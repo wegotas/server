@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Status windows</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+<body>
+    <header>
+        <img src="{% static '/img/Logo.jpg' %}">
+    </header>
+    <br><br>
+    <div>
+        <!-- <font>Success/Failure</font> -->
+        <font color="{{ color }}">{{ status }}</font>
+    </div>
+    <br>
+    <div>
+        <!-- <font>Message of what has happpened</font> -->
+        <font>{{ message }}</font>
+
+    </div>
+</body>
+</html>

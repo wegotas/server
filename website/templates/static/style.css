@@ -1,0 +1,153 @@
+body {
+    font-family: "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
+    color: #5e5d52;
+}
+
+.container {
+    flex: 1 100%;
+}
+.main-table thead th {
+    background-color: #1d96b2;
+    border: 1px solid #1d96b2;
+    font-weight: normal;
+    text-align: center;
+    color: white;
+}
+.main-table thead th:first-of-type {
+    text-align: left;
+}
+.main-table tbody,
+.main-table tr,
+.main-table th,
+.main-table td {
+    display: block;
+    padding: 0;
+    text-align: left;
+    white-space: normal;
+}
+
+.main-table tr {
+    display: table-row;
+}
+.main-table th,
+.main-table td {
+    padding: .5em;
+    vertical-align: middle;
+}
+          
+.main-table th,
+.main-table td {
+    padding: .75em .5em;
+}
+
+.main-table th,
+.main-table td {
+    display: table-cell;
+    padding: .5em;
+}
+
+.maine-table th,
+.main-table td {
+    padding: .75em .5em;
+}
+          
+.main-table th,
+.main-table td {
+    padding: .75em;
+}
+
+.main-table caption {
+    margin-bottom: 1em;
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+}
+
+.main-table caption {
+    font-size: 1.5em;
+}
+
+.main-table tfoot {
+    font-size: .8em;
+    font-style: italic;
+}
+          
+.main-table tfoot {
+      font-size: .9em;
+  }
+          
+.main-table tbody {
+      display: table-row-group;
+  }
+          
+.main-table tbody tr {
+    margin-bottom: 1em;
+    border: 2px solid #1d96b2;
+}
+          
+.main-table tbody tr {
+    display: table-row;
+    border-width: 1px;
+}
+          
+.main-table tbody tr:last-of-type {
+    margin-bottom: 0;
+}
+          
+.main-table tbody tr:nth-of-type(even) {
+    background-color: rgba(94, 93, 82, 0.1);
+}
+          
+.main-table tbody th[scope="row"] {
+  background-color: #1d96b2;
+  color: white;
+}
+
+.main-table tbody th[scope="row"] {
+    background-color: transparent;
+    color: #5e5d52;
+    text-align: left;
+}
+
+.main-table tbody td {
+    text-align: right;
+}
+
+.main-table tbody td {
+    border-bottom: 1px solid #1d96b2;
+}
+          
+.main-table tbody td {
+    text-align: center;
+}
+
+.container-search {
+    width: 400px;
+    height: 50px;
+    padding: 15px;
+    margin-top: 35px;
+}
+
+.search {
+    width: 300px;
+}
+
+.header img {
+    float: left;
+    width: 200px;
+    height: 80px;
+    background: #555;
+}
+
+.header h1 {
+    position: relative;
+    top: 18px;
+    left: 10px;
+}
+
+header {
+    background-image: url(img/Logo.jpg);
+    width: 170px;
+    height: 70px;
+}
+
