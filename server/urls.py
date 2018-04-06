@@ -18,7 +18,9 @@ from django.urls import path, re_path, include
 from server import views
 
 urlpatterns = [
+    path('if/', include('ULCDTinterface.urls')),
     path('website/', include('website.urls')),
     path('data/', views.process_data),
+    path('aux_data/', views.aux_data),
     path('admin/', admin.site.urls),
 ]

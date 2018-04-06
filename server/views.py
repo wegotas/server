@@ -155,7 +155,32 @@ def process_data(request):
                 print("Something else")
                 return HttpResponse(str(e), status=404)
 
+
+@csrf_exempt
 def aux_data(request):
-    if request == "Get":
+    print("aux_data called")
+    if request.method == "GET":
+        print("GET aux_data")
+        print("___________________________")
         categories = Categories.objects.all()
-    print("test")
+        cat_dict = dict()
+        for category in categories:
+            print(category.id_category)
+            print(category.category_name)
+            cat_dict[category.id_category] = category.category_name
+        print(cat_dict)
+        print("___________________________")
+        types = Types.objects.all()
+        typ_dict = dict()
+        for type in types:
+            print(type.id_types)
+            print(type.type_name)
+            typ_dict[type.id_types] = type.type_name
+        print(typ_dict)
+        print("___________________________")
+        dict_dict = dict()
+        dict_dict["cat_dict"] = cat_dict
+        dict_dict["typ_dict"] = typ_dict
+        print(dict_dict)
+        return JsonResponse(dict_dict)
+
