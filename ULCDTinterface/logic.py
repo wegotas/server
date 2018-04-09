@@ -22,6 +22,22 @@ class Computer_record():
         self.timenow = datetime.datetime.now()
         self.computer_id = self._computer_save_and_getid(data_dict)
 
+    # SIS METODAS DAR NEUZBAIGTAS KARTU SU HDD IR RAMU METODU. PO TO JU VISU ID TURETU SAUGOTI x_to_comp LENTELESE!!!
+    def _battery_save_and_getid(self, serial, wear_out, expected_time):
+        try:
+            bios = Batteries.objects.get(
+                serial=serial,
+                wear_out=wear_out,
+                expected_time=expected_time
+            )
+            print("bios: " + value + "\nIt's id is: " + bios.id_bios)
+            return bios.id_bios
+        except Bioses.DoesNotExist:
+            print("no such bios exception: " + value)
+            bios = Bioses(bios_text=value)
+            bios.save()
+            return bios.id_bios
+
     """
     def _battery_save(self, serial, wear_out, expected_time):
         if serial == "N/A" and wear_out == "N/A" and expected_time == "N/A":

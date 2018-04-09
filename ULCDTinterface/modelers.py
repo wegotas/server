@@ -22,7 +22,6 @@ class Batteries(models.Model):
     serial = models.CharField(max_length=45)
     wear_out = models.CharField(max_length=45)
     expected_time = models.CharField(max_length=45)
-    f_id_computer_battery = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer_battery', blank=True, null=True)
 
     class Meta:
         managed = True
@@ -91,6 +90,7 @@ class Computers(models.Model):
     date = models.DateTimeField(blank=True, null=True)
     f_bios = models.ForeignKey(Bioses, models.DO_NOTHING, blank=True, null=True)
     f_motherboard = models.ForeignKey('Motherboards', models.DO_NOTHING, blank=True, null=True)
+    date_of_sale = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -127,8 +127,6 @@ class HddSizes(models.Model):
 class Hdds(models.Model):
     id_hdd = models.AutoField(primary_key=True)
     hdd_serial = models.CharField(max_length=45)
-    f_id_computer_hdd = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer_hdd', blank=True, null=True)
-    f_id_computer = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -183,7 +181,6 @@ class RamSizes(models.Model):
 class Rams(models.Model):
     id_ram = models.AutoField(primary_key=True)
     ram_serial = models.CharField(max_length=45)
-    f_id_computer_ram = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer_ram', blank=True, null=True)
 
     class Meta:
         managed = True
@@ -220,3 +217,33 @@ class Types(models.Model):
         for type in types:
             typ_dict[type.id_type] = type.type_name
         return typ_dict
+
+
+class BatToComp(models.Model):
+    id_bat_to_comp = models.AutoField(primary_key=True)
+    f_id_computer_bat_to_com = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer_bat_to_com', blank=True, null=True)
+    f_bat_bat_to_com = models.ForeignKey(Batteries, models.DO_NOTHING, db_column='f_bat_bat_to_com', blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'bat_to_comp'
+
+
+class HddToComp(models.Model):
+    id_hdd_to_comp = models.AutoField(primary_key=True)
+    f_id_computer_hdd_to_com = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer_hdd_to_com', blank=True, null=True)
+    f_id_hdd_hdd_to_com = models.ForeignKey(Hdds, models.DO_NOTHING, db_column='f_id_hdd_hdd_to_com', blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'hdd_to_comp'
+
+
+class RamToComp(models.Model):
+    id_ram_to_comp = models.AutoField(primary_key=True)
+    f_id_computer_ram_to_com = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer_ram_to_com', blank=True, null=True)
+    f_id_ram_ram_to_com = models.ForeignKey(Rams, models.DO_NOTHING, db_column='f_id_ram_ram_to_com', blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'ram_to_comp'
