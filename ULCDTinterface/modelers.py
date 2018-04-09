@@ -55,6 +55,13 @@ class Categories(models.Model):
         managed = True
         db_table = 'Categories'
 
+    def get_values():
+        categories = Categories.objects.all()
+        cat_dict = dict()
+        for category in categories:
+            cat_dict[category.id_category] = category.category_name
+        return cat_dict
+
 
 class Computers(models.Model):
     id_computer = models.AutoField(primary_key=True)
@@ -191,6 +198,13 @@ class Testers(models.Model):
         managed = True
         db_table = 'Testers'
 
+    def get_values():
+        testers = Testers.objects.all()
+        tes_dict = dict()
+        for tester in testers:
+            tes_dict[tester.id_tester] = tester.tester_name
+        return tes_dict
+
 
 class Types(models.Model):
     id_type = models.AutoField(primary_key=True)
@@ -199,3 +213,10 @@ class Types(models.Model):
     class Meta:
         managed = True
         db_table = 'Types'
+
+    def get_values():
+        types = Types.objects.all()
+        typ_dict = dict()
+        for type in types:
+            typ_dict[type.id_type] = type.type_name
+        return typ_dict
