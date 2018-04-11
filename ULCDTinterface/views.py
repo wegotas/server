@@ -71,7 +71,7 @@ def check_if_exists(request):
         datastring = unquote(query_string)
         data = json.loads(datastring)
         data["Serial"] = str(data["Serial"]).strip()
-        exists = Computers.objects.filter(computer_serial=data["Serial"])
+        exists = Computers.objects.filter(computer_serial=data["Serial"]).exists()
         if exists:
             return HttpResponse(status=200)
         else:
