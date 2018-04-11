@@ -96,6 +96,12 @@ class Computers(models.Model):
         managed = True
         db_table = 'Computers'
 
+    def getDate(self):
+        if self.date is None:
+            return "N/A"
+        else:
+            return self.date.strftime('%Y-%m-%d %H:%M:%S')
+
 
 class Diagonals(models.Model):
     id_diagonal = models.AutoField(primary_key=True)

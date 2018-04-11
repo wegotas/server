@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <title>Computers</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="{% static '/img/Logo.jpg' %}">
+            <h1></h1>
+        </header>
+        <div class="container-search">
+            <input class="search" type="text" name="search" value=""><input type="submit" value="Submit">
+            <input type="submit" value="Submit"> <input type="submit" value="Submit"> <input type="submit" value="Submit">
+        </div>
+        <table class="main-table" border="1">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nr.</th>
+                    <th>Serial</th>
+                    <th>Manufacturer</th>
+                    <th>Model</th>
+                    <th>CPU</th>
+                    <th>RAM</th>
+                    <th>GPU</th>
+                    <th>Screen</th>
+                    <th>Other</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for computer in computers %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="" value="">
+                    </td>
+                    <td>{{ computer.id_computer }}</td>
+                    <td>{{ computer.computer_serial }}</td>
+                    <td>{{ computer.f_manufacturer.manufacturer_name }}</td>
+                    <td>{{ computer.f_model.model_name }}</td>
+                    <td>{{ computer.f_cpu.cpu_name }}</td>
+                    <td>{{ computer.f_ram_size.ram_size_text }}</td>
+                    <td>{{ computer.f_gpu.gpu_name }}</td>
+                    <td>{{ computer.f_diagonal.diagonal_text }}</td>
+                    <td>{{ computer.other }}</td>
+                    <td>
+                        <button onclick="look({{ computer.id_computer }})">Look</button>
+                        <button onclick="edit({{ computer.id_computer }})">Edit</button>
+                        <button onclick="remove({{ computer.id_computer }})">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+    function look(index) {
+        var lookWindow = window.open('look/'+index+'/', "", "width=300,height=650");
+    }
+    </script>
+    <script>
+    function edit(index) {
+        var editWindow = window.open('edit/'+index+'/', "", "width=400,height=650");
+    }
+    </script>
+    <script>
+    function remove(index) {
+        var deleteWindow = window.open('delete/'+index+'/', "", "width=340,height=208");
+    }
+    </script>
+
+    </body>
+</html>

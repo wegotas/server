@@ -25,6 +25,7 @@ class Computer_record():
             self.timenow = datetime.datetime.now()
             self.computer = self._computer_save_and_get(data_dict)
             if data_dict["Category"] == "Sold":
+                print("Computer id: " + str(self.computer.id_computer))
                 bat1 = self._battery_save_and_get(
                     data_dict["Bat1 serial"],
                     data_dict["Bat1 wear"],
@@ -67,20 +68,37 @@ class Computer_record():
             self.success = False
 
     def _bat_to_comp_relation_creation(self, bat):
+        bat_to_comp, created = BatToComp.objects.get_or_create(
+            f_id_computer_bat_to_com=self.computer,
+            f_bat_bat_to_com=bat
+        )
+        """
         try:
+            print("Battery id: " + str(bat.id_battery))
             existing_bat_to_comp = BatToComp.objects.filter(
                 f_id_computer_bat_to_com=self.computer,
                 f_bat_bat_to_com=bat
             ).first()
+            print(existing_bat_to_comp.f_id_computer_bat_to_com)
+            print(existing_bat_to_comp.f_bat_bat_to_com)
+            print("retrieval succesful")
         except BatToComp.DoesNotExist:
             bat_to_comp =BatToComp(
                 f_id_computer_bat_to_com=self.computer,
                 f_bat_bat_to_com=bat
             )
             bat_to_comp.save()
+            print("save succesful")
+        """
 
     def _ram_to_comp_relation_creation(self, ram):
+        ram_to_comp = RamToComp.objects.get_or_create(
+            f_id_computer_ram_to_com=self.computer,
+            f_id_ram_ram_to_com=ram
+        )
+        """
         try:
+            print("Ram id: " + str(ram.id_ram))
             existing_ram_to_comp = RamToComp.objects.filter(
                 f_id_computer_ram_to_com=self.computer,
                 f_id_ram_ram_to_com=ram
@@ -91,9 +109,16 @@ class Computer_record():
                 f_id_ram_ram_to_com=ram
             )
             ram_to_comp.save()
+        """
 
     def _hdd_to_comp_relation_creation(self, hdd):
+        hdd_to_comp = HddToComp.objects.get_or_create(
+            f_id_computer_hdd_to_com=self.computer,
+            f_id_hdd_hdd_to_com=hdd
+        )
+        """
         try:
+            print("Hdd id: " + str(hdd.id_hdd))
             existing_hdd_to_comp = HddToComp.objects.filter(
                 f_id_computer_hdd_to_com=self.computer,
                 f_id_hdd_hdd_to_com=hdd
@@ -104,6 +129,7 @@ class Computer_record():
                 f_id_hdd_hdd_to_com=hdd
             )
             hdd_to_comp.save()
+        """
 
     def _battery_save_and_get(self, serial, wear_out, expected_time):
         try:

@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from server.modelers import Computers
+# from server.modelers import Computers
+from ULCDTinterface.modelers import Computers, BatToComp
 from django.template import loader
+from website.logic import *
 import re
 import os
 from django.views.decorators.csrf import csrf_exempt
 # from website.form_classes import Computers_form
-
+"""
 # Create your views here.
 def index(request):
     print("INDEX")
@@ -94,3 +96,29 @@ def delete(request, int_index):
         template = loader.get_template('computer_delete.html')
         computer = Computers.objects.get(id_computer=int_index)
         return HttpResponse(template.render({'computer': computer}, request))
+"""
+
+def index(request):
+    print("INDEX")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    template = loader.get_template('index2.html')
+    computers = Computers.objects.all()
+    return HttpResponse(template.render({'computers': computers}, request))
+
+def look(request, int_index):
+    print("LOOK ")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    print(request)
+    print(int_index)
+    template = loader.get_template('computer_look2.html')
+    computer = Computers.objects.get(id_computer=int_index)
+    batteries = get_batteries(int_index)
+    rams = get_rams(int_index)
+    hdds = get_hdds(int_index)
+    return HttpResponse(template.render({'computer': computer, 'bat_list': batteries, "ram_list": rams, "hdd_list": hdds}, request))
