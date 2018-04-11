@@ -76,3 +76,4 @@ def check_if_exists(request):
             return HttpResponse(status=200)
         else:
             return HttpResponse(status=404)
+    return HttpResponse(status=404)
