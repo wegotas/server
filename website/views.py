@@ -38,31 +38,31 @@ def edit(request, int_index):
     if request.method == 'POST':
         print("This was POST request")
         computer = Computers(
-            id_computer=request.POST.get("id_computer", ""),
-            serial=request.POST.get("serial", ""),
-            manufacturer=request.POST.get("manufacturer", ""),
-            model=request.POST.get("model", ""),
-            cpu=request.POST.get("cpu", ""),
-            ram=request.POST.get("ram", ""),
-            gpu=request.POST.get("gpu", ""),
-            hdd=request.POST.get("hdd", ""),
-            diagonal=request.POST.get("diagonal", ""),
-            license=request.POST.get("camera", ""),
-            camera=request.POST.get("camera", ""),
-            cover=request.POST.get("cover", ""),
-            display=request.POST.get("display", ""),
-            bezel=request.POST.get("bezel", ""),
-            keyboard=request.POST.get("keyboard", ""),
-            mouse=request.POST.get("mouse", ""),
-            sound=request.POST.get("sound", ""),
-            cdrom=request.POST.get("cdrom", ""),
-            battery=request.POST.get("battery", ""),
-            hdd_cover=request.POST.get("hdd_cover", ""),
-            ram_cover=request.POST.get("ram_cover", ""),
-            other=request.POST.get("other", ""),
-            tester=request.POST.get("tester", ""),
-            date=request.POST.get("date", ""),
-            bios=request.POST.get("bios", "")
+            id_computer=data_dict.pop("id_computer", "")[0],
+            serial=data_dict.pop("serial", "")[0],
+            manufacturer=data_dict.pop("manufacturer", "")[0],
+            model=data_dict.pop("model", "")[0],
+            cpu=data_dict.pop("cpu", "")[0],
+            ram=data_dict.pop("ram", "")[0],
+            gpu=data_dict.pop("gpu", "")[0],
+            hdd=data_dict.pop("hdd", "")[0],
+            diagonal=data_dict.pop("diagonal", "")[0],
+            license=data_dict.pop("camera", "")[0],
+            camera=data_dict.pop("camera", "")[0],
+            cover=data_dict.pop("cover", "")[0],
+            display=data_dict.pop("display", "")[0],
+            bezel=data_dict.pop("bezel", "")[0],
+            keyboard=data_dict.pop("keyboard", "")[0],
+            mouse=data_dict.pop("mouse", "")[0],
+            sound=data_dict.pop("sound", "")[0],
+            cdrom=data_dict.pop("cdrom", "")[0],
+            battery=data_dict.pop("battery", "")[0],
+            hdd_cover=data_dict.pop("hdd_cover", "")[0],
+            ram_cover=data_dict.pop("ram_cover", "")[0],
+            other=data_dict.pop("other", "")[0],
+            tester=data_dict.pop("tester", "")[0],
+            date=data_dict.pop("date", "")[0],
+            bios=data_dict.pop("bios", "")[0]
         )
         computer.save()
         template = loader.get_template('status.html')
@@ -114,11 +114,37 @@ def look(request, int_index):
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
-    print(request)
-    print(int_index)
-    template = loader.get_template('computer_look2.html')
-    computer = Computers.objects.get(id_computer=int_index)
-    batteries = get_batteries(int_index)
-    rams = get_rams(int_index)
-    hdds = get_hdds(int_index)
-    return HttpResponse(template.render({'computer': computer, 'bat_list': batteries, "ram_list": rams, "hdd_list": hdds}, request))
+        template = loader.get_template('computer_look2.html')
+        computer = Computers.objects.get(id_computer=int_index)
+        batteries = get_batteries(int_index)
+        rams = get_rams(int_index)
+        hdds = get_hdds(int_index)
+        return HttpResponse(
+            template.render({'computer': computer,
+                             'bat_list': batteries,
+                             "ram_list": rams,
+                             "hdd_list": hdds}, request))
+
+@csrf_exempt
+def edit(request, int_index):
+    print("EDIT ")
+    if request.method == 'POST':
+        # data_dict = request.POST.copy()
+        print("This was POST request")
+        edit_post(request.POST.copy())
+        ecr = Edit_computer_record(request.POST.copy())
+        return HttpResponse("Success", request)
+
+    if request.method == 'GET':
+        print("This was GET request")
+        template = loader.get_template('computer_edit2.html')
+        computer = Computers.objects.get(id_computer=int_index)
+        batteries = get_batteries(int_index)
+        rams = get_rams(int_index)
+        hdds = get_hdds(int_index)
+        return HttpResponse(template.render({'computer': computer,
+                                             'bat_list': batteries,
+                                             "ram_list": rams,
+                                             "hdd_list": hdds}, request))
+
+

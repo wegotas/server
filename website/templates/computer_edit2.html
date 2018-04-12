@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Overview of the computer</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+<style>
+th, td {
+font-size: 13px;
+}
+th {
+text-align: right;
+padding-right: 10px;
+}
+</style>
+<body>
+    <header>
+        <img src="{% static '/img/Logo.jpg' %}">
+    </header>
+    <table align="center">
+        <form action="" method="post">
+            <tr>
+                <th></th>
+                <td>
+                    <input type="submit" name="edit" value="Edit">
+                </td>
+            <tr>
+            <tr>
+                <th>Computer ID:</th>
+                <td>
+                    <input type="text" name="id_computer" value="{{ computer.id_computer }}" readonly>
+                </td>
+            </tr>
+            <tr>
+                <th>Serial:</th>
+                <td>
+                    <input type="text" name="serial" value="{{ computer.computer_serial }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Type:</th>
+                <td>
+                    <input type="text" name="type_name" value="{{ computer.f_type.type_name }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Category:</th>
+                <td>
+                    <input type="text" name="category_name" value="{{ computer.f_category.category_name }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Manufacturer:</th>
+                <td>
+                    <input type="text" name="manufacturer_name" value="{{ computer.f_manufacturer.manufacturer_name }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Model:</th>
+                <td>
+                    <input type="text" name="model_name" value="{{ computer.f_model.model_name }}">
+                </td>
+            </tr>
+            <tr>
+                <th>CPU:</th>
+                <td>
+                    <input type="text" name="cpu_name" value="{{ computer.f_cpu.cpu_name }}">
+                </td>
+            </tr>
+            <tr>
+                <th>GPU:</th>
+                <td>
+                    <input type="text" name="gpu_name" value="{{ computer.f_gpu.gpu_name }}">
+                </td>
+            </tr>
+            <tr>
+                <th>RAM:</th>
+                <td>
+                    <input type="text" name="ram_size_text" value="{{ computer.f_ram_size.ram_size_text }}">
+                </td>
+            </tr>
+
+            <tr>
+                <th>HDD:</th>
+                <td>
+                    <input type="text" name="hdd_size_text" value="{{ computer.f_hdd_size.hdd_size_text }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Diagonal:</th>
+                <td>
+                    <input type="text" name="diagonal_text" value="{{ computer.f_diagonal.diagonal_text }}">
+                </td>
+            </tr>
+            <tr>
+                <th>License:</th>
+                <td>
+                    <input type="text" name="license_name" value="{{ computer.f_license.license_name }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Camera:</th>
+                <td>
+                    <input type="text" name="option_name" value="{{ computer.f_camera.option_name }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Cover:</th>
+                <td>
+                    <input type="text" name="cover" value="{{ computer.cover }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Display:</th>
+                <td>
+                    <input type="text" name="display" value="{{ computer.display }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Bezel:</th>
+                <td>
+                    <input type="text" name="bezel" value="{{ computer.bezel }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Keyboard:</th>
+                <td>
+                    <input type="text" name="keyboard" value="{{ computer.keyboard }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Mouse:</th>
+                <td>
+                    <input type="text" name="mouse" value="{{ computer.mouse }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Sound:</th>
+                <td>
+                    <input type="text" name="sound" value="{{ computer.sound }}">
+                </td>
+            </tr>
+            <tr>
+                <th>CD-ROM:</th>
+                <td>
+                    <input type="text" name="cdrom" value="{{ computer.cdrom }}">
+                </td>
+            </tr>
+            <tr>
+                <th>HDD cover:</th>
+                <td>
+                    <input type="text" name="hdd_cover" value="{{ computer.hdd_cover }}">
+                </td>
+            </tr>
+            <tr>
+                <th>RAM cover</th>
+                <td>
+                    <input type="text" name="ram_cover" value="{{ computer.ram_cover }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Other</th>
+                <td>
+                    <input type="text" name="other" value="{{ computer.other }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Tester:</th>
+                <td>
+                    <input type="text" name="tester_name" value="{{ computer.f_tester.tester_name }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Date:</th>
+                <td>
+                    <input type="text" name="date" value="{{ computer.getDate }}">
+                </td>
+            </tr>
+            <tr>
+                <th>BIOS:</th>
+                <td>
+                    <input type="text" name="bios_text" value="{{ computer.f_bios.bios_text }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Motherboard serial:</th>
+                <!-- <td>{{ computer.f_motherboard.motherboard_serial }}</td> -->
+                <td>
+                    <input type="text" name="motherboard_serial" value="{{ computer.f_motherboard.motherboard_serial }}">
+                </td>
+            </tr>
+            {% for bat_unit in bat_list %}
+            <tr>
+                <th>Battery{{ bat_unit.index }} serial</th>
+                <td>
+                    <input type="text" name="bat_serial_{{ bat_unit.id }}" value="{{ bat_unit.serial }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Battery{{ bat_unit.index }} wear</th>
+                <td>
+                    <input type="text" name="bat_wear_{{ bat_unit.id }}" value="{{ bat_unit.wear }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Battery{{ bat_unit.index }} time</th>
+                <td>
+                    <input type="text" name="bat_time_{{ bat_unit.id }}" value="{{ bat_unit.time }}">
+                </td>
+            </tr>
+            {% endfor %}
+            {% for ram_unit in ram_list %}
+            <tr>
+                <th>RAM{{ ram_unit.index }} serial</th>
+                <td>
+                    <input type="text" name="ram_serial_{{ ram_unit.id }}" value="{{ ram_unit.serial }}">
+                </td>
+            </tr>
+            {% endfor %}
+            {% for hdd_unit in hdd_list %}
+            <tr>
+                <th>HDD{{ hdd_unit.index }} serial</th>
+                <td>
+                    <input type="text" name="hdd_serial_{{ hdd_unit.id }}" value="{{ hdd_unit.serial }}">
+                </td>
+            </tr>
+            {% endfor %}
+        </form>
+    </table>
+</body>
+</html>

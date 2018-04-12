@@ -98,12 +98,6 @@ padding-right: 10px;
             <th>CD-ROM:</th>
             <td>{{ computer.cdrom }}</td>
         </tr>
-        <!--
-        <tr>
-            <th>Battery:</th>
-            <td>NOT IMPLEMENTED YET (WIP){{ computer.battery }}</td>
-        </tr>
-        -->
         <tr>
             <th>HDD cover:</th>
             <td>{{ computer.hdd_cover }}</td>
@@ -128,6 +122,10 @@ padding-right: 10px;
             <th>BIOS:</th>
             <td>{{ computer.f_bios.bios_text }}</td>
         </tr>
+        <tr>
+            <th>Motherboard serial:</th>
+            <td>{{ computer.f_motherboard.motherboard_serial }}</td>
+        </tr>
         {% for bat_unit in bat_list %}
         <tr>
             <th>bat_serial{{ bat_unit.index }}</th>
@@ -140,6 +138,18 @@ padding-right: 10px;
         <tr>
             <th>bat_time{{ bat_unit.index }}</th>
             <td>{{ bat_unit.time }}</td>
+        </tr>
+        {% endfor %}
+        {% for ram_unit in ram_list %}
+        <tr>
+            <th>ram_serial{{ ram_unit.index }}</th>
+            <td>{{ ram_unit.serial }}</td>
+        </tr>
+        {% endfor %}
+        {% for hdd_unit in hdd_list %}
+        <tr>
+            <th>hdd_serial{{ hdd_unit.index }}</th>
+            <td>{{ hdd_unit.serial }}</td>
         </tr>
         {% endfor %}
     </table>
