@@ -129,9 +129,7 @@ def look(request, int_index):
 def edit(request, int_index):
     print("EDIT ")
     if request.method == 'POST':
-        # data_dict = request.POST.copy()
         print("This was POST request")
-        edit_post(request.POST.copy())
         ecr = Edit_computer_record(request.POST.copy())
         return HttpResponse("Success", request)
 
@@ -147,4 +145,16 @@ def edit(request, int_index):
                                              "ram_list": rams,
                                              "hdd_list": hdds}, request))
 
-
+@csrf_exempt
+def delete(request, int_index):
+    print("DELETE")
+    if request.method == 'POST':
+        print("This was POST request")
+        print(int_index)
+        existing_computer = Computers.objects.get(id_computer=int_index)
+        motherboard = existing_computer.f_motherboard
+        existing_computer.delete()
+        motherboard.delete()
+    if request.method == 'GET':
+        print("This was GET request")
+        print(int_index)

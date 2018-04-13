@@ -52,7 +52,6 @@ def get_rams(computer_id):
                     id=ram.id_ram_to_comp,
                     serial=ram.f_id_ram_ram_to_com.ram_serial
                 )
-                print("Before appending")
                 ram_list.append(ram)
         if len(ram_list) == 0:
             first_ram = rams.first()
@@ -93,55 +92,155 @@ def get_hdds(computer_id):
 class Edit_computer_record():
 
     def __init__(self, data_dict):
-        print("test")
-        self.existing_computer = Computers(id_computer=data_dict.pop("id_computer", "")[0])
+        self.data_dict = data_dict
+        self.data_dict.pop("edit", "")
 
-        self._type_save(data_dict.pop("type_name", "")[0])
-        self._tester_save(data_dict.pop("tester_name", "")[0])
-        self._bios_save(data_dict.pop("bios_text", "")[0])
-        self._cpu_save(data_dict.pop("cpu_name", "")[0])
-        self._camera_option_save(data_dict.pop("option_name", "")[0])
-        self._camera_option_save(data_dict.pop("option_name", "")[0])
-        self._diagonal_save(data_dict.pop("diagonal_text", "")[0])
+        self._type_save(self.data_dict.pop("type_name", "")[0])
+        self._category_save(self.data_dict.pop("category_name", "")[0])
+        self._tester_save(self.data_dict.pop("tester_name", "")[0])
+        self._bios_save(self.data_dict.pop("bios_text", "")[0])
+        self._cpu_save(self.data_dict.pop("cpu_name", "")[0])
+        self._camera_option_save(self.data_dict.pop("option_name", "")[0])
+        self._diagonal_save(self.data_dict.pop("diagonal_text", "")[0])
+        self._gpu_save(self.data_dict.pop("gpu_name", "")[0])
+        self._hddsize_save(self.data_dict.pop("hdd_size_text", "")[0])
+        self._license_save(self.data_dict.pop("license_name", "")[0])
+        self._manufacturer_save(self.data_dict.pop("manufacturer_name", "")[0])
+        self._model_save(self.data_dict.pop("model_name", "")[0])
+        self._motherboard_save(self.data_dict.pop("motherboard_serial", "")[0])
+        self._ramsize_save(self.data_dict.pop("ram_size_text", "")[0])
+        self._computer_save()
+        self._process_ram_and_hdd_serials()
+        self._process_batteries()
+
+    def _process_batteries(self):
+        while len(self.data_dict) > 2:
+            key = next(iter(self.data_dict))
+            dbindex = self.get_dbindex(key)
+            serial = self.data_dict.pop("bat_serial_" + dbindex)[0]
+            wear = self.data_dict.pop("bat_wear_" + dbindex)[0]
+            time = self.data_dict.pop("bat_time_" + dbindex)[0]
+            battery = Batteries.objects.get_or_create(
+                serial=serial,
+                wear_out=wear,
+                expected_time=time
+            )[0]
+            battery.save()
+
+            old_battocomp = BatToComp.objects.get(id_bat_to_comp=dbindex)
+            new_battocomp = BatToComp(
+                id_bat_to_comp=old_battocomp.id_bat_to_comp,
+                f_id_computer_bat_to_com=self.computer,
+                f_bat_bat_to_com=battery
+            )
+            new_battocomp.save()
+
+    def _process_ram_and_hdd_serials(self):
+        processed_key_list = []
+        for key, value in self.data_dict.items():
+            if "bat" in key:
+                continue
+            elif "ram" in key:
+                dbindex = self.get_dbindex(key)
+                ram = Rams.objects.get_or_create(ram_serial=value)[0]
+                old_ramtocomp = RamToComp.objects.get(id_ram_to_comp=dbindex)
+                new_ramtocomp = RamToComp(
+                    id_ram_to_comp=old_ramtocomp.id_ram_to_comp,
+                    f_id_computer_ram_to_com=self.computer,
+                    f_id_ram_ram_to_com=ram
+                )
+                new_ramtocomp.save()
+                processed_key_list.append(key)
+            elif "hdd" in key:
+                dbindex = self.get_dbindex(key)
+                hdd = Hdds.objects.get_or_create(hdd_serial=value)[0]
+                old_hddtocomp = HddToComp.objects.get(id_hdd_to_comp=dbindex)
+                new_hddtocomp = HddToComp(
+                    id_hdd_to_comp=old_hddtocomp.id_hdd_to_comp,
+                    f_id_computer_hdd_to_com=self.computer,
+                    f_id_hdd_hdd_to_com=hdd
+                )
+                new_hddtocomp.save()
+                processed_key_list.append(key)
+        for key in processed_key_list:
+            self.data_dict.pop(key)
+
+    def get_dbindex(self, key):
+        return key.split("_")[2]
+
+    def _computer_save(self):
+        self.computer = Computers(
+            id_computer=self.data_dict.pop("id_computer", "")[0],
+            computer_serial=self.data_dict.pop("serial", "")[0],
+            f_type=self.type,
+            f_category=self.category,
+            f_manufacturer=self.manufacturer,
+            f_model=self.model,
+            f_cpu=self.cpu,
+            f_gpu=self.gpu,
+            f_ram_size=self.ramsize,
+            f_hdd_size=self.hddsize,
+            f_diagonal=self.diagonal,
+            f_license=self.license,
+            f_camera=self.camera_option,
+            cover=self.data_dict.pop("cover", "")[0],
+            display=self.data_dict.pop("display", "")[0],
+            bezel=self.data_dict.pop("bezel", "")[0],
+            keyboard=self.data_dict.pop("keyboard", "")[0],
+            mouse=self.data_dict.pop("mouse", "")[0],
+            sound=self.data_dict.pop("sound", "")[0],
+            cdrom=self.data_dict.pop("cdrom", "")[0],
+            hdd_cover=self.data_dict.pop("hdd_cover", "")[0],
+            ram_cover=self.data_dict.pop("ram_cover", "")[0],
+            other=self.data_dict.pop("other", "")[0],
+            f_tester=self.tester,
+            date=self.data_dict.pop("date", "")[0],
+            f_bios=self.bios,
+            f_motherboard=self.motherboard,
+        )
+        self.computer.save()
 
     def _type_save(self, value):
-        self.type = Types.objects.get_or_create(type_name=value)
+        self.type = Types.objects.get_or_create(type_name=value)[0]
 
     def _tester_save(self, value):
-        self.tester = Testers.objects.get_or_create(tester_name=value)
+        self.tester = Testers.objects.get_or_create(tester_name=value)[0]
+
+    def _category_save(self, value):
+        self.category = Categories.objects.get_or_create(category_name=value)[0]
 
     def _bios_save(self, value):
-        self.bios = Bioses.objects.get_or_create(bios_text=value)
+        self.bios = Bioses.objects.get_or_create(bios_text=value)[0]
 
     def _cpu_save(self, value):
-        self.cpu = Cpus.objects.get_or_create(cpu_name=value)
+        self.cpu = Cpus.objects.get_or_create(cpu_name=value)[0]
 
     def _camera_option_save(self, value):
-        self.camera_option = CameraOptions.objects.get_or_create(option_name=value)
+        self.camera_option = CameraOptions.objects.get_or_create(option_name=value)[0]
 
     def _diagonal_save(self, value):
-        self.diagonal = Diagonals.objects.get_or_create(diagonal_text=value)
+        self.diagonal = Diagonals.objects.get_or_create(diagonal_text=value)[0]
 
     def _gpu_save(self, value):
-        self.gpu = Gpus.objects.get_or_create(gpu_name=value)
+        self.gpu = Gpus.objects.get_or_create(gpu_name=value)[0]
 
     def _hddsize_save(self, value):
-        self.hddsize = HddSizes.objects.get_or_create(hdd_size_text=value)
+        self.hddsize = HddSizes.objects.get_or_create(hdd_size_text=value)[0]
 
     def _license_save(self, value):
-        self.license = Licenses.objects.get_or_create(license_name=value)
+        self.license = Licenses.objects.get_or_create(license_name=value)[0]
 
     def _manufacturer_save(self, value):
-        self.manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=value)
+        self.manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=value)[0]
 
     def _model_save(self, value):
-        self.model = Models.objects.get_or_create(model_name=value)
+        self.model = Models.objects.get_or_create(model_name=value)[0]
 
     def _motherboard_save(self, value):
-        self.motherboard = Motherboards.objects.get_or_create(motherboard_serial=value)
+        self.motherboard = Motherboards.objects.get_or_create(motherboard_serial=value)[0]
 
     def _ramsize_save(self, value):
-        self.ramsize = RamSizes.objects.get_or_create(ram_size_text=value)
+        self.ramsize = RamSizes.objects.get_or_create(ram_size_text=value)[0]
 
 
 def edit_post(data_dict):
@@ -163,7 +262,7 @@ def edit_post(data_dict):
     gpu = data_dict.pop("gpu_name", "")[0]
     print("gpu_name: " + gpu)
     ram_size = data_dict.pop("ram_size_text", "")[0]
-    print("hdd_size_text: " + ram_size)
+    print("ram_size_text: " + ram_size)
     hdd_size = data_dict.pop("hdd_size_text", "")[0]
     print("hdd_size_text: " + hdd_size)
     diagonal = data_dict.pop("diagonal_text", "")[0]

@@ -68,7 +68,22 @@
     </script>
     <script>
     function remove(index) {
-        var deleteWindow = window.open('delete/'+index+'/', "", "width=340,height=208");
+        // var deleteWindow = window.open('delete/'+index+'/', "", "width=340,height=208");
+
+        var txt;
+        if (confirm("Press a button")) {
+            // txt = "Pressed button";
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'delete/'+index+'/', true);
+            // xhr.setRequestedHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.send()
+        }
+        /*
+        else {
+            txt = "Pressed cancel";
+        }
+        alert(txt)
+        */
     }
     </script>
 
