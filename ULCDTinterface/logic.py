@@ -258,7 +258,7 @@ class Computer_record():
             cpu = Cpus.objects.get(cpu_name=value)
             return cpu
         except Cpus.DoesNotExist:
-            cpu = Bioses(cpu_name=value)
+            cpu = Cpus(cpu_name=value)
             cpu.save()
             return cpu
 
