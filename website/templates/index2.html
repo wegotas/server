@@ -8,13 +8,18 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <img src="{% static '/img/Logo.jpg' %}">
-            <h1></h1>
-        </header>
-        <div class="container-search">
-            <input class="search" type="text" name="search" value=""><input type="submit" value="Submit">
-            <input type="submit" value="Submit"> <input type="submit" value="Submit"> <input type="submit" value="Submit">
+        <div style="width: 100%; height: 70px;">
+            <div style="width: 200px; float: left;">
+              <header>
+                  <img src="{% static '/img/Logo.jpg' %}">
+              </header>
+            </div>
+            <div class="container-search" style="margin-left: 100px;">
+                <input class="search" type="text" name="search" value=""><input type="submit" value="Submit">
+                <input type="submit" value="Submit">
+                <input type="submit" value="Submit">
+                <input type="submit" value="Submit">
+            </div>
         </div>
         <table class="main-table" border="1">
             <thead>
@@ -29,6 +34,7 @@
                     <th>GPU</th>
                     <th>Screen</th>
                     <th>Other</th>
+                    <th>Record's option</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,7 +43,8 @@
                     <td>
                         <input type="checkbox" name="" value="">
                     </td>
-                    <td>{{ computer.id_computer }}</td>
+                    {{ counter.increment }}
+                    <td>{{ counter.count }}</td>
                     <td>{{ computer.computer_serial }}</td>
                     <td>{{ computer.f_manufacturer.manufacturer_name }}</td>
                     <td>{{ computer.f_model.model_name }}</td>
@@ -47,9 +54,16 @@
                     <td>{{ computer.f_diagonal.diagonal_text }}</td>
                     <td>{{ computer.other }}</td>
                     <td>
-                        <button onclick="look({{ computer.id_computer }})">Look</button>
-                        <button onclick="edit({{ computer.id_computer }})">Edit</button>
-                        <button onclick="remove({{ computer.id_computer }})">Delete</button>
+                        <button onclick="edit({{ computer.id_computer }})">
+                            <img
+                            src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAy1JREFUSImV02tIU2EYB/D/2TnunDmmQxs4DQMrRMM1jTYjbQ6ipALDOB+rr/lFhCV+CcpYNyMManQvksAuil0U7GaJWCNRsqiG2SojdZaOdciz4+a7PsjEbe24PfB+Oe/7/P7PuVFIoCwWi1alUonR10VRpHp7e/1yvdRyeG1t7ZmVen1FCsf9jd5jGSYozs09tdlsJxIZNKYaGhqOtLe3zzudzlC86uzs/Fxpta6OZyjk8KqqqkMGgyHuGQBQKBQKkRDKarVWWywWJqGAMF5aWkrL4eGigfoQIddpmnYuG5As/qq/X5em1e6laTqdAjZYrdYRnucXeyMCksXtl9rwUr1Ds7liqyo9PX0BpKi109PTrrC9CMXDBUGA3+9HdnZ2JH7xHlpDlfibtgZfPAK25Wvw2zMBSZJAARm5ubmbTCZTKw0Adru9zmg0HsvLy6O9Xi/CSxAEDA8Po6SkBBzHRUzeGqoEUWqAyfcYTi3FR58Se/IV+O2ZwOzsrI+maXtXV9d7mud5pVqtvmYymXSiKGLpkiQJxcXF0Gq1i/jRC3dxewnuYotAhQioGTeGZlKxK58N/vzmbnrW0+MAAEYQBCorK2vKbDbnL/fMGx23cVexMwZPm3gNH7MC/nmaPBoYdQz09DSGe2S/8aV1JAJ/F4OzkpcUfL95dqDjct3SvoQCDp9vxb0I3BCDF461NL99cNEW3Rvz50WX484TtNG7FvCJd3BxkTgX9KHw2/UbQw+vHPxfv+wd/BgbAxv4A25u5r+4KujDfu6FT+MbORnPkA0YHBxEcUEejhsn8SukiZn8pHEcVeWGaTlDNuCTywVCCHQaJVrKp7DK83xx8lPGcdTu2y3XLh8wOjqKjx8+4OrVKwgEAshKU8KxQ41Vwa9o2uBJCAdkXnJfXx88Hg8IIXh4vwPriorg9Xpxq3o9ysrKEsJlA944ndDr9cjIzMRGsxlbysuRkZmZMLxswIGaGqzQ6ZCTk5M0GhOQwjCB6I31RmNCACGEsDL7FACca27eDoY56Pf7U5KZjmXZYECSHtvq60/LBgAAz/NKt9sdSiZAp9Mpuru7Jbkz/wAVAobVY0U2sQAAAABJRU5ErkJggg=="
+                            />
+                        </button>
+                        <button onclick="remove({{ computer.id_computer }})">
+                            <img
+                            src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAEsklEQVR4nGJkIBKcdFfouCqoUsjAwMCg/f5Ov/nOBxXE6AMAAAD//2Ii1oLz3HJZwn++sIn8+8Z2nlsui1h9AAAAAP//NMitCoAwFIDR7w5FxLDmT7cKPoCPvy6Y7SoWg7iy7RrEdjjyY5vKZm4HF2zdV0WGQYiqhKSEmDhvT9BETN/ZIkcBEcEICIIxYJ9rHfdl6pw/AF4AAAD//2KBWXCIT/UYr6K2kp6CHAM3BxsDExMTw9+//xj+/vvH8OfvXzj97+9fht9//jH8+fsH4kImJgYmJiYGJkZGhv+MTAx3Hj1Vufbzy34GhqtaDAwMDAAAAAD//zzNPQ5AQBBA4Uf2r1BJJFoKic4d3F2hdQWHmBmyqxCq133vH5x1M66xIh8bJRs4RzbjNsNUuFQxFUQElbe5FHyIuBBwMZG6nmFa2H07f+4DAAD//0TRsQ2AMAwF0cNGSgrYf0IqEHVw8g1dmOD0dDPQo2HngW87XgtmC67kzYQhTMKGWCVKJrX/Ap8KaPfFEzEffAAAAP//RNG5DYAwEAXRWVtAwtF/M/RCTAASCWK9/iQcDcwE7xskv455WYex3em7hmRQolIkSghXxUOPQcWrECJjv4MZGZji3N7uDQAA//+CRzIMlDka/XdSlmR48eUHg4iaNgOPkDADEwcXw59vXxh+fv7E8PPTB4Yfnz8yfPvwnuHb548MXz5+YPj5+w+Dqq4+w70Xrxlqtp1AMRMAAAD//8JIpv8Z/jMwMDAwfGRkY+DVMGAw8wlhMFBVYtBXUWR4++svg4CeOYNjXDqDhpggg6oQL8NPbkEGdd8IBv2wZIa/f/9jJFMAAAAA///CtOA/xKuff/9hEP37lYGJiwcu9/7zVwbBr28Z2ARF4WKff/1h+H3tNAOfqDjD////MCwAAAAA///CzGhQRf//MzBw//mBIc318zOG2L/XzyD0f0wfAAAAAP//wuoDcsD//wwM//9hagYAAAD//8JiAZk2MPzH6gMAAAAA///CGcnkAGwWAAAAAP//oqIPGLBGMgAAAP//wrQAGo6MGDmECAuwxAEAAAD//8IaRHBfkOibf1gsAAAAAP//wp2K/v8n3gKoOmxxAAAAAP//wpEP/jP8/fOH4f+f38RZAAX/sMQBAAAA///C6oN/f/8y/P/9i+HP5w8MDP/+MTD8/8/w/98/BkYk1yK7/P8/aObEEkQAAAAA//9s1bENgEAMxVDPQMP+g9EgCjrQJQcSPyE0dDCB9Sr/LLOoDNSNzZw8nWuZ0DoTvdGUVAjZThzOLcEwvoJv4AEAAP//YkEXYPrPwPCdmYOBn52F4S2HAMOv+9cZvp87xPDzz18Grk8/GN6waDGIPbrD8Ov9G4Y/P38y8LKyMnAYWDO8f/2Sgf3/XwwLAAAAAP//wkiMvRZyDz4KSstrCHEz8DMzMHAxMzIwMzIw/Pr7n+EPAyPD7///Gf78Z2D4/Z8BQv9jYPj85z/Dww+fGWQ/Pr2ff/qZ9v///7/DzAMAAAD//0LxARMTk4DO77eZR5//rtv1jEP7FwMjL2YQYgJexn9vZBl+3FBk+tLLysqq/+fPn9v//v17y8DAwAAAAAD//wMAM0He6FgJ1cIAAAAASUVORK5CYII="
+                            />
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -68,22 +82,22 @@
     </script>
     <script>
     function remove(index) {
-        // var deleteWindow = window.open('delete/'+index+'/', "", "width=340,height=208");
-
-        var txt;
-        if (confirm("Press a button")) {
-            // txt = "Pressed button";
+        if (confirm("Do you really want do delete this record?")) {
             var xhr = new XMLHttpRequest();
             xhr.open('POST', 'delete/'+index+'/', true);
-            // xhr.setRequestedHeader('Content-type', 'application/x-www-form-urlencoded');
             xhr.send()
+            /*
+            if(xhr) {
+              alert(xhr.readyState)
+              // location.reload()
+            }
+            */
+            xhr.onreadystatechange = function(e) {
+              if (xhr.readyState === 4) {
+                location.reload()
+              }
+            }
         }
-        /*
-        else {
-            txt = "Pressed cancel";
-        }
-        alert(txt)
-        */
     }
     </script>
 

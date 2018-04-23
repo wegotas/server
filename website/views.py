@@ -1,102 +1,8 @@
-from django.shortcuts import render
 from django.http import HttpResponse
-# from server.modelers import Computers
 from ULCDTinterface.modelers import Computers, BatToComp
 from django.template import loader
 from website.logic import *
-import re
-import os
 from django.views.decorators.csrf import csrf_exempt
-# from website.form_classes import Computers_form
-"""
-# Create your views here.
-def index(request):
-    print("INDEX")
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
-    template = loader.get_template('index.html')
-    computers = Computers.objects.all()
-    return HttpResponse(template.render({'computers': computers}, request))
-
-def look(request, int_index):
-    print("LOOK ")
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
-    print(request)
-    print(int_index)
-    template = loader.get_template('computer_look.html')
-    computer = Computers.objects.get(id_computer=int_index)
-    return HttpResponse(template.render({'computer': computer}, request))
-
-@csrf_exempt
-def edit(request, int_index):
-    print("EDIT ")
-    if request.method == 'POST':
-        print("This was POST request")
-        computer = Computers(
-            id_computer=data_dict.pop("id_computer", "")[0],
-            serial=data_dict.pop("serial", "")[0],
-            manufacturer=data_dict.pop("manufacturer", "")[0],
-            model=data_dict.pop("model", "")[0],
-            cpu=data_dict.pop("cpu", "")[0],
-            ram=data_dict.pop("ram", "")[0],
-            gpu=data_dict.pop("gpu", "")[0],
-            hdd=data_dict.pop("hdd", "")[0],
-            diagonal=data_dict.pop("diagonal", "")[0],
-            license=data_dict.pop("camera", "")[0],
-            camera=data_dict.pop("camera", "")[0],
-            cover=data_dict.pop("cover", "")[0],
-            display=data_dict.pop("display", "")[0],
-            bezel=data_dict.pop("bezel", "")[0],
-            keyboard=data_dict.pop("keyboard", "")[0],
-            mouse=data_dict.pop("mouse", "")[0],
-            sound=data_dict.pop("sound", "")[0],
-            cdrom=data_dict.pop("cdrom", "")[0],
-            battery=data_dict.pop("battery", "")[0],
-            hdd_cover=data_dict.pop("hdd_cover", "")[0],
-            ram_cover=data_dict.pop("ram_cover", "")[0],
-            other=data_dict.pop("other", "")[0],
-            tester=data_dict.pop("tester", "")[0],
-            date=data_dict.pop("date", "")[0],
-            bios=data_dict.pop("bios", "")[0]
-        )
-        computer.save()
-        template = loader.get_template('status.html')
-        return HttpResponse(template.render({'status': "Success",
-                                             'color': "green",
-                                             'message': "Record with serial \""+computer.serial+"\" has been updated"},
-                                            request))
-
-    if request.method == 'GET':
-        print("This was GET request")
-        template = loader.get_template('computer_edit.html')
-        computer = Computers.objects.get(id_computer=int_index)
-        return HttpResponse(template.render({'computer': computer}, request))
-
-@csrf_exempt
-def delete(request, int_index):
-    print("DELETE")
-    if request.method == 'POST':
-        print("This was POST request")
-        computer = Computers.objects.get(id_computer=int_index)
-        computer.delete()
-        template = loader.get_template('status.html')
-        return HttpResponse(template.render({'status': "Success",
-                                             'color': "green",
-                                             'message': "Record with serial \"" + computer.serial + "\" has been deleted"},
-                                            request))
-        # return HttpResponse("Object with an index " + str(int_index) + " deleted")
-
-    if request.method == 'GET':
-        print("This was GET request")
-        template = loader.get_template('computer_delete.html')
-        computer = Computers.objects.get(id_computer=int_index)
-        return HttpResponse(template.render({'computer': computer}, request))
-"""
 
 def index(request):
     print("INDEX")
@@ -106,7 +12,8 @@ def index(request):
         print("This was GET request")
     template = loader.get_template('index2.html')
     computers = Computers.objects.all()
-    return HttpResponse(template.render({'computers': computers}, request))
+    counter = Counter()
+    return HttpResponse(template.render({'computers': computers, "counter": counter}, request))
 
 def look(request, int_index):
     print("LOOK ")
@@ -151,10 +58,50 @@ def delete(request, int_index):
     if request.method == 'POST':
         print("This was POST request")
         print(int_index)
+        bats_to_comp = BatToComp.objects.filter(f_id_computer_bat_to_com=int_index)
+        for bat_to_comp in bats_to_comp:
+            bat_to_comp.delete()
+        hdds_to_comp = HddToComp.objects.filter(f_id_computer_hdd_to_com=int_index)
+        for hdd_to_comp in hdds_to_comp:
+            hdd_to_comp.delete()
+        rams_to_comp = RamToComp.objects.filter(f_id_computer_ram_to_com=int_index)
+        for ram_to_comp in rams_to_comp:
+            ram_to_comp.delete()
         existing_computer = Computers.objects.get(id_computer=int_index)
         motherboard = existing_computer.f_motherboard
+        cpu = existing_computer.f_cpu
+        diagonal = existing_computer.f_diagonal
+        hdd_size = existing_computer.f_hdd_size
         existing_computer.delete()
-        motherboard.delete()
+        motherboard_deletion_if_exists(motherboard)
+        cpu_deletion_if_exists(cpu)
+        hdd_size_deletion_if_exists(hdd_size)
+        diagonal_deletion_if_exists(diagonal)
+        return HttpResponse("If you see this message that means after deletion post update on JS side page reload has failed")
     if request.method == 'GET':
         print("This was GET request")
         print(int_index)
+
+def motherboard_deletion_if_exists(motherboard):
+    if motherboard is not None:
+        motherboard.delete()
+
+def cpu_deletion_if_exists(cpu):
+    if cpu is not None:
+        if not Computers.objects.filter(f_cpu=cpu.id_cpu).exists():
+            cpu.delete()
+
+def diagonal_deletion_if_exists(diagonal):
+    if diagonal is not None:
+        if not Computers.objects.filter(f_diagonal=diagonal.id_diagonal).exists():
+            diagonal.delete()
+
+def hdd_size_deletion_if_exists(hdd_size):
+    if hdd_size is not None:
+        print(hdd_size)
+        if not Computers.objects.filter(f_hdd_size=hdd_size.id_hdd_sizes).exists():
+            print("Does not exist")
+            hdd_size.delete()
+            print("Deletion accomplished")
+        else:
+            print("Does exist")

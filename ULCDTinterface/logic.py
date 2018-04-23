@@ -342,3 +342,4 @@ class Computer_record():
             ramSize = RamSizes(ram_size_text=value)
             ramSize.save()
             return ramSize
+
