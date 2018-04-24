@@ -68,15 +68,27 @@ def delete(request, int_index):
         for ram_to_comp in rams_to_comp:
             ram_to_comp.delete()
         existing_computer = Computers.objects.get(id_computer=int_index)
+
         motherboard = existing_computer.f_motherboard
         cpu = existing_computer.f_cpu
         diagonal = existing_computer.f_diagonal
         hdd_size = existing_computer.f_hdd_size
+        ram_size = existing_computer.f_ram_size
+        gpu = existing_computer.f_gpu
+        model = existing_computer.f_model
+        manufacturer = existing_computer.f_manufacturer
+
         existing_computer.delete()
         motherboard_deletion_if_exists(motherboard)
         cpu_deletion_if_exists(cpu)
-        hdd_size_deletion_if_exists(hdd_size)
         diagonal_deletion_if_exists(diagonal)
+        hdd_size_deletion_if_exists(hdd_size)
+        ram_size_deletion_if_exists(ram_size)
+        gpu_deletion_if_exists(gpu)
+        model_deletion_if_exists(model)
+        manufacturer_deletion_if_exists(manufacturer)
+
+
         return HttpResponse("If you see this message that means after deletion post update on JS side page reload has failed")
     if request.method == 'GET':
         print("This was GET request")
@@ -98,10 +110,30 @@ def diagonal_deletion_if_exists(diagonal):
 
 def hdd_size_deletion_if_exists(hdd_size):
     if hdd_size is not None:
-        print(hdd_size)
         if not Computers.objects.filter(f_hdd_size=hdd_size.id_hdd_sizes).exists():
-            print("Does not exist")
             hdd_size.delete()
+
+def ram_size_deletion_if_exists(ram_size):
+    if ram_size is not None:
+        if not Computers.objects.filter(f_ram_size=ram_size.id_ram_size).exists():
+            ram_size.delete()
+
+def gpu_deletion_if_exists(gpu):
+    if gpu is not None:
+        if not Computers.objects.filter(f_gpu=gpu.id_gpu).exists():
+            gpu.delete()
+
+def model_deletion_if_exists(model):
+    if model is not None:
+        if not Computers.objects.filter(f_model=model.id_model).exists():
+            model.delete()
+
+def manufacturer_deletion_if_exists(manufacturer):
+    if manufacturer is not None:
+        print(manufacturer)
+        if not Computers.objects.filter(f_manufacturer=manufacturer.id_manufacturer).exists():
+            print("Does not exist")
+            manufacturer.delete()
             print("Deletion accomplished")
         else:
             print("Does exist")

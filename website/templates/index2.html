@@ -34,7 +34,7 @@
                     <th>GPU</th>
                     <th>Screen</th>
                     <th>Other</th>
-                    <th>Record's option</th>
+                    <th>Record's options</th>
                 </tr>
             </thead>
             <tbody>
@@ -86,12 +86,6 @@
             var xhr = new XMLHttpRequest();
             xhr.open('POST', 'delete/'+index+'/', true);
             xhr.send()
-            /*
-            if(xhr) {
-              alert(xhr.readyState)
-              // location.reload()
-            }
-            */
             xhr.onreadystatechange = function(e) {
               if (xhr.readyState === 4) {
                 location.reload()
@@ -100,6 +94,5 @@
         }
     }
     </script>
-
     </body>
 </html>
