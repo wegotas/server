@@ -10,7 +10,18 @@ def index(request):
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
-    template = loader.get_template('index2.html')
+    template = loader.get_template('index3.html')
+    computers = Computers.objects.all()
+    counter = Counter()
+    return HttpResponse(template.render({'computers': computers, "counter": counter}, request))
+
+def paging(request, qty, page):
+    print("Paging")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    template = loader.get_template('index3.html')
     computers = Computers.objects.all()
     counter = Counter()
     return HttpResponse(template.render({'computers': computers, "counter": counter}, request))
