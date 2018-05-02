@@ -5,10 +5,8 @@
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <title>Page Title</title>
         <meta name="description" content="Write some words to describe your html page">
-        <!--
-        <link rel="stylesheet" type="text/css" href="{% static 'blended_layout.css' %}">
-        -->
         <link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/leaf.png' %}">
         <script type="text/javascript" src="{% static 'index.js' %}"></script>
     </head>
     <body>
@@ -45,35 +43,6 @@
                                 <div class="mfs-fieldname">No</div>
                             </div>
                         </div>
-                        <!--
-                        <div class="mfs-box">
-                            <div class="man-filter-title">Box-name</div>
-                            <div class="manual-filter-selection">
-                                <input class="mfs-checkbox" type="checkbox" name="" value="">
-                                <div class="mfs-fieldname">Fieldname1</div>
-                            </div>
-                            <div class="manual-filter-selection">
-                                <input class="mfs-checkbox" type="checkbox" name="" value="">
-                                <div class="mfs-fieldname">Fieldname2</div>
-                            </div>
-                            <div class="manual-filter-selection">
-                                <input class="mfs-checkbox" type="checkbox" name="" value="">
-                                <div class="mfs-fieldname">Fieldname3</div>
-                            </div>
-                            <div class="manual-filter-selection">
-                                <input class="mfs-checkbox" type="checkbox" name="" value="">
-                                <div class="mfs-fieldname">Fieldname4</div>
-                            </div>
-                            <div class="manual-filter-selection">
-                                <input class="mfs-checkbox" type="checkbox" name="" value="">
-                                <div class="mfs-fieldname">Fieldname5</div>
-                            </div>
-                            <div class="manual-filter-selection">
-                                <input class="mfs-checkbox" type="checkbox" name="" value="">
-                                <div class="mfs-fieldname">Fieldname6</div>
-                            </div>
-                        </div>
-                        -->
                         <div class="mfs-box">
                             <div class="man-filter-title">Other</div>
                             <div class="manual-filter-selection">
@@ -142,13 +111,12 @@
                         <div class="item">
                             <div class="textbox">Qty:</div>
                             <div class="selector">
-                                <select class="c-select">
-                                    <option value="all">All</option>
-                                    <option value="10">10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                    <option value="200">200</option>
+                                <select id="qty" class="c-select" onchange="handleSelect(this)">
+                                    <option {{ qtySelect.state10 }} value="?qty=10">10</option>
+                                    <option {{ qtySelect.state20 }} value="?qty=20">20</option>
+                                    <option {{ qtySelect.state50 }} value="?qty=50">50</option>
+                                    <option {{ qtySelect.state100 }} value="?qty=100">100</option>
+                                    <option {{ qtySelect.state200 }} value="?qty=200">200</option>
                                 </select>
                             </div>
                         </div>
@@ -244,14 +212,198 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th>Serial<button type="button" class="filter-button" onclick="alert('column filter')">&#8642;</button></th>
-                                <th>Manufacturer<button type="button" class="filter-button" onclick="alert('column filter')">&#8642;</button></th>
-                                <th>Model<button type="button" class="filter-button" onclick="alert('column filter')">&#8642;</button></th>
-                                <th>CPU<button type="button" class="filter-button" onclick="alert('column filter')">&#8642;</button></th>
-                                <th>RAM<button type="button" class="filter-button" onclick="alert('column filter')">&#8642;</button></th>
-                                <th>GPU<button type="button" class="filter-button" onclick="alert('column filter')">&#8642;</button></th>
-                                <th>Screen<button type="button" class="filter-button" onclick="alert('column filter')">&#8642;</button></th>
-                                <th>Other</th>
+                                <th>Serial<button type="button" class="filter-button" onclick="autoFilterMenu('af-Serial')">&#8642;</button>
+                                    <div id="af-Serial" class="autofilter">
+                                        <div class="af-top">
+                                            <div class="af-checkbkox">
+                                                <input type="checkbox" onclick="afSelectAll(this, 'sr-af')">
+                                            </div>
+                                            <div class="af-textinput">
+                                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'sr-af')">
+                                            </div>
+                                        </div>
+                                        <div class="af-body" id="sr-af">
+                                            {% for afChoice in autoFilters.serials %}
+                                            <div class="af-selection">
+                                                <div class="af-checkbkox">
+                                                    <input type="checkbox" onclick="afSelect(this)">
+                                                </div>
+                                                <div class="af-chkbxtitle">
+                                                    {{ afChoice }}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>Manufacturer<button type="button" class="filter-button" onclick="autoFilterMenu('af-Manufacturer')">&#8642;</button>
+                                    <div id="af-Manufacturer" class="autofilter">
+                                        <div class="af-top">
+                                            <div class="af-checkbkox">
+                                                <input type="checkbox" onclick="afSelectAll(this, 'man-af')">
+                                            </div>
+                                            <div class="af-textinput">
+                                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'man-af')">
+                                            </div>
+                                        </div>
+                                        <div class="af-body" id="man-af">
+                                            {% for afChoice in autoFilters.manufacturers %}
+                                            <div class="af-selection">
+                                                <div class="af-checkbkox">
+                                                    <input type="checkbox" onclick="afSelect(this)">
+                                                </div>
+                                                <div class="af-chkbxtitle">
+                                                    {{ afChoice }}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>Model<button type="button" class="filter-button" onclick="autoFilterMenu('af-Model')">&#8642;</button>
+                                    <div id="af-Model" class="autofilter">
+                                        <div class="af-top">
+                                            <div class="af-checkbkox">
+                                                <input type="checkbox" onclick="afSelectAll(this, 'mod-af')">
+                                            </div>
+                                            <div class="af-textinput">
+                                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'mod-af')">
+                                            </div>
+                                        </div>
+                                        <div class="af-body" id="mod-af">
+                                            {% for afChoice in autoFilters.models %}
+                                            <div class="af-selection">
+                                                <div class="af-checkbkox">
+                                                    <input type="checkbox" onclick="afSelect(this)">
+                                                </div>
+                                                <div class="af-chkbxtitle">
+                                                    {{ afChoice }}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>CPU<button type="button" class="filter-button" onclick="autoFilterMenu('af-CPU')">&#8642;</button>
+                                    <div id="af-CPU" class="autofilter">
+                                        <div class="af-top">
+                                            <div class="af-checkbkox">
+                                                <input type="checkbox" onclick="afSelectAll(this, 'cpu-af')">
+                                            </div>
+                                            <div class="af-textinput">
+                                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'cpu-af')">
+                                            </div>
+                                        </div>
+                                        <div class="af-body" id="cpu-af">
+                                            {% for afChoice in autoFilters.cpus %}
+                                            <div class="af-selection">
+                                                <div class="af-checkbkox">
+                                                    <input type="checkbox" onclick="afSelect(this)">
+                                                </div>
+                                                <div class="af-chkbxtitle">
+                                                    {{ afChoice }}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>RAM<button type="button" class="filter-button" onclick="autoFilterMenu('af-RAM')">&#8642;</button>
+                                    <div id="af-RAM" class="autofilter">
+                                        <div class="af-top">
+                                            <div class="af-checkbkox">
+                                                <input type="checkbox" onclick="afSelectAll(this, 'ram-af')">
+                                            </div>
+                                            <div class="af-textinput">
+                                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'ram-af')">
+                                            </div>
+                                        </div>
+                                        <div class="af-body" id="ram-af">
+                                            {% for afChoice in autoFilters.rams %}
+                                            <div class="af-selection">
+                                                <div class="af-checkbkox">
+                                                    <input type="checkbox" onclick="afSelect(this)">
+                                                </div>
+                                                <div class="af-chkbxtitle">
+                                                    {{ afChoice }}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>GPU<button type="button" class="filter-button" onclick="autoFilterMenu('af-GPU')">&#8642;</button>
+                                    <div id="af-GPU" class="autofilter">
+                                        <div class="af-top">
+                                            <div class="af-checkbkox">
+                                                <input type="checkbox" onclick="afSelectAll(this, 'gpu-af')">
+                                            </div>
+                                            <div class="af-textinput">
+                                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'gpu-af')">
+                                            </div>
+                                        </div>
+                                        <div class="af-body" id="gpu-af">
+                                            {% for afChoice in autoFilters.gpus %}
+                                            <div class="af-selection">
+                                                <div class="af-checkbkox">
+                                                    <input type="checkbox" onclick="afSelect(this)">
+                                                </div>
+                                                <div class="af-chkbxtitle">
+                                                    {{ afChoice }}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>Screen<button type="button" class="filter-button" onclick="autoFilterMenu('af-Screen')">&#8642;</button>
+                                    <div id="af-Screen" class="autofilter">
+                                        <div class="af-top">
+                                            <div class="af-checkbkox">
+                                                <input type="checkbox" onclick="afSelectAll(this, 'scr-af')">
+                                            </div>
+                                            <div class="af-textinput">
+                                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'scr-af')">
+                                            </div>
+                                        </div>
+                                        <div class="af-body" id="scr-af">
+                                            {% for afChoice in autoFilters.screens %}
+                                            <div class="af-selection">
+                                                <div class="af-checkbkox">
+                                                    <input type="checkbox" onclick="afSelect(this)">
+                                                </div>
+                                                <div class="af-chkbxtitle">
+                                                    {{ afChoice }}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>Other <button type="button" class="filter-button" onclick="autoFilterMenu('af-Other')">&#8642;</button>
+                                    <div id="af-Other" class="autofilter">
+                                        <div class="af-top">
+                                            <div class="af-checkbkox">
+                                                <input type="checkbox" onclick="afSelectAll(this, 'oth-af')">
+                                            </div>
+                                            <div class="af-textinput">
+                                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'oth-af')">
+                                            </div>
+                                        </div>
+                                        <div class="af-body" id="oth-af">
+                                            {% for afChoice in autoFilters.others %}
+                                            <div class="af-selection">
+                                                <div class="af-checkbkox">
+                                                    <input type="checkbox" onclick="afSelect(this)">
+                                                </div>
+                                                <div class="af-chkbxtitle">
+                                                    {{ afChoice }}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </th>
                                 <th id="last-th"></th>
                             </tr>
                         </thead>
@@ -277,69 +429,27 @@
                                         src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAy1JREFUSImV02tIU2EYB/D/2TnunDmmQxs4DQMrRMM1jTYjbQ6ipALDOB+rr/lFhCV+CcpYNyMManQvksAuil0U7GaJWCNRsqiG2SojdZaOdciz4+a7PsjEbe24PfB+Oe/7/P7PuVFIoCwWi1alUonR10VRpHp7e/1yvdRyeG1t7ZmVen1FCsf9jd5jGSYozs09tdlsJxIZNKYaGhqOtLe3zzudzlC86uzs/Fxpta6OZyjk8KqqqkMGgyHuGQBQKBQKkRDKarVWWywWJqGAMF5aWkrL4eGigfoQIddpmnYuG5As/qq/X5em1e6laTqdAjZYrdYRnucXeyMCksXtl9rwUr1Ds7liqyo9PX0BpKi109PTrrC9CMXDBUGA3+9HdnZ2JH7xHlpDlfibtgZfPAK25Wvw2zMBSZJAARm5ubmbTCZTKw0Adru9zmg0HsvLy6O9Xi/CSxAEDA8Po6SkBBzHRUzeGqoEUWqAyfcYTi3FR58Se/IV+O2ZwOzsrI+maXtXV9d7mud5pVqtvmYymXSiKGLpkiQJxcXF0Gq1i/jRC3dxewnuYotAhQioGTeGZlKxK58N/vzmbnrW0+MAAEYQBCorK2vKbDbnL/fMGx23cVexMwZPm3gNH7MC/nmaPBoYdQz09DSGe2S/8aV1JAJ/F4OzkpcUfL95dqDjct3SvoQCDp9vxb0I3BCDF461NL99cNEW3Rvz50WX484TtNG7FvCJd3BxkTgX9KHw2/UbQw+vHPxfv+wd/BgbAxv4A25u5r+4KujDfu6FT+MbORnPkA0YHBxEcUEejhsn8SukiZn8pHEcVeWGaTlDNuCTywVCCHQaJVrKp7DK83xx8lPGcdTu2y3XLh8wOjqKjx8+4OrVKwgEAshKU8KxQ41Vwa9o2uBJCAdkXnJfXx88Hg8IIXh4vwPriorg9Xpxq3o9ysrKEsJlA944ndDr9cjIzMRGsxlbysuRkZmZMLxswIGaGqzQ6ZCTk5M0GhOQwjCB6I31RmNCACGEsDL7FACca27eDoY56Pf7U5KZjmXZYECSHtvq60/LBgAAz/NKt9sdSiZAp9Mpuru7Jbkz/wAVAobVY0U2sQAAAABJRU5ErkJggg=="
                                         />
                                     </button>
-                                    <!--
-                                    <button onclick="remove({{ computer.id_computer }})">
-                                        <img
-                                        src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAEsklEQVR4nGJkIBKcdFfouCqoUsjAwMCg/f5Ov/nOBxXE6AMAAAD//2Ii1oLz3HJZwn++sIn8+8Z2nlsui1h9AAAAAP//NMitCoAwFIDR7w5FxLDmT7cKPoCPvy6Y7SoWg7iy7RrEdjjyY5vKZm4HF2zdV0WGQYiqhKSEmDhvT9BETN/ZIkcBEcEICIIxYJ9rHfdl6pw/AF4AAAD//2KBWXCIT/UYr6K2kp6CHAM3BxsDExMTw9+//xj+/vvH8OfvXzj97+9fht9//jH8+fsH4kImJgYmJiYGJkZGhv+MTAx3Hj1Vufbzy34GhqtaDAwMDAAAAAD//zzNPQ5AQBBA4Uf2r1BJJFoKic4d3F2hdQWHmBmyqxCq133vH5x1M66xIh8bJRs4RzbjNsNUuFQxFUQElbe5FHyIuBBwMZG6nmFa2H07f+4DAAD//0TRsQ2AMAwF0cNGSgrYf0IqEHVw8g1dmOD0dDPQo2HngW87XgtmC67kzYQhTMKGWCVKJrX/Ap8KaPfFEzEffAAAAP//RNG5DYAwEAXRWVtAwtF/M/RCTAASCWK9/iQcDcwE7xskv455WYex3em7hmRQolIkSghXxUOPQcWrECJjv4MZGZji3N7uDQAA//+CRzIMlDka/XdSlmR48eUHg4iaNgOPkDADEwcXw59vXxh+fv7E8PPTB4Yfnz8yfPvwnuHb548MXz5+YPj5+w+Dqq4+w70Xrxlqtp1AMRMAAAD//8JIpv8Z/jMwMDAwfGRkY+DVMGAw8wlhMFBVYtBXUWR4++svg4CeOYNjXDqDhpggg6oQL8NPbkEGdd8IBv2wZIa/f/9jJFMAAAAA///CtOA/xKuff/9hEP37lYGJiwcu9/7zVwbBr28Z2ARF4WKff/1h+H3tNAOfqDjD////MCwAAAAA///CzGhQRf//MzBw//mBIc318zOG2L/XzyD0f0wfAAAAAP//wuoDcsD//wwM//9hagYAAAD//8JiAZk2MPzH6gMAAAAA///CGcnkAGwWAAAAAP//oqIPGLBGMgAAAP//wrQAGo6MGDmECAuwxAEAAAD//8IaRHBfkOibf1gsAAAAAP//wp2K/v8n3gKoOmxxAAAAAP//wpEP/jP8/fOH4f+f38RZAAX/sMQBAAAA///C6oN/f/8y/P/9i+HP5w8MDP/+MTD8/8/w/98/BkYk1yK7/P8/aObEEkQAAAAA//9s1bENgEAMxVDPQMP+g9EgCjrQJQcSPyE0dDCB9Sr/LLOoDNSNzZw8nWuZ0DoTvdGUVAjZThzOLcEwvoJv4AEAAP//YkEXYPrPwPCdmYOBn52F4S2HAMOv+9cZvp87xPDzz18Grk8/GN6waDGIPbrD8Ov9G4Y/P38y8LKyMnAYWDO8f/2Sgf3/XwwLAAAAAP//wkiMvRZyDz4KSstrCHEz8DMzMHAxMzIwMzIw/Pr7n+EPAyPD7///Gf78Z2D4/Z8BQv9jYPj85z/Dww+fGWQ/Pr2ff/qZ9v///7/DzAMAAAD//0LxARMTk4DO77eZR5//rtv1jEP7FwMjL2YQYgJexn9vZBl+3FBk+tLLysqq/+fPn9v//v17y8DAwAAAAAD//wMAM0He6FgJ1cIAAAAASUVORK5CYII="
-                                        />
-                                    </button>
-                                    -->
                                 </td>
                             </tr>
                             {% endfor %}
-                        <!--
-                            <tr>
-                                <td>
-                                    <input type="checkbox" id="check1" onclick="recordSelect(this)">
-                                </td>
-                                <td>1</td>
-                                <td>gdsfgdf</td>
-                                <td>Dell</td>
-                                <td>E6420</td>
-                                <td>i5-2520 Ghz</td>
-                                <td>4 GB DDR3</td>
-                                <td>Inte</td>
-                                <td>15.6</td>
-                                <td>security sdffsdfsdfsdfsdfsdfsdfsdfsdfsdffffffffffffffffsdfslkjkljlkjlkj</td>
-                                <td>
-                                    <button onclick="alert('edit placeholder')">
-                                        <img src="
-                             data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAy1JREFUSImV02tIU2EYB/D/2TnunDmmQxs4DQMrRMM1jTYjbQ6ipALDOB+rr/lFhCV+CcpYNyMManQvksAuil0U7GaJWCNRsqiG2SojdZaOdciz4+a7PsjEbe24PfB+Oe/7/P7PuVFIoCwWi1alUonR10VRpHp7e/1yvdRyeG1t7ZmVen1FCsf9jd5jGSYozs09tdlsJxIZNKYaGhqOtLe3zzudzlC86uzs/Fxpta6OZyjk8KqqqkMGgyHuGQBQKBQKkRDKarVWWywWJqGAMF5aWkrL4eGigfoQIddpmnYuG5As/qq/X5em1e6laTqdAjZYrdYRnucXeyMCksXtl9rwUr1Ds7liqyo9PX0BpKi109PTrrC9CMXDBUGA3+9HdnZ2JH7xHlpDlfibtgZfPAK25Wvw2zMBSZJAARm5ubmbTCZTKw0Adru9zmg0HsvLy6O9Xi/CSxAEDA8Po6SkBBzHRUzeGqoEUWqAyfcYTi3FR58Se/IV+O2ZwOzsrI+maXtXV9d7mud5pVqtvmYymXSiKGLpkiQJxcXF0Gq1i/jRC3dxewnuYotAhQioGTeGZlKxK58N/vzmbnrW0+MAAEYQBCorK2vKbDbnL/fMGx23cVexMwZPm3gNH7MC/nmaPBoYdQz09DSGe2S/8aV1JAJ/F4OzkpcUfL95dqDjct3SvoQCDp9vxb0I3BCDF461NL99cNEW3Rvz50WX484TtNG7FvCJd3BxkTgX9KHw2/UbQw+vHPxfv+wd/BgbAxv4A25u5r+4KujDfu6FT+MbORnPkA0YHBxEcUEejhsn8SukiZn8pHEcVeWGaTlDNuCTywVCCHQaJVrKp7DK83xx8lPGcdTu2y3XLh8wOjqKjx8+4OrVKwgEAshKU8KxQ41Vwa9o2uBJCAdkXnJfXx88Hg8IIXh4vwPriorg9Xpxq3o9ysrKEsJlA944ndDr9cjIzMRGsxlbysuRkZmZMLxswIGaGqzQ6ZCTk5M0GhOQwjCB6I31RmNCACGEsDL7FACca27eDoY56Pf7U5KZjmXZYECSHtvq60/LBgAAz/NKt9sdSiZAp9Mpuru7Jbkz/wAVAobVY0U2sQAAAABJRU5ErkJggg==
-                            "/>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" id="check2" onclick="recordSelect(this)">
-                                </td>
-                                <td>1</td>
-                                <td>gdsfgdf</td>
-                                <td>Dell</td>
-                                <td>E6420</td>
-                                <td>i5-2520 Ghz</td>
-                                <td>4 GB DDR3</td>
-                                <td>Inte</td>
-                                <td>15.6</td>
-                                <td>security mark</td>
-                                <td>
-                                    <button onclick="alert('edit placeholder')">
-                                      <img src="
-                           data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAy1JREFUSImV02tIU2EYB/D/2TnunDmmQxs4DQMrRMM1jTYjbQ6ipALDOB+rr/lFhCV+CcpYNyMManQvksAuil0U7GaJWCNRsqiG2SojdZaOdciz4+a7PsjEbe24PfB+Oe/7/P7PuVFIoCwWi1alUonR10VRpHp7e/1yvdRyeG1t7ZmVen1FCsf9jd5jGSYozs09tdlsJxIZNKYaGhqOtLe3zzudzlC86uzs/Fxpta6OZyjk8KqqqkMGgyHuGQBQKBQKkRDKarVWWywWJqGAMF5aWkrL4eGigfoQIddpmnYuG5As/qq/X5em1e6laTqdAjZYrdYRnucXeyMCksXtl9rwUr1Ds7liqyo9PX0BpKi109PTrrC9CMXDBUGA3+9HdnZ2JH7xHlpDlfibtgZfPAK25Wvw2zMBSZJAARm5ubmbTCZTKw0Adru9zmg0HsvLy6O9Xi/CSxAEDA8Po6SkBBzHRUzeGqoEUWqAyfcYTi3FR58Se/IV+O2ZwOzsrI+maXtXV9d7mud5pVqtvmYymXSiKGLpkiQJxcXF0Gq1i/jRC3dxewnuYotAhQioGTeGZlKxK58N/vzmbnrW0+MAAEYQBCorK2vKbDbnL/fMGx23cVexMwZPm3gNH7MC/nmaPBoYdQz09DSGe2S/8aV1JAJ/F4OzkpcUfL95dqDjct3SvoQCDp9vxb0I3BCDF461NL99cNEW3Rvz50WX484TtNG7FvCJd3BxkTgX9KHw2/UbQw+vHPxfv+wd/BgbAxv4A25u5r+4KujDfu6FT+MbORnPkA0YHBxEcUEejhsn8SukiZn8pHEcVeWGaTlDNuCTywVCCHQaJVrKp7DK83xx8lPGcdTu2y3XLh8wOjqKjx8+4OrVKwgEAshKU8KxQ41Vwa9o2uBJCAdkXnJfXx88Hg8IIXh4vwPriorg9Xpxq3o9ysrKEsJlA944ndDr9cjIzMRGsxlbysuRkZmZMLxswIGaGqzQ6ZCTk5M0GhOQwjCB6I31RmNCACGEsDL7FACca27eDoY56Pf7U5KZjmXZYECSHtvq60/LBgAAz/NKt9sdSiZAp9Mpuru7Jbkz/wAVAobVY0U2sQAAAABJRU5ErkJggg==
-                          "/>
-                                    </button>
-                                </td>
-                            </tr>
-                        -->
                         </tbody>
                     </table>
-                    <div align="center">
-                        <a href="">1</a>
-                        <a href="">2</a>
-                        <a href="">3</a>
-                        <a href="">4</a>
-                        <a href="">5</a>
-                        <a href="">6</a>
+                    <div class="pagination" align="center">
+                        <span class="step-links">
+                            {% if computers.has_previous %}
+                            <a href="?page=1&qty={{ qtySelect.qty }}">&laquo; first</a>
+                            <a href="?page={{ computers.previous_page_number }}&qty={{ qtySelect.qty }}">previous</a>
+                            {% endif %}
+
+                            <span class="current">
+                                Page {{ computers.number }} of {{ computers.paginator.num_pages }}.
+                            </span>
+
+                            {% if computers.has_next %}
+                                <a href="?page={{ computers.next_page_number }}&qty={{ qtySelect.qty }}">next</a>
+                                <a href="?page={{ computers.paginator.num_pages }}&qty={{ qtySelect.qty }}">last &raquo;</a>
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
             </div>

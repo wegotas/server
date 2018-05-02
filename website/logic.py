@@ -346,3 +346,69 @@ class Counter:
     def increment(self):
         self.count += 1
         return ''
+
+class QtySelect:
+    qty = 0
+    state10 = ""
+    state20 = ""
+    state50 = ""
+    state100 = ""
+    state200 = ""
+
+    def setDefaultSelect(self, qty):
+        self.qty=qty
+        if qty==10:
+            self.state10 = "selected"
+        elif qty==20:
+            self.state20 = "selected"
+        elif qty==50:
+            self.state50 = "selected"
+        elif qty==100:
+            self.state100 = "selected"
+        elif qty==200:
+            self.state200 = "selected"
+
+
+class AutoFilters:
+
+    def __init__(self):
+        self.getSerials()
+        self.getManufacturers()
+        self.getModels()
+        self.getCpus()
+        self.getRams()
+        self.getGpus()
+        self.getScreens()
+        self.getOther()
+
+    def getSerials(self):
+        serials = Computers.objects.values('computer_serial').distinct()
+        self.serials = [a['computer_serial'] for a in serials]
+
+    def getManufacturers(self):
+        manufacturers = Manufacturers.objects.values('manufacturer_name').distinct()
+        self.manufacturers = [a['manufacturer_name'] for a in manufacturers]
+
+    def getModels(self):
+        models = Models.objects.values('model_name').distinct()
+        self.models = [a['model_name'] for a in models]
+
+    def getCpus(self):
+        cpus = Cpus.objects.values('cpu_name').distinct()
+        self.cpus = [a['cpu_name'] for a in cpus]
+
+    def getRams(self):
+        rams = RamSizes.objects.values('ram_size_text').distinct()
+        self.rams = [a['ram_size_text'] for a in rams]
+
+    def getGpus(self):
+        gpus = Gpus.objects.values('gpu_name').distinct()
+        self.gpus = [a['gpu_name'] for a in gpus]
+
+    def getScreens(self):
+        screens = Diagonals.objects.values('diagonal_text').distinct()
+        self.screens = [a['diagonal_text'] for a in screens]
+
+    def getOther(self):
+        others = Computers.objects.values('other').distinct()
+        self.others = [a['other'] for a in others]

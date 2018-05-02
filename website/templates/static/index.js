@@ -55,6 +55,18 @@ function autoFilterMenu(filterDivId){
 }
 
 function afSelect(checkbox) {
+  parent = checkbox.parentElement;
+  console.log(parent);
+  grandparent = parent.parentElement;
+  console.log(grandparent);
+  child = grandparent.childNodes[3];
+  console.log(child);
+  text = child.innerText;
+  console.log(text);
+  grandgrandparent = grandparent.parentElement;
+  console.log(grandgrandparent);
+  id = grandgrandparent.id;
+  console.log(id);
   if (checkbox.checked){
       filters_selected++;
   } else {
@@ -91,4 +103,8 @@ function filterKeywordChange(inputbox, workingDivId) {
       selectionDivs[i].style.display = "none";
     }
   }
+}
+
+function handleSelect(element) {
+  window.location = element.value;
 }

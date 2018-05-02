@@ -3,7 +3,10 @@ from ULCDTinterface.modelers import Computers, BatToComp
 from django.template import loader
 from website.logic import *
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import render
 
+"""
 def index(request):
     print("INDEX")
     if request.method == 'POST':
@@ -14,17 +17,32 @@ def index(request):
     computers = Computers.objects.all()
     counter = Counter()
     return HttpResponse(template.render({'computers': computers, "counter": counter}, request))
-
-def paging(request, qty, page):
+"""
+def index(request):
     print("Paging")
     if request.method == 'POST':
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
-    template = loader.get_template('index3.html')
+    if request.GET.get('qty') is None:
+        qty = 10
+    else:
+        qty = int(request.GET.get('qty'))
+    qtySelect = QtySelect()
+    qtySelect.setDefaultSelect(qty)
     computers = Computers.objects.all()
+    paginator = Paginator(computers, qty)
+    if request.GET.get('page') is None:
+        page = 1
+    else:
+        page = int(request.GET.get('page'))
+    computers = paginator.get_page(page)
     counter = Counter()
-    return HttpResponse(template.render({'computers': computers, "counter": counter}, request))
+    counter.count = qty*(page-1)
+
+    autoFilters = AutoFilters()
+
+    return render(request, 'index3.html', {'computers': computers, "counter": counter, "qtySelect": qtySelect, "autoFilters": autoFilters})
 
 def look(request, int_index):
     print("LOOK ")
