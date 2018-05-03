@@ -412,3 +412,56 @@ class AutoFilters:
     def getOther(self):
         others = Computers.objects.values('other').distinct()
         self.others = [a['other'] for a in others]
+
+
+class CatTyp:
+
+    def __init__(self):
+        self.innerList = []
+        query = """select distinct tp.id_type, tp.type_name, cat.category_name from sopena_computers.Types as tp
+join sopena_computers.Computers as comp on comp.f_type_id = tp.id_type
+join sopena_computers.Categories as cat on cat.id_category = comp.f_category_id"""
+        for output in Types.objects.raw(query):
+            inserted = False
+            for member in self.innerList:
+                if member.type == output.type_name:
+                    member.add_category(output.category_name)
+                    inserted = True
+            if not inserted:
+                cattypholder = CatTypHolder(output.type_name, output.category_name)
+                self.innerList.append(cattypholder)
+
+
+class CatTypHolder:
+
+    def __init__(self, type_name, category_name):
+        self.innerList = []
+        self.type = type_name
+        self.innerList.append(category_name)
+
+    def add_category(self, category_name):
+        self.innerList.append(category_name)
+
+def getQty(request):
+    if request.GET.get('qty') is None:
+        return 10
+    else:
+        return int(request.GET.get('qty'))
+
+def getPage(request):
+    if request.GET.get('page') is None:
+        return 1
+    else:
+        return int(request.GET.get('page'))
+
+def getType(request):
+    if request.GET.get('type') is None:
+        return None
+    else:
+        return request.GET.get('type')
+
+def getCat(request):
+    if request.GET.get('cat') is None:
+        return None
+    else:
+        return request.GET.get('cat')

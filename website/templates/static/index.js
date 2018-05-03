@@ -1,6 +1,78 @@
 var records_selected = 0;
 var filters_selected = 0;
 
+class AFHolder {
+  constructor(id_name) {
+    this.id_name = id_name;
+    this.items = [];
+  }
+
+  add(value) {
+    this.items.push(value);
+  }
+
+  remove(value) {
+    var index = this.items.indexOf(value);
+    if (index > -1) {
+      this.items.splice(index, 1);
+    }
+  }
+
+  length() {
+    return this.items.length;
+  }
+
+  debug() {
+    console.log(this.id_name);
+    console.log(this.items);
+  }
+}
+
+class AFManager {
+  constructor() {
+    this.filter_list = []
+  }
+
+  add_filter(filter_name, value) {
+    var found = false;
+    for (var i=0; i<this.filter_list.length; i++) {
+      if(this.filter_list[i].id_name == filter_name) {
+        found = true;
+        this.filter_list[i].add(value);
+        break;
+      }
+    }
+    if(!found){
+      var filter = new AFHolder(filter_name);
+      filter.add(value);
+      this.filter_list.push(filter);
+    }
+    this.debug();
+  }
+
+  remove_filter(filter_name, value){
+    for (var i=0; i<this.filter_list.length; i++) {
+      if(this.filter_list[i].id_name == filter_name) {
+        this.filter_list[i].remove(value);
+        if(this.filter_list[i].length()==0){
+          this.filter_list.splice(i, 1);
+        }
+        break;
+      }
+    }
+    this.debug();
+  }
+
+  debug() {
+    for (var i=0; i<this.filter_list.length; i++){
+      this.filter_list[i].debug();
+    }
+    console.log("________________________________________");
+  }
+}
+
+var afmanager = new AFManager();
+
 function manButPress() {
     var button = document.getElementById("manual-filter-button");
     if (button.innerHTML.includes("Show")){
@@ -26,17 +98,6 @@ function recordSelect(checkbox){
 }
 
 function recordSelectAll(checkbox){
-    /*
-    console.log(checkbox.checked)
-    checkbox1 = document.getElementById("check1");
-    if (checkbox1.checked != checkbox.checked) {
-        checkbox1.click();
-    }
-    checkbox2 = document.getElementById("check2");
-    if (checkbox2.checked != checkbox.checked) {
-        checkbox2.click();
-    }
-    */
     workingDiv = document.getElementById("records");
     recordCheckboxes = workingDiv.getElementsByClassName("record-chkbx");
     for (var i =0; i < recordCheckboxes.length; i++) {
@@ -56,21 +117,23 @@ function autoFilterMenu(filterDivId){
 
 function afSelect(checkbox) {
   parent = checkbox.parentElement;
-  console.log(parent);
+  // console.log(parent);
   grandparent = parent.parentElement;
-  console.log(grandparent);
+  // console.log(grandparent);
   child = grandparent.childNodes[3];
-  console.log(child);
+  // console.log(child);
   text = child.innerText;
-  console.log(text);
+  // console.log(text);
   grandgrandparent = grandparent.parentElement;
-  console.log(grandgrandparent);
+  // console.log(grandgrandparent);
   id = grandgrandparent.id;
-  console.log(id);
+  // console.log(id);
   if (checkbox.checked){
       filters_selected++;
+      afmanager.add_filter(id, text);
   } else {
       filters_selected--;
+      afmanager.remove_filter(id, text);
   }
   if (filters_selected>0) {
       document.getElementById("filter").style.display = "inline-block";

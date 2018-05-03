@@ -6,43 +6,31 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 
-"""
-def index(request):
-    print("INDEX")
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
-    template = loader.get_template('index3.html')
-    computers = Computers.objects.all()
-    counter = Counter()
-    return HttpResponse(template.render({'computers': computers, "counter": counter}, request))
-"""
 def index(request):
     print("Paging")
     if request.method == 'POST':
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
-    if request.GET.get('qty') is None:
-        qty = 10
-    else:
-        qty = int(request.GET.get('qty'))
+    qty = getQty(request)
     qtySelect = QtySelect()
     qtySelect.setDefaultSelect(qty)
     computers = Computers.objects.all()
     paginator = Paginator(computers, qty)
-    if request.GET.get('page') is None:
-        page = 1
-    else:
-        page = int(request.GET.get('page'))
+
+    page = getPage(request)
     computers = paginator.get_page(page)
     counter = Counter()
     counter.count = qty*(page-1)
-
+    cattyp = CatTyp()
     autoFilters = AutoFilters()
 
-    return render(request, 'index3.html', {'computers': computers, "counter": counter, "qtySelect": qtySelect, "autoFilters": autoFilters})
+    return render(request, 'index3.html', {
+        'computers': computers,
+        "counter": counter,
+        "qtySelect": qtySelect,
+        "autoFilters": autoFilters,
+        "cattyp": cattyp})
 
 def look(request, int_index):
     print("LOOK ")

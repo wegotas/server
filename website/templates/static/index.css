@@ -69,6 +69,10 @@ border-radius: 4px;
   border-radius: 4px;
 }
 
+.img-button:hover {
+  outline: 1px solid red;
+}
+
 .c-select {
 margin-right: 15px;
 border-radius: 4px 4px 1px 1px;
@@ -126,9 +130,10 @@ background: transparent;
 }
 .c-inputbox{
   border: 2px solid darkgrey;
-  height: 26px;
+  height: 20px;
   border-radius: 4px 2px 2px 10px;
   text-align: right;
+  padding-right: 8px;
 }
 
 .c-inputbox:hover {
@@ -225,11 +230,16 @@ background: transparent;
   z-index: 1;
 }
 
+.autofilter:hover {
+  border: 1px solid #F22613;
+}
+
 .show {
   display: block;
 }
 
 .af-top {
+  text-align: left;
   border-bottom: 2px double darkgrey;
   margin-bottom: 2px;
   padding: 2px;
@@ -240,8 +250,8 @@ background: transparent;
   padding: 2px;
 }
 
-.af-selection {
-
+.af-selection:hover {
+  outline: 1px solid #aaa;
 }
 
 .af-textinput {
@@ -314,7 +324,6 @@ background: transparent;
 }
 
 .menu2 {
-    width: 80%;
 		height: 30px;
     background-color: ghostwhite;
     border-style: solid;
@@ -363,4 +372,8 @@ background: transparent;
 
 .main-table tbody tr:nth-of-type(even) {
     background-color: rgba(94, 93, 82, 0.2);
+}
+
+.row:hover{
+  outline: 1px solid #9932cc;
 }
