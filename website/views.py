@@ -13,17 +13,34 @@ def index(request):
     if request.method == 'GET':
         print("This was GET request")
     qty = getQty(request)
-    qtySelect = QtySelect()
-    qtySelect.setDefaultSelect(qty)
-    computers = Computers.objects.all()
-    paginator = Paginator(computers, qty)
-
     page = getPage(request)
-    computers = paginator.get_page(page)
-    counter = Counter()
-    counter.count = qty*(page-1)
+    typ = getType(request)
+    cat = getCat(request)
+    keyword = getKeyword(request)
+    print("Keyword is: " + str(keyword))
+    if cat or typ:
+        qtySelect = QtySelect()
+        qtySelect.setDefaultSelect(qty)
+        # computers = Computers.objects.all()
+        typeRecord = Types.objects.filter(type_name=typ)[:1].get()
+        catRecord = Categories.objects.filter(category_name=cat)[:1].get()
+        """
+        for record in typeRecord:
+            print(record)
+            print(record.__dict__)
+        """
+        computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category)
+        paginator = Paginator(computers, qty)
+        computers = paginator.get_page(page)
+        counter = Counter()
+        counter.count = qty*(page-1)
+        autoFilters = AutoFilters()
+    else:
+        computers = None
+        counter = None
+        qtySelect = None
+        autoFilters = None
     cattyp = CatTyp()
-    autoFilters = AutoFilters()
 
     return render(request, 'index3.html', {
         'computers': computers,

@@ -362,7 +362,6 @@ background: transparent;
 }
 
 .main-table tbody td{
-  /*border-top: 1px solid grey;*/
   border-bottom: 1px solid grey;
 }
 
@@ -377,3 +376,8 @@ background: transparent;
 .row:hover{
   outline: 1px solid #9932cc;
 }
+
+ .no-data {
+   align: center;
+   color: red;
+ }

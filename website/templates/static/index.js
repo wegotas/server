@@ -115,6 +115,15 @@ function autoFilterMenu(filterDivId){
     filterDiv.classList.toggle("show");
 }
 
+function afFilter(checkbox, columnId) {
+  console.log(checkbox);
+  console.log(columnId);
+
+  columns = document.getElementsById(columnId);
+  console.log(columns);
+
+}
+
 function afSelect(checkbox) {
   parent = checkbox.parentElement;
   // console.log(parent);
@@ -169,5 +178,104 @@ function filterKeywordChange(inputbox, workingDivId) {
 }
 
 function handleSelect(element) {
-  window.location = element.value;
+  newURL = formationOfURL(element.value);
+  loadPage(newURL);
+}
+
+function formationOfURL(parameterString) {
+  href = location.href;
+  string = parameterString.substr(1);
+  stringList = string.split('&');
+  for (var i =0; i<stringList.length; i++) {
+    fieldName = stringList[i].split('=')[0];
+    regString = "&" + fieldName + "=[0-9]+"
+    pattern = new RegExp(regString, "g");
+    href = href.replace(pattern, "");
+  }
+  return href + parameterString;
+}
+
+function loadPage(newURL) {
+  window.location = newURL;
+}
+
+function search(){
+  var parameterArray = [];
+  var preExistingParametersArray = [];
+  searchKeyword = document.getElementById("search_input").value;
+  console.log(searchKeyword);
+  parameterArray.push("keyword="+searchKeyword);
+  console.log(parameterArray);
+  /* newURL = location.href + "?keyword="+searchKeyword; */
+  var baseURL, preExistingParameters;
+  if (location.href.includes("?")) {
+    [baseURL, preExistingParameters] = location.href.split("?");
+    preExistingParametersArray = preExistingParameters.split("&");
+  }
+  else {
+    baseURL = location.href;
+  }
+  console.log(baseURL);
+  console.log(preExistingParametersArray);
+
+  /* loadPage(newURL); */
+}
+/*
+function search() {
+  var input, filter, table, tr, td, i;
+  console.log("Search called");
+  input = document.getElementById("search_input");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("contents-table");
+  trs = table.getElementsByTagName("tr");
+  for (i=0; i < trs.length; i++) {
+    td = trs[i].getElementsByTagName("td")[2];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        trs[i].style.display = "";
+        console.log("Show");
+      }
+      else {
+        trs[i].style.display = "none";
+        console.log("Not show");
+      }
+    }
+  }
+}
+*/
+function search() {
+  var input, filter, table, trs, tr, td, i, j, found, indexes;
+  indexes = [2,3,4,5,6,7];
+  console.log("Search called");
+  input = document.getElementById("search_input");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("contents-table");
+  trs = table.getElementsByTagName("tr");
+  for (i=0; i < trs.length; i++) {
+    found = false;
+    console.log("Row: "+i);
+    if (i==0)
+    {
+      continue;
+    }
+    for (j=0; j < indexes.length; j++) {
+      console.log("j: "+j);
+      console.log("column: "+indexes[j]);
+      tr = trs[i];
+      console.log(tr);
+      tds = tr.getElementsByTagName("td");
+      console.log(tds);
+      td = tds[indexes[j]];
+      console.log(td);
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        found = true;
+      }
+    }
+    if (found) {
+      trs[i].style.display = "";
+    }
+    else {
+      trs[i].style.display = "none";
+    }
+  }
 }

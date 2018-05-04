@@ -367,6 +367,8 @@ class QtySelect:
             self.state100 = "selected"
         elif qty==200:
             self.state200 = "selected"
+        elif qty==1000:
+            self.state1000 = "selected"
 
 
 class AutoFilters:
@@ -465,3 +467,9 @@ def getCat(request):
         return None
     else:
         return request.GET.get('cat')
+
+def getKeyword(request):
+    if request.GET.get('keyword') is None:
+        return None
+    else:
+        return request.GET.get('keyword')
