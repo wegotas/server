@@ -1,4 +1,5 @@
 var records_selected = 0;
+var selected_records = [];
 var filters_selected = 0;
 
 class AFHolder {
@@ -85,6 +86,7 @@ function manButPress() {
 }
 
 function recordSelect(checkbox){
+    /*
     if (checkbox.checked){
         records_selected++;
     }else {
@@ -95,6 +97,19 @@ function recordSelect(checkbox){
     } else {
         document.getElementById("mass-select-options").style.display = "none";
     }
+    */
+    if (checkbox.checked){
+        selected_records.push(checkbox.value);
+    }else {
+        selected_records.splice(selected_records.indexOf(checkbox.value), 1);
+    }
+    if (selected_records.length>0) {
+      document.getElementById("mass-select-options").style.display = "inline-block";
+    } else {
+      document.getElementById("mass-select-options").style.display = "none";
+    }
+    console.log(selected_records);
+
 }
 
 function recordSelectAll(checkbox){
@@ -199,6 +214,7 @@ function loadPage(newURL) {
   window.location = newURL;
 }
 
+/*
 function search(){
   var parameterArray = [];
   var preExistingParametersArray = [];
@@ -206,7 +222,7 @@ function search(){
   console.log(searchKeyword);
   parameterArray.push("keyword="+searchKeyword);
   console.log(parameterArray);
-  /* newURL = location.href + "?keyword="+searchKeyword; */
+
   var baseURL, preExistingParameters;
   if (location.href.includes("?")) {
     [baseURL, preExistingParameters] = location.href.split("?");
@@ -217,9 +233,9 @@ function search(){
   }
   console.log(baseURL);
   console.log(preExistingParametersArray);
-
-  /* loadPage(newURL); */
 }
+*/
+
 /*
 function search() {
   var input, filter, table, tr, td, i;
@@ -243,6 +259,7 @@ function search() {
   }
 }
 */
+
 function search() {
   var input, filter, table, trs, tr, td, i, j, found, indexes;
   indexes = [2,3,4,5,6,7];
@@ -276,6 +293,39 @@ function search() {
     }
     else {
       trs[i].style.display = "none";
+    }
+  }
+}
+
+function mass_delete() {
+  if (confirm("Do you really want do delete these records?")) {
+    var xhr = new XMLHttpRequest();
+    indexArray = JSON.stringify(selected_records);
+    xhr.open('POST', 'mass_delete/', true);
+    xhr.send(indexArray);
+    xhr.onreadystatechange = function(e) {
+      if (xhr.readyState === 4) {
+        location.reload();
+      }
+    }
+  }
+}
+
+function mass_catchange(element) {
+  console.log(element);
+  console.log(element.value);
+  if (confirm("Do you really want do move these records to another category?")) {
+    var xhr = new XMLHttpRequest();
+    var objectToSend = {};
+    objectToSend[element.value] = selected_records;
+    console.log(objectToSend);
+    indexArray = JSON.stringify(objectToSend);
+    xhr.open('POST', 'cat_change/', true);
+    xhr.send(indexArray);
+    xhr.onreadystatechange = function(e) {
+      if (xhr.readyState === 4) {
+        location.reload();
+      }
     }
   }
 }

@@ -5,6 +5,8 @@ from website.logic import *
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
+from rest_framework.parsers import JSONParser
+
 
 def index(request):
     print("Paging")
@@ -17,29 +19,30 @@ def index(request):
     typ = getType(request)
     cat = getCat(request)
     keyword = getKeyword(request)
+    possible_categories = None
     print("Keyword is: " + str(keyword))
     if cat or typ:
         qtySelect = QtySelect()
         qtySelect.setDefaultSelect(qty)
-        # computers = Computers.objects.all()
         typeRecord = Types.objects.filter(type_name=typ)[:1].get()
         catRecord = Categories.objects.filter(category_name=cat)[:1].get()
-        """
-        for record in typeRecord:
-            print(record)
-            print(record.__dict__)
-        """
         computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category)
         paginator = Paginator(computers, qty)
         computers = paginator.get_page(page)
         counter = Counter()
         counter.count = qty*(page-1)
         autoFilters = AutoFilters()
+        category_querySet = Categories.objects.values_list('category_name')
+        possible_categories = []
+        for query_member in category_querySet:
+            possible_categories.append(query_member[0])
+        print(possible_categories)
     else:
         computers = None
         counter = None
         qtySelect = None
         autoFilters = None
+        possible_types = None
     cattyp = CatTyp()
 
     return render(request, 'index3.html', {
@@ -47,7 +50,8 @@ def index(request):
         "counter": counter,
         "qtySelect": qtySelect,
         "autoFilters": autoFilters,
-        "cattyp": cattyp})
+        "cattyp": cattyp,
+        "poscat": possible_categories})
 
 def look(request, int_index):
     print("LOOK ")
@@ -121,53 +125,81 @@ def delete(request, int_index):
         gpu_deletion_if_exists(gpu)
         model_deletion_if_exists(model)
         manufacturer_deletion_if_exists(manufacturer)
-
-
         return HttpResponse("If you see this message that means after deletion post update on JS side page reload has failed")
     if request.method == 'GET':
         print("This was GET request")
         print(int_index)
 
+
 def motherboard_deletion_if_exists(motherboard):
     if motherboard is not None:
         motherboard.delete()
+
 
 def cpu_deletion_if_exists(cpu):
     if cpu is not None:
         if not Computers.objects.filter(f_cpu=cpu.id_cpu).exists():
             cpu.delete()
 
+
 def diagonal_deletion_if_exists(diagonal):
     if diagonal is not None:
         if not Computers.objects.filter(f_diagonal=diagonal.id_diagonal).exists():
             diagonal.delete()
+
 
 def hdd_size_deletion_if_exists(hdd_size):
     if hdd_size is not None:
         if not Computers.objects.filter(f_hdd_size=hdd_size.id_hdd_sizes).exists():
             hdd_size.delete()
 
+
 def ram_size_deletion_if_exists(ram_size):
     if ram_size is not None:
         if not Computers.objects.filter(f_ram_size=ram_size.id_ram_size).exists():
             ram_size.delete()
+
 
 def gpu_deletion_if_exists(gpu):
     if gpu is not None:
         if not Computers.objects.filter(f_gpu=gpu.id_gpu).exists():
             gpu.delete()
 
+
 def model_deletion_if_exists(model):
     if model is not None:
         if not Computers.objects.filter(f_model=model.id_model).exists():
             model.delete()
 
+
 def manufacturer_deletion_if_exists(manufacturer):
     if manufacturer is not None:
-        print(manufacturer)
         if not Computers.objects.filter(f_manufacturer=manufacturer.id_manufacturer).exists():
-            print("Does not exist")
             manufacturer.delete()
-            print("Deletion accomplished")
-        else:
-            print("Does exist")
+
+
+@csrf_exempt
+def mass_delete(request):
+    print("Mass delete")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    for record_index in data:
+        recordDeleteByIndex(record_index)
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
+
+
+@csrf_exempt
+def cat_change(request):
+    print("Mass delete")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    changeCategoriesUsingDict(data)
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
