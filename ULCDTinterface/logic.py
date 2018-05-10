@@ -132,6 +132,15 @@ class Computer_record():
         """
 
     def _battery_save_and_get(self, serial, wear_out, expected_time):
+        battery = Batteries.objects.get_or_create(
+            serial=serial,
+            wear_out=wear_out,
+            expected_time=expected_time
+        )
+        battery.save()
+        return battery
+
+        """
         try:
             battery = Batteries.objects.get(
                 serial=serial,
@@ -147,8 +156,14 @@ class Computer_record():
             )
             battery.save()
             return battery
+        """
 
     def _ram_save_and_get(self, value):
+        ram = Rams.objects.get_or_create(ram_serial=value)
+        ram.save()
+        return ram
+
+        """
         try:
             ram = Rams.objects.get(ram_serial=value)
             return ram
@@ -156,8 +171,14 @@ class Computer_record():
             ram = Rams(ram_serial=value)
             ram.save()
             return ram
+        """
 
     def _hdd_save_and_get(self, value):
+        hdd = Hdds.objects.get_or_create(hdd_serial=value)
+        hdd.save()
+        return hdd
+
+        """
         try:
             hdd = Hdds.objects.get(hdd_serial=value)
             return hdd
@@ -165,6 +186,7 @@ class Computer_record():
             hdd = Hdds(hdd_serial=value)
             hdd.save()
             return hdd
+        """
 
     def _computer_save_and_get(self, data):
         try:
