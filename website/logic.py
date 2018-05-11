@@ -1,4 +1,4 @@
-from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, Motherboards, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
+from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
 
 class Bat_holder():
     def __init__(self, index=1, id=0, serial="N/A", wear="N/A", time="N/A"):
@@ -107,7 +107,9 @@ class Edit_computer_record():
         self._license_save(self.data_dict.pop("license_name", "")[0])
         self._manufacturer_save(self.data_dict.pop("manufacturer_name", "")[0])
         self._model_save(self.data_dict.pop("model_name", "")[0])
-        self._motherboard_save(self.data_dict.pop("motherboard_serial", "")[0])
+        # self._motherboard_save(self.data_dict.pop("motherboard_serial", "")[0])
+        print(data_dict["motherboard_serial"])
+        self.motherboard = self.data_dict.pop("motherboard_serial", "")[0]
         self._ramsize_save(self.data_dict.pop("ram_size_text", "")[0])
         self._computer_save()
         self._process_ram_and_hdd_serials()
@@ -196,7 +198,7 @@ class Edit_computer_record():
             f_tester=self.tester,
             date=self.data_dict.pop("date", "")[0],
             f_bios=self.bios,
-            f_motherboard=self.motherboard,
+            motherboard_serial=self.motherboard,
         )
         self.computer.save()
 
@@ -236,8 +238,10 @@ class Edit_computer_record():
     def _model_save(self, value):
         self.model = Models.objects.get_or_create(model_name=value)[0]
 
+    """"
     def _motherboard_save(self, value):
         self.motherboard = Motherboards.objects.get_or_create(motherboard_serial=value)[0]
+    """
 
     def _ramsize_save(self, value):
         self.ramsize = RamSizes.objects.get_or_create(ram_size_text=value)[0]
