@@ -279,7 +279,7 @@ background: transparent;
 .pageLeftTop {
   float: left;
   clear: both;
-  width: 80px;
+  width: 105px;
   background-color: #f9f9f9;
   border-color: gainsboro;
   border-style: solid;
@@ -302,11 +302,17 @@ background: transparent;
     padding: 10px 10px;
     text-decoration: none;
     display: block;
-    text-align: left;
+    text-align: center;
 }
 
 .menu-choice a {
   color: black;
+}
+
+.menu-choice button {
+  text-align: center;
+  color: black;
+  width: 100%;
 }
 
 .vertical-menu {
@@ -347,7 +353,7 @@ background: transparent;
 }
 
 .main-table {
-  width: 91.7%;
+  width: 90%;
   border-radius: 6px;
   border: 2px solid #85BDE4;
 }

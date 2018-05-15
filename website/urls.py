@@ -8,5 +8,8 @@ urlpatterns = [
     path('mass_delete/', views.mass_delete, name='mass_delete'),
     path('mass_excel/', views.mass_excel, name='mass_excel'),
     path('cat_change/', views.cat_change, name='cat_change'),
+    path('cat/', views.categories, name='categories'),
+    path('typ/', views.types, name='types'),
+    path('test/', views.testers, name='testers'),
     path('', views.index, name='index')
 ]

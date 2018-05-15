@@ -113,10 +113,16 @@
                 <div class="pageLeftTop">
                     <div class="vertical-menu">
                         <a class="active">Meniu:</a>
-                        <a class="menu-choice" href="" onclick="alert('insertion placeholder')">+ new record</a>
-                        <a class="menu-choice" href="">Link 2</a>
-                        <a class="menu-choice" href="">Link 3</a>
-                        <a class="menu-choice" href="">Link 4</a>
+                        <a class="menu-choice" onclick="alert('manual record placeholder')">+record</a>
+                        <!--
+                        <a class="menu-choice" onclick="alert('tester placeholder')">testers</a>
+                        <a class="menu-choice" onclick="alert('type placeholder')">types</a>
+
+                        <a class="menu-choice" onclick="alert('category placeholder')">categories</a>
+                        -->
+                        <a class="menu-choice" onclick="launchTesterWindow()">testers</a>
+                        <a class="menu-choice" onclick="launchTypWindow()">types</a>
+                        <a class="menu-choice" onclick="launchCatWindow()">categories</a>
                     </div>
                 </div>
                 {% if computers  %}

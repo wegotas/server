@@ -361,3 +361,15 @@ function mass_catchange(element) {
     }
   }
 }
+
+function launchCatWindow() {
+    var catWindow = window.open('cat/', "", "width=400,height=650");
+}
+
+function launchTypWindow() {
+    var typWindow = window.open('typ/', "", "width=400,height=650");
+}
+
+function launchTesterWindow() {
+    var testerWindow = window.open('test/', "", "width=400,height=650");
+}

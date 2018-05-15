@@ -211,7 +211,6 @@ def mass_excel(request):
     response.write(excel_file.getvalue())
     response["Content-Disposition"] = "attachment; filename=computers.xlsx"
     excel_file.close()
-    print(response.__dict__)
     return response
 
 @csrf_exempt
@@ -225,3 +224,42 @@ def cat_change(request):
     changeCategoriesUsingDict(data)
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
+
+@csrf_exempt
+def categories(request):
+    print("Categories")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    categories = get_categories_list()
+    print(categories)
+    template = loader.get_template('items.html')
+    return HttpResponse(template.render({'items': categories}, request))
+
+@csrf_exempt
+def types(request):
+    print("types")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    types = get_types_list()
+    print(types)
+    # return HttpResponse("Types failure")
+    template = loader.get_template('items.html')
+    return HttpResponse(template.render({'items': types}, request))
+
+@csrf_exempt
+def testers(request):
+    print("testers")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+        testers = get_testers_list()
+        print(testers)
+        # return HttpResponse("Testers failure")
+        template = loader.get_template('items.html')
+        return HttpResponse(template.render({'items': testers}, request))
+

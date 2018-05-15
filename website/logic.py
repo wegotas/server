@@ -777,3 +777,24 @@ def _get_camera_option(computer):
     except:
         camera_option = "N/A"
     return camera_option
+
+def get_categories_list():
+    result = Categories.objects.values_list('category_name')
+    lst = []
+    for member in result:
+        lst.append(member[0])
+    return lst
+
+def get_types_list():
+    result = Types.objects.values_list('type_name')
+    lst = []
+    for member in result:
+        lst.append(member[0])
+    return lst
+
+def get_testers_list():
+    result = Testers.objects.values_list('tester_name')
+    lst = []
+    for member in result:
+        lst.append(member[0])
+    return lst
