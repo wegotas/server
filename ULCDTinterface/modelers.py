@@ -97,7 +97,7 @@ class Computers(models.Model):
     ram_cover = models.CharField(max_length=45, blank=True, null=True)
     other = models.CharField(max_length=300, blank=True, null=True)
     f_tester = models.ForeignKey('Testers', models.DO_NOTHING, blank=True, null=True)
-    date = models.DateTimeField(blank=True, null=True)
+    date = models.DateField() # models.DateTimeField(blank=True, null=True)
     f_bios = models.ForeignKey(Bioses, models.DO_NOTHING, blank=True, null=True)
     f_sale = models.ForeignKey('Sales', models.DO_NOTHING, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -110,7 +110,7 @@ class Computers(models.Model):
         if self.date is None:
             return "N/A"
         else:
-            return self.date.strftime('%Y-%m-%d %H:%M:%S')
+            return self.date.strftime('%Y-%m-%d')
 
 
 class Diagonals(models.Model):
@@ -202,6 +202,12 @@ class Sales(models.Model):
     class Meta:
         managed = True
         db_table = 'Sales'
+
+    def getDate(self):
+        if self.date_of_sale is None:
+            return "N/A"
+        else:
+            return self.date_of_sale.strftime('%Y-%m-%d')
 
 
 class Testers(models.Model):

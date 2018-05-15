@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from rest_framework.parsers import JSONParser
+from wsgiref.util import FileWrapper
 
 
 def index(request):
@@ -85,6 +86,12 @@ def edit(request, int_index):
         batteries = get_batteries(int_index)
         rams = get_rams(int_index)
         hdds = get_hdds(int_index)
+        print("Price: " + str(computer.price))
+        print("Computer sale id: " + str(computer.f_sale))
+        if computer.f_sale != None:
+            print("date_of_sale: " + str(computer.f_sale.date_of_sale))
+            print("f_id_client: " + str(computer.f_sale.f_id_client))
+            print("client_name: " + str(computer.f_sale.f_id_client.client_name))
         return HttpResponse(template.render({'computer': computer,
                                              'bat_list': batteries,
                                              "ram_list": rams,
@@ -191,6 +198,21 @@ def mass_delete(request):
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
+@csrf_exempt
+def mass_excel(request):
+    print("Mass excel")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    excel_file = createExcelFile(data)
+    response = HttpResponse(content_type="application/ms-excel")
+    response.write(excel_file.getvalue())
+    response["Content-Disposition"] = "attachment; filename=computers.xlsx"
+    excel_file.close()
+    print(response.__dict__)
+    return response
 
 @csrf_exempt
 def cat_change(request):

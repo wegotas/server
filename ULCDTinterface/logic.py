@@ -1,4 +1,4 @@
-from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
+from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
 import datetime, decimal
 from django.utils import timezone
 
@@ -28,7 +28,8 @@ class Computer_record():
             self.price = self._price_get(data_dict["Price"])
             # self.timenow = datetime.datetime.now()
             self.timenow = timezone.now()
-            self.computer = self._computer_save_and_get(data_dict)
+            # self.computer = self._computer_save_and_get(data_dict)
+            """
             if data_dict["Category"] == "Sold":
                 print("Computer id: " + str(self.computer.id_computer))
                 bat1 = self._battery_save_and_get(
@@ -62,31 +63,54 @@ class Computer_record():
                 self._hdd_to_comp_relation_creation(hdd1)
                 hdd2 = self._hdd_save_and_get(data_dict["hdd_serial2"])
                 self._hdd_to_comp_relation_creation(hdd2)
-                hdd3 = self._hdd_save_and_get(data_dict["hdd_serial2"])
+                hdd3 = self._hdd_save_and_get(data_dict["hdd_serial3"])
                 self._hdd_to_comp_relation_creation(hdd3)
                 self.message += "Sold category's additional serial fields have been processed\n"
+            """
+            if self.is_sold:
+                self.client = self._client_save_and_get(data_dict["Client"])
+                self.sale = self._sale_save_and_get(self.client)
+                self.computer = self._computer_sold_save_and_get(data_dict)
+
+                bat1 = self._battery_save_and_get(
+                    data_dict["Bat1 serial"],
+                    data_dict["Bat1 wear"],
+                    data_dict["Bat1 expected time"]
+                )
+                self._bat_to_comp_relation_creation(bat1)
+
+                bat2 = self._battery_save_and_get(
+                    data_dict["Bat2 serial"],
+                    data_dict["Bat2 wear"],
+                    data_dict["Bat2 expected time"]
+                )
+                self._bat_to_comp_relation_creation(bat2)
+
+                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial1"]))
+                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial2"]))
+                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial3"]))
+                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial4"]))
+                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial5"]))
+                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial6"]))
+
+                self._hdd_to_comp_relation_creation(self._hdd_save_and_get(data_dict["hdd_serial1"]))
+                self._hdd_to_comp_relation_creation(self._hdd_save_and_get(data_dict["hdd_serial2"]))
+                self._hdd_to_comp_relation_creation(self._hdd_save_and_get(data_dict["hdd_serial3"]))
+            else:
+                self.computer = self._computer_save_and_get(data_dict)
             self.message += "Success"
             self.success = True
         except decimal.InvalidOperation as e:
-            print("decimal.InvalidOperation")
-            print(e)
-            print(e.__dict__)
-            print(str(e))
             self.message += "Failure\nPossible reason:\n"
             self.message += str(e)
             self.success = False
         except Exception as e:
-            print("Exception")
-            print(e)
-            print(e.__dict__)
-            print(str(e))
             self.message += "Failure\nPossible reason:\n"
             self.message += str(e)
             self.success = False
 
     def _price_get(self, price):
         return price.replace(",", ".")
-        # return price
 
     def _bat_to_comp_relation_creation(self, bat):
         bat_to_comp, created = BatToComp.objects.get_or_create(
@@ -105,6 +129,20 @@ class Computer_record():
             f_id_computer_hdd_to_com=self.computer,
             f_id_hdd_hdd_to_com=hdd
         )
+
+    def _client_save_and_get(self, client_name):
+        client = Clients.objects.get_or_create(client_name=client_name)[0]
+        client.save()
+        return client
+
+    def _sale_save_and_get(self, client):
+        sale = Sales.objects.get_or_create(
+            date_of_sale=self.timenow,
+            f_id_client=client
+
+        )[0]
+        sale.save()
+        return sale
 
     def _battery_save_and_get(self, serial, wear_out, expected_time):
 
@@ -127,8 +165,6 @@ class Computer_record():
         return hdd
 
     def _computer_save_and_get(self, data):
-        print(self.price)
-        print(type(self.price))
         try:
             existing_computer = Computers.objects.get(computer_serial=data['Serial'])
             computer = Computers(
@@ -159,11 +195,9 @@ class Computer_record():
                 date=self.timenow,
                 f_bios=self.bios,
                 motherboard_serial=data["motherboard_serial"],
-                price=self.price
+                # price=self.price
             )
-            print("before save")
             computer.save()
-            print("After save")
             self.message += "Existing record has been updated\n"
             return computer
         except Computers.DoesNotExist:
@@ -195,7 +229,80 @@ class Computer_record():
                 date=self.timenow,
                 f_bios=self.bios,
                 motherboard_serial=data["motherboard_serial"],
-                price=self.price
+                # price=self.price
+            )
+            computer.save()
+            self.message += "New record has been added\n"
+            return computer
+
+    def _computer_sold_save_and_get(self, data):
+        try:
+            existing_computer = Computers.objects.get(computer_serial=data['Serial'])
+            computer = Computers(
+                id_computer=existing_computer.id_computer,
+                computer_serial=data['Serial'],
+                f_type=self.type,
+                f_category=self.category,
+                f_manufacturer=self.manufacturer,
+                f_model=self.model,
+                f_cpu=self.cpu,
+                f_gpu=self.gpu,
+                f_ram_size=self.ramsize,
+                f_hdd_size=self.hddsize,
+                f_diagonal=self.diagonal,
+                f_license=self.license,
+                f_camera=self.camera_option,
+                cover=data["Cover"],
+                display=data["Display"],
+                bezel=data["Bezel"],
+                keyboard=data["Keyboard"],
+                mouse=data["Mouse"],
+                sound=data["Sound"],
+                cdrom=data["CD-ROM"],
+                hdd_cover=data["HDD Cover"],
+                ram_cover=data["RAM Cover"],
+                other=data["Other"],
+                f_tester=self.tester,
+                date=self.timenow,
+                f_bios=self.bios,
+                motherboard_serial=data["motherboard_serial"],
+                price=self.price,
+                f_sale=self.sale
+            )
+            computer.save()
+            self.message += "Existing record has been updated\n"
+            return computer
+        except Computers.DoesNotExist:
+            print("No computer with such serial, inserting a new record")
+            computer = Computers(
+                computer_serial=data['Serial'],
+                f_type=self.type,
+                f_category=self.category,
+                f_manufacturer=self.manufacturer,
+                f_model=self.model,
+                f_cpu=self.cpu,
+                f_gpu=self.gpu,
+                f_ram_size=self.ramsize,
+                f_hdd_size=self.hddsize,
+                f_diagonal=self.diagonal,
+                f_license=self.license,
+                f_camera=self.camera_option,
+                cover=data["Cover"],
+                display=data["Display"],
+                bezel=data["Bezel"],
+                keyboard=data["Keyboard"],
+                mouse=data["Mouse"],
+                sound=data["Sound"],
+                cdrom=data["CD-ROM"],
+                hdd_cover=data["HDD Cover"],
+                ram_cover=data["RAM Cover"],
+                other=data["Other"],
+                f_tester=self.tester,
+                date=self.timenow,
+                f_bios=self.bios,
+                motherboard_serial=data["motherboard_serial"],
+                price=self.price,
+                f_sale=self.sale
             )
             computer.save()
             self.message += "New record has been added\n"
@@ -211,92 +318,51 @@ class Computer_record():
         return Testers.objects.get(tester_name=value)
 
     def _bios_save_and_get(self, value):
-        try:
-            bios = Bioses.objects.get(bios_text=value)
-            return bios
-        except Bioses.DoesNotExist:
-            bios = Bioses(bios_text=value)
-            bios.save()
-            return bios
+        bios = Bioses.objects.get_or_create(bios_text=value)[0]
+        bios.save()
+        return bios
 
     def _cpus_save_and_get(self, value):
-        try:
-            cpu = Cpus.objects.get(cpu_name=value)
-            return cpu
-        except Cpus.DoesNotExist:
-            cpu = Cpus(cpu_name=value)
-            cpu.save()
-            return cpu
+        cpu = Cpus.objects.get_or_create(cpu_name=value)[0]
+        cpu.save()
+        return cpu
 
     def _camera_option_save_and_get(self, value):
-        try:
-            option = CameraOptions.objects.get(option_name=value)
-            return option
-        except CameraOptions.DoesNotExist:
-            option = CameraOptions(option_name=value)
-            option.save()
-            return option
+        option = CameraOptions.objects.get_or_create(option_name=value)[0]
+        option.save()
+        return option
 
     def _diagonals_save_and_get(self, value):
-        try:
-            diagonal = Diagonals.objects.get(diagonal_text=value)
-            return diagonal
-        except Diagonals.DoesNotExist:
-            diagonal = Diagonals(diagonal_text=value)
-            diagonal.save()
-            return diagonal
+        diagonal = Diagonals.objects.get_or_create(diagonal_text=value)[0]
+        diagonal.save()
+        return diagonal
 
     def _gpus_save_and_get(self, value):
-        try:
-            gpu = Gpus.objects.get(gpu_name=value)
-            return gpu
-        except Gpus.DoesNotExist:
-            gpu = Gpus(gpu_name=value)
-            gpu.save()
-            return gpu
+        gpu = Gpus.objects.get_or_create(gpu_name=value)[0]
+        gpu.save()
+        return gpu
 
     def _hddSizes_save_and_get(self, value):
-        try:
-            hddSize = HddSizes.objects.get(hdd_size_text=value)
-            return hddSize
-        except HddSizes.DoesNotExist:
-            hddSize = HddSizes(hdd_size_text=value)
-            hddSize.save()
-            return hddSize
+        hddSize = HddSizes.objects.get_or_create(hdd_size_text=value)[0]
+        hddSize.save()
+        return hddSize
 
     def _licenses_save_and_get(self, value):
-        try:
-            license = Licenses.objects.get(license_name=value)
-            return license
-        except Licenses.DoesNotExist:
-            license = Licenses(license_name=value)
-            license.save()
-            return license
+        license = Licenses.objects.get_or_create(license_name=value)[0]
+        license.save()
+        return license
 
     def _manufacturers_save_and_get(self, value):
-        try:
-            manufacturer = Manufacturers.objects.get(manufacturer_name=value)
-            return manufacturer
-        except Manufacturers.DoesNotExist:
-            manufacturer = Manufacturers(manufacturer_name=value)
-            manufacturer.save()
-            return manufacturer
+        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=value)[0]
+        manufacturer.save()
+        return manufacturer
 
     def _models_save_and_get(self, value):
-        try:
-            model = Models.objects.get(model_name=value)
-            return model
-        except Models.DoesNotExist:
-            model = Models(model_name=value)
-            model.save()
-            return model
+        model = Models.objects.get_or_create(model_name=value)[0]
+        model.save()
+        return model
 
     def _ramSizes_save_and_get(self, value):
-        try:
-            ramSize = RamSizes.objects.get(ram_size_text=value)
-            return ramSize
-        except RamSizes.DoesNotExist:
-            ramSize = RamSizes(ram_size_text=value)
-            ramSize.save()
-            return ramSize
-
+        ramSize = RamSizes.objects.get_or_create(ram_size_text=value)[0]
+        ramSize.save()
+        return ramSize

@@ -1,4 +1,7 @@
-from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
+from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
+import xlsxwriter
+import io
+
 
 class Bat_holder():
     def __init__(self, index=1, id=0, serial="N/A", wear="N/A", time="N/A"):
@@ -94,6 +97,10 @@ class Edit_computer_record():
     def __init__(self, data_dict):
         self.data_dict = data_dict
         self.data_dict.pop("edit", "")
+        self.data_dict.pop("edit.x", "")
+        self.data_dict.pop("edit.y", "")
+        self.data_dict.pop("motherboard_serial", "")
+
 
         self._type_save(self.data_dict.pop("type_name", "")[0])
         self._category_save(self.data_dict.pop("category_name", "")[0])
@@ -108,12 +115,18 @@ class Edit_computer_record():
         self._manufacturer_save(self.data_dict.pop("manufacturer_name", "")[0])
         self._model_save(self.data_dict.pop("model_name", "")[0])
         # self._motherboard_save(self.data_dict.pop("motherboard_serial", "")[0])
-        print(data_dict["motherboard_serial"])
-        self.motherboard = self.data_dict.pop("motherboard_serial", "")[0]
+        # print(data_dict["motherboard_serial"])
+        # self.motherboard = self.data_dict.pop("motherboard_serial", "")[0]
         self._ramsize_save(self.data_dict.pop("ram_size_text", "")[0])
-        self._computer_save()
-        self._process_ram_and_hdd_serials()
-        self._process_batteries()
+        if "client_name" in data_dict:
+            self._client_save(self.data_dict.pop("client_name", "")[0])
+            self._sale_save(self.data_dict.pop("date_of_sale", "")[0])
+            self._computer_sold_save()
+            print(data_dict)
+            self._process_ram_and_hdd_serials()
+            self._process_batteries()
+        else:
+            self._computer_save()
 
     def _process_batteries(self):
         while len(self.data_dict) > 2:
@@ -197,10 +210,53 @@ class Edit_computer_record():
             other=self.data_dict.pop("other", "")[0],
             f_tester=self.tester,
             date=self.data_dict.pop("date", "")[0],
-            f_bios=self.bios,
-            motherboard_serial=self.motherboard,
+            f_bios=self.bios
         )
         self.computer.save()
+
+    def _computer_sold_save(self):
+        self.computer = Computers(
+            id_computer=self.data_dict.pop("id_computer", "")[0],
+            computer_serial=self.data_dict.pop("serial", "")[0],
+            f_type=self.type,
+            f_category=self.category,
+            f_manufacturer=self.manufacturer,
+            f_model=self.model,
+            f_cpu=self.cpu,
+            f_gpu=self.gpu,
+            f_ram_size=self.ramsize,
+            f_hdd_size=self.hddsize,
+            f_diagonal=self.diagonal,
+            f_license=self.license,
+            f_camera=self.camera_option,
+            cover=self.data_dict.pop("cover", "")[0],
+            display=self.data_dict.pop("display", "")[0],
+            bezel=self.data_dict.pop("bezel", "")[0],
+            keyboard=self.data_dict.pop("keyboard", "")[0],
+            mouse=self.data_dict.pop("mouse", "")[0],
+            sound=self.data_dict.pop("sound", "")[0],
+            cdrom=self.data_dict.pop("cdrom", "")[0],
+            hdd_cover=self.data_dict.pop("hdd_cover", "")[0],
+            ram_cover=self.data_dict.pop("ram_cover", "")[0],
+            other=self.data_dict.pop("other", "")[0],
+            f_tester=self.tester,
+            date=self.data_dict.pop("date", "")[0],
+            f_bios=self.bios,
+            f_sale=self.sale,
+            price=self.data_dict.pop("price", "")[0]
+            # motherboard_serial=self.motherboard,
+        )
+        self.computer.save()
+
+    def _client_save(self, client_name):
+        self.client = Clients.objects.get_or_create(client_name=client_name)[0]
+        # self.client.save()
+
+    def _sale_save(self, date_of_sale):
+        self.sale = Sales.objects.get_or_create(
+            date_of_sale=date_of_sale,
+            f_id_client=self.client
+        )[0]
 
     def _type_save(self, value):
         self.type = Types.objects.get_or_create(type_name=value)[0]
@@ -567,3 +623,157 @@ def changeCategoriesUsingDict(dict):
         computer = Computers.objects.get(id_computer=ind)
         computer.f_category = category
         computer.save()
+
+def createExcelFile(indexes):
+    memfile = io.BytesIO()
+    workbook = xlsxwriter.Workbook(memfile)
+    worksheet = workbook.add_worksheet()
+    bold_bordered = workbook.add_format({"bold": True, "border": 1})
+    bordered = workbook.add_format({"border": 1})
+
+    worksheet.write("A1", "S/N", bold_bordered)
+    worksheet.write("B1", "Manufacturer", bold_bordered)
+    worksheet.write("C1", "Model", bold_bordered)
+    worksheet.write("D1", "CPU", bold_bordered)
+    worksheet.write("E1", "RAM", bold_bordered)
+    worksheet.write("F1", "GPU", bold_bordered)
+    worksheet.write("G1", "HDD", bold_bordered)
+    worksheet.write("H1", "Batteries", bold_bordered)
+    worksheet.write("I1", "LCD", bold_bordered)
+    worksheet.write("J1", "Optical", bold_bordered)
+    worksheet.write("K1", "COA", bold_bordered)
+    worksheet.write("L1", "Cam", bold_bordered)
+    worksheet.write("M1", "Comment", bold_bordered)
+    worksheet.write("N1", "Price", bold_bordered)
+    row = 1
+    col = 0
+    for int_index in indexes:
+        computer = Computers.objects.get(id_computer=int_index)
+        # print(computer.computer_serial)
+        worksheet.write(row, col, _get_serial(computer), bordered)
+        # print(computer.f_manufacturer.manufacturer_name)
+        worksheet.write(row, col + 1, _get_manufacturer(computer), bordered)
+        # print(computer.f_model.model_name)
+        worksheet.write(row, col + 2, _get_model(computer), bordered)
+        # print(computer.f_cpu.cpu_name)
+        worksheet.write(row, col + 3, _get_cpu_name(computer), bordered)
+        # print(computer.f_ram_size.ram_size_text)
+        worksheet.write(row, col + 4, _get_ram_size(computer), bordered)
+        # print(computer.f_gpu.gpu_name)
+        worksheet.write(row, col + 5, _get_gpu_name(computer), bordered)
+        # print(computer.f_hdd_size.hdd_size_text)
+        worksheet.write(row, col + 6, _get_hdd_size(computer), bordered)
+        # print(_get_battery_time(int_index))
+        worksheet.write(row, col + 7, _get_battery_time(int_index), bordered)
+        # print(computer.f_diagonal.diagonal_text)
+        worksheet.write(row, col + 8, _get_diagonal(computer), bordered)
+        # print(computer.cdrom)
+        worksheet.write(row, col + 9, _get_cdrom(computer), bordered)
+        # print(computer.f_license.license_name)
+        worksheet.write(row, col + 10, _get_license(computer), bordered)
+        # print(computer.f_camera.option_name)
+        worksheet.write(row, col + 11, _get_camera_option(computer), bordered)
+        # print(computer.other)
+        worksheet.write(row, col + 12, str(computer.other), bordered)
+        row += 1
+    workbook.close()
+    return memfile
+
+def _get_serial(computer):
+    serial = ""
+    try:
+        serial = computer.computer_serial
+    except:
+        serial = "N/A"
+    return serial
+
+def _get_manufacturer(computer):
+    manufacturer = ""
+    try:
+        manufacturer = computer.f_manufacturer.manufacturer_name
+    except:
+        manufacturer = "N/A"
+    return manufacturer
+
+def _get_model(computer):
+    model = ""
+    try:
+        model = computer.f_model.model_name
+    except:
+        model = "N/A"
+    return model
+
+def _get_cpu_name(computer):
+    cpu_name = ""
+    try:
+        cpu_name = computer.f_cpu.cpu_name
+    except:
+        cpu_name = "N/A"
+    return cpu_name
+
+def _get_ram_size(computer):
+    ram_size = ""
+    try:
+        ram_size = computer.f_ram_size.ram_size_text
+    except:
+        ram_size = "N/A"
+    return ram_size
+
+def _get_gpu_name(computer):
+    gpu_name = ""
+    try:
+        gpu_name = computer.f_gpu.gpu_name
+    except:
+        gpu_name = "N/A"
+    return gpu_name
+
+def _get_hdd_size(computer):
+    hdd_size = ""
+    try:
+        hdd_size = computer.f_hdd_size.hdd_size_text
+    except:
+        hdd_size = "N/A"
+    return hdd_size
+
+def _get_battery_time(int_index):
+    bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=int_index)
+    for con in bat_to_comps:
+        print(con.f_bat_bat_to_com.expected_time)
+    if len(bat_to_comps) > 2:
+        return "~1h."
+    elif len(bat_to_comps) < 1:
+        return "No"
+    else:
+        return str(bat_to_comps[0].f_bat_bat_to_com.expected_time)
+
+def _get_diagonal(computer):
+    diagonal = ""
+    try:
+        diagonal = computer.f_diagonal.diagonal_text
+    except:
+        diagonal = "N/A"
+    return diagonal
+
+def _get_cdrom(computer):
+    cdrom = ""
+    try:
+        cdrom = computer.cdrom
+    except:
+        cdrom = "N/A"
+    return cdrom
+
+def _get_license(computer):
+    license_name = ""
+    try:
+        license_name = computer.f_license.license_name
+    except:
+        license_name = "N/A"
+    return license_name
+
+def _get_camera_option(computer):
+    camera_option = ""
+    try:
+        camera_option = computer.f_camera.option_name
+    except:
+        camera_option = "N/A"
+    return camera_option

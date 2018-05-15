@@ -311,6 +311,38 @@ function mass_delete() {
   }
 }
 
+function mass_excel() {
+  var xhr = new XMLHttpRequest();
+  var runAsync = true ;
+  indexArray = JSON.stringify(selected_records);
+  xhr.open('POST', 'mass_excel/', true);
+  xhr.responseType = "arraybuffer";
+
+  xhr.send(indexArray);
+
+  xhr.onreadystatechange = function(e) {
+    if (xhr.readyState === 4) {
+      console.log(xhr.response);
+      /*
+      location.reload();
+      */
+      const link = document.createElement( 'a' );
+      link.style.display = 'none';
+      document.body.appendChild( link );
+
+      const blob = new Blob( [ xhr.response ], { type: '‘application/octet-binary' } );
+      const objectURL = URL.createObjectURL( blob );
+
+      link.href = objectURL;
+      link.href = URL.createObjectURL( blob );
+      link.download =  'excel.xlsx';
+      link.click();
+      }
+  }
+
+}
+
+
 function mass_catchange(element) {
   console.log(element);
   console.log(element.value);

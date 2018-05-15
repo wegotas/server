@@ -23,6 +23,10 @@ input {
   width: auto;
 }
 
+input:read-only {
+  background-color: darkgrey;
+}
+
 </style>
 <body>
 
@@ -56,7 +60,7 @@ input {
             <tr>
                 <th>Serial:</th>
                 <td>
-                    <input type="text" name="serial" value="{{ computer.computer_serial }}">
+                    <input type="text" name="serial" value="{{ computer.computer_serial }}" readonly>
                 </td>
             </tr>
             <tr>
@@ -206,11 +210,30 @@ input {
             </tr>
             <tr>
                 <th>Motherboard serial:</th>
-                <!-- <td>{{ computer.f_motherboard.motherboard_serial }}</td> -->
                 <td>
-                    <input type="text" name="motherboard_serial" value="{{ computer.motherboard_serial }}">
+                    <input type="text" name="motherboard_serial" value="{{ computer.motherboard_serial }}" readonly>
                 </td>
             </tr>
+            {% if computer.f_sale != None %}
+            <tr>
+                <th>Price:</th>
+                <td>
+                    <input type="text" name="price" value="{{ computer.price }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Date of sale:</th>
+                <td>
+                    <input type="text" name="date_of_sale" value="{{ computer.f_sale.getDate }}">
+                </td>
+            </tr>
+            <tr>
+                <th>Client:</th>
+                <td>
+                    <input type="text" name="client_name" value="{{ computer.f_sale.f_id_client.client_name }}">
+                </td>
+            </tr>
+            {% endif %}
             {% for bat_unit in bat_list %}
             <tr>
                 <th>Battery{{ bat_unit.index }} serial</th>
