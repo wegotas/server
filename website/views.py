@@ -230,10 +230,12 @@ def categories(request):
     print("Categories")
     if request.method == 'POST':
         print("This was POST request")
+        print(request.POST.get("item_name"))
+        save_category(request.POST.get("item_name"))
+        print("Finished")
     if request.method == 'GET':
         print("This was GET request")
     categories = get_categories_list()
-    print(categories)
     template = loader.get_template('items.html')
     return HttpResponse(template.render({'items': categories}, request))
 
@@ -242,11 +244,12 @@ def types(request):
     print("types")
     if request.method == 'POST':
         print("This was POST request")
+        print(request.POST.get("item_name"))
+        save_type(request.POST.get("item_name"))
+        print("Finished")
     if request.method == 'GET':
         print("This was GET request")
     types = get_types_list()
-    print(types)
-    # return HttpResponse("Types failure")
     template = loader.get_template('items.html')
     return HttpResponse(template.render({'items': types}, request))
 
@@ -255,11 +258,12 @@ def testers(request):
     print("testers")
     if request.method == 'POST':
         print("This was POST request")
+        print(request.POST.get("item_name"))
+        save_tester(request.POST.get("item_name"))
+        print("Finished")
     if request.method == 'GET':
         print("This was GET request")
-        testers = get_testers_list()
-        print(testers)
-        # return HttpResponse("Testers failure")
-        template = loader.get_template('items.html')
-        return HttpResponse(template.render({'items': testers}, request))
+    testers = get_testers_list()
+    template = loader.get_template('items.html')
+    return HttpResponse(template.render({'items': testers}, request))
 

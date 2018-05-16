@@ -7,12 +7,14 @@
 <body>
     <table>
         <tr>
-            <td>
-                <input type="text" placeholder="Name of an object">
-            </td>
-            <td>
-                <button>+</button>
-            </td>
+            <form method="post">
+                <td>
+                    <input name="item_name" type="text" placeholder="Name of an object"/>
+                </td>
+                <td>
+                    <input type="submit" value="+" />
+                </td>
+            </form>
         </tr>
         {% for item in items %}
         <tr>

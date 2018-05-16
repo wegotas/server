@@ -785,6 +785,10 @@ def get_categories_list():
         lst.append(member[0])
     return lst
 
+def save_category(name):
+    category = Categories(category_name=name)
+    category.save()
+
 def get_types_list():
     result = Types.objects.values_list('type_name')
     lst = []
@@ -792,9 +796,17 @@ def get_types_list():
         lst.append(member[0])
     return lst
 
+def save_type(name):
+    typ = Types(type_name=name)
+    typ.save()
+
 def get_testers_list():
     result = Testers.objects.values_list('tester_name')
     lst = []
     for member in result:
         lst.append(member[0])
     return lst
+
+def save_tester(name):
+    tester = Testers(tester_name=name)
+    tester.save()
