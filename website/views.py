@@ -15,44 +15,72 @@ def index(request):
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
-    qty = getQty(request)
-    page = getPage(request)
-    typ = getType(request)
-    cat = getCat(request)
-    keyword = getKeyword(request)
-    possible_categories = None
-    print("Keyword is: " + str(keyword))
-    if cat or typ:
+    isSold = getIsSold(request)
+    if isSold:
+        qty = getQty(request)
+        page = getPage(request)
+        possible_categories = None
+        keyword = getKeyword(request)
         qtySelect = QtySelect()
         qtySelect.setDefaultSelect(qty)
-        typeRecord = Types.objects.filter(type_name=typ)[:1].get()
-        catRecord = Categories.objects.filter(category_name=cat)[:1].get()
-        computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category)
+        computers = Computers.objects.exclude(f_sale__isnull=True)
+        af = AutoFiltersFromSoldComputers(computers)
         paginator = Paginator(computers, qty)
         computers = paginator.get_page(page)
         counter = Counter()
-        counter.count = qty*(page-1)
-        autoFilters = AutoFilters()
+        counter.count = qty * (page - 1)
+        # autoFilters = AutoFilters()
         category_querySet = Categories.objects.values_list('category_name')
         possible_categories = []
         for query_member in category_querySet:
             possible_categories.append(query_member[0])
-        print(possible_categories)
+        cattyp = CatTyp()
+        return render(request, 'sold.html', {
+            'computers': computers,
+            "counter": counter,
+            "qtySelect": qtySelect,
+            # "autoFilters": autoFilters,
+            "autoFilters": af,
+            "cattyp": cattyp,
+            "poscat": possible_categories})
     else:
-        computers = None
-        counter = None
-        qtySelect = None
-        autoFilters = None
-        possible_types = None
-    cattyp = CatTyp()
-
-    return render(request, 'index3.html', {
-        'computers': computers,
-        "counter": counter,
-        "qtySelect": qtySelect,
-        "autoFilters": autoFilters,
-        "cattyp": cattyp,
-        "poscat": possible_categories})
+        qty = getQty(request)
+        page = getPage(request)
+        typ = getType(request)
+        cat = getCat(request)
+        keyword = getKeyword(request)
+        possible_categories = None
+        if cat or typ:
+            qtySelect = QtySelect()
+            qtySelect.setDefaultSelect(qty)
+            typeRecord = Types.objects.filter(type_name=typ)[:1].get()
+            catRecord = Categories.objects.filter(category_name=cat)[:1].get()
+            computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category, f_sale=None)
+            af = AutoFiltersFromComputers(computers)
+            paginator = Paginator(computers, qty)
+            computers = paginator.get_page(page)
+            counter = Counter()
+            counter.count = qty*(page-1)
+            # autoFilters = AutoFilters()
+            category_querySet = Categories.objects.values_list('category_name')
+            possible_categories = []
+            for query_member in category_querySet:
+                possible_categories.append(query_member[0])
+        else:
+            computers = None
+            counter = None
+            qtySelect = None
+            autoFilters = None
+            possible_types = None
+        cattyp = CatTyp()
+        return render(request, 'index3.html', {
+            'computers': computers,
+            "counter": counter,
+            "qtySelect": qtySelect,
+            # "autoFilters": autoFilters,
+            "autoFilters": af,
+            "cattyp": cattyp,
+            "poscat": possible_categories})
 
 def look(request, int_index):
     print("LOOK ")
@@ -267,3 +295,15 @@ def testers(request):
     template = loader.get_template('items.html')
     return HttpResponse(template.render({'items': testers}, request))
 
+@csrf_exempt
+def new_record(request):
+    print("new_record")
+    if request.method == 'POST':
+        print("This was POST request")
+        adding_new_computer(request.POST.copy())
+        return HttpResponse("Success", request)
+
+    if request.method == 'GET':
+        print("This was GET request")
+    template = loader.get_template('new_record.html')
+    return HttpResponse(template.render(), request)

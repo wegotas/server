@@ -1,6 +1,7 @@
 from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
 import xlsxwriter
 import io
+from django.utils import timezone
 
 
 class Bat_holder():
@@ -476,6 +477,128 @@ class AutoFilters:
         self.others = [a['other'] for a in others]
 
 
+class AutoFiltersFromComputers:
+
+    def __init__(self, computers):
+        self.computers = computers
+        self._get_serials()
+        self._get_manufacturers()
+        self._getModels()
+        self._getCpus()
+        self._getRams()
+        self._getGpus()
+        self._getScreens()
+        self._getOther()
+
+    def _get_serials(self):
+        serials = self.computers.values('computer_serial').distinct()
+        self.serials = [a['computer_serial'] for a in serials]
+
+    def _get_manufacturers(self):
+        manufacturers = self.computers.values('f_manufacturer').distinct()
+        manufacturers_id = [a['f_manufacturer'] for a in manufacturers]
+        self.manufacturers = []
+        for id in manufacturers_id:
+            man = Manufacturers.objects.get(id_manufacturer=id)
+            self.manufacturers.append(man.manufacturer_name)
+
+    def _getModels(self):
+        models = self.computers.values('f_model').distinct()
+        models_id = [a['f_model'] for a in models]
+        self.models = []
+        for id in models_id:
+            mod = Models.objects.get(id_model=id)
+            self.models.append(mod.model_name)
+
+    def _getCpus(self):
+        cpus = self.computers.values('f_cpu').distinct()
+        cpus_id = [a['f_cpu'] for a in cpus]
+        self.cpus = []
+        for id in cpus_id:
+            if id is None:
+                self.cpus.append("")
+            else:
+                cpu = Cpus.objects.get(id_cpu=id)
+                self.cpus.append(cpu.cpu_name)
+
+    def _getRams(self):
+        rams = self.computers.values('f_ram_size').distinct()
+        rams_id = [a['f_ram_size'] for a in rams]
+        self.rams = []
+        for id in rams_id:
+            if id is None:
+                self.rams.append("")
+            else:
+                ram = RamSizes.objects.get(id_ram_size=id)
+                self.rams.append(ram.ram_size_text)
+
+    def _getGpus(self):
+        gpus = self.computers.values('f_gpu').distinct()
+        gpus_id = [a['f_gpu'] for a in gpus]
+        self.gpus = []
+        for id in gpus_id:
+            if id is None:
+                self.gpus.append("")
+            else:
+                gpu = Gpus.objects.get(id_gpu=id)
+                self.gpus.append(gpu.gpu_name)
+
+    def _getScreens(self):
+        screens = self.computers.values("f_diagonal").distinct()
+        screens_id = [a['f_diagonal'] for a in screens]
+        self.screens = []
+        for id in screens_id:
+            if id is None:
+                self.screens.append("")
+            else:
+                screen = Diagonals.objects.get(id_diagonal=id)
+                self.screens.append(screen.diagonal_text)
+
+    def _getOther(self):
+        others = self.computers.values("other").distinct()
+        self.others = [a['other'] for a in others]
+
+
+class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
+
+    def __init__(self, computers):
+        self.computers = computers
+        self._getPrice()
+        self._getDateOfSale()
+        self._getClients()
+        super(AutoFiltersFromSoldComputers, self).__init__(computers)
+
+    def _getPrice(self):
+        prices = self.computers.values("price").distinct()
+        self.prices = [a['price'] for a in prices]
+        print(self.prices)
+
+    def _getDateOfSale(self):
+        sales = self.computers.values("f_sale").distinct()
+        sales_id = [a['f_sale'] for a in sales]
+        self.dates = []
+        for id in sales_id:
+            if id is None:
+                self.dates.append("")
+            else:
+                sale = Sales.objects.get(id_sale=id)
+                self.dates.append(sale.getDate())
+                print(sale.getDate())
+        self.dates = list(set(self.dates))
+
+    def _getClients(self):
+        sales = self.computers.values("f_sale").distinct()
+        sales_id = [a['f_sale'] for a in sales]
+        self.clients = []
+        for id in sales_id:
+            if id is None:
+                self.dates.append("")
+            else:
+                sale = Sales.objects.get(id_sale=id)
+                self.clients.append(sale.f_id_client.client_name)
+        self.clients = list(set(self.clients))
+
+
 class CatTyp:
 
     def __init__(self):
@@ -503,6 +626,15 @@ class CatTypHolder:
 
     def add_category(self, category_name):
         self.innerList.append(category_name)
+
+def getIsSold(request):
+    if request.GET.get('sold') is None:
+        return False
+    else:
+        if request.GET.get('sold') == "True":
+            return True
+        else:
+            return False
 
 def getQty(request):
     if request.GET.get('qty') is None:
@@ -810,3 +942,183 @@ def get_testers_list():
 def save_tester(name):
     tester = Testers(tester_name=name)
     tester.save()
+
+def adding_new_computer(data_dict):
+    print("adding_new_computer")
+    print("serial: " + data_dict.get("serial"))
+    print("type_name: " + data_dict.get("type_name"))
+    print("category_name: " + data_dict.get("category_name"))
+    print("manufacturer_name: " + data_dict.get("manufacturer_name"))
+    print("model_name: " + data_dict.get("model_name"))
+    print("cpu_name: " + data_dict.get("cpu_name"))
+    print("gpu_name: " + data_dict.get("gpu_name"))
+    print("ram_size_text: " + data_dict.get("ram_size_text"))
+    print("hdd_size_text: " + data_dict.get("hdd_size_text"))
+    print("diagonal_text: " + data_dict.get("diagonal_text"))
+    print("license_name: " + data_dict.get("license_name"))
+    print("cover: " + data_dict.get("cover"))
+    print("display: " + data_dict.get("display"))
+    print("bezel: " + data_dict.get("bezel"))
+    print("hdd_cover: " + data_dict.get("hdd_cover"))
+    print("ram_cover: " + data_dict.get("ram_cover"))
+    print("other: " + data_dict.get("other"))
+    print("tester_name: " + data_dict.get("tester_name"))
+    rta = record_to_add(data_dict)
+    rta.save()
+
+
+class record_to_add():
+
+    def __init__(self, data_dict):
+        self.data = data_dict
+        """
+        self.serial = data_dict.get("serial")
+        self.type_name = data_dict.get("type_name")
+        self.category_name = data_dict.get("category_name")
+        self.manufacturer_name = data_dict.get("manufacturer_name")
+        self.model_name = data_dict.get("model_name")
+        self.cpu_name = data_dict.get("cpu_name")
+        self.gpu_name = data_dict.get("gpu_name")
+        self.ram_size_text = data_dict.get("ram_size_text")
+        self.hdd_size_text = data_dict.get("hdd_size_text")
+        self.diagonal_text = data_dict.get("diagonal_text")
+        self.license_name = data_dict.get("license_name")
+        self.cover = data_dict.get("cover")
+        self.display = data_dict.get("display")
+        self.bezel = data_dict.get("bezel")
+        self.hdd_cover = data_dict.get("hdd_cover")
+        self.ram_cover = data_dict.get("ram_cover")
+        self.other = data_dict.get("other")
+        self.tester_name = data_dict.get("tester_name")
+        """
+
+    def save(self):
+        """
+        typ = self._save_and_get_type()
+        cat = self._save_and_get_category()
+        man = self._save_and_get_manufacturer()
+        model = self._save_and_get_model()
+        cpu = self._save_and_get_cpu()
+        gpu = self._save_and_get_gpu()
+        ramsize = self._save_and_get_ramsize()
+        hdd_size = self._save_and_get_hdd_size()
+        diagonal = self._save_and_get_diagonal()
+        lic = self._save_and_get_license()
+        """
+        print("rta save start")
+        self._save_and_get_type()
+        self._save_and_get_category()
+        self._save_and_get_manufacturer()
+        self._save_and_get_model()
+        self._save_and_get_cpu()
+        self._save_and_get_gpu()
+        self._save_and_get_ramsize()
+        self._save_and_get_hdd_size()
+        self._save_and_get_diagonal()
+        self._save_and_get_license()
+        self._save_and_get_tester()
+        self.timenow = timezone.now()
+        self._save_computer()
+        print("rta save end")
+
+    def _save_and_get_type(self):
+        # typ = Types(type_name=self.type_name)
+        # self.typ = Types(type_name=self.data.get("type_name"))
+        # self.typ.save()
+        # self.typ.objects.get_or_create(type_name=self.data.get("type_name"))[0]
+        self.typ = Types.objects.get_or_create(type_name=self.data.get("type_name"))[0]
+        # return typ
+
+    def _save_and_get_category(self):
+        # cat = Categories(category_name=self.category_name)
+        # self.cat = Categories(category_name=self.data.get("category_name"))
+        # self.cat.save()
+        self.cat = Categories.objects.get_or_create(category_name=self.data.get("category_name"))[0]
+        # return cat
+
+    def _save_and_get_manufacturer(self):
+        # man = Manufacturers(manufacturer_name=self.manufacturer_name)
+        # self.man = Manufacturers(manufacturer_name=self.data.get("manufacturer_name"))
+        # self.man.save()
+        self.man = Manufacturers.objects.get_or_create(manufacturer_name=self.data.get("manufacturer_name"))[0]
+        # return man
+
+    def _save_and_get_model(self):
+        # model = Models(model_name=self.model_name)
+        # self.model = Models(model_name=self.data.get("model_name"))
+        # self.model.save()
+        self.model = Models.objects.get_or_create(model_name=self.data.get("model_name"))[0]
+        # return model
+
+    def _save_and_get_cpu(self):
+        # cpu = Cpus(cpu_name=self.cpu_name)
+        # self.cpu = Cpus(cpu_name=self.data.get("cpu_name"))
+        # self.cpu.save()
+        self.cpu = Cpus.objects.get_or_create(cpu_name=self.data.get("cpu_name"))[0]
+        # return cpu
+
+    def _save_and_get_gpu(self):
+        # gpu = Gpus(gpu_name=self.gpu_name)
+        # self.gpu = Gpus(gpu_name=self.data.get("gpu_name"))
+        # self.gpu.save()
+        self.gpu = Gpus.objects.get_or_create(gpu_name=self.data.get("gpu_name"))[0]
+        # return gpu
+
+    def _save_and_get_ramsize(self):
+        # ramsize = RamSizes(ram_size_text=self.ram_size_text)
+        # self.ramsize = RamSizes(ram_size_text=self.data.get("ram_size_text"))
+        # self.ramsize.save()
+        self.ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data.get("ram_size_text"))[0]
+        # return ramsize
+
+    def _save_and_get_hdd_size(self):
+        # hddsize = HddSizes(hdd_size_text=self.hdd_size_text)
+        # self.hddsize = HddSizes(hdd_size_text=self.data.get("hdd_size_text"))
+        # self.hddsize.save()
+        self.hddsize = HddSizes.objects.get_or_create(hdd_size_text=self.data.get("hdd_size_text"))[0]
+        # return hddsize
+
+    def _save_and_get_diagonal(self):
+        # diagonal = Diagonals(diagonal_text=self.diagonal_text)
+        # self.diagonal = Diagonals(diagonal_text=self.data.get("diagonal_text"))
+        # self.diagonal.save()
+        self.diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data.get("diagonal_text"))[0]
+        # return diagonal
+
+    def _save_and_get_license(self):
+        # lic = Licenses(license_name=self.license_name)
+        # self.lic = Licenses(license_name=self.data.get("license_name"))
+        # self.lic.save()
+        self.lic = Licenses.objects.get_or_create(license_name=self.data.get("license_name"))[0]
+        # return lic
+
+    def _save_and_get_tester(self):
+        # tester = Testers(tester_name=self.tester_name)
+        # self.tester = Testers(tester_name=self.data.get("tester_name"))
+        # self.tester.save()
+        self.tester = Testers.objects.get_or_create(tester_name=self.data.get("tester_name"))[0]
+        # return tester
+
+    def _save_computer(self):
+        computer = Computers(
+            computer_serial=self.data.get("serial"),
+            f_type=self.typ,
+            f_category=self.cat,
+            f_manufacturer=self.man,
+            f_model=self.model,
+            f_cpu=self.cpu,
+            f_gpu=self.gpu,
+            f_ram_size=self.ramsize,
+            f_hdd_size=self.hddsize,
+            f_diagonal=self.diagonal,
+            f_license=self.lic,
+            cover=self.data.get("cover"),
+            display=self.data.get("display"),
+            bezel=self.data.get("bezel"),
+            hdd_cover=self.data.get("hdd_cover"),
+            ram_cover=self.data.get("ram_cover"),
+            other=self.data.get("other"),
+            f_tester=self.tester,
+            date=self.timenow
+        )
+        computer.save()

@@ -85,6 +85,14 @@ function manButPress() {
     }
 }
 
+function onload() {
+  collectSelectedAF()
+}
+
+function collectSelectedAF() {
+  
+}
+
 function recordSelect(checkbox){
     /*
     if (checkbox.checked){
@@ -109,7 +117,6 @@ function recordSelect(checkbox){
       document.getElementById("mass-select-options").style.display = "none";
     }
     console.log(selected_records);
-
 }
 
 function recordSelectAll(checkbox){
@@ -372,4 +379,8 @@ function launchTypWindow() {
 
 function launchTesterWindow() {
     var testerWindow = window.open('test/', "", "width=400,height=650");
+}
+
+function launchNewRecordWindow() {
+    var testerWindow = window.open('new_record/', "", "width=400,height=650");
 }
