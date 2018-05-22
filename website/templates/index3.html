@@ -165,7 +165,7 @@
                     </div>
                     <div id="filter" class="menu-div">
                         <div class="item">
-                            <button type="button" class="button img-button" onclick="alert('filter placeholder')">
+                            <button type="button" class="button img-button" onclick="applyAFs()">
                                 Filter out
                             </button>
                         </div>
@@ -195,8 +195,7 @@
                                             {% for afChoice in autoFilters.serials %}
                                             <div class="af-selection">
                                                 <div class="af-checkbkox">
-                                                    <!-- <input type="checkbox" onclick="afSelect(this)" checked> -->
-                                                    <input type="checkbox" onclick="afFilter(this, 'serial')" checked>
+                                                    <input type="checkbox" onclick="afSelect(this)" checked>
                                                 </div>
                                                 <div class="af-chkbxtitle">
                                                     {{ afChoice }}

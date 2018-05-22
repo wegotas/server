@@ -1,6 +1,7 @@
 var records_selected = 0;
 var selected_records = [];
 var filters_selected = 0;
+var selected_filters = [];
 
 class AFHolder {
   constructor(id_name) {
@@ -23,6 +24,15 @@ class AFHolder {
     return this.items.length;
   }
 
+  getParameters() {
+    var parametersList = [];
+    for (var i = 0; i < this.items.length; i++) {
+      var parameter = this.id_name + "=" + this.items[i];
+      parametersList.push(parameter);
+    }
+    return parametersList.join("&");
+  }
+
   debug() {
     console.log(this.id_name);
     console.log(this.items);
@@ -31,7 +41,28 @@ class AFHolder {
 
 class AFManager {
   constructor() {
-    this.filter_list = []
+    this.filter_list = [];
+    this.possible_fieldnames = [];
+  }
+
+  process_collection_of_filters(af_div_id) {
+    var afSelections = document.getElementById(af_div_id).getElementsByClassName("af-selection");
+    for (var i = 0; i<afSelections.length; i++) {
+      var afSelection = afSelections[i];
+      var title = afSelection.getElementsByClassName("af-chkbxtitle")[0];
+      var checkbox = afSelection.getElementsByTagName("input")[0];
+      if (checkbox.checked) {
+        this.add_filter(afSelection.parentElement.id, title.innerText.trim());
+      }
+    }
+  }
+
+  set_possible_fieldnames() {
+    var afDivs = document.getElementsByClassName("autofilter");
+    for (var i=0; i<afDivs.length; i++) {
+      this.possible_fieldnames.push(afDivs[i].id);
+    }
+    console.log(this.possible_fieldnames);
   }
 
   add_filter(filter_name, value) {
@@ -48,10 +79,9 @@ class AFManager {
       filter.add(value);
       this.filter_list.push(filter);
     }
-    this.debug();
   }
 
-  remove_filter(filter_name, value){
+  remove_filter(filter_name, value) {
     for (var i=0; i<this.filter_list.length; i++) {
       if(this.filter_list[i].id_name == filter_name) {
         this.filter_list[i].remove(value);
@@ -61,7 +91,47 @@ class AFManager {
         break;
       }
     }
-    this.debug();
+  }
+
+  showFilterButton() {
+    var filterButton = document.getElementById("filter");
+    console.log(filterButton);
+    if (this.filter_list.length > 0) {
+        filterButton.style.display = "inline-block";
+    } else {
+        filterButton.style.display = "none";
+    }
+  }
+
+  formNewUrlWithAFURLaddon(url) {
+    /*
+    console.log(url);
+    */
+    var splittedArray = url.split("?");
+    var mainURL = splittedArray[0];
+    var attributesString = splittedArray[1];
+    console.log(mainURL);
+    console.log(attributesString);
+    var attributes = attributesString.split("&");
+    console.log(attributes);
+    for (var i = attributes.length -1; i > -1; i--) {
+      console.log(attributes[i]);
+      for (var j = 0; j > this.possible_fieldnames.length; j++) {
+        if ( attributes[i].includes(this.possible_fieldnames[j])) {
+          attributes.splice(i, 1)
+          break;
+        }
+      }
+    }
+    return mainURL + "?"+ attributes.join("&") +"&" + this.getAFURLaddon();
+  }
+
+  getAFURLaddon() {
+    var parametersList = [];
+    for (var i = 0; i < this.filter_list.length; i++) {
+      parametersList.push(this.filter_list[i].getParameters());
+    }
+    return parametersList.join("&");
   }
 
   debug() {
@@ -85,27 +155,21 @@ function manButPress() {
     }
 }
 
-function onload() {
-  collectSelectedAF()
+window.onload = function() {load_test()}
+
+function load_test() {
+  collectSelectedAF();
 }
 
 function collectSelectedAF() {
-  
+  filterDivs = document.getElementsByClassName("autofilter");
+  for (var i = 0; i < filterDivs.length; i++ ){
+    afmanager.process_collection_of_filters(filterDivs[i].id);
+  }
+  afmanager.set_possible_fieldnames();
 }
 
 function recordSelect(checkbox){
-    /*
-    if (checkbox.checked){
-        records_selected++;
-    }else {
-        records_selected--;
-    }
-    if (records_selected>0) {
-        document.getElementById("mass-select-options").style.display = "inline-block";
-    } else {
-        document.getElementById("mass-select-options").style.display = "none";
-    }
-    */
     if (checkbox.checked){
         selected_records.push(checkbox.value);
     }else {
@@ -116,7 +180,6 @@ function recordSelect(checkbox){
     } else {
       document.getElementById("mass-select-options").style.display = "none";
     }
-    console.log(selected_records);
 }
 
 function recordSelectAll(checkbox){
@@ -138,39 +201,22 @@ function autoFilterMenu(filterDivId){
 }
 
 function afFilter(checkbox, columnId) {
-  console.log(checkbox);
-  console.log(columnId);
-
-  columns = document.getElementsById(columnId);
-  console.log(columns);
-
+  columns = document.getElementById(columnId);
 }
 
 function afSelect(checkbox) {
   parent = checkbox.parentElement;
-  // console.log(parent);
   grandparent = parent.parentElement;
-  // console.log(grandparent);
   child = grandparent.childNodes[3];
-  // console.log(child);
   text = child.innerText;
-  // console.log(text);
   grandgrandparent = grandparent.parentElement;
-  // console.log(grandgrandparent);
   id = grandgrandparent.id;
-  // console.log(id);
   if (checkbox.checked){
-      filters_selected++;
       afmanager.add_filter(id, text);
   } else {
-      filters_selected--;
       afmanager.remove_filter(id, text);
   }
-  if (filters_selected>0) {
-      document.getElementById("filter").style.display = "inline-block";
-  } else {
-      document.getElementById("filter").style.display = "none";
-  }
+  afmanager.showFilterButton();
 }
 
 function afSelectAll(checkbox ,filterDivId) {
@@ -270,27 +316,20 @@ function search() {
 function search() {
   var input, filter, table, trs, tr, td, i, j, found, indexes;
   indexes = [2,3,4,5,6,7];
-  console.log("Search called");
   input = document.getElementById("search_input");
   filter = input.value.toUpperCase();
   table = document.getElementById("contents-table");
   trs = table.getElementsByTagName("tr");
   for (i=0; i < trs.length; i++) {
     found = false;
-    console.log("Row: "+i);
     if (i==0)
     {
       continue;
     }
     for (j=0; j < indexes.length; j++) {
-      console.log("j: "+j);
-      console.log("column: "+indexes[j]);
       tr = trs[i];
-      console.log(tr);
       tds = tr.getElementsByTagName("td");
-      console.log(tds);
       td = tds[indexes[j]];
-      console.log(td);
       if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
         found = true;
       }
@@ -324,15 +363,10 @@ function mass_excel() {
   indexArray = JSON.stringify(selected_records);
   xhr.open('POST', 'mass_excel/', true);
   xhr.responseType = "arraybuffer";
-
   xhr.send(indexArray);
-
   xhr.onreadystatechange = function(e) {
     if (xhr.readyState === 4) {
       console.log(xhr.response);
-      /*
-      location.reload();
-      */
       const link = document.createElement( 'a' );
       link.style.display = 'none';
       document.body.appendChild( link );
@@ -349,15 +383,11 @@ function mass_excel() {
 
 }
 
-
 function mass_catchange(element) {
-  console.log(element);
-  console.log(element.value);
   if (confirm("Do you really want do move these records to another category?")) {
     var xhr = new XMLHttpRequest();
     var objectToSend = {};
     objectToSend[element.value] = selected_records;
-    console.log(objectToSend);
     indexArray = JSON.stringify(objectToSend);
     xhr.open('POST', 'cat_change/', true);
     xhr.send(indexArray);
@@ -367,6 +397,16 @@ function mass_catchange(element) {
       }
     }
   }
+}
+
+function applyAFs() {
+  newURL = afmanager.formNewUrlWithAFURLaddon(location.href);
+  /*
+  console.log(newURL);
+  */
+  
+  loadPage(newURL);
+
 }
 
 function launchCatWindow() {

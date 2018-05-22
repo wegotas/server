@@ -16,11 +16,15 @@ def index(request):
     if request.method == 'GET':
         print("This was GET request")
     isSold = getIsSold(request)
+    data_dict = request.GET.copy()
+    qty = getQty(data_dict)
+    page = getPage(data_dict)
+    keyword = getKeyword(data_dict)
     if isSold:
-        qty = getQty(request)
-        page = getPage(request)
+        # qty = getQty(data_dict)
+        # page = getPage(request)
         possible_categories = None
-        keyword = getKeyword(request)
+        # keyword = getKeyword(request)
         qtySelect = QtySelect()
         qtySelect.setDefaultSelect(qty)
         computers = Computers.objects.exclude(f_sale__isnull=True)
@@ -44,11 +48,18 @@ def index(request):
             "cattyp": cattyp,
             "poscat": possible_categories})
     else:
-        qty = getQty(request)
-        page = getPage(request)
-        typ = getType(request)
-        cat = getCat(request)
-        keyword = getKeyword(request)
+        # qty = getQty(data_dict)
+        # page = getPage(request)
+        # typ = getType(request)
+        typ = getType(data_dict)
+        # cat = getCat(request)
+        cat = getCat(data_dict)
+        # print(data_dict)
+        data_dict.pop("sold")
+        print("Type: " + typ)
+        print("Category: " + cat)
+        # keyword = getKeyword(request)
+        print(data_dict)
         possible_categories = None
         if cat or typ:
             qtySelect = QtySelect()
@@ -67,6 +78,7 @@ def index(request):
             for query_member in category_querySet:
                 possible_categories.append(query_member[0])
         else:
+            af = None
             computers = None
             counter = None
             qtySelect = None

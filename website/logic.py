@@ -636,35 +636,35 @@ def getIsSold(request):
         else:
             return False
 
-def getQty(request):
-    if request.GET.get('qty') is None:
+def getQty(data_dict):
+    if data_dict.get('qty') is None:
         return 10
     else:
-        return int(request.GET.get('qty'))
+        return int(data_dict.pop('qty'))
 
-def getPage(request):
-    if request.GET.get('page') is None:
+def getPage(data_dict):
+    if data_dict.get('page') is None:
         return 1
     else:
-        return int(request.GET.get('page'))
+        return int(data_dict.pop('page'))
 
-def getType(request):
-    if request.GET.get('type') is None:
+def getType(data_dict):
+    if data_dict.get('type') is None:
         return None
     else:
-        return request.GET.get('type')
+        return data_dict.pop('type')[0]
 
-def getCat(request):
-    if request.GET.get('cat') is None:
+def getCat(data_dict):
+    if data_dict.get('cat') is None:
         return None
     else:
-        return request.GET.get('cat')
+        return data_dict.pop('cat')[0]
 
-def getKeyword(request):
-    if request.GET.get('keyword') is None:
+def getKeyword(data_dict):
+    if data_dict.get('keyword') is None:
         return None
     else:
-        return request.GET.get('keyword')
+        return data_dict.pop('keyword')
 
 
 def recordDeleteByIndex(int_index):
