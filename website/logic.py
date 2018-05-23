@@ -100,7 +100,7 @@ class Edit_computer_record():
         self.data_dict.pop("edit", "")
         self.data_dict.pop("edit.x", "")
         self.data_dict.pop("edit.y", "")
-        self.data_dict.pop("motherboard_serial", "")
+        # self.data_dict.pop("motherboard_serial", "")
 
 
         self._type_save(self.data_dict.pop("type_name", "")[0])
@@ -115,15 +115,12 @@ class Edit_computer_record():
         self._license_save(self.data_dict.pop("license_name", "")[0])
         self._manufacturer_save(self.data_dict.pop("manufacturer_name", "")[0])
         self._model_save(self.data_dict.pop("model_name", "")[0])
-        # self._motherboard_save(self.data_dict.pop("motherboard_serial", "")[0])
-        # print(data_dict["motherboard_serial"])
-        # self.motherboard = self.data_dict.pop("motherboard_serial", "")[0]
+        self.motherboard = self.data_dict.pop("motherboard_serial", "")[0]
         self._ramsize_save(self.data_dict.pop("ram_size_text", "")[0])
         if "client_name" in data_dict:
             self._client_save(self.data_dict.pop("client_name", "")[0])
             self._sale_save(self.data_dict.pop("date_of_sale", "")[0])
             self._computer_sold_save()
-            print(data_dict)
             self._process_ram_and_hdd_serials()
             self._process_batteries()
         else:
@@ -211,7 +208,8 @@ class Edit_computer_record():
             other=self.data_dict.pop("other", "")[0],
             f_tester=self.tester,
             date=self.data_dict.pop("date", "")[0],
-            f_bios=self.bios
+            f_bios=self.bios,
+            motherboard_serial=self.motherboard
         )
         self.computer.save()
 
@@ -244,8 +242,8 @@ class Edit_computer_record():
             date=self.data_dict.pop("date", "")[0],
             f_bios=self.bios,
             f_sale=self.sale,
-            price=self.data_dict.pop("price", "")[0]
-            # motherboard_serial=self.motherboard,
+            price=self.data_dict.pop("price", "")[0],
+            motherboard_serial=self.motherboard
         )
         self.computer.save()
 
@@ -295,11 +293,6 @@ class Edit_computer_record():
     def _model_save(self, value):
         self.model = Models.objects.get_or_create(model_name=value)[0]
 
-    """"
-    def _motherboard_save(self, value):
-        self.motherboard = Motherboards.objects.get_or_create(motherboard_serial=value)[0]
-    """
-
     def _ramsize_save(self, value):
         self.ramsize = RamSizes.objects.get_or_create(ram_size_text=value)[0]
 
@@ -307,59 +300,32 @@ class Edit_computer_record():
 def edit_post(data_dict):
     data_dict.pop("edit", "")
     id_computer = data_dict.pop("id_computer", "")[0]
-    print("id_computer: " + id_computer)
     serial = data_dict.pop("serial", "")[0]
-    print("serial: " + serial)
     type_name = data_dict.pop("type_name", "")[0]
-    print("type_name: " + type_name)
     category_name = data_dict.pop("category_name", "")[0]
-    print("category_name: " + category_name)
     manufacturer = data_dict.pop("manufacturer_name", "")[0]
-    print("manufacturer_name: " + manufacturer)
     model = data_dict.pop("model_name", "")[0]
-    print("model_name: " + model)
     cpu = data_dict.pop("cpu_name", "")[0]
-    print("cpu_name: " + cpu)
     gpu = data_dict.pop("gpu_name", "")[0]
-    print("gpu_name: " + gpu)
     ram_size = data_dict.pop("ram_size_text", "")[0]
-    print("ram_size_text: " + ram_size)
     hdd_size = data_dict.pop("hdd_size_text", "")[0]
-    print("hdd_size_text: " + hdd_size)
     diagonal = data_dict.pop("diagonal_text", "")[0]
-    print("diagonal_text: " + diagonal)
     license_name = data_dict.pop("license_name", "")[0]
-    print("license_name: " + license_name)
     option_name = data_dict.pop("option_name", "")[0]
-    print("option_name: " + option_name)
     cover = data_dict.pop("cover", "")[0]
-    print("cover: " + cover)
     display = data_dict.pop("display", "")[0]
-    print("display: " + display)
     bezel = data_dict.pop("bezel", "")[0]
-    print("bezel: " + bezel)
     keyboard = data_dict.pop("keyboard", "")[0]
-    print("keyboard: " + keyboard)
     mouse = data_dict.pop("mouse", "")[0]
-    print("mouse: " + mouse)
     sound = data_dict.pop("sound", "")[0]
-    print("sound: " + sound)
     cdrom = data_dict.pop("cdrom", "")[0]
-    print("cdrom: " + cdrom)
     hdd_cover = data_dict.pop("hdd_cover", "")[0]
-    print("hdd_cover: " + hdd_cover)
     ram_cover = data_dict.pop("ram_cover", "")[0]
-    print("ram_cover: " + ram_cover)
     other = data_dict.pop("other", "")[0]
-    print("other: " + other)
     tester_name = data_dict.pop("tester_name", "")[0]
-    print("tester_name: " + tester_name)
     date = data_dict.pop("date", "")[0]
-    print("date: " + date)
     bios_text = data_dict.pop("bios_text", "")[0]
-    print("bios_text: " + bios_text)
     motherboard = data_dict.pop("motherboard_serial", "")[0]
-    print(motherboard)
     bat_list = []
     ram_list = []
     hdd_list = []
@@ -571,7 +537,6 @@ class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
     def _getPrice(self):
         prices = self.computers.values("price").distinct()
         self.prices = [a['price'] for a in prices]
-        print(self.prices)
 
     def _getDateOfSale(self):
         sales = self.computers.values("f_sale").distinct()
@@ -583,7 +548,6 @@ class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
             else:
                 sale = Sales.objects.get(id_sale=id)
                 self.dates.append(sale.getDate())
-                print(sale.getDate())
         self.dates = list(set(self.dates))
 
     def _getClients(self):
@@ -627,6 +591,7 @@ class CatTypHolder:
     def add_category(self, category_name):
         self.innerList.append(category_name)
 
+
 def getIsSold(request):
     if request.GET.get('sold') is None:
         return False
@@ -636,17 +601,20 @@ def getIsSold(request):
         else:
             return False
 
+
 def getQty(data_dict):
     if data_dict.get('qty') is None:
         return 10
     else:
-        return int(data_dict.pop('qty'))
+        return int(data_dict.pop('qty')[0])
+
 
 def getPage(data_dict):
     if data_dict.get('page') is None:
         return 1
     else:
-        return int(data_dict.pop('page'))
+        return int(data_dict.pop('page')[0])
+
 
 def getType(data_dict):
     if data_dict.get('type') is None:
@@ -654,17 +622,24 @@ def getType(data_dict):
     else:
         return data_dict.pop('type')[0]
 
+
 def getCat(data_dict):
     if data_dict.get('cat') is None:
         return None
     else:
         return data_dict.pop('cat')[0]
 
+
 def getKeyword(data_dict):
     if data_dict.get('keyword') is None:
         return None
     else:
         return data_dict.pop('keyword')
+
+
+def removeSold(data_dict):
+    if "sold" in data_dict:
+        data_dict.pop("sold")
 
 
 def recordDeleteByIndex(int_index):
@@ -679,7 +654,6 @@ def recordDeleteByIndex(int_index):
         ram_to_comp.delete()
     existing_computer = Computers.objects.get(id_computer=int_index)
 
-    motherboard = existing_computer.f_motherboard
     cpu = existing_computer.f_cpu
     diagonal = existing_computer.f_diagonal
     hdd_size = existing_computer.f_hdd_size
@@ -689,7 +663,6 @@ def recordDeleteByIndex(int_index):
     manufacturer = existing_computer.f_manufacturer
 
     existing_computer.delete()
-    motherboard_deletion_if_exists(motherboard)
     cpu_deletion_if_exists(cpu)
     diagonal_deletion_if_exists(diagonal)
     hdd_size_deletion_if_exists(hdd_size)
@@ -697,6 +670,7 @@ def recordDeleteByIndex(int_index):
     gpu_deletion_if_exists(gpu)
     model_deletion_if_exists(model)
     manufacturer_deletion_if_exists(manufacturer)
+
 
 def motherboard_deletion_if_exists(motherboard):
     if motherboard is not None:
@@ -747,14 +721,13 @@ def manufacturer_deletion_if_exists(manufacturer):
 
 def changeCategoriesUsingDict(dict):
     category_name = next(iter(dict))
-    print(category_name)
     indexes = dict[category_name]
-    print(indexes)
     category = Categories.objects.get(category_name=category_name)
     for ind in indexes:
         computer = Computers.objects.get(id_computer=ind)
         computer.f_category = category
         computer.save()
+
 
 def createExcelFile(indexes):
     memfile = io.BytesIO()
@@ -781,35 +754,23 @@ def createExcelFile(indexes):
     col = 0
     for int_index in indexes:
         computer = Computers.objects.get(id_computer=int_index)
-        # print(computer.computer_serial)
         worksheet.write(row, col, _get_serial(computer), bordered)
-        # print(computer.f_manufacturer.manufacturer_name)
         worksheet.write(row, col + 1, _get_manufacturer(computer), bordered)
-        # print(computer.f_model.model_name)
         worksheet.write(row, col + 2, _get_model(computer), bordered)
-        # print(computer.f_cpu.cpu_name)
         worksheet.write(row, col + 3, _get_cpu_name(computer), bordered)
-        # print(computer.f_ram_size.ram_size_text)
         worksheet.write(row, col + 4, _get_ram_size(computer), bordered)
-        # print(computer.f_gpu.gpu_name)
         worksheet.write(row, col + 5, _get_gpu_name(computer), bordered)
-        # print(computer.f_hdd_size.hdd_size_text)
         worksheet.write(row, col + 6, _get_hdd_size(computer), bordered)
-        # print(_get_battery_time(int_index))
         worksheet.write(row, col + 7, _get_battery_time(int_index), bordered)
-        # print(computer.f_diagonal.diagonal_text)
         worksheet.write(row, col + 8, _get_diagonal(computer), bordered)
-        # print(computer.cdrom)
         worksheet.write(row, col + 9, _get_cdrom(computer), bordered)
-        # print(computer.f_license.license_name)
         worksheet.write(row, col + 10, _get_license(computer), bordered)
-        # print(computer.f_camera.option_name)
         worksheet.write(row, col + 11, _get_camera_option(computer), bordered)
-        # print(computer.other)
         worksheet.write(row, col + 12, str(computer.other), bordered)
         row += 1
     workbook.close()
     return memfile
+
 
 def _get_serial(computer):
     serial = ""
@@ -819,6 +780,7 @@ def _get_serial(computer):
         serial = "N/A"
     return serial
 
+
 def _get_manufacturer(computer):
     manufacturer = ""
     try:
@@ -826,6 +788,7 @@ def _get_manufacturer(computer):
     except:
         manufacturer = "N/A"
     return manufacturer
+
 
 def _get_model(computer):
     model = ""
@@ -835,6 +798,7 @@ def _get_model(computer):
         model = "N/A"
     return model
 
+
 def _get_cpu_name(computer):
     cpu_name = ""
     try:
@@ -842,6 +806,7 @@ def _get_cpu_name(computer):
     except:
         cpu_name = "N/A"
     return cpu_name
+
 
 def _get_ram_size(computer):
     ram_size = ""
@@ -851,6 +816,7 @@ def _get_ram_size(computer):
         ram_size = "N/A"
     return ram_size
 
+
 def _get_gpu_name(computer):
     gpu_name = ""
     try:
@@ -859,6 +825,7 @@ def _get_gpu_name(computer):
         gpu_name = "N/A"
     return gpu_name
 
+
 def _get_hdd_size(computer):
     hdd_size = ""
     try:
@@ -866,6 +833,7 @@ def _get_hdd_size(computer):
     except:
         hdd_size = "N/A"
     return hdd_size
+
 
 def _get_battery_time(int_index):
     bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=int_index)
@@ -878,6 +846,7 @@ def _get_battery_time(int_index):
     else:
         return str(bat_to_comps[0].f_bat_bat_to_com.expected_time)
 
+
 def _get_diagonal(computer):
     diagonal = ""
     try:
@@ -885,6 +854,7 @@ def _get_diagonal(computer):
     except:
         diagonal = "N/A"
     return diagonal
+
 
 def _get_cdrom(computer):
     cdrom = ""
@@ -894,6 +864,7 @@ def _get_cdrom(computer):
         cdrom = "N/A"
     return cdrom
 
+
 def _get_license(computer):
     license_name = ""
     try:
@@ -901,6 +872,7 @@ def _get_license(computer):
     except:
         license_name = "N/A"
     return license_name
+
 
 def _get_camera_option(computer):
     camera_option = ""
@@ -910,6 +882,7 @@ def _get_camera_option(computer):
         camera_option = "N/A"
     return camera_option
 
+
 def get_categories_list():
     result = Categories.objects.values_list('category_name')
     lst = []
@@ -917,9 +890,11 @@ def get_categories_list():
         lst.append(member[0])
     return lst
 
+
 def save_category(name):
     category = Categories(category_name=name)
     category.save()
+
 
 def get_types_list():
     result = Types.objects.values_list('type_name')
@@ -928,9 +903,11 @@ def get_types_list():
         lst.append(member[0])
     return lst
 
+
 def save_type(name):
     typ = Types(type_name=name)
     typ.save()
+
 
 def get_testers_list():
     result = Testers.objects.values_list('tester_name')
@@ -939,165 +916,118 @@ def get_testers_list():
         lst.append(member[0])
     return lst
 
+
 def save_tester(name):
     tester = Testers(tester_name=name)
     tester.save()
-
-def adding_new_computer(data_dict):
-    print("adding_new_computer")
-    print("serial: " + data_dict.get("serial"))
-    print("type_name: " + data_dict.get("type_name"))
-    print("category_name: " + data_dict.get("category_name"))
-    print("manufacturer_name: " + data_dict.get("manufacturer_name"))
-    print("model_name: " + data_dict.get("model_name"))
-    print("cpu_name: " + data_dict.get("cpu_name"))
-    print("gpu_name: " + data_dict.get("gpu_name"))
-    print("ram_size_text: " + data_dict.get("ram_size_text"))
-    print("hdd_size_text: " + data_dict.get("hdd_size_text"))
-    print("diagonal_text: " + data_dict.get("diagonal_text"))
-    print("license_name: " + data_dict.get("license_name"))
-    print("cover: " + data_dict.get("cover"))
-    print("display: " + data_dict.get("display"))
-    print("bezel: " + data_dict.get("bezel"))
-    print("hdd_cover: " + data_dict.get("hdd_cover"))
-    print("ram_cover: " + data_dict.get("ram_cover"))
-    print("other: " + data_dict.get("other"))
-    print("tester_name: " + data_dict.get("tester_name"))
-    rta = record_to_add(data_dict)
-    rta.save()
 
 
 class record_to_add():
 
     def __init__(self, data_dict):
         self.data = data_dict
-        """
-        self.serial = data_dict.get("serial")
-        self.type_name = data_dict.get("type_name")
-        self.category_name = data_dict.get("category_name")
-        self.manufacturer_name = data_dict.get("manufacturer_name")
-        self.model_name = data_dict.get("model_name")
-        self.cpu_name = data_dict.get("cpu_name")
-        self.gpu_name = data_dict.get("gpu_name")
-        self.ram_size_text = data_dict.get("ram_size_text")
-        self.hdd_size_text = data_dict.get("hdd_size_text")
-        self.diagonal_text = data_dict.get("diagonal_text")
-        self.license_name = data_dict.get("license_name")
-        self.cover = data_dict.get("cover")
-        self.display = data_dict.get("display")
-        self.bezel = data_dict.get("bezel")
-        self.hdd_cover = data_dict.get("hdd_cover")
-        self.ram_cover = data_dict.get("ram_cover")
-        self.other = data_dict.get("other")
-        self.tester_name = data_dict.get("tester_name")
-        """
+        self.error_list = []
+
+    def get_error_message(self):
+        return "\r\n".join(self.error_list)
 
     def save(self):
-        """
-        typ = self._save_and_get_type()
-        cat = self._save_and_get_category()
-        man = self._save_and_get_manufacturer()
-        model = self._save_and_get_model()
-        cpu = self._save_and_get_cpu()
-        gpu = self._save_and_get_gpu()
-        ramsize = self._save_and_get_ramsize()
-        hdd_size = self._save_and_get_hdd_size()
-        diagonal = self._save_and_get_diagonal()
-        lic = self._save_and_get_license()
-        """
         print("rta save start")
-        self._save_and_get_type()
-        self._save_and_get_category()
-        self._save_and_get_manufacturer()
-        self._save_and_get_model()
-        self._save_and_get_cpu()
-        self._save_and_get_gpu()
-        self._save_and_get_ramsize()
-        self._save_and_get_hdd_size()
-        self._save_and_get_diagonal()
-        self._save_and_get_license()
-        self._save_and_get_tester()
-        self.timenow = timezone.now()
-        self._save_computer()
-        print("rta save end")
+        self._validate()
+        if len(self.error_list) == 0:
+            self._save_and_get_type()
+            self._save_and_get_category()
+            self._save_and_get_manufacturer()
+            self._save_and_get_model()
+            self._save_and_get_cpu()
+            self._save_and_get_gpu()
+            self._save_and_get_ramsize()
+            self._save_and_get_hdd_size()
+            self._save_and_get_diagonal()
+            self._save_and_get_license()
+            self._save_and_get_tester()
+            self.timenow = timezone.now()
+            self._save_computer()
+            print("rta save end")
+        else:
+            print("rta save FAILED")
+
+    def isSaved(self):
+        if len(self.error_list) == 0:
+            return True
+        else:
+            return False
+
+    def _validate(self):
+        fieldnames = (
+            "serial",
+            "type_name",
+            "category_name",
+            "manufacturer_name",
+            "model_name",
+            "diagonal_text",
+            "license_name",
+            "cover",
+            "bezel",
+            "hdd_cover",
+            "ram_cover",
+            "other",
+            "tester_name"
+        )
+
+        error_messages = (
+            "Serial was not set",
+            "Type was not set",
+            "Category was not set",
+            "Manufacturer was not set",
+            "Model was not set",
+            "Diagonal was not set",
+            "License was not set",
+            "Cover was not set",
+            "Bezel was not set",
+            "HDD cover was not set",
+            "RAM cover was not set",
+            "Other was not set",
+            "Tester was not set"
+        )
+
+        for i in range(len(fieldnames)):
+            if self.data.get(fieldnames[i]) == "":
+                self.error_list.append(error_messages[i])
+
 
     def _save_and_get_type(self):
-        # typ = Types(type_name=self.type_name)
-        # self.typ = Types(type_name=self.data.get("type_name"))
-        # self.typ.save()
-        # self.typ.objects.get_or_create(type_name=self.data.get("type_name"))[0]
         self.typ = Types.objects.get_or_create(type_name=self.data.get("type_name"))[0]
-        # return typ
 
     def _save_and_get_category(self):
-        # cat = Categories(category_name=self.category_name)
-        # self.cat = Categories(category_name=self.data.get("category_name"))
-        # self.cat.save()
         self.cat = Categories.objects.get_or_create(category_name=self.data.get("category_name"))[0]
-        # return cat
 
     def _save_and_get_manufacturer(self):
-        # man = Manufacturers(manufacturer_name=self.manufacturer_name)
-        # self.man = Manufacturers(manufacturer_name=self.data.get("manufacturer_name"))
-        # self.man.save()
         self.man = Manufacturers.objects.get_or_create(manufacturer_name=self.data.get("manufacturer_name"))[0]
-        # return man
 
     def _save_and_get_model(self):
-        # model = Models(model_name=self.model_name)
-        # self.model = Models(model_name=self.data.get("model_name"))
-        # self.model.save()
         self.model = Models.objects.get_or_create(model_name=self.data.get("model_name"))[0]
-        # return model
 
     def _save_and_get_cpu(self):
-        # cpu = Cpus(cpu_name=self.cpu_name)
-        # self.cpu = Cpus(cpu_name=self.data.get("cpu_name"))
-        # self.cpu.save()
         self.cpu = Cpus.objects.get_or_create(cpu_name=self.data.get("cpu_name"))[0]
-        # return cpu
 
     def _save_and_get_gpu(self):
-        # gpu = Gpus(gpu_name=self.gpu_name)
-        # self.gpu = Gpus(gpu_name=self.data.get("gpu_name"))
-        # self.gpu.save()
         self.gpu = Gpus.objects.get_or_create(gpu_name=self.data.get("gpu_name"))[0]
-        # return gpu
 
     def _save_and_get_ramsize(self):
-        # ramsize = RamSizes(ram_size_text=self.ram_size_text)
-        # self.ramsize = RamSizes(ram_size_text=self.data.get("ram_size_text"))
-        # self.ramsize.save()
         self.ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data.get("ram_size_text"))[0]
-        # return ramsize
 
     def _save_and_get_hdd_size(self):
-        # hddsize = HddSizes(hdd_size_text=self.hdd_size_text)
-        # self.hddsize = HddSizes(hdd_size_text=self.data.get("hdd_size_text"))
-        # self.hddsize.save()
         self.hddsize = HddSizes.objects.get_or_create(hdd_size_text=self.data.get("hdd_size_text"))[0]
-        # return hddsize
 
     def _save_and_get_diagonal(self):
-        # diagonal = Diagonals(diagonal_text=self.diagonal_text)
-        # self.diagonal = Diagonals(diagonal_text=self.data.get("diagonal_text"))
-        # self.diagonal.save()
         self.diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data.get("diagonal_text"))[0]
-        # return diagonal
 
     def _save_and_get_license(self):
-        # lic = Licenses(license_name=self.license_name)
-        # self.lic = Licenses(license_name=self.data.get("license_name"))
-        # self.lic.save()
         self.lic = Licenses.objects.get_or_create(license_name=self.data.get("license_name"))[0]
-        # return lic
 
     def _save_and_get_tester(self):
-        # tester = Testers(tester_name=self.tester_name)
-        # self.tester = Testers(tester_name=self.data.get("tester_name"))
-        # self.tester.save()
         self.tester = Testers.objects.get_or_create(tester_name=self.data.get("tester_name"))[0]
-        # return tester
 
     def _save_computer(self):
         computer = Computers(
@@ -1122,3 +1052,57 @@ class record_to_add():
             date=self.timenow
         )
         computer.save()
+
+
+class AutoFilter():
+
+    keys = ('man-af', 'sr-af', 'scr-af', 'ram-af', 'gpu-af', 'mod-af', 'cpu-af', 'oth-af', 'cli-af', 'dos-af', 'pri-af')
+
+    def __init__(self, data_dict):
+        self.filter_dict = {}
+        for key in self.keys:
+            if key in data_dict:
+                self.filter_dict[key] = data_dict.pop(key)
+
+    def debug(self):
+        for key, value in self.filter_dict.items():
+            print(key)
+            print(value)
+
+    def filter(self, computers):
+        for key, value in self.filter_dict.items():
+            print(key)
+            print(value)
+            if key == 'man-af':
+                print("its man-af")
+                computers = computers.filter(f_manufacturer__manufacturer_name__in=value)
+            elif key == 'sr-af':
+                print("its sr-af")
+                computers = computers.filter(computer_serial__in=value)
+            elif key == 'scr-af':
+                print("its scr-af")
+                computers = computers.filter(f_diagonal__diagonal_text__in=value)
+            elif key == 'ram-af':
+                print("its ram-af")
+                computers = computers.filter(f_ram_size__ram_size_text__in=value)
+            elif key == 'gpu-af':
+                print("its gpu-af")
+                computers = computers.filter(f_gpu__gpu_name__in=value)
+            elif key == 'mod-af':
+                print("its mod-af")
+                computers = computers.filter(f_model__model_name__in=value)
+            elif key == 'cpu-af':
+                print("its cpu-af")
+                computers = computers.filter(f_cpu__cpu_name__in=value)
+            elif key == 'oth-af':
+                print("its oth-af")
+                computers = computers.filter(other__in=value)
+            elif key == 'cli-af':
+                print("its cli-af")
+            elif key == 'dos-af':
+                print("its dos-af")
+            elif key == 'pri-af':
+                print("its pri-af")
+                computers = computers.filter(price__in=value)
+
+        return computers

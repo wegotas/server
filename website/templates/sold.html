@@ -171,7 +171,7 @@
                     </div>
                     <div id="filter" class="menu-div">
                         <div class="item">
-                            <button type="button" class="button img-button" onclick="alert('filter placeholder')">
+                            <button type="button" class="button img-button" onclick="applyAFs()">
                                 Filter out
                             </button>
                         </div>
@@ -191,7 +191,7 @@
                                     <div id="af-Serial" class="autofilter">
                                         <div class="af-top">
                                             <div class="af-checkbkox">
-                                                <input type="checkbox" onclick="afSelectAll(this, 'sr-af')" checked>
+                                                <input type="checkbox" onclick="afSelectAll(this, 'sr-af')">
                                             </div>
                                             <div class="af-textinput">
                                                 <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'sr-af')">
@@ -201,8 +201,7 @@
                                             {% for afChoice in autoFilters.serials %}
                                             <div class="af-selection">
                                                 <div class="af-checkbkox">
-                                                    <!-- <input type="checkbox" onclick="afSelect(this)" checked> -->
-                                                    <input type="checkbox" onclick="afFilter(this, 'serial')" checked>
+                                                    <input type="checkbox" onclick="afSelect(this)">
                                                 </div>
                                                 <div class="af-chkbxtitle">
                                                     {{ afChoice }}
@@ -216,7 +215,7 @@
                                     <div id="af-Manufacturer" class="autofilter">
                                         <div class="af-top">
                                             <div class="af-checkbkox">
-                                                <input type="checkbox" onclick="afSelectAll(this, 'man-af')" checked>
+                                                <input type="checkbox" onclick="afSelectAll(this, 'man-af')">
                                             </div>
                                             <div class="af-textinput">
                                                 <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'man-af')">
@@ -226,7 +225,7 @@
                                             {% for afChoice in autoFilters.manufacturers %}
                                             <div class="af-selection">
                                                 <div class="af-checkbkox">
-                                                    <input type="checkbox" onclick="afSelect(this)" checked>
+                                                    <input type="checkbox" onclick="afSelect(this)">
                                                 </div>
                                                 <div class="af-chkbxtitle">
                                                     {{ afChoice }}
@@ -240,7 +239,7 @@
                                     <div id="af-Model" class="autofilter">
                                         <div class="af-top">
                                             <div class="af-checkbkox">
-                                                <input type="checkbox" onclick="afSelectAll(this, 'mod-af')" checked>
+                                                <input type="checkbox" onclick="afSelectAll(this, 'mod-af')">
                                             </div>
                                             <div class="af-textinput">
                                                 <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'mod-af')">
@@ -250,7 +249,7 @@
                                             {% for afChoice in autoFilters.models %}
                                             <div class="af-selection">
                                                 <div class="af-checkbkox">
-                                                    <input type="checkbox" onclick="afSelect(this)" checked>
+                                                    <input type="checkbox" onclick="afSelect(this)">
                                                 </div>
                                                 <div class="af-chkbxtitle">
                                                     {{ afChoice }}
@@ -264,7 +263,7 @@
                                     <div id="af-CPU" class="autofilter">
                                         <div class="af-top">
                                             <div class="af-checkbkox">
-                                                <input type="checkbox" onclick="afSelectAll(this, 'cpu-af')" checked>
+                                                <input type="checkbox" onclick="afSelectAll(this, 'cpu-af')">
                                             </div>
                                             <div class="af-textinput">
                                                 <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'cpu-af')">
@@ -274,7 +273,7 @@
                                             {% for afChoice in autoFilters.cpus %}
                                             <div class="af-selection">
                                                 <div class="af-checkbkox">
-                                                    <input type="checkbox" onclick="afSelect(this)" checked>
+                                                    <input type="checkbox" onclick="afSelect(this)">
                                                 </div>
                                                 <div class="af-chkbxtitle">
                                                     {{ afChoice }}
@@ -288,7 +287,7 @@
                                     <div id="af-Other" class="autofilter">
                                         <div class="af-top">
                                             <div class="af-checkbkox">
-                                                <input type="checkbox" onclick="afSelectAll(this, 'oth-af')" checked>
+                                                <input type="checkbox" onclick="afSelectAll(this, 'oth-af')">
                                             </div>
                                             <div class="af-textinput">
                                                 <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'oth-af')">
@@ -298,7 +297,7 @@
                                             {% for afChoice in autoFilters.others %}
                                             <div class="af-selection">
                                                 <div class="af-checkbkox">
-                                                    <input type="checkbox" onclick="afSelect(this)" checked>
+                                                    <input type="checkbox" onclick="afSelect(this)">
                                                 </div>
                                                 <div class="af-chkbxtitle">
                                                     {{ afChoice }}
@@ -312,7 +311,7 @@
                                     <div id="af-Price" class="autofilter">
                                         <div class="af-top">
                                             <div class="af-checkbkox">
-                                                <input type="checkbox" onclick="afSelectAll(this, 'pri-af')" checked>
+                                                <input type="checkbox" onclick="afSelectAll(this, 'pri-af')">
                                             </div>
                                             <div class="af-textinput">
                                                 <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'pri-af')">
@@ -322,7 +321,7 @@
                                             {% for afChoice in autoFilters.prices %}
                                             <div class="af-selection">
                                                 <div class="af-checkbkox">
-                                                    <input type="checkbox" onclick="afSelect(this)" checked>
+                                                    <input type="checkbox" onclick="afSelect(this)">
                                                 </div>
                                                 <div class="af-chkbxtitle">
                                                     {{ afChoice }}
@@ -336,7 +335,7 @@
                                     <div id="af-Client" class="autofilter">
                                         <div class="af-top">
                                             <div class="af-checkbkox">
-                                                <input type="checkbox" onclick="afSelectAll(this, 'cli-af')" checked>
+                                                <input type="checkbox" onclick="afSelectAll(this, 'cli-af')">
                                             </div>
                                             <div class="af-textinput">
                                                 <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'cli-af')">
@@ -346,7 +345,7 @@
                                             {% for afChoice in autoFilters.clients %}
                                             <div class="af-selection">
                                                 <div class="af-checkbkox">
-                                                    <input type="checkbox" onclick="afSelect(this)" checked>
+                                                    <input type="checkbox" onclick="afSelect(this)">
                                                 </div>
                                                 <div class="af-chkbxtitle">
                                                     {{ afChoice }}
@@ -360,7 +359,7 @@
                                     <div id="af-Date_of_sale" class="autofilter">
                                         <div class="af-top">
                                             <div class="af-checkbkox">
-                                                <input type="checkbox" onclick="afSelectAll(this, 'dos-af')" checked>
+                                                <input type="checkbox" onclick="afSelectAll(this, 'dos-af')">
                                             </div>
                                             <div class="af-textinput">
                                                 <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'dos-af')">
@@ -370,7 +369,7 @@
                                             {% for afChoice in autoFilters.dates %}
                                             <div class="af-selection">
                                                 <div class="af-checkbkox">
-                                                    <input type="checkbox" onclick="afSelect(this)" checked>
+                                                    <input type="checkbox" onclick="afSelect(this)">
                                                 </div>
                                                 <div class="af-chkbxtitle">
                                                     {{ afChoice }}

@@ -27,9 +27,13 @@ input:read-only {
   background-color: darkgrey;
 }
 
+.error {
+  color: red;
+  text-align: center;
+}
+
 </style>
 <body>
-
     <table align="center">
         <form action="" method="post">
           <div style="width: 100%; height: 70px;">
@@ -43,32 +47,38 @@ input:read-only {
               <input class="edit_width" type="image" name="edit" value="Edit" src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAWBJREFUWIXtl7FOwzAURQ8lA9AFKZSyo3RG6kfQHQSCj2HjazqwIOAHKqEwMkViZAqUERhAMNgGtzy7cUjaCnolS8mzn++V83z1Av8dS0IsAg6AHrBZEU8OXAJ94M23cAtIgY+axjXQdpFHNZPbIiJJwPEUyM04NKQNS0DPdTQOPAKZHsPA3C8u+yhCCi4DdoBX/b4K3ALbBfNb5qHhW+XBnUUO8KJjwSgroDIsBMxcgGgIFjLk4roRYimyzSZAp4iYK0bN4gFYKZI4AWvA09je52bS9wmGjF61snjWAkTMvAZ8AjZQDvdbNIHYNekrwhhlr1IRpsDJWOwU6AprE2C9jABQ3i75u1TtXWB3wn4/MNc1sBAw1wISlMMZNHUsGPYtyAPyOsA93w4X47lqAkSuI6bXlO5LAiJUy1w3+QBYdh1Nu2YRA6yGFNy/Znuo1rklzJdBDlwAZ8B7RXv+EXwCoevGfewJkkwAAAAASUVORK5CYII=">
             </div>
             </div>
+            <div class="error">
+                {{ error_message|linebreaks }}
+            </div>
+            <div align="center">
+                <font color="red">*</font> Signifies fields which must be filled in.
+            </div>
             <tr>
-                <th>Serial:</th>
+                <th>Serial<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="serial">
                 </td>
             </tr>
             <tr>
-                <th>Type:</th>
+                <th>Type<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="type_name">
                 </td>
             </tr>
             <tr>
-                <th>Category:</th>
+                <th>Category<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="category_name">
                 </td>
             </tr>
             <tr>
-                <th>Manufacturer:</th>
+                <th>Manufacturer<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="manufacturer_name">
                 </td>
             </tr>
             <tr>
-                <th>Model:</th>
+                <th>Model<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="model_name">
                 </td>
@@ -98,19 +108,19 @@ input:read-only {
                 </td>
             </tr>
             <tr>
-                <th>Diagonal:</th>
+                <th>Diagonal<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="diagonal_text">
                 </td>
             </tr>
             <tr>
-                <th>License:</th>
+                <th>License<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="license_name">
                 </td>
             </tr>
             <tr>
-                <th>Cover:</th>
+                <th>Cover<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="cover">
                 </td>
@@ -122,31 +132,31 @@ input:read-only {
                 </td>
             </tr>
             <tr>
-                <th>Bezel:</th>
+                <th>Bezel<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="bezel">
                 </td>
             </tr>
             <tr>
-                <th>HDD cover:</th>
+                <th>HDD cover<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="hdd_cover">
                 </td>
             </tr>
             <tr>
-                <th>RAM cover</th>
+                <th>RAM cover<font color="red">*</font></th>
                 <td>
                     <input type="text" name="ram_cover">
                 </td>
             </tr>
             <tr>
-                <th>Other</th>
+                <th>Other<font color="red">*</font></th>
                 <td>
                     <input type="text" name="other">
                 </td>
             </tr>
             <tr>
-                <th>Tester:</th>
+                <th>Tester<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="tester_name">
                 </td>

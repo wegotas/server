@@ -60,9 +60,9 @@ class AFManager {
   set_possible_fieldnames() {
     var afDivs = document.getElementsByClassName("autofilter");
     for (var i=0; i<afDivs.length; i++) {
-      this.possible_fieldnames.push(afDivs[i].id);
+      var fieldname = afDivs[i].getElementsByClassName("af-body")[0];
+      this.possible_fieldnames.push(fieldname.id);
     }
-    console.log(this.possible_fieldnames);
   }
 
   add_filter(filter_name, value) {
@@ -94,8 +94,13 @@ class AFManager {
   }
 
   showFilterButton() {
+    /*
+    console.log("showFilterButton() called");
+    */
     var filterButton = document.getElementById("filter");
+    /*
     console.log(filterButton);
+    */
     if (this.filter_list.length > 0) {
         filterButton.style.display = "inline-block";
     } else {
@@ -115,14 +120,18 @@ class AFManager {
     var attributes = attributesString.split("&");
     console.log(attributes);
     for (var i = attributes.length -1; i > -1; i--) {
-      console.log(attributes[i]);
-      for (var j = 0; j > this.possible_fieldnames.length; j++) {
+      console.log("Attribute: " + attributes[i]);
+      for (var j = 0; j < this.possible_fieldnames.length; j++) {
+        console.log("Fieldname: " + this.possible_fieldnames[j]);
         if ( attributes[i].includes(this.possible_fieldnames[j])) {
+          console.log("Removing");
           attributes.splice(i, 1)
           break;
         }
       }
     }
+    console.log(attributes);
+    console.log(this.getAFURLaddon());
     return mainURL + "?"+ attributes.join("&") +"&" + this.getAFURLaddon();
   }
 
@@ -404,7 +413,6 @@ function applyAFs() {
   /*
   console.log(newURL);
   */
-  
   loadPage(newURL);
 
 }

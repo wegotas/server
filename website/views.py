@@ -20,6 +20,8 @@ def index(request):
     qty = getQty(data_dict)
     page = getPage(data_dict)
     keyword = getKeyword(data_dict)
+    autoFilters = AutoFilter(data_dict)
+    # autoFilters.debug()
     if isSold:
         # qty = getQty(data_dict)
         # page = getPage(request)
@@ -29,6 +31,7 @@ def index(request):
         qtySelect.setDefaultSelect(qty)
         computers = Computers.objects.exclude(f_sale__isnull=True)
         af = AutoFiltersFromSoldComputers(computers)
+        computers = autoFilters.filter(computers)
         paginator = Paginator(computers, qty)
         computers = paginator.get_page(page)
         counter = Counter()
@@ -55,11 +58,9 @@ def index(request):
         # cat = getCat(request)
         cat = getCat(data_dict)
         # print(data_dict)
-        data_dict.pop("sold")
-        print("Type: " + typ)
-        print("Category: " + cat)
+        removeSold(data_dict)
+        # data_dict.pop("sold")
         # keyword = getKeyword(request)
-        print(data_dict)
         possible_categories = None
         if cat or typ:
             qtySelect = QtySelect()
@@ -68,6 +69,7 @@ def index(request):
             catRecord = Categories.objects.filter(category_name=cat)[:1].get()
             computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category, f_sale=None)
             af = AutoFiltersFromComputers(computers)
+            computers = autoFilters.filter(computers)
             paginator = Paginator(computers, qty)
             computers = paginator.get_page(page)
             counter = Counter()
@@ -126,12 +128,6 @@ def edit(request, int_index):
         batteries = get_batteries(int_index)
         rams = get_rams(int_index)
         hdds = get_hdds(int_index)
-        print("Price: " + str(computer.price))
-        print("Computer sale id: " + str(computer.f_sale))
-        if computer.f_sale != None:
-            print("date_of_sale: " + str(computer.f_sale.date_of_sale))
-            print("f_id_client: " + str(computer.f_sale.f_id_client))
-            print("client_name: " + str(computer.f_sale.f_id_client.client_name))
         return HttpResponse(template.render({'computer': computer,
                                              'bat_list': batteries,
                                              "ram_list": rams,
@@ -142,7 +138,6 @@ def delete(request, int_index):
     print("DELETE")
     if request.method == 'POST':
         print("This was POST request")
-        print(int_index)
         bats_to_comp = BatToComp.objects.filter(f_id_computer_bat_to_com=int_index)
         for bat_to_comp in bats_to_comp:
             bat_to_comp.delete()
@@ -284,9 +279,7 @@ def types(request):
     print("types")
     if request.method == 'POST':
         print("This was POST request")
-        print(request.POST.get("item_name"))
         save_type(request.POST.get("item_name"))
-        print("Finished")
     if request.method == 'GET':
         print("This was GET request")
     types = get_types_list()
@@ -298,9 +291,7 @@ def testers(request):
     print("testers")
     if request.method == 'POST':
         print("This was POST request")
-        print(request.POST.get("item_name"))
         save_tester(request.POST.get("item_name"))
-        print("Finished")
     if request.method == 'GET':
         print("This was GET request")
     testers = get_testers_list()
@@ -312,9 +303,13 @@ def new_record(request):
     print("new_record")
     if request.method == 'POST':
         print("This was POST request")
-        adding_new_computer(request.POST.copy())
-        return HttpResponse("Success", request)
-
+        rta = record_to_add(request.POST.copy())
+        rta.save()
+        if rta.isSaved():
+            return HttpResponse("Success", request)
+        else:
+            template = loader.get_template('new_record.html')
+            return HttpResponse(template.render({"error_message": rta.get_error_message()}, request))
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('new_record.html')
