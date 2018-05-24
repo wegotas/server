@@ -3,6 +3,7 @@ var selected_records = [];
 var filters_selected = 0;
 var selected_filters = [];
 
+
 class AFHolder {
   constructor(id_name) {
     this.id_name = id_name;
@@ -169,6 +170,13 @@ window.onload = function() {load_test()}
 function load_test() {
   collectSelectedAF();
   remove_keyword();
+  search_textbox = document.getElementById('search_input');
+  search_textbox.addEventListener('keyup', function(event) {
+    event.preventDefault();
+    if (event.keyCode === 13) {
+      search_using_keyword();
+    }
+  })
 }
 
 function remove_keyword() {
@@ -239,7 +247,9 @@ function afSelect(checkbox) {
   } else {
       afmanager.remove_filter(id, text);
   }
+  /*
   afmanager.showFilterButton();
+  */
 }
 
 function afSelectAll(checkbox ,filterDivId) {
@@ -338,13 +348,16 @@ function search() {
 
 function search_using_keyword() {
   searchKeyword = document.getElementById("search_input").value;
-  href = location.href;
-  if (href.indexOf('?') !== -1) {
-    location.href = href + '&keyword=' + searchKeyword
+  if (searchKeyword !== '') {
+    href = location.href;
+    if (href.indexOf('?') !== -1) {
+      location.href = href + '&keyword=' + searchKeyword
+    }
+    else {
+      location.href = href + '?keyword=' + searchKeyword
+    }
   }
-  else {
-    location.href = href + '?keyword=' + searchKeyword
-  }
+
 }
 
 function search() {

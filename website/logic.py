@@ -633,7 +633,7 @@ def getCat(data_dict):
 
 
 def getKeyword(data_dict):
-    if data_dict.get('keyword') is None:
+    if data_dict.get('keyword') is None or data_dict.get('keyword') == "":
         return None
     else:
         return data_dict.pop('keyword')[0]
@@ -725,7 +725,9 @@ def changeCategoriesUsingDict(dict):
     category_name = next(iter(dict))
     indexes = dict[category_name]
     category = Categories.objects.get(category_name=category_name)
+    print(indexes)
     for ind in indexes:
+        print(ind)
         computer = Computers.objects.get(id_computer=ind)
         computer.f_category = category
         computer.save()

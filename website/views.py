@@ -25,10 +25,10 @@ def index(request):
         qtySelect = QtySelect()
         qtySelect.setDefaultSelect(qty)
         computers = Computers.objects.exclude(f_sale__isnull=True)
-        af = AutoFiltersFromSoldComputers(computers)
         computers = autoFilters.filter(computers)
         if keyword is not None:
             computers = search(keyword, computers)
+        af = AutoFiltersFromSoldComputers(computers)
         paginator = Paginator(computers, qty)
         computers = paginator.get_page(page)
         counter = Counter()
@@ -57,10 +57,12 @@ def index(request):
             typeRecord = Types.objects.filter(type_name=typ)[:1].get()
             catRecord = Categories.objects.filter(category_name=cat)[:1].get()
             computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category, f_sale=None)
-            af = AutoFiltersFromComputers(computers)
             computers = autoFilters.filter(computers)
             if keyword is not None:
+                print(type(keyword))
+                print(keyword)
                 computers = search(keyword, computers)
+            af = AutoFiltersFromComputers(computers)
             paginator = Paginator(computers, qty)
             computers = paginator.get_page(page)
             counter = Counter()
@@ -243,7 +245,7 @@ def mass_excel(request):
 
 @csrf_exempt
 def cat_change(request):
-    print("Mass delete")
+    print("Mass cat_change")
     if request.method == 'POST':
         print("This was POST request")
     if request.method == 'GET':
