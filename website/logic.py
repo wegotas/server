@@ -1099,8 +1099,10 @@ class AutoFilter():
                 computers = computers.filter(other__in=value)
             elif key == 'cli-af':
                 print("its cli-af")
+                computers = computers.filter(f_sale__f_id_client__client_name__in=value)
             elif key == 'dos-af':
                 print("its dos-af")
+                computers = computers.filter(f_sale__date_of_sale__in=value)
             elif key == 'pri-af':
                 print("its pri-af")
                 computers = computers.filter(price__in=value)
