@@ -3,10 +3,9 @@ from ULCDTinterface.modelers import Computers, BatToComp
 from django.template import loader
 from website.logic import *
 from django.views.decorators.csrf import csrf_exempt
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator
 from django.shortcuts import render
 from rest_framework.parsers import JSONParser
-from wsgiref.util import FileWrapper
 
 
 def index(request):
@@ -21,46 +20,36 @@ def index(request):
     page = getPage(data_dict)
     keyword = getKeyword(data_dict)
     autoFilters = AutoFilter(data_dict)
-    # autoFilters.debug()
     if isSold:
-        # qty = getQty(data_dict)
-        # page = getPage(request)
         possible_categories = None
-        # keyword = getKeyword(request)
         qtySelect = QtySelect()
         qtySelect.setDefaultSelect(qty)
         computers = Computers.objects.exclude(f_sale__isnull=True)
         af = AutoFiltersFromSoldComputers(computers)
         computers = autoFilters.filter(computers)
+        if keyword is not None:
+            computers = search(keyword, computers)
         paginator = Paginator(computers, qty)
         computers = paginator.get_page(page)
         counter = Counter()
         counter.count = qty * (page - 1)
-        # autoFilters = AutoFilters()
         category_querySet = Categories.objects.values_list('category_name')
         possible_categories = []
         for query_member in category_querySet:
             possible_categories.append(query_member[0])
         cattyp = CatTyp()
+        # removeKeyword(request)
         return render(request, 'sold.html', {
             'computers': computers,
             "counter": counter,
             "qtySelect": qtySelect,
-            # "autoFilters": autoFilters,
             "autoFilters": af,
             "cattyp": cattyp,
             "poscat": possible_categories})
     else:
-        # qty = getQty(data_dict)
-        # page = getPage(request)
-        # typ = getType(request)
         typ = getType(data_dict)
-        # cat = getCat(request)
         cat = getCat(data_dict)
-        # print(data_dict)
         removeSold(data_dict)
-        # data_dict.pop("sold")
-        # keyword = getKeyword(request)
         possible_categories = None
         if cat or typ:
             qtySelect = QtySelect()
@@ -70,11 +59,12 @@ def index(request):
             computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category, f_sale=None)
             af = AutoFiltersFromComputers(computers)
             computers = autoFilters.filter(computers)
+            if keyword is not None:
+                computers = search(keyword, computers)
             paginator = Paginator(computers, qty)
             computers = paginator.get_page(page)
             counter = Counter()
             counter.count = qty*(page-1)
-            # autoFilters = AutoFilters()
             category_querySet = Categories.objects.values_list('category_name')
             possible_categories = []
             for query_member in category_querySet:
@@ -87,11 +77,11 @@ def index(request):
             autoFilters = None
             possible_types = None
         cattyp = CatTyp()
+        # removeKeyword(request)
         return render(request, 'index3.html', {
             'computers': computers,
             "counter": counter,
             "qtySelect": qtySelect,
-            # "autoFilters": autoFilters,
             "autoFilters": af,
             "cattyp": cattyp,
             "poscat": possible_categories})
@@ -128,10 +118,11 @@ def edit(request, int_index):
         batteries = get_batteries(int_index)
         rams = get_rams(int_index)
         hdds = get_hdds(int_index)
-        return HttpResponse(template.render({'computer': computer,
-                                             'bat_list': batteries,
-                                             "ram_list": rams,
-                                             "hdd_list": hdds}, request))
+        return HttpResponse(
+            template.render({'computer': computer,
+                             'bat_list': batteries,
+                             "ram_list": rams,
+                             "hdd_list": hdds}, request))
 
 @csrf_exempt
 def delete(request, int_index):
@@ -233,6 +224,7 @@ def mass_delete(request):
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
+
 @csrf_exempt
 def mass_excel(request):
     print("Mass excel")
@@ -248,6 +240,7 @@ def mass_excel(request):
     excel_file.close()
     return response
 
+
 @csrf_exempt
 def cat_change(request):
     print("Mass delete")
@@ -259,6 +252,7 @@ def cat_change(request):
     changeCategoriesUsingDict(data)
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
+
 
 @csrf_exempt
 def categories(request):
@@ -274,6 +268,7 @@ def categories(request):
     template = loader.get_template('items.html')
     return HttpResponse(template.render({'items': categories}, request))
 
+
 @csrf_exempt
 def types(request):
     print("types")
@@ -286,6 +281,7 @@ def types(request):
     template = loader.get_template('items.html')
     return HttpResponse(template.render({'items': types}, request))
 
+
 @csrf_exempt
 def testers(request):
     print("testers")
@@ -297,6 +293,7 @@ def testers(request):
     testers = get_testers_list()
     template = loader.get_template('items.html')
     return HttpResponse(template.render({'items': testers}, request))
+
 
 @csrf_exempt
 def new_record(request):

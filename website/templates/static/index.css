@@ -185,9 +185,11 @@ background: transparent;
   display: none;
 }
 
+/*
 #filter{
   display: none;
 }
+*/
 
 .mfs-box {
   display: inline-block;

@@ -2,6 +2,8 @@ from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOp
 import xlsxwriter
 import io
 from django.utils import timezone
+import re
+from django.db.models import Q
 
 
 class Bat_holder():
@@ -634,7 +636,7 @@ def getKeyword(data_dict):
     if data_dict.get('keyword') is None:
         return None
     else:
-        return data_dict.pop('keyword')
+        return data_dict.pop('keyword')[0]
 
 
 def removeSold(data_dict):
@@ -1064,47 +1066,77 @@ class AutoFilter():
             if key in data_dict:
                 self.filter_dict[key] = data_dict.pop(key)
 
-    def debug(self):
-        for key, value in self.filter_dict.items():
-            print(key)
-            print(value)
-
     def filter(self, computers):
         for key, value in self.filter_dict.items():
-            print(key)
-            print(value)
             if key == 'man-af':
-                print("its man-af")
                 computers = computers.filter(f_manufacturer__manufacturer_name__in=value)
             elif key == 'sr-af':
-                print("its sr-af")
                 computers = computers.filter(computer_serial__in=value)
             elif key == 'scr-af':
-                print("its scr-af")
                 computers = computers.filter(f_diagonal__diagonal_text__in=value)
             elif key == 'ram-af':
-                print("its ram-af")
                 computers = computers.filter(f_ram_size__ram_size_text__in=value)
             elif key == 'gpu-af':
-                print("its gpu-af")
                 computers = computers.filter(f_gpu__gpu_name__in=value)
             elif key == 'mod-af':
-                print("its mod-af")
                 computers = computers.filter(f_model__model_name__in=value)
             elif key == 'cpu-af':
-                print("its cpu-af")
                 computers = computers.filter(f_cpu__cpu_name__in=value)
             elif key == 'oth-af':
-                print("its oth-af")
                 computers = computers.filter(other__in=value)
             elif key == 'cli-af':
-                print("its cli-af")
                 computers = computers.filter(f_sale__f_id_client__client_name__in=value)
             elif key == 'dos-af':
-                print("its dos-af")
                 computers = computers.filter(f_sale__date_of_sale__in=value)
             elif key == 'pri-af':
-                print("its pri-af")
                 computers = computers.filter(price__in=value)
-
         return computers
+
+
+def normalize_query(query_string,
+                    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
+                    normspace=re.compile(r'\s{2,}').sub):
+    return [normspace('', (str(t[0]) or str(t[1])).strip()) for t in findterms(query_string)]
+
+
+def get_query(query_string):
+    searchfields = (
+        'computer_serial',
+        'other',
+        'f_manufacturer__manufacturer_name',
+        'f_diagonal__diagonal_text',
+        'f_ram_size__ram_size_text',
+        'f_gpu__gpu_name',
+        'f_model__model_name',
+        'f_cpu__cpu_name',
+        'f_sale__f_id_client__client_name',
+        'f_sale__date_of_sale',
+        'price'
+    )
+    query = None
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None
+        for field_name in searchfields:
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query
+
+
+def search(keyword, computers):
+    print("Search initiated")
+    entry_query = get_query(keyword)
+    computers = computers.filter(entry_query)
+    return computers
+
+
+def removeKeyword(request):
+    if request.GET.get('keyword') is not None:
+        request.GET.pop('keyword')

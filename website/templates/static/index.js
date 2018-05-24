@@ -168,6 +168,20 @@ window.onload = function() {load_test()}
 
 function load_test() {
   collectSelectedAF();
+  remove_keyword();
+}
+
+function remove_keyword() {
+  href = location.href;
+  regChecker = /&keyword=[A-Za-z0-9]+/
+  if (regChecker.test(href)){
+    regString = "&keyword=[A-Za-z0-9]+"
+    pattern = new RegExp(regString, "g");
+    /*
+    location.href = href.replace(pattern, "");
+    */
+    history.pushState({id: 'index'}, 'Page Title', href.replace(pattern, ""));
+  }
 }
 
 function collectSelectedAF() {
@@ -321,6 +335,17 @@ function search() {
   }
 }
 */
+
+function search_using_keyword() {
+  searchKeyword = document.getElementById("search_input").value;
+  href = location.href;
+  if (href.indexOf('?') !== -1) {
+    location.href = href + '&keyword=' + searchKeyword
+  }
+  else {
+    location.href = href + '?keyword=' + searchKeyword
+  }
+}
 
 function search() {
   var input, filter, table, trs, tr, td, i, j, found, indexes;
