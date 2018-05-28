@@ -571,7 +571,8 @@ class CatTyp:
         self.innerList = []
         query = """select distinct tp.id_type, tp.type_name, cat.category_name from sopena_computers.Types as tp
 join sopena_computers.Computers as comp on comp.f_type_id = tp.id_type
-join sopena_computers.Categories as cat on cat.id_category = comp.f_category_id"""
+join sopena_computers.Categories as cat on cat.id_category = comp.f_category_id
+where comp.f_sale_id is NULL"""
         for output in Types.objects.raw(query):
             inserted = False
             for member in self.innerList:
@@ -886,9 +887,24 @@ def _get_camera_option(computer):
         camera_option = "N/A"
     return camera_option
 
+class item:
+
+    def __init__(self, item_id, item_name):
+        self.id = item_id
+        self.name = item_name
 
 def get_categories_list():
     result = Categories.objects.values_list('category_name')
+    cats = Categories.objects.all()
+    catlist = []
+    for cat in cats:
+        newItem = item(cat.id_category, cat.category_name)
+        catlist.append(newItem)
+    print(catlist)
+    for catmember in catlist:
+        print(catmember.id)
+        print(catmember.name)
+    return catlist
     lst = []
     for member in result:
         lst.append(member[0])
@@ -902,6 +918,16 @@ def save_category(name):
 
 def get_types_list():
     result = Types.objects.values_list('type_name')
+    types = Types.objects.all()
+    typeslist = []
+    for typie in types:
+        newItem = item(typie.id_type, typie.type_name)
+        typeslist.append(newItem)
+    print(typeslist)
+    for typemember in typeslist:
+        print(typemember.id)
+        print(typemember.name)
+    return typeslist
     lst = []
     for member in result:
         lst.append(member[0])
@@ -915,6 +941,16 @@ def save_type(name):
 
 def get_testers_list():
     result = Testers.objects.values_list('tester_name')
+    testers = Testers.objects.all()
+    testerslist = []
+    for tester in testers:
+        newItem = item(tester.id_tester, tester.tester_name)
+        testerslist.append(newItem)
+    print(testerslist)
+    for testermember in testerslist:
+        print(testermember.id)
+        print(testermember.name)
+    return testerslist
     lst = []
     for member in result:
         lst.append(member[0])

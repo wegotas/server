@@ -1,0 +1,25 @@
+.lefter {
+  float:left;
+  margin-bottom: 10px;
+}
+
+.field {
+
+}
+
+.field input {
+  text-align: right;
+  width: 140px;
+}
+
+.greyed {
+  background-color: darkgrey;
+}
+
+.editor {
+  width: 48px;
+}
+
+.deleter {
+  color: red;
+}

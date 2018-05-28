@@ -1,24 +1,31 @@
 <!DOCTYPE html>
+{% load staticfiles %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Add the object</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'items.css' %}">
+    <script type="text/javascript" src="{% static 'items.js' %}"></script>
 </head>
 <body>
     <table>
         <tr>
             <form method="post">
-                <td>
-                    <input name="item_name" type="text" placeholder="Name of an object"/>
-                </td>
-                <td>
-                    <input type="submit" value="+" />
+                <td colspan="3">
+                    <div class="lefter">
+                        <input name="item_name" type="text" dir="rtl" placeholder="Name of an object"/>
+                    </div>
+                    <div class="lefter">
+                        <input type="submit" value="+" />
+                    </div>
                 </td>
             </form>
         </tr>
         {% for item in items %}
-        <tr>
-            <td>{{ item }}</td>
+        <tr class="row">
+            <td class="field"><input class="greyed" type="text" value="{{ item.name }}" id="{{ item.id }}" readonly/></td>
+            <td><button class="editor" onclick="edit(this ,{{ item.id }})">Edit</button></td>
+            <td><button class="deleter">X</button></td>
         </tr>
         {% endfor %}
     </table>
