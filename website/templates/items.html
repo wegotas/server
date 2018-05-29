@@ -13,19 +13,21 @@
             <form method="post">
                 <td colspan="3">
                     <div class="lefter">
-                        <input name="item_name" type="text" dir="rtl" placeholder="Name of an object"/>
+                        <input name="item_name" type="text" class="newNameField" placeholder="Name of an object"/>
                     </div>
                     <div class="lefter">
-                        <input type="submit" value="+" />
+                        <input type="submit" class="newNameAdder" value="+" />
                     </div>
                 </td>
             </form>
+        <tr>
+            <div class="error">{{ message }}</div>
         </tr>
         {% for item in items %}
         <tr class="row">
-            <td class="field"><input class="greyed" type="text" value="{{ item.name }}" id="{{ item.id }}" readonly/></td>
-            <td><button class="editor" onclick="edit(this ,{{ item.id }})">Edit</button></td>
-            <td><button class="deleter">X</button></td>
+            <td class="field"><input class="inputField greyed" type="text" value="{{ item.name }}" id="field{{ item.id }}" readonly/></td>
+            <td><button class="editor button" onclick="edit(this ,field{{ item.id }})">Edit</button></td>
+            <td><button class="deleter button" onclick="deleteItem({{ item.id }})">X</button></td>
         </tr>
         {% endfor %}
     </table>

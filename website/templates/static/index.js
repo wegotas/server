@@ -95,13 +95,7 @@ class AFManager {
   }
 
   showFilterButton() {
-    /*
-    console.log("showFilterButton() called");
-    */
     var filterButton = document.getElementById("filter");
-    /*
-    console.log(filterButton);
-    */
     if (this.filter_list.length > 0) {
         filterButton.style.display = "inline-block";
     } else {
@@ -110,9 +104,6 @@ class AFManager {
   }
 
   formNewUrlWithAFURLaddon(url) {
-    /*
-    console.log(url);
-    */
     var splittedArray = url.split("?");
     var mainURL = splittedArray[0];
     var attributesString = splittedArray[1];
@@ -165,11 +156,10 @@ function manButPress() {
     }
 }
 
-window.onload = function() {load_test()}
+window.onload = function() {load()}
 
-function load_test() {
+function load() {
   collectSelectedAF();
-  remove_keyword();
   search_textbox = document.getElementById('search_input');
   search_textbox.addEventListener('keyup', function(event) {
     event.preventDefault();
@@ -181,15 +171,13 @@ function load_test() {
 
 function remove_keyword() {
   href = location.href;
-  regChecker = /&keyword=[A-Za-z0-9]+/
+  regChecker = /[&|?]keyword=[A-Za-z0-9]+/;
   if (regChecker.test(href)){
-    regString = "&keyword=[A-Za-z0-9]+"
+    regString = "[&|?]keyword=[A-Za-z0-9]+";
     pattern = new RegExp(regString, "g");
-    /*
-    location.href = href.replace(pattern, "");
-    */
-    history.pushState({id: 'index'}, 'Page Title', href.replace(pattern, ""));
+    return href.replace(pattern, "")
   }
+  return location.href;
 }
 
 function collectSelectedAF() {
@@ -247,9 +235,6 @@ function afSelect(checkbox) {
   } else {
       afmanager.remove_filter(id, text);
   }
-  /*
-  afmanager.showFilterButton();
-  */
 }
 
 function afSelectAll(checkbox ,filterDivId) {
@@ -300,56 +285,19 @@ function loadPage(newURL) {
   window.location = newURL;
 }
 
-/*
-function search(){
-  var parameterArray = [];
-  var preExistingParametersArray = [];
-  searchKeyword = document.getElementById("search_input").value;
-  console.log(searchKeyword);
-  parameterArray.push("keyword="+searchKeyword);
-  console.log(parameterArray);
-
-  var baseURL, preExistingParameters;
-  if (location.href.includes("?")) {
-    [baseURL, preExistingParameters] = location.href.split("?");
-    preExistingParametersArray = preExistingParameters.split("&");
-  }
-  else {
-    baseURL = location.href;
-  }
-  console.log(baseURL);
-  console.log(preExistingParametersArray);
-}
-*/
-
-/*
-function search() {
-  var input, filter, table, tr, td, i;
-  console.log("Search called");
-  input = document.getElementById("search_input");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("contents-table");
-  trs = table.getElementsByTagName("tr");
-  for (i=0; i < trs.length; i++) {
-    td = trs[i].getElementsByTagName("td")[2];
-    if (td) {
-      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-        trs[i].style.display = "";
-        console.log("Show");
-      }
-      else {
-        trs[i].style.display = "none";
-        console.log("Not show");
-      }
-    }
-  }
-}
-*/
-
 function search_using_keyword() {
+  console.log("search_using_keyword called");
+  variable1 = document.getElementById("search_input");
+  console.log(variable1);
+  variable2 = variable1.value;
+  console.log(variable2);
   searchKeyword = document.getElementById("search_input").value;
   if (searchKeyword !== '') {
+    /*
     href = location.href;
+    */
+    href = remove_keyword();
+    console.log(href);
     if (href.indexOf('?') !== -1) {
       location.href = href + '&keyword=' + searchKeyword
     }
@@ -446,11 +394,19 @@ function mass_catchange(element) {
   }
 }
 
+function mass_sold() {
+  /*
+  console.log("mass sold");
+  alert("mass sold");
+  */
+  /*
+  launchCatToSoldWindow();
+  */
+  launchCatToSoldWithParamsWindow();
+}
+
 function applyAFs() {
   newURL = afmanager.formNewUrlWithAFURLaddon(location.href);
-  /*
-  console.log(newURL);
-  */
   loadPage(newURL);
 
 }
@@ -468,5 +424,35 @@ function launchTesterWindow() {
 }
 
 function launchNewRecordWindow() {
-    var testerWindow = window.open('new_record/', "", "width=400,height=650");
+    var recordWindow = window.open('new_record/', "", "width=400,height=650");
+}
+
+function launchCatToSoldWindow() {
+    var testerWindow = window.open('cat_to_sold/', "", "width=450,height=650");
+}
+
+function launchCatToSoldWithParamsWindow() {
+  var param = {'variable': '1234'};
+  OpenWindowWithPost('cat_to_sold/',"width=450,height=650", "_top", param);
+}
+
+function OpenWindowWithPost(url, windowoption, name, params) {
+  var form = document.createElement('form');
+  form.setAttribute("method", "post");
+  form.setAttribute("action", url);
+  form.setAttribute("target", name);
+
+  for (var i in params) {
+    if (params.hasOwnProperty(i)) {
+      var input = document.createElement("input");
+      input.type = "hidden";
+      input.name = i;
+      input.value = params[i];
+      form.appendChild(input);
+    }
+  }
+
+  document.body.appendChild(form);
+  form.submit();
+  form.removeChild(form);
 }

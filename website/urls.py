@@ -9,8 +9,15 @@ urlpatterns = [
     path('mass_excel/', views.mass_excel, name='mass_excel'),
     path('cat_change/', views.cat_change, name='cat_change'),
     path('new_record/', views.new_record, name='new_record'),
+    path('cat/del/<int:int_index>/', views.delCat, name='categoryDeletion'),
+    path('cat/edit/', views.cat_edit, name='categoryEdit'),
     path('cat/', views.categories, name='categories'),
+    path('typ/del/<int:int_index>/', views.delTyp, name='typeDeletion'),
+    path('typ/edit/', views.typ_edit, name='typeEdit'),
     path('typ/', views.types, name='types'),
+    path('test/del/<int:int_index>/', views.delTes, name='testerDeletion'),
+    path('test/edit/', views.tes_edit, name='testEdit'),
     path('test/', views.testers, name='testers'),
+    path('cat_to_sold/', views.cat_to_sold, name='cat_to_sold'),
     path('', views.index, name='index')
 ]

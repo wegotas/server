@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.shortcuts import render
 from rest_framework.parsers import JSONParser
+from django.db.utils import IntegrityError
 
 
 def index(request):
@@ -261,7 +262,6 @@ def categories(request):
     print("Categories")
     if request.method == 'POST':
         print("This was POST request")
-        print(request.POST.get("item_name"))
         save_category(request.POST.get("item_name"))
         print("Finished")
     if request.method == 'GET':
@@ -269,6 +269,29 @@ def categories(request):
     categories = get_categories_list()
     template = loader.get_template('items.html')
     return HttpResponse(template.render({'items': categories}, request))
+
+
+@csrf_exempt
+def delCat(request, int_index):
+    print("Delete category")
+    if request.method == 'POST':
+        print("This was POST request")
+        deleteCategory(int_index)
+    if request.method == 'GET':
+        print("This was GET request")
+
+
+@csrf_exempt
+def cat_edit(request):
+    print("cat_edit")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    edit_category(data)
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -285,6 +308,29 @@ def types(request):
 
 
 @csrf_exempt
+def delTyp(request, int_index):
+    print("Delete type")
+    if request.method == 'POST':
+        print("This was POST request")
+        deleteType(int_index)
+    if request.method == 'GET':
+        print("This was GET request")
+
+
+@csrf_exempt
+def typ_edit(request):
+    print("typ_edit")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    edit_type(data)
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
+
+
+@csrf_exempt
 def testers(request):
     print("testers")
     if request.method == 'POST':
@@ -295,6 +341,32 @@ def testers(request):
     testers = get_testers_list()
     template = loader.get_template('items.html')
     return HttpResponse(template.render({'items': testers}, request))
+
+
+@csrf_exempt
+def delTes(request, int_index):
+    print("Delete tester")
+    message = ""
+    if request.method == 'POST':
+        print("This was POST request")
+        deleteTester(int_index)
+    if request.method == 'GET':
+        print("This was GET request")
+    template = loader.get_template('items.html')
+    return HttpResponse(template.render({'items': testers}, request))
+
+
+@csrf_exempt
+def tes_edit(request):
+    print("tes_edit")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    edit_tester(data)
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -312,4 +384,15 @@ def new_record(request):
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('new_record.html')
+    return HttpResponse(template.render(), request)
+
+
+@csrf_exempt
+def cat_to_sold(request):
+    print("cat_to_sold")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    template = loader.get_template('catToSold.html')
     return HttpResponse(template.render(), request)

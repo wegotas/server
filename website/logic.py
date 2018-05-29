@@ -726,9 +726,7 @@ def changeCategoriesUsingDict(dict):
     category_name = next(iter(dict))
     indexes = dict[category_name]
     category = Categories.objects.get(category_name=category_name)
-    print(indexes)
     for ind in indexes:
-        print(ind)
         computer = Computers.objects.get(id_computer=ind)
         computer.f_category = category
         computer.save()
@@ -894,72 +892,81 @@ class item:
         self.name = item_name
 
 def get_categories_list():
-    result = Categories.objects.values_list('category_name')
     cats = Categories.objects.all()
     catlist = []
     for cat in cats:
         newItem = item(cat.id_category, cat.category_name)
         catlist.append(newItem)
-    print(catlist)
-    for catmember in catlist:
-        print(catmember.id)
-        print(catmember.name)
     return catlist
-    lst = []
-    for member in result:
-        lst.append(member[0])
-    return lst
 
 
 def save_category(name):
-    category = Categories(category_name=name)
-    category.save()
+    if name != "":
+        category = Categories(category_name=name)
+        category.save()
+
+
+def edit_category(data):
+    cat = Categories.objects.get(id_category=data["ItemId"])
+    cat.category_name = data["ItemName"]
+    cat.save()
+
+
+def deleteCategory(index):
+    cat = Categories.objects.get(id_category=index)
+    cat.delete()
 
 
 def get_types_list():
-    result = Types.objects.values_list('type_name')
     types = Types.objects.all()
     typeslist = []
     for typie in types:
         newItem = item(typie.id_type, typie.type_name)
         typeslist.append(newItem)
-    print(typeslist)
-    for typemember in typeslist:
-        print(typemember.id)
-        print(typemember.name)
     return typeslist
-    lst = []
-    for member in result:
-        lst.append(member[0])
-    return lst
 
 
 def save_type(name):
-    typ = Types(type_name=name)
+    if name != "":
+        typ = Types(type_name=name)
+        typ.save()
+
+
+def edit_type(data):
+    typ = Types.objects.get(id_type=data["ItemId"])
+    typ.type_name = data["ItemName"]
     typ.save()
 
 
+def deleteType(index):
+    typ = Types.objects.get(id_type=index)
+    typ.delete()
+
+
 def get_testers_list():
-    result = Testers.objects.values_list('tester_name')
     testers = Testers.objects.all()
     testerslist = []
     for tester in testers:
         newItem = item(tester.id_tester, tester.tester_name)
         testerslist.append(newItem)
-    print(testerslist)
-    for testermember in testerslist:
-        print(testermember.id)
-        print(testermember.name)
     return testerslist
-    lst = []
-    for member in result:
-        lst.append(member[0])
-    return lst
 
 
 def save_tester(name):
-    tester = Testers(tester_name=name)
-    tester.save()
+    if name != "":
+        tester = Testers(tester_name=name)
+        tester.save()
+
+
+def edit_tester(data):
+    tes = Testers.objects.get(id_tester=data["ItemId"])
+    tes.tester_name = data["ItemName"]
+    tes.save()
+
+
+def deleteTester(index):
+    tes = Testers.objects.get(id_tester=index)
+    tes.delete()
 
 
 class record_to_add():
