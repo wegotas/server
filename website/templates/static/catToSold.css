@@ -1,6 +1,22 @@
 .lefter {
   float:left;
-  margin-bottom: 10px;
+}
+
+.righter {
+  float:right;
+}
+
+.upper {
+
+}
+
+.error {
+  color: red;
+  text-align: center;
+}
+
+.marBot {
+  margin-bottom: 5px;
 }
 
 #clientField {
@@ -8,7 +24,7 @@
 }
 
 .submitDiv {
-  text-align: center;
+  width: auto;
 }
 
 .mainTable {

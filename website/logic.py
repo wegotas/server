@@ -1185,3 +1185,63 @@ def search(keyword, computers):
 def removeKeyword(request):
     if request.GET.get('keyword') is not None:
         request.GET.pop('keyword')
+
+
+def computersForCatToSold(data_dict):
+    ids = data_dict.pop('id')
+    computers = Computers.objects.filter(id_computer__in=ids)
+    return computers
+
+
+class ExecutorOfCatToSold():
+
+    def __init__(self, data_dict):
+        self.error_list = []
+        self.idPrices = {}
+        for key, value in data_dict.items():
+            if "client" in key:
+                self._validate_client(value)
+            if "price" in key:
+                if self._validate_price(value):
+                    self.idPrices[self._getId(key)] = value
+        self.validated = len(self.error_list) == 0
+
+    def write_to_database(self):
+        dbClient = Clients.objects.get_or_create(client_name=self.client)[0]
+        dbClient.save()
+        sale = Sales(date_of_sale=timezone.now(), f_id_client=dbClient)
+        sale.save()
+        for key, value in self.idPrices.items():
+            computer = Computers.objects.get(id_computer=key)
+            # computer(price=value, f_sale=sale)
+            computer.price = value.replace(",",".")
+            computer.f_sale = sale
+            computer.save()
+
+    def _validate_client(self, client):
+        if client == "":
+            self.error_list.append("No client was specified")
+        else:
+            self.client = client
+
+    def _validate_price(self, price):
+        isValidated = True
+        empty_price_error = "Not all computers have prices set"
+        if price == "":
+            if empty_price_error in self.error_list:
+                pass
+            else:
+                self.error_list.append("Not all computers have prices set")
+                isValidated = False
+        else:
+            # min 0.01, max 10000 pagal mariu
+            if not re.match(r'^[0-9]+[\.\,]{0,1}[0-9]{0,2}$', price):
+                self.error_list.append('Price "'+price+'" is not a valid price')
+                isValidated = False
+        return isValidated
+
+    def _getId(self, key):
+        return key.split("_")[1]
+
+    def get_error_message(self):
+        return "\r\n".join(self.error_list)

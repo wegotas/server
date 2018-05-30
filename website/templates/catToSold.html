@@ -8,9 +8,16 @@
 </head>
 <body>
     <form>
-        <div class="submitDiv">
-            <input name="client" type="text" class="lefter" id="clientField" placeholder="Client"/>
-            <input type="submit" class="lefter" value="Set computers as sold" />
+        <div style="100%;">
+            <div>
+                <input class="marBot lefter" name="client" type="text" id="clientField" placeholder="Client"/>
+            </div>
+            <div class="submitDiv" align="center">
+                <input class="marBot" type="submit" formmethod="post" value="Set computers as sold" />
+            </div>
+            <div class="error">
+                {{ error_message|linebreaks }}
+            </div>
         </div>
         <div class="tableHolder">
             <table class="mainTable">
@@ -43,6 +50,35 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for computer in computers %}
+                    <tr>
+                        <td>
+                            {{ computer.computer_serial }}
+                        </td>
+                        <td>
+                            {{ computer.f_manufacturer.manufacturer_name }}
+                        </td>
+                        <td>
+                            {{ computer.f_model.model_name }}
+                        </td>
+                        <td>
+                            {{ computer.f_cpu.cpu_name }}
+                        </td>
+                        <td>
+                            {{ computer.f_gpu.gpu_name }}
+                        </td>
+                        <td>
+                            {{ computer.f_ram_size.ram_size_text }}
+                        </td>
+                        <td>
+                            {{ computer.other }}
+                        </td>
+                        <td>
+                            <input name="price_{{ computer.id_computer }}" type="text" class="priceField" placeholder="Price"/>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <!--
                     <tr>
                         <td>
                             serial
@@ -147,6 +183,7 @@
                             <input name="client" type="text" class="priceField" placeholder="Price"/>
                         </td>
                     </tr>
+                    -->
                 </tbody>
             </table>
         </div>

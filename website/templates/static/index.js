@@ -241,7 +241,8 @@ function afSelectAll(checkbox ,filterDivId) {
   filterDiv = document.getElementById(filterDivId);
   filterCheckboxes = filterDiv.getElementsByTagName("input");
   for (var i =0; i < filterCheckboxes.length; i++) {
-    if (filterCheckboxes[i].checked != checkbox.checked)
+    style = filterCheckboxes[i].parentElement.parentElement.style.display
+    if (filterCheckboxes[i].checked != checkbox.checked && style !== "none")
       filterCheckboxes[i].click();
   }
 }
@@ -293,9 +294,6 @@ function search_using_keyword() {
   console.log(variable2);
   searchKeyword = document.getElementById("search_input").value;
   if (searchKeyword !== '') {
-    /*
-    href = location.href;
-    */
     href = remove_keyword();
     console.log(href);
     if (href.indexOf('?') !== -1) {
@@ -395,20 +393,12 @@ function mass_catchange(element) {
 }
 
 function mass_sold() {
-  /*
-  console.log("mass sold");
-  alert("mass sold");
-  */
-  /*
   launchCatToSoldWindow();
-  */
-  launchCatToSoldWithParamsWindow();
 }
 
 function applyAFs() {
   newURL = afmanager.formNewUrlWithAFURLaddon(location.href);
   loadPage(newURL);
-
 }
 
 function launchCatWindow() {
@@ -428,31 +418,13 @@ function launchNewRecordWindow() {
 }
 
 function launchCatToSoldWindow() {
-    var testerWindow = window.open('cat_to_sold/', "", "width=450,height=650");
+    var testerWindow = window.open('cat_to_sold/' + getCatSoldParams(), "", "width=920,height=600");
 }
 
-function launchCatToSoldWithParamsWindow() {
-  var param = {'variable': '1234'};
-  OpenWindowWithPost('cat_to_sold/',"width=450,height=650", "_top", param);
-}
-
-function OpenWindowWithPost(url, windowoption, name, params) {
-  var form = document.createElement('form');
-  form.setAttribute("method", "post");
-  form.setAttribute("action", url);
-  form.setAttribute("target", name);
-
-  for (var i in params) {
-    if (params.hasOwnProperty(i)) {
-      var input = document.createElement("input");
-      input.type = "hidden";
-      input.name = i;
-      input.value = params[i];
-      form.appendChild(input);
-    }
+function getCatSoldParams() {
+  stringArray = [];
+  for (var i = 0; i<selected_records.length; i++) {
+    stringArray.push("id="+selected_records[i]);
   }
-
-  document.body.appendChild(form);
-  form.submit();
-  form.removeChild(form);
+  return "?" + stringArray.join('&');
 }

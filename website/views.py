@@ -392,7 +392,17 @@ def cat_to_sold(request):
     print("cat_to_sold")
     if request.method == 'POST':
         print("This was POST request")
+        executor = ExecutorOfCatToSold(request.POST.copy())
+        # executor.debug()
+        if executor.validated:
+            executor.write_to_database()
+            return HttpResponse("Success", request)
+        else:
+            computers = computersForCatToSold(request.GET.copy())
+            template = loader.get_template('catToSold.html')
+            return HttpResponse(template.render({'computers': computers, "error_message": executor.get_error_message()}), request)
     if request.method == 'GET':
         print("This was GET request")
-    template = loader.get_template('catToSold.html')
-    return HttpResponse(template.render(), request)
+        computers = computersForCatToSold(request.GET.copy())
+        template = loader.get_template('catToSold.html')
+        return HttpResponse(template.render({'computers': computers}), request)
