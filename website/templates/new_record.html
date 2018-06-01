@@ -62,61 +62,149 @@ input:read-only {
             <tr>
                 <th>Type<font color="red">*</font>:</th>
                 <td>
+                    <!--
                     <input type="text" name="type_name">
+                    -->
+                    <select name="type_name" value="">
+                        <option value="" selected disabled hidden>Choose type</option>
+                        {% for type in rtac.types %}
+                        <option value="{{ type }}">{{ type }}</option>
+                        {% endfor %}
+                    </select>
                 </td>
             </tr>
             <tr>
                 <th>Category<font color="red">*</font>:</th>
                 <td>
+                    <!--
                     <input type="text" name="category_name">
+                    -->
+                    <select name="category_name" value="">
+                        <option value="" selected disabled hidden>Choose category</option>
+                        {% for category in rtac.categories %}
+                        <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
                 </td>
             </tr>
             <tr>
                 <th>Manufacturer<font color="red">*</font>:</th>
                 <td>
+                    <!--
                     <input type="text" name="manufacturer_name">
+                    -->
+                    <!--
+                    <select name="manufacturer_name" value="">
+                        <option value="" selected disabled hidden>Choose manufacturer</option>
+                        {% for manufacturer in rtac.manufacturers %}
+                        <option value="{{ manufacturer }}">{{ manufacturer }}</option>
+                        {% endfor %}
+                    </select>
+                    -->
+                    <input list="manufacturers" name="manufacturer_name">
+                    <datalist id="manufacturers">
+                        {% for manufacturer in rtac.manufacturers %}
+                        <option value="{{ manufacturer }}"></option>
+                        {% endfor %}
+                    </datalist>
                 </td>
             </tr>
             <tr>
                 <th>Model<font color="red">*</font>:</th>
                 <td>
+                    <!--
                     <input type="text" name="model_name">
+                    -->
+                    <input list="models" name="model_name">
+                    <datalist id="models">
+                        {% for model in rtac.models %}
+                        <option value="{{ model }}"></option>
+                        {% endfor %}
+                    </datalist>
                 </td>
             </tr>
             <tr>
                 <th>CPU:</th>
                 <td>
+                    <!--
                     <input type="text" name="cpu_name">
+                    -->
+                    <input list="cpus" name="cpu_name">
+                    <datalist id="cpus">
+                        {% for cpu in rtac.cpus %}
+                        <option value="{{ cpu }}"></option>
+                        {% endfor %}
+                    </datalist>
                 </td>
             </tr>
             <tr>
                 <th>GPU:</th>
                 <td>
+                    <!--
                     <input type="text" name="gpu_name">
+                    -->
+                    <input list="gpus" name="gpu_name">
+                    <datalist id="gpus">
+                        {% for gpu in rtac.gpus %}
+                        <option value="{{ gpu }}"></option>
+                        {% endfor %}
+                    </datalist>
                 </td>
             </tr>
             <tr>
                 <th>RAM:</th>
                 <td>
+                    <!--
                     <input type="text" name="ram_size_text">
+                    -->
+                    <input list="ram_sizes" name="ram_size_text">
+                    <datalist id="ram_sizes">
+                        {% for ram in rtac.rams %}
+                        <option value="{{ ram }}"></option>
+                        {% endfor %}
+                    </datalist>
                 </td>
             </tr>
             <tr>
                 <th>HDD:</th>
                 <td>
+                    <!--
                     <input type="text" name="hdd_size_text">
+                    -->
+                    <input list="hdd_sizes" name="hdd_size_text">
+                    <datalist id="hdd_sizes">
+                        {% for hdd in rtac.hdds %}
+                        <option value="{{ hdd }}"></option>
+                        {% endfor %}
+                    </datalist>
                 </td>
             </tr>
             <tr>
                 <th>Diagonal<font color="red">*</font>:</th>
                 <td>
+                    <!--
                     <input type="text" name="diagonal_text">
+                    -->
+                    <input list="diagonals" name="diagonal_text">
+                    <datalist id="diagonals">
+                        {% for diagonal in rtac.diagonals %}
+                        <option value="{{ diagonal }}"></option>
+                        {% endfor %}
+                    </datalist>
                 </td>
             </tr>
             <tr>
                 <th>License<font color="red">*</font>:</th>
                 <td>
+                    <!--
                     <input type="text" name="license_name">
+                    -->
+                    <select name="license_name" value="">
+                        <option value="" selected disabled hidden>Choose license</option>
+                        {% for license in rtac.licenses %}
+                        <option value="{{ license }}">{{ license }}</option>
+                        {% endfor %}
+                    </select>
                 </td>
             </tr>
             <tr>
@@ -158,7 +246,15 @@ input:read-only {
             <tr>
                 <th>Tester<font color="red">*</font>:</th>
                 <td>
+                    <!--
                     <input type="text" name="tester_name">
+                    -->
+                    <select name="tester_name" value="">
+                        <option value="" selected disabled hidden>Choose tester</option>
+                        {% for tester in rtac.testers %}
+                        <option value="{{ tester }}">{{ tester }}</option>
+                        {% endfor %}
+                    </select>
                 </td>
             </tr>
         </form>

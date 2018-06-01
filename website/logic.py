@@ -973,6 +973,7 @@ class record_to_add():
 
     def __init__(self, data_dict):
         self.data = data_dict
+        print(self.data)
         self.error_list = []
 
     def get_error_message(self):
@@ -1039,7 +1040,7 @@ class record_to_add():
         )
 
         for i in range(len(fieldnames)):
-            if self.data.get(fieldnames[i]) == "":
+            if self.data.get(fieldnames[i]) == "" or self.data.get(fieldnames[i]) is None:
                 self.error_list.append(error_messages[i])
 
 
@@ -1099,6 +1100,55 @@ class record_to_add():
             date=self.timenow
         )
         computer.save()
+
+
+class RecordToAddChoices:
+
+    def __init__(self):
+        self._set_types()
+        self._set_categories()
+        self._set_manufacturers()
+        self._set_models()
+        self._set_cpu()
+        self._set_gpu()
+        self._set_rams()
+        self._set_hdds()
+        self._set_diagonals()
+        self._set_licenses()
+        self._set_tester()
+
+    def _set_types(self):
+        self.types = [record[0] for record in Types.objects.values_list("type_name")]
+
+    def _set_categories(self):
+        self.categories = [record[0] for record in Categories.objects.values_list("category_name")]
+
+    def _set_manufacturers(self):
+        self.manufacturers = [record[0] for record in Manufacturers.objects.values_list("manufacturer_name")]
+
+    def _set_models(self):
+        self.models = [record[0] for record in Models.objects.values_list("model_name")]
+
+    def _set_cpu(self):
+        self.cpus = [record[0] for record in Cpus.objects.values_list("cpu_name")]
+
+    def _set_gpu(self):
+        self.gpus = [record[0] for record in Gpus.objects.values_list("gpu_name")]
+
+    def _set_rams(self):
+        self.rams = [record[0] for record in RamSizes.objects.values_list("ram_size_text")]
+
+    def _set_hdds(self):
+        self.hdds = [record[0] for record in HddSizes.objects.values_list("hdd_size_text")]
+
+    def _set_diagonals(self):
+        self.diagonals = [record[0] for record in Diagonals.objects.values_list("diagonal_text")]
+
+    def _set_licenses(self):
+        self.licenses = [record[0] for record in Licenses.objects.values_list("license_name")]
+
+    def _set_tester(self):
+        self.testers = [record[0] for record in Testers.objects.values_list("tester_name")]
 
 
 class AutoFilter():

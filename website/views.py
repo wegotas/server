@@ -372,6 +372,7 @@ def tes_edit(request):
 @csrf_exempt
 def new_record(request):
     print("new_record")
+    rtac = RecordToAddChoices()
     if request.method == 'POST':
         print("This was POST request")
         rta = record_to_add(request.POST.copy())
@@ -380,11 +381,11 @@ def new_record(request):
             return HttpResponse("Success", request)
         else:
             template = loader.get_template('new_record.html')
-            return HttpResponse(template.render({"error_message": rta.get_error_message()}, request))
+            return HttpResponse(template.render({"rtac": rtac, "error_message": rta.get_error_message()}, request))
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('new_record.html')
-    return HttpResponse(template.render(), request)
+    return HttpResponse(template.render({"rtac": rtac}), request)
 
 
 @csrf_exempt
