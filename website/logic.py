@@ -1214,7 +1214,7 @@ class ExecutorOfCatToSold():
         for key, value in self.idPrices.items():
             computer = Computers.objects.get(id_computer=key)
             # computer(price=value, f_sale=sale)
-            computer.price = value.replace(",",".")
+            computer.price = value.replace(",", ".")
             computer.f_sale = sale
             computer.save()
 

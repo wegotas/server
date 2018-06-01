@@ -248,14 +248,14 @@ function afSelectAll(checkbox ,filterDivId) {
 }
 
 function filterKeywordChange(inputbox, workingDivId) {
-  keyword = inputbox.value;
+  keyword = inputbox.value.toUpperCase();
   workingDiv = document.getElementById(workingDivId);
   selectionDivs = workingDiv.getElementsByClassName("af-selection");
   for (var i =0; i<selectionDivs.length; i++) {
     selectionDiv = selectionDivs[i];
     divs = selectionDiv.childNodes;
     chkbxTitleDiv = selectionDiv.childNodes[3];
-    chkbxTitle = chkbxTitleDiv.innerText;
+    chkbxTitle = chkbxTitleDiv.innerText.toUpperCase();
     if (chkbxTitle.includes(keyword)) {
       selectionDivs[i].style.display = "block";
     } else {
