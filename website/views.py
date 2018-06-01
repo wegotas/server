@@ -109,6 +109,7 @@ def look(request, int_index):
 @csrf_exempt
 def edit(request, int_index):
     print("EDIT ")
+    rc = RecordChoices()
     if request.method == 'POST':
         print("This was POST request")
         ecr = Edit_computer_record(request.POST.copy())
@@ -125,7 +126,8 @@ def edit(request, int_index):
             template.render({'computer': computer,
                              'bat_list': batteries,
                              "ram_list": rams,
-                             "hdd_list": hdds}, request))
+                             "hdd_list": hdds,
+                             "rc": rc}, request))
 
 @csrf_exempt
 def delete(request, int_index):
@@ -372,7 +374,7 @@ def tes_edit(request):
 @csrf_exempt
 def new_record(request):
     print("new_record")
-    rtac = RecordToAddChoices()
+    rc = RecordChoices()
     if request.method == 'POST':
         print("This was POST request")
         rta = record_to_add(request.POST.copy())
@@ -381,11 +383,11 @@ def new_record(request):
             return HttpResponse("Success", request)
         else:
             template = loader.get_template('new_record.html')
-            return HttpResponse(template.render({"rtac": rtac, "error_message": rta.get_error_message()}, request))
+            return HttpResponse(template.render({"rtac": rc, "error_message": rta.get_error_message()}, request))
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('new_record.html')
-    return HttpResponse(template.render({"rtac": rtac}), request)
+    return HttpResponse(template.render({"rc": rc}), request)
 
 
 @csrf_exempt

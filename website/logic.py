@@ -1102,7 +1102,7 @@ class record_to_add():
         computer.save()
 
 
-class RecordToAddChoices:
+class RecordChoices:
 
     def __init__(self):
         self._set_types()
@@ -1115,6 +1115,7 @@ class RecordToAddChoices:
         self._set_hdds()
         self._set_diagonals()
         self._set_licenses()
+        self._set_cameras()
         self._set_tester()
 
     def _set_types(self):
@@ -1146,6 +1147,12 @@ class RecordToAddChoices:
 
     def _set_licenses(self):
         self.licenses = [record[0] for record in Licenses.objects.values_list("license_name")]
+
+    def _set_cameras(self):
+        self.cameras = [record[0] for record in CameraOptions.objects.values_list("option_name")]
+        print("____________________________________________________________")
+        print(self.cameras)
+        print("____________________________________________________________")
 
     def _set_tester(self):
         self.testers = [record[0] for record in Testers.objects.values_list("tester_name")]

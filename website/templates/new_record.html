@@ -67,7 +67,7 @@ input:read-only {
                     -->
                     <select name="type_name" value="">
                         <option value="" selected disabled hidden>Choose type</option>
-                        {% for type in rtac.types %}
+                        {% for type in rc.types %}
                         <option value="{{ type }}">{{ type }}</option>
                         {% endfor %}
                     </select>
@@ -81,7 +81,7 @@ input:read-only {
                     -->
                     <select name="category_name" value="">
                         <option value="" selected disabled hidden>Choose category</option>
-                        {% for category in rtac.categories %}
+                        {% for category in rc.categories %}
                         <option value="{{ category }}">{{ category }}</option>
                         {% endfor %}
                     </select>
@@ -96,14 +96,14 @@ input:read-only {
                     <!--
                     <select name="manufacturer_name" value="">
                         <option value="" selected disabled hidden>Choose manufacturer</option>
-                        {% for manufacturer in rtac.manufacturers %}
+                        {% for manufacturer in rc.manufacturers %}
                         <option value="{{ manufacturer }}">{{ manufacturer }}</option>
                         {% endfor %}
                     </select>
                     -->
                     <input list="manufacturers" name="manufacturer_name">
                     <datalist id="manufacturers">
-                        {% for manufacturer in rtac.manufacturers %}
+                        {% for manufacturer in rc.manufacturers %}
                         <option value="{{ manufacturer }}"></option>
                         {% endfor %}
                     </datalist>
@@ -117,7 +117,7 @@ input:read-only {
                     -->
                     <input list="models" name="model_name">
                     <datalist id="models">
-                        {% for model in rtac.models %}
+                        {% for model in rc.models %}
                         <option value="{{ model }}"></option>
                         {% endfor %}
                     </datalist>
@@ -131,7 +131,7 @@ input:read-only {
                     -->
                     <input list="cpus" name="cpu_name">
                     <datalist id="cpus">
-                        {% for cpu in rtac.cpus %}
+                        {% for cpu in rc.cpus %}
                         <option value="{{ cpu }}"></option>
                         {% endfor %}
                     </datalist>
@@ -145,7 +145,7 @@ input:read-only {
                     -->
                     <input list="gpus" name="gpu_name">
                     <datalist id="gpus">
-                        {% for gpu in rtac.gpus %}
+                        {% for gpu in rc.gpus %}
                         <option value="{{ gpu }}"></option>
                         {% endfor %}
                     </datalist>
@@ -159,7 +159,7 @@ input:read-only {
                     -->
                     <input list="ram_sizes" name="ram_size_text">
                     <datalist id="ram_sizes">
-                        {% for ram in rtac.rams %}
+                        {% for ram in rc.rams %}
                         <option value="{{ ram }}"></option>
                         {% endfor %}
                     </datalist>
@@ -173,7 +173,7 @@ input:read-only {
                     -->
                     <input list="hdd_sizes" name="hdd_size_text">
                     <datalist id="hdd_sizes">
-                        {% for hdd in rtac.hdds %}
+                        {% for hdd in rc.hdds %}
                         <option value="{{ hdd }}"></option>
                         {% endfor %}
                     </datalist>
@@ -187,7 +187,7 @@ input:read-only {
                     -->
                     <input list="diagonals" name="diagonal_text">
                     <datalist id="diagonals">
-                        {% for diagonal in rtac.diagonals %}
+                        {% for diagonal in rc.diagonals %}
                         <option value="{{ diagonal }}"></option>
                         {% endfor %}
                     </datalist>
@@ -201,7 +201,7 @@ input:read-only {
                     -->
                     <select name="license_name" value="">
                         <option value="" selected disabled hidden>Choose license</option>
-                        {% for license in rtac.licenses %}
+                        {% for license in rc.licenses %}
                         <option value="{{ license }}">{{ license }}</option>
                         {% endfor %}
                     </select>
@@ -251,7 +251,7 @@ input:read-only {
                     -->
                     <select name="tester_name" value="">
                         <option value="" selected disabled hidden>Choose tester</option>
-                        {% for tester in rtac.testers %}
+                        {% for tester in rc.testers %}
                         <option value="{{ tester }}">{{ tester }}</option>
                         {% endfor %}
                     </select>
