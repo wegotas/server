@@ -1150,9 +1150,6 @@ class RecordChoices:
 
     def _set_cameras(self):
         self.cameras = [record[0] for record in CameraOptions.objects.values_list("option_name")]
-        print("____________________________________________________________")
-        print(self.cameras)
-        print("____________________________________________________________")
 
     def _set_tester(self):
         self.testers = [record[0] for record in Testers.objects.values_list("tester_name")]
