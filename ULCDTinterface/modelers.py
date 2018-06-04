@@ -49,6 +49,7 @@ class CameraOptions(models.Model):
 class Categories(models.Model):
     id_category = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=45)
+    permanent = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = True

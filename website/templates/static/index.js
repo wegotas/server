@@ -421,6 +421,10 @@ function launchCatToSoldWindow() {
     var testerWindow = window.open('cat_to_sold/' + getCatSoldParams(), "", "width=920,height=600");
 }
 
+function launchOrderWindow() {
+    var orderWindow = window.open('new_order/', "", "width=400,height=600");
+}
+
 function getCatSoldParams() {
   stringArray = [];
   for (var i = 0; i<selected_records.length; i++) {

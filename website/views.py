@@ -269,6 +269,7 @@ def categories(request):
     if request.method == 'GET':
         print("This was GET request")
     categories = get_categories_list()
+    print(categories)
     template = loader.get_template('items.html')
     return HttpResponse(template.render({'items': categories}, request))
 
@@ -409,3 +410,13 @@ def cat_to_sold(request):
         computers = computersForCatToSold(request.GET.copy())
         template = loader.get_template('catToSold.html')
         return HttpResponse(template.render({'computers': computers}), request)
+
+@csrf_exempt
+def new_order(request):
+    print("tes_edit")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    template = loader.get_template('new_order.html')
+    return HttpResponse(template.render(), request)

@@ -887,15 +887,16 @@ def _get_camera_option(computer):
 
 class item:
 
-    def __init__(self, item_id, item_name):
+    def __init__(self, item_id, item_name, permanence=0):
         self.id = item_id
         self.name = item_name
+        self.permanence = bool(permanence)
 
 def get_categories_list():
     cats = Categories.objects.all()
     catlist = []
     for cat in cats:
-        newItem = item(cat.id_category, cat.category_name)
+        newItem = item(cat.id_category, cat.category_name, cat.permanent)
         catlist.append(newItem)
     return catlist
 
@@ -908,13 +909,15 @@ def save_category(name):
 
 def edit_category(data):
     cat = Categories.objects.get(id_category=data["ItemId"])
-    cat.category_name = data["ItemName"]
-    cat.save()
+    if cat.permanent == 0:
+        cat.category_name = data["ItemName"]
+        cat.save()
 
 
 def deleteCategory(index):
     cat = Categories.objects.get(id_category=index)
-    cat.delete()
+    if cat.permanent == 0:
+        cat.delete()
 
 
 def get_types_list():

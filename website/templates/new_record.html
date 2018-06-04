@@ -43,7 +43,6 @@ input:read-only {
               </header>
             </div>
             <div align="center" style="padding-top: 34px">
-              <!-- <input class="edit_width" type="submit" name="edit" value="Edit"> -->
               <input class="edit_width" type="image" name="edit" value="Edit" src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAWBJREFUWIXtl7FOwzAURQ8lA9AFKZSyo3RG6kfQHQSCj2HjazqwIOAHKqEwMkViZAqUERhAMNgGtzy7cUjaCnolS8mzn++V83z1Av8dS0IsAg6AHrBZEU8OXAJ94M23cAtIgY+axjXQdpFHNZPbIiJJwPEUyM04NKQNS0DPdTQOPAKZHsPA3C8u+yhCCi4DdoBX/b4K3ALbBfNb5qHhW+XBnUUO8KJjwSgroDIsBMxcgGgIFjLk4roRYimyzSZAp4iYK0bN4gFYKZI4AWvA09je52bS9wmGjF61snjWAkTMvAZ8AjZQDvdbNIHYNekrwhhlr1IRpsDJWOwU6AprE2C9jABQ3i75u1TtXWB3wn4/MNc1sBAw1wISlMMZNHUsGPYtyAPyOsA93w4X47lqAkSuI6bXlO5LAiJUy1w3+QBYdh1Nu2YRA6yGFNy/Znuo1rklzJdBDlwAZ8B7RXv+EXwCoevGfewJkkwAAAAASUVORK5CYII=">
             </div>
             </div>
@@ -62,9 +61,6 @@ input:read-only {
             <tr>
                 <th>Type<font color="red">*</font>:</th>
                 <td>
-                    <!--
-                    <input type="text" name="type_name">
-                    -->
                     <select name="type_name" value="">
                         <option value="" selected disabled hidden>Choose type</option>
                         {% for type in rc.types %}
@@ -76,9 +72,6 @@ input:read-only {
             <tr>
                 <th>Category<font color="red">*</font>:</th>
                 <td>
-                    <!--
-                    <input type="text" name="category_name">
-                    -->
                     <select name="category_name" value="">
                         <option value="" selected disabled hidden>Choose category</option>
                         {% for category in rc.categories %}
@@ -90,17 +83,6 @@ input:read-only {
             <tr>
                 <th>Manufacturer<font color="red">*</font>:</th>
                 <td>
-                    <!--
-                    <input type="text" name="manufacturer_name">
-                    -->
-                    <!--
-                    <select name="manufacturer_name" value="">
-                        <option value="" selected disabled hidden>Choose manufacturer</option>
-                        {% for manufacturer in rc.manufacturers %}
-                        <option value="{{ manufacturer }}">{{ manufacturer }}</option>
-                        {% endfor %}
-                    </select>
-                    -->
                     <input list="manufacturers" name="manufacturer_name">
                     <datalist id="manufacturers">
                         {% for manufacturer in rc.manufacturers %}
@@ -112,9 +94,6 @@ input:read-only {
             <tr>
                 <th>Model<font color="red">*</font>:</th>
                 <td>
-                    <!--
-                    <input type="text" name="model_name">
-                    -->
                     <input list="models" name="model_name">
                     <datalist id="models">
                         {% for model in rc.models %}
@@ -126,9 +105,6 @@ input:read-only {
             <tr>
                 <th>CPU:</th>
                 <td>
-                    <!--
-                    <input type="text" name="cpu_name">
-                    -->
                     <input list="cpus" name="cpu_name">
                     <datalist id="cpus">
                         {% for cpu in rc.cpus %}
@@ -140,9 +116,6 @@ input:read-only {
             <tr>
                 <th>GPU:</th>
                 <td>
-                    <!--
-                    <input type="text" name="gpu_name">
-                    -->
                     <input list="gpus" name="gpu_name">
                     <datalist id="gpus">
                         {% for gpu in rc.gpus %}
@@ -154,9 +127,6 @@ input:read-only {
             <tr>
                 <th>RAM:</th>
                 <td>
-                    <!--
-                    <input type="text" name="ram_size_text">
-                    -->
                     <input list="ram_sizes" name="ram_size_text">
                     <datalist id="ram_sizes">
                         {% for ram in rc.rams %}
@@ -168,9 +138,6 @@ input:read-only {
             <tr>
                 <th>HDD:</th>
                 <td>
-                    <!--
-                    <input type="text" name="hdd_size_text">
-                    -->
                     <input list="hdd_sizes" name="hdd_size_text">
                     <datalist id="hdd_sizes">
                         {% for hdd in rc.hdds %}
@@ -182,9 +149,6 @@ input:read-only {
             <tr>
                 <th>Diagonal<font color="red">*</font>:</th>
                 <td>
-                    <!--
-                    <input type="text" name="diagonal_text">
-                    -->
                     <input list="diagonals" name="diagonal_text">
                     <datalist id="diagonals">
                         {% for diagonal in rc.diagonals %}
@@ -196,9 +160,6 @@ input:read-only {
             <tr>
                 <th>License<font color="red">*</font>:</th>
                 <td>
-                    <!--
-                    <input type="text" name="license_name">
-                    -->
                     <select name="license_name" value="">
                         <option value="" selected disabled hidden>Choose license</option>
                         {% for license in rc.licenses %}
@@ -246,9 +207,6 @@ input:read-only {
             <tr>
                 <th>Tester<font color="red">*</font>:</th>
                 <td>
-                    <!--
-                    <input type="text" name="tester_name">
-                    -->
                     <select name="tester_name" value="">
                         <option value="" selected disabled hidden>Choose tester</option>
                         {% for tester in rc.testers %}
