@@ -72,6 +72,16 @@ class Clients(models.Model):
         db_table = 'Clients'
 
 
+class CompOrd(models.Model):
+    id_comp_ord = models.AutoField(db_column='id_comp/ord', primary_key=True)  # Field renamed to remove unsuitable characters.
+    is_ready = models.IntegerField()
+    f_order_id_to_order = models.ForeignKey('Orders', models.DO_NOTHING, db_column='f_order_id_to_order')
+
+    class Meta:
+        managed = False
+        db_table = 'Comp/Ord'
+
+
 class Computers(models.Model):
     id_computer = models.AutoField(primary_key=True)
     computer_serial = models.CharField(max_length=45)
@@ -102,6 +112,8 @@ class Computers(models.Model):
     f_bios = models.ForeignKey(Bioses, models.DO_NOTHING, blank=True, null=True)
     f_sale = models.ForeignKey('Sales', models.DO_NOTHING, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    f_id_comp_ord = models.ForeignKey(CompOrd, models.DO_NOTHING, db_column='f_id_comp/ord', unique=True, blank=True,
+                                      null=True)  # Field renamed to remove unsuitable characters.
 
     class Meta:
         managed = True
@@ -175,6 +187,29 @@ class Models(models.Model):
     class Meta:
         managed = True
         db_table = 'Models'
+
+
+class OrdTes(models.Model):
+    id_ord_tes = models.AutoField(db_column='id_ord/tes', primary_key=True)  # Field renamed to remove unsuitable characters.
+    f_order = models.ForeignKey('Orders', models.DO_NOTHING)
+    f_id_tester = models.ForeignKey('Testers', models.DO_NOTHING, db_column='f_id_tester')
+
+    class Meta:
+        managed = False
+        db_table = 'Ord/Tes'
+
+
+class Orders(models.Model):
+    id_order = models.AutoField(primary_key=True)
+    order_name = models.CharField(max_length=45)
+    is_ready = models.IntegerField()
+    is_sent = models.IntegerField()
+    creation_date = models.DateField()
+    f_id_client = models.ForeignKey(Clients, models.DO_NOTHING, db_column='f_id_client')
+
+    class Meta:
+        managed = False
+        db_table = 'Orders'
 
 
 class RamSizes(models.Model):

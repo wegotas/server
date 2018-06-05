@@ -16,11 +16,13 @@ def index(request):
     if request.method == 'GET':
         print("This was GET request")
     isSold = getIsSold(request)
+    isOrder = getIsOrder(request)
     data_dict = request.GET.copy()
     qty = getQty(data_dict)
     page = getPage(data_dict)
     keyword = getKeyword(data_dict)
     autoFilters = AutoFilter(data_dict)
+    cattyp = CatTyp()
     if isSold:
         possible_categories = None
         qtySelect = QtySelect()
@@ -38,7 +40,7 @@ def index(request):
         possible_categories = []
         for query_member in category_querySet:
             possible_categories.append(query_member[0])
-        cattyp = CatTyp()
+        # cattyp = CatTyp()
         # removeKeyword(request)
         return render(request, 'sold.html', {
             'computers': computers,
@@ -47,6 +49,14 @@ def index(request):
             "autoFilters": af,
             "cattyp": cattyp,
             "poscat": possible_categories})
+    elif isOrder:
+        counter = Counter()
+        orders = OrdersClass()
+        return render(request, 'orders.html', {
+            "counter": counter,
+            "cattyp": cattyp,
+            "orders": orders
+        })
     else:
         typ = getType(data_dict)
         cat = getCat(data_dict)
@@ -72,6 +82,7 @@ def index(request):
             possible_categories = []
             for query_member in category_querySet:
                 possible_categories.append(query_member[0])
+            po = PossibleOrders()
         else:
             af = None
             computers = None
@@ -79,7 +90,7 @@ def index(request):
             qtySelect = None
             autoFilters = None
             possible_types = None
-        cattyp = CatTyp()
+        # cattyp = CatTyp()
         # removeKeyword(request)
         return render(request, 'index3.html', {
             'computers': computers,
@@ -87,7 +98,9 @@ def index(request):
             "qtySelect": qtySelect,
             "autoFilters": af,
             "cattyp": cattyp,
-            "poscat": possible_categories})
+            "poscat": possible_categories,
+            "po": po
+        })
 
 def look(request, int_index):
     print("LOOK ")
@@ -414,9 +427,13 @@ def cat_to_sold(request):
 @csrf_exempt
 def new_order(request):
     print("tes_edit")
+    noc = NewOrderChoices()
     if request.method == 'POST':
         print("This was POST request")
+        # print(request.POST)
+        no = NewOrder(request.POST.copy())
+        no.save()
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('new_order.html')
-    return HttpResponse(template.render(), request)
+    return HttpResponse(template.render({"noc": noc}), request)

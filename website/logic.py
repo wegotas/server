@@ -1,4 +1,4 @@
-from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
+from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp, CompOrd, OrdTes, Orders
 import xlsxwriter
 import io
 from django.utils import timezone
@@ -600,6 +600,16 @@ def getIsSold(request):
         return False
     else:
         if request.GET.get('sold') == "True":
+            return True
+        else:
+            return False
+
+
+def getIsOrder(request):
+    if request.GET.get('orders') is None:
+        return False
+    else:
+        if request.GET.get('orders') == "True":
             return True
         else:
             return False
@@ -1233,7 +1243,6 @@ def get_query(query_string):
 
 
 def search(keyword, computers):
-    print("Search initiated")
     entry_query = get_query(keyword)
     computers = computers.filter(entry_query)
     return computers
@@ -1302,3 +1311,124 @@ class ExecutorOfCatToSold():
 
     def get_error_message(self):
         return "\r\n".join(self.error_list)
+
+
+class NewOrderChoices:
+
+    def __init__(self):
+        self._set_clients()
+        self._set_testers()
+
+    def _set_clients(self):
+        self.clients = [record[0] for record in Clients.objects.values_list("client_name")]
+
+    def _set_testers(self):
+        self.testers = [record[0] for record in Testers.objects.values_list("tester_name")]
+
+
+class NewOrder:
+
+    def __init__(self, data_dict):
+        self.data = data_dict
+
+    def save(self):
+        order = self._save_and_get_order()
+        tester_names = self.data.pop('tes')
+        for tester_name in tester_names:
+            tester = Testers.objects.get(tester_name=tester_name)
+            ord_tes = OrdTes(
+                f_order=order,
+                f_id_tester=tester
+            )
+            ord_tes.save()
+
+    def _save_and_get_order(self):
+        client = self._get_or_save_client()
+        order = Orders(
+            order_name=self.data.pop('order_name')[0],
+            is_ready=0,
+            is_sent=0,
+            creation_date=timezone.now(),
+            f_id_client=client
+        )
+        order.save()
+        return order
+
+    def _get_or_save_client(self):
+        client = Clients.objects.get_or_create(client_name=self.data.pop('client_name')[0])[0]
+        return client
+
+
+class Order:
+
+    def __init__(self, order_object):
+        self.id = order_object.id_order
+        self.name = order_object.order_name
+        self.isReady = bool(order_object.is_ready)
+        self.isSent = bool(order_object.is_sent)
+        self.date = order_object.creation_date
+        self.client = order_object.f_id_client.client_name
+        self._set_computer_count()
+        self._set_testers()
+
+    def _set_computer_count(self):
+        self.count = CompOrd.objects.filter(f_order_id_to_order=self.id).count()
+
+    def _set_testers(self):
+        self.testers = []
+        variables = OrdTes.objects.filter(f_order=self.id)
+        for variable in variables:
+            self.testers.append(variable.f_id_tester.tester_name)
+
+    def get_testers(self):
+        stringToReturn = ""
+        try:
+            stringToReturn = ", ".join(self.testers)
+        except:
+            pass
+        return stringToReturn
+
+    def get_status(self):
+        statuses = ("In-Preperation", "Ready", "Sent", "Empty")
+        if self.count == 0:
+            return statuses[3]
+        elif self.isSent:
+            return statuses[2]
+        elif self.isReady:
+            return statuses[1]
+        else:
+            return statuses[0]
+
+    def debug(self):
+        print("ID: " + str(self.id))
+        print("Name: " + self.name)
+        print("IsReady: " + str(self.isReady))
+        print("IsSent:  " + str(self.isSent))
+        print("Date: " + str(self.date))
+        print("Client: " + self.client)
+        print("Count: " + str(self.count))
+        print("Testers: " + self.get_testers())
+        print("Status: " + self.get_status())
+
+class OrdersClass:
+
+    def __init__(self):
+        print("Orders class initiated")
+        self.order_list = []
+        self._set_orders()
+
+    def _set_orders(self):
+        orders = Orders.objects.all()
+        for ord in orders:
+            order = Order(ord)
+            self.order_list.append(order)
+            # order.debug()
+
+class PossibleOrders:
+
+    def __init__(self):
+        self._set_orders()
+
+    def _set_orders(self):
+        self.orders = [record[0] for record in Orders.objects.values_list("order_name")]
+
