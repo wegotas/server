@@ -155,7 +155,7 @@
                             </button>
                         </div>
                         <div class="item">
-                            <select class="c-select" onchange="mass_catchange(this)">
+                            <select class="c-select" onchange="ord_assign(this)">
                                 <option style="display:none" value="default" selected="selected">Select order to assign to:</option>
                                 {% for order in po.orders %}
                                 <option value="{{ order }}" >{{ order }}</option>

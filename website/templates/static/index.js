@@ -214,6 +214,11 @@ function edit(index) {
     var editWindow = window.open('edit/'+index+'/', "", "width=400,height=650");
 }
 
+function editOrder(index) {
+  console.log(index);
+  var editWindow = window.open('edit_order/'+index+'/', "", "width=600,height=650");
+}
+
 function autoFilterMenu(filterDivId){
     filterDiv = document.getElementById(filterDivId);
     filterDiv.classList.toggle("show");
@@ -383,6 +388,22 @@ function mass_catchange(element) {
     objectToSend[element.value] = selected_records;
     indexArray = JSON.stringify(objectToSend);
     xhr.open('POST', 'cat_change/', true);
+    xhr.send(indexArray);
+    xhr.onreadystatechange = function(e) {
+      if (xhr.readyState === 4) {
+        location.reload();
+      }
+    }
+  }
+}
+
+function ord_assign(element) {
+  if (confirm("Do you really want to assign these records to this order?")) {
+    var xhr = new XMLHttpRequest();
+    var objectToSend = {};
+    objectToSend[element.value] = selected_records;
+    indexArray = JSON.stringify(objectToSend);
+    xhr.open('POST', 'ord_assign/', true);
     xhr.send(indexArray);
     xhr.onreadystatechange = function(e) {
       if (xhr.readyState === 4) {

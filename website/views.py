@@ -67,7 +67,7 @@ def index(request):
             qtySelect.setDefaultSelect(qty)
             typeRecord = Types.objects.filter(type_name=typ)[:1].get()
             catRecord = Categories.objects.filter(category_name=cat)[:1].get()
-            computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category, f_sale=None)
+            computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category, f_sale=None).exclude(f_id_comp_ord__isnull=False).exclude(f_sale__isnull=False)
             computers = autoFilters.filter(computers)
             if keyword is not None:
                 print(type(keyword))
@@ -269,7 +269,21 @@ def cat_change(request):
     data = JSONParser().parse(request)
     changeCategoriesUsingDict(data)
     return HttpResponse(
-        "If you see this message that means after deletion post update on JS side page reload has failed")
+        "If you see this message that means after changes post update on JS side page reload has failed")
+
+
+@csrf_exempt
+def ord_assign(request):
+    print("Mass ord_change")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    print(data)
+    assignComputersToOrderUsingDict(data)
+    return HttpResponse(
+        "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -424,16 +438,33 @@ def cat_to_sold(request):
         template = loader.get_template('catToSold.html')
         return HttpResponse(template.render({'computers': computers}), request)
 
+
 @csrf_exempt
 def new_order(request):
     print("tes_edit")
     noc = NewOrderChoices()
     if request.method == 'POST':
         print("This was POST request")
-        # print(request.POST)
         no = NewOrder(request.POST.copy())
         no.save()
+        if no.isSaved():
+            return HttpResponse("Success", request)
+        else:
+            template = loader.get_template('new_order.html')
+            return HttpResponse(template.render({"noc": noc, "error_message": no.get_error_message()}), request)
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('new_order.html')
     return HttpResponse(template.render({"noc": noc}), request)
+
+
+@csrf_exempt
+def edit_order(request, int_index):
+    print("EDIT order")
+    ote = OrderToEdit(int_index)
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    template = loader.get_template('order_edit.html')
+    return HttpResponse(template.render({"ote": ote}), request)

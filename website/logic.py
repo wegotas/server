@@ -572,7 +572,7 @@ class CatTyp:
         query = """select distinct tp.id_type, tp.type_name, cat.category_name from sopena_computers.Types as tp
 join sopena_computers.Computers as comp on comp.f_type_id = tp.id_type
 join sopena_computers.Categories as cat on cat.id_category = comp.f_category_id
-where comp.f_sale_id is NULL"""
+where comp.f_sale_id is NULL and comp.`f_id_comp/ord` is Null"""
         for output in Types.objects.raw(query):
             inserted = False
             for member in self.innerList:
@@ -1259,7 +1259,7 @@ def computersForCatToSold(data_dict):
     return computers
 
 
-class ExecutorOfCatToSold():
+class ExecutorOfCatToSold:
 
     def __init__(self, data_dict):
         self.error_list = []
@@ -1330,17 +1330,51 @@ class NewOrder:
 
     def __init__(self, data_dict):
         self.data = data_dict
+        self.error_list = []
 
     def save(self):
-        order = self._save_and_get_order()
-        tester_names = self.data.pop('tes')
-        for tester_name in tester_names:
-            tester = Testers.objects.get(tester_name=tester_name)
-            ord_tes = OrdTes(
-                f_order=order,
-                f_id_tester=tester
-            )
-            ord_tes.save()
+        print("New order save start")
+        self._validate()
+        if len(self.error_list) == 0:
+            order = self._save_and_get_order()
+            tester_names = self.data.pop('tes')
+            for tester_name in tester_names:
+                tester = Testers.objects.get(tester_name=tester_name)
+                ord_tes = OrdTes(
+                    f_order=order,
+                    f_id_tester=tester
+                )
+                ord_tes.save()
+            print("New order save end")
+        else:
+            print("New order creation has FAILED")
+
+    def isSaved(self):
+        return len(self.error_list) == 0
+
+    def get_error_message(self):
+        return "\r\n".join(self.error_list)
+
+    def _validate(self):
+        fieldnames = (
+            'order_name',
+            'client_name',
+            'tes'
+        )
+
+        error_messages = (
+            "Order name was not set",
+            "Client was not set",
+            "No testers were assigned to the order"
+        )
+
+        if self.data.get('order_name') != "" and self.data.get('order_name') is not None:
+            if Orders.objects.filter(order_name=self.data.get('order_name')).exists():
+                self.error_list.append("Order with such name allready exists")
+
+        for i in range(len(fieldnames)):
+            if self.data.get(fieldnames[i]) == "" or self.data.get(fieldnames[i]) is None:
+                self.error_list.append(error_messages[i])
 
     def _save_and_get_order(self):
         client = self._get_or_save_client()
@@ -1399,16 +1433,6 @@ class Order:
         else:
             return statuses[0]
 
-    def debug(self):
-        print("ID: " + str(self.id))
-        print("Name: " + self.name)
-        print("IsReady: " + str(self.isReady))
-        print("IsSent:  " + str(self.isSent))
-        print("Date: " + str(self.date))
-        print("Client: " + self.client)
-        print("Count: " + str(self.count))
-        print("Testers: " + self.get_testers())
-        print("Status: " + self.get_status())
 
 class OrdersClass:
 
@@ -1422,7 +1446,7 @@ class OrdersClass:
         for ord in orders:
             order = Order(ord)
             self.order_list.append(order)
-            # order.debug()
+
 
 class PossibleOrders:
 
@@ -1432,3 +1456,48 @@ class PossibleOrders:
     def _set_orders(self):
         self.orders = [record[0] for record in Orders.objects.values_list("order_name")]
 
+
+def assignComputersToOrderUsingDict(dict):
+    order_name = next(iter(dict))
+    indexes = dict[order_name]
+    order = Orders.objects.get(order_name=order_name)
+    for ind in indexes:
+        compord = CompOrd(is_ready=0, f_order_id_to_order=order)
+        compord.save()
+        computer = Computers.objects.get(id_computer=ind)
+        computer.f_id_comp_ord = compord
+        computer.save()
+
+
+class TesterCustomClass:
+
+    def __init__(self, tester_name, assigned):
+        self.tester_name = tester_name
+        self.assigned = assigned
+
+
+class OrderToEdit:
+
+    def __init__(self, index):
+        self._get_order(index)
+        self._get_computers_from_order()
+        self._get_testers()
+
+    def _get_order(self, index):
+        ord = Orders.objects.get(id_order=index)
+        self.order = Order(ord)
+
+    def _get_computers_from_order(self):
+        compords = CompOrd.objects.filter(f_order_id_to_order=self.order.id)
+        compordsIds = [record.id_comp_ord for record in compords]
+        self.computers = Computers.objects.filter(f_id_comp_ord__in=compordsIds)
+
+    def _get_testers(self):
+        self.testers = []
+        testers = Testers.objects.all()
+        for tester in testers:
+            custtom_tester = TesterCustomClass(tester.tester_name, tester.tester_name in self.order.testers)
+            self.testers.append(custtom_tester)
+
+
+# statuses = ("In-Preperation", "Ready")
