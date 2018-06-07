@@ -216,7 +216,7 @@ function edit(index) {
 
 function editOrder(index) {
   console.log(index);
-  var editWindow = window.open('edit_order/'+index+'/', "", "width=600,height=650");
+  var editWindow = window.open('edit_order/'+index+'/', "", "width=720,height=650");
 }
 
 function autoFilterMenu(filterDivId){

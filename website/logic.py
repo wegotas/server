@@ -1482,6 +1482,7 @@ class OrderToEdit:
         self._get_order(index)
         self._get_computers_from_order()
         self._get_testers()
+        self.error_list = []
 
     def _get_order(self, index):
         ord = Orders.objects.get(id_order=index)
@@ -1496,8 +1497,73 @@ class OrderToEdit:
         self.testers = []
         testers = Testers.objects.all()
         for tester in testers:
-            custtom_tester = TesterCustomClass(tester.tester_name, tester.tester_name in self.order.testers)
-            self.testers.append(custtom_tester)
+            custom_tester = TesterCustomClass(tester.tester_name, tester.tester_name in self.order.testers)
+            self.testers.append(custom_tester)
+
+    def isSaved(self):
+        return len(self.error_list) == 0
+
+    def get_error_message(self):
+        return "\r\n".join(self.error_list)
+
+    def set_new_data(self, data_dict):
+        def _validate():
+            fieldnames = (
+                'order_id',
+                'order_name',
+                'client_name',
+                'tes'
+            )
+            error_messages = (
+                "!!!No order id!!!",
+                "Order name was not set",
+                "Client name was not set",
+                "Testers were not set",
+            )
+            for i in range(len(fieldnames)):
+                if data_dict.get(fieldnames[i]) == "" or data_dict.get(fieldnames[i]) is None:
+                    self.error_list.append(error_messages[i])
+
+        def _save():
+            order = Orders.objects.get(id_order=order_id)
+            order.order_name = new_order_name
+            client = Clients.objects.get_or_create(client_name=new_client_name)[0]
+            order.f_id_client = client
+            order.save()
+            OrdTes.objects.filter(f_order=order).delete()
+            for tester_name in testers:
+                tester = Testers.objects.get(tester_name=tester_name)
+                new_ordtes = OrdTes(f_order=order, f_id_tester=tester)
+                new_ordtes.save()
+            for status_holder in statuses:
+                computer = Computers.objects.get(id_computer=status_holder.computer_id)
+                compord = CompOrd.objects.get(id_comp_ord=computer.f_id_comp_ord.id_comp_ord)
+                compord.is_ready = status_holder.value
+                compord.save()
+
+        _validate()
+        if len(self.error_list) == 0:
+            order_id = data_dict.pop('order_id')[0]
+            new_order_name = data_dict.pop('order_name')[0]
+            new_client_name = data_dict.pop('client_name')[0]
+            testers = data_dict.pop('tes')
+            statuses = []
+            for key, value in data_dict.items():
+                if 'status' in key:
+                    sh = StatusHolder(key, value)
+                    statuses.append(sh)
+            for status in statuses:
+                data_dict.pop('status_'+status.computer_id)
+            _save()
 
 
-# statuses = ("In-Preperation", "Ready")
+class StatusHolder:
+    statuses = ("In-Preperation", "Ready")
+
+    def __init__(self, key, value):
+        self.computer_id = key.split('_')[1]
+        self.value = None
+        try:
+            self.value = self.statuses.index(value)
+        except ValueError:
+            pass

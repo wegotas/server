@@ -8,12 +8,14 @@
     <script type="text/javascript" src="{% static 'order_edit.js' %}"></script>
 </head>
 <body>
-    <form>
+    <form method="post">
+        <div class="error">{{ error_message|linebreaks }}</div>
         <table>
             <tr>
-                <th>Order name:</th>
-                <td><input class="textbox" name="order_name" type="text" value="{{ ote.order.name }}"></td>
-                <td rowspan="3" class="multiple-checkbox-holder">
+                <tr>
+                <th>Order id:</th>
+                <td><input class="textbox" type="text" name="order_id" value="{{ ote.order.id }}" readonly></td>
+                <td rowspan="4" class="multiple-checkbox-holder">
                     <div class="item title"><b>Testers:</b></div>
                     {% for tester in ote.testers %}
                     <div class="item">
@@ -21,37 +23,13 @@
                         <div class="chkbx-title">'{{ tester.tester_name }}'</div>
                     </div>
                     {% endfor %}
-                    <!--
-                    <div class="item">
-                        <input type="checkbox" name="tes" value="tester1" class="chkbx">
-                        <div class="chkbx-title">'tester1'</div>
-                    </div>
-                    <div class="item">
-                        <input type="checkbox" name="tes" value="tester2" class="chkbx">
-                        <div class="chkbx-title">'tester2'</div>
-                    </div>
-                    <div class="item">
-                        <input type="checkbox" name="tes" value="tester3" class="chkbx">
-                        <div class="chkbx-title">'tester3'</div>
-                    </div>
-                    <div class="item">
-                        <input type="checkbox" name="tes" value="tester4" class="chkbx">
-                        <div class="chkbx-title">'tester4'</div>
-                    </div>
-                    <div class="item">
-                        <input type="checkbox" name="tes" value="tester5" class="chkbx">
-                        <div class="chkbx-title">'tester5'</div>
-                    </div>
-                    <div class="item">
-                        <input type="checkbox" name="tes" value="tester6" class="chkbx">
-                        <div class="chkbx-title">'tester6'</div>
-                    </div>
-                    <div class="item">
-                        <input type="checkbox" name="tes" value="tester7" class="chkbx">
-                        <div class="chkbx-title">'tester7'</div>
-                    </div>
-                    -->
                 </td>
+                <td rowspan="4"><button type="submit">Submit</button></td>
+            </tr>
+            </tr>
+            <tr>
+                <th>Order name:</th>
+                <td><input class="textbox" name="order_name" type="text" value="{{ ote.order.name }}"></td>
             </tr>
             <tr>
                 <th>Client name:</th>
@@ -59,7 +37,7 @@
             </tr>
             <tr>
                 <th>Status:</th>
-                <td><input class="textbox" type="text" value="{{ ote.order.get_status }}" disabled></td>
+                <td><input class="textbox" type="text" value="{{ ote.order.get_status }}" readonly></td>
             </tr>
         </table>
 
@@ -87,7 +65,12 @@
                     <td>{{ computer.f_gpu.gpu_name }}</td>
                     <td>{{ computer.f_ram_size.ram_size_text }}</td>
                     <td>{{ computer.other }}</td>
-                    <td>{{ computer.f_id_comp_ord.is_ready }} {% if computer.f_id_comp_ord.is_ready == 1 %}True{% else %}False{% endif %}</td>
+                    <td>
+                        <select name="status_{{ computer.id_computer }}">
+                            <option value="In-Preperation"{% if computer.f_id_comp_ord.is_ready == 0 %} selected{% endif %}>In-Preperation</option>
+                            <option value="Ready"{% if computer.f_id_comp_ord.is_ready == 1 %} selected{% endif %}>Ready</option>
+                        </select>
+                    </td>
                     <td><button class="img-button" type="button" onclick="edit({{ computer.id_computer }})">
                         <img
                             src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAy1JREFUSImV02tIU2EYB/D/2TnunDmmQxs4DQMrRMM1jTYjbQ6ipALDOB+rr/lFhCV+CcpYNyMManQvksAuil0U7GaJWCNRsqiG2SojdZaOdciz4+a7PsjEbe24PfB+Oe/7/P7PuVFIoCwWi1alUonR10VRpHp7e/1yvdRyeG1t7ZmVen1FCsf9jd5jGSYozs09tdlsJxIZNKYaGhqOtLe3zzudzlC86uzs/Fxpta6OZyjk8KqqqkMGgyHuGQBQKBQKkRDKarVWWywWJqGAMF5aWkrL4eGigfoQIddpmnYuG5As/qq/X5em1e6laTqdAjZYrdYRnucXeyMCksXtl9rwUr1Ds7liqyo9PX0BpKi109PTrrC9CMXDBUGA3+9HdnZ2JH7xHlpDlfibtgZfPAK25Wvw2zMBSZJAARm5ubmbTCZTKw0Adru9zmg0HsvLy6O9Xi/CSxAEDA8Po6SkBBzHRUzeGqoEUWqAyfcYTi3FR58Se/IV+O2ZwOzsrI+maXtXV9d7mud5pVqtvmYymXSiKGLpkiQJxcXF0Gq1i/jRC3dxewnuYotAhQioGTeGZlKxK58N/vzmbnrW0+MAAEYQBCorK2vKbDbnL/fMGx23cVexMwZPm3gNH7MC/nmaPBoYdQz09DSGe2S/8aV1JAJ/F4OzkpcUfL95dqDjct3SvoQCDp9vxb0I3BCDF461NL99cNEW3Rvz50WX484TtNG7FvCJd3BxkTgX9KHw2/UbQw+vHPxfv+wd/BgbAxv4A25u5r+4KujDfu6FT+MbORnPkA0YHBxEcUEejhsn8SukiZn8pHEcVeWGaTlDNuCTywVCCHQaJVrKp7DK83xx8lPGcdTu2y3XLh8wOjqKjx8+4OrVKwgEAshKU8KxQ41Vwa9o2uBJCAdkXnJfXx88Hg8IIXh4vwPriorg9Xpxq3o9ysrKEsJlA944ndDr9cjIzMRGsxlbysuRkZmZMLxswIGaGqzQ6ZCTk5M0GhOQwjCB6I31RmNCACGEsDL7FACca27eDoY56Pf7U5KZjmXZYECSHtvq60/LBgAAz/NKt9sdSiZAp9Mpuru7Jbkz/wAVAobVY0U2sQAAAABJRU5ErkJggg=="

@@ -464,6 +464,12 @@ def edit_order(request, int_index):
     ote = OrderToEdit(int_index)
     if request.method == 'POST':
         print("This was POST request")
+        ote.set_new_data(request.POST.copy())
+        if ote.isSaved():
+            return HttpResponse("Success", request)
+        else:
+            template = loader.get_template('order_edit.html')
+            return HttpResponse(template.render({"ote": ote, "error_message": ote.get_error_message()}), request)
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('order_edit.html')
