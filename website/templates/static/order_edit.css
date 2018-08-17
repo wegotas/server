@@ -21,6 +21,15 @@
   width: 140px;
 }
 
+.checkbox-wrapper {
+  text-align: center;
+}
+
+.checkbox {
+  width: 20px;
+  display: inline-block;
+}
+
 .multiple-checkbox-holder {
   vertical-align: top;
   border-style: inset;

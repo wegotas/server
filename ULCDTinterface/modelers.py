@@ -202,7 +202,6 @@ class OrdTes(models.Model):
 class Orders(models.Model):
     id_order = models.AutoField(primary_key=True)
     order_name = models.CharField(max_length=45)
-    is_ready = models.IntegerField()
     is_sent = models.IntegerField()
     creation_date = models.DateField()
     f_id_client = models.ForeignKey(Clients, models.DO_NOTHING, db_column='f_id_client')

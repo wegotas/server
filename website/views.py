@@ -70,8 +70,6 @@ def index(request):
             computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category, f_sale=None).exclude(f_id_comp_ord__isnull=False).exclude(f_sale__isnull=False)
             computers = autoFilters.filter(computers)
             if keyword is not None:
-                print(type(keyword))
-                print(keyword)
                 computers = search(keyword, computers)
             af = AutoFiltersFromComputers(computers)
             paginator = Paginator(computers, qty)
@@ -90,16 +88,17 @@ def index(request):
             qtySelect = None
             autoFilters = None
             possible_types = None
+            po = PossibleOrders()
         # cattyp = CatTyp()
         # removeKeyword(request)
-        return render(request, 'index3.html', {
+        return render(request, 'index.html', {
             'computers': computers,
             "counter": counter,
             "qtySelect": qtySelect,
             "autoFilters": af,
             "cattyp": cattyp,
             "poscat": possible_categories,
-            "po": po
+            "po": po,
         })
 
 def look(request, int_index):
@@ -424,7 +423,6 @@ def cat_to_sold(request):
     if request.method == 'POST':
         print("This was POST request")
         executor = ExecutorOfCatToSold(request.POST.copy())
-        # executor.debug()
         if executor.validated:
             executor.write_to_database()
             return HttpResponse("Success", request)

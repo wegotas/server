@@ -300,7 +300,7 @@ class AuthUserUserPermissions(models.Model):
         managed = False
         db_table = 'auth_user_user_permissions'
         unique_together = (('user', 'permission'),)
-"""
+
 
 class BatToComp(models.Model):
     id_bat_to_comp = models.AutoField(primary_key=True)
@@ -311,7 +311,7 @@ class BatToComp(models.Model):
         managed = False
         db_table = 'bat_to_comp'
 
-"""
+
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
     object_id = models.TextField(blank=True, null=True)

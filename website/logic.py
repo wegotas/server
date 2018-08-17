@@ -1398,12 +1398,16 @@ class Order:
     def __init__(self, order_object):
         self.id = order_object.id_order
         self.name = order_object.order_name
-        self.isReady = bool(order_object.is_ready)
+        self.isReady = self.get_isReady()
         self.isSent = bool(order_object.is_sent)
         self.date = order_object.creation_date
         self.client = order_object.f_id_client.client_name
         self._set_computer_count()
         self._set_testers()
+
+    def get_isReady(self):
+        count = CompOrd.objects.filter(f_order_id_to_order=self.id, is_ready=0).count()
+        return not count >= 1
 
     def _set_computer_count(self):
         self.count = CompOrd.objects.filter(f_order_id_to_order=self.id).count()
@@ -1437,7 +1441,6 @@ class Order:
 class OrdersClass:
 
     def __init__(self):
-        print("Orders class initiated")
         self.order_list = []
         self._set_orders()
 
@@ -1507,6 +1510,7 @@ class OrderToEdit:
         return "\r\n".join(self.error_list)
 
     def set_new_data(self, data_dict):
+        print(data_dict)
         def _validate():
             fieldnames = (
                 'order_id',
@@ -1523,12 +1527,15 @@ class OrderToEdit:
             for i in range(len(fieldnames)):
                 if data_dict.get(fieldnames[i]) == "" or data_dict.get(fieldnames[i]) is None:
                     self.error_list.append(error_messages[i])
+            if self.order.isSent:
+                self.error_list.append('Sent orders are not allowed for editing')
 
         def _save():
             order = Orders.objects.get(id_order=order_id)
             order.order_name = new_order_name
             client = Clients.objects.get_or_create(client_name=new_client_name)[0]
             order.f_id_client = client
+            order.isReady = new_is_sent_status
             order.save()
             OrdTes.objects.filter(f_order=order).delete()
             for tester_name in testers:
@@ -1547,6 +1554,12 @@ class OrderToEdit:
             new_order_name = data_dict.pop('order_name')[0]
             new_client_name = data_dict.pop('client_name')[0]
             testers = data_dict.pop('tes')
+            new_is_sent_status = 0
+            if 'set_as_sent' in data_dict:
+                received_is_sent_status = data_dict.pop('set_as_sent')[0]
+                if received_is_sent_status == 'on':
+                    new_is_sent_status=1
+            print(new_is_sent_status)
             statuses = []
             for key, value in data_dict.items():
                 if 'status' in key:

@@ -334,7 +334,7 @@ background: transparent;
 }
 
 .menu2 {
-		height: 30px;
+	height: 30px;
     background-color: ghostwhite;
     border-style: solid;
     border-color: gainsboro;
@@ -343,7 +343,7 @@ background: transparent;
     margin-bottom: 5px;
     float: left;
     text-align: left;
-		padding: 5px;
+	padding: 5px;
     border-radius: 2px;
 }
 

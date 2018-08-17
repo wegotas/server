@@ -284,6 +284,7 @@ function formationOfURL(parameterString) {
     pattern = new RegExp(regString, "g");
     href = href.replace(pattern, "");
   }
+  console.log(href + parameterString)
   return href + parameterString;
 }
 
@@ -308,7 +309,6 @@ function search_using_keyword() {
       location.href = href + '?keyword=' + searchKeyword
     }
   }
-
 }
 
 function search() {
@@ -374,11 +374,10 @@ function mass_excel() {
 
       link.href = objectURL;
       link.href = URL.createObjectURL( blob );
-      link.download =  'excel.xlsx';
+      link.download = 'excel.xlsx';
       link.click();
       }
   }
-
 }
 
 function mass_catchange(element) {
