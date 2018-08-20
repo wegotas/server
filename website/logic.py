@@ -1377,7 +1377,6 @@ class NewOrder:
         client = self._get_or_save_client()
         order = Orders(
             order_name=self.data.pop('order_name')[0],
-            is_ready=0,
             is_sent=0,
             creation_date=timezone.now(),
             f_id_client=client
