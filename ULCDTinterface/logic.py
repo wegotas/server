@@ -26,78 +26,39 @@ class Computer_record():
             self.is_sold = data_dict["IsSold"]
             print("IsSold: " + str(self.is_sold))
             self.price = self._price_get(data_dict["Price"])
-            # self.timenow = datetime.datetime.now()
             self.timenow = timezone.now()
-            # self.computer = self._computer_save_and_get(data_dict)
-            """
-            if data_dict["Category"] == "Sold":
-                print("Computer id: " + str(self.computer.id_computer))
-                bat1 = self._battery_save_and_get(
-                    data_dict["Bat1 serial"],
-                    data_dict["Bat1 wear"],
-                    data_dict["Bat1 expected time"]
-                )
-                self._bat_to_comp_relation_creation(bat1)
-
-                bat2 = self._battery_save_and_get(
-                    data_dict["Bat2 serial"],
-                    data_dict["Bat2 wear"],
-                    data_dict["Bat2 expected time"]
-                )
-                self._bat_to_comp_relation_creation(bat2)
-
-                ram1 = self._ram_save_and_get(data_dict["ram_serial1"])
-                self._ram_to_comp_relation_creation(ram1)
-                ram2 = self._ram_save_and_get(data_dict["ram_serial2"])
-                self._ram_to_comp_relation_creation(ram2)
-                ram3 = self._ram_save_and_get(data_dict["ram_serial3"])
-                self._ram_to_comp_relation_creation(ram3)
-                ram4 = self._ram_save_and_get(data_dict["ram_serial4"])
-                self._ram_to_comp_relation_creation(ram4)
-                ram5 = self._ram_save_and_get(data_dict["ram_serial5"])
-                self._ram_to_comp_relation_creation(ram5)
-                ram6 = self._ram_save_and_get(data_dict["ram_serial6"])
-                self._ram_to_comp_relation_creation(ram6)
-
-                hdd1 = self._hdd_save_and_get(data_dict["hdd_serial1"])
-                self._hdd_to_comp_relation_creation(hdd1)
-                hdd2 = self._hdd_save_and_get(data_dict["hdd_serial2"])
-                self._hdd_to_comp_relation_creation(hdd2)
-                hdd3 = self._hdd_save_and_get(data_dict["hdd_serial3"])
-                self._hdd_to_comp_relation_creation(hdd3)
-                self.message += "Sold category's additional serial fields have been processed\n"
-            """
             if self.is_sold:
                 self.client = self._client_save_and_get(data_dict["Client"])
                 self.sale = self._sale_save_and_get(self.client)
                 self.computer = self._computer_sold_save_and_get(data_dict)
+                self.message += "Sold have been processed\n"
 
-                bat1 = self._battery_save_and_get(
-                    data_dict["Bat1 serial"],
-                    data_dict["Bat1 wear"],
-                    data_dict["Bat1 expected time"]
-                )
-                self._bat_to_comp_relation_creation(bat1)
-
-                bat2 = self._battery_save_and_get(
-                    data_dict["Bat2 serial"],
-                    data_dict["Bat2 wear"],
-                    data_dict["Bat2 expected time"]
-                )
-                self._bat_to_comp_relation_creation(bat2)
-
-                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial1"]))
-                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial2"]))
-                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial3"]))
-                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial4"]))
-                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial5"]))
-                self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial6"]))
-
-                self._hdd_to_comp_relation_creation(self._hdd_save_and_get(data_dict["hdd_serial1"]))
-                self._hdd_to_comp_relation_creation(self._hdd_save_and_get(data_dict["hdd_serial2"]))
-                self._hdd_to_comp_relation_creation(self._hdd_save_and_get(data_dict["hdd_serial3"]))
             else:
                 self.computer = self._computer_save_and_get(data_dict)
+            bat1 = self._battery_save_and_get(
+                data_dict["Bat1 serial"],
+                data_dict["Bat1 wear"],
+                data_dict["Bat1 expected time"]
+            )
+            self._bat_to_comp_relation_creation(bat1)
+
+            bat2 = self._battery_save_and_get(
+                data_dict["Bat2 serial"],
+                data_dict["Bat2 wear"],
+                data_dict["Bat2 expected time"]
+            )
+            self._bat_to_comp_relation_creation(bat2)
+
+            self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial1"]))
+            self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial2"]))
+            self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial3"]))
+            self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial4"]))
+            self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial5"]))
+            self._ram_to_comp_relation_creation(self._ram_save_and_get(data_dict["ram_serial6"]))
+
+            self._hdd_to_comp_relation_creation(self._hdd_save_and_get(data_dict["hdd_serial1"]))
+            self._hdd_to_comp_relation_creation(self._hdd_save_and_get(data_dict["hdd_serial2"]))
+            self._hdd_to_comp_relation_creation(self._hdd_save_and_get(data_dict["hdd_serial3"]))
             self.message += "Success"
             self.success = True
         except decimal.InvalidOperation as e:

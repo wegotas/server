@@ -12,19 +12,18 @@
         <div class="error">{{ error_message|linebreaks }}</div>
         <table>
             <tr>
-                <tr>
                 <th>Order id:</th>
                 <td><input class="textbox" type="text" name="order_id" value="{{ ote.order.id }}" readonly></td>
                 <td rowspan="6" class="multiple-checkbox-holder">
                     <div class="item title"><b>Testers:</b></div>
                     {% for tester in ote.testers %}
                     <div class="item">
-                        <input type="checkbox" name="tes" value="{{ tester.tester_name }}" class="chkbx blockableCheckbox"{% if tester.assigned %} checked{% endif %}>
+                        <input type="checkbox" name="tes" value="{{ tester.tester_name }}" class="chkbx blockableCheckbox"{% if tester.assigned %} checked{% endif %}{% if ote.order.isSent %} disabled{% endif %}>
                         <div class="chkbx-title">'{{ tester.tester_name }}'</div>
                     </div>
                     {% endfor %}
                 </td>
-                <td rowspan="5"><button type="submit">Submit</button></td>
+                <td rowspan="5"><button type="submit"{% if ote.order.isSent %} disabled{% endif %}>Submit</button></td>
             </tr>
             </tr>
             <tr>
@@ -33,11 +32,11 @@
             </tr>
             <tr>
                 <th>Order name:</th>
-                <td><input class="textbox blockable" name="order_name" type="text" value="{{ ote.order.name }}"></td>
+                <td><input class="textbox blockable" name="order_name" type="text" value="{{ ote.order.name }}"{% if ote.order.isSent %} readonly{% endif %}></td>
             </tr>
             <tr>
                 <th>Client name:</th>
-                <td><input class="textbox blockable" name="client_name" type="text" value="{{ ote.order.client }}"></td>
+                <td><input class="textbox blockable" name="client_name" type="text" value="{{ ote.order.client }}"{% if ote.order.isSent %} readonly{% endif %}></td>
             </tr>
             <tr>
                 <th>Status:</th>
@@ -46,7 +45,7 @@
             {% if ote.order.isReady %}
             <tr>
                 <td colspan="2">
-                    <div class="checkbox-wrapper">Set as sent <input class="checkbox" type="checkbox" name="set_as_sent" id="locker" onclick="disableElements(this)"></div>
+                    <div class="checkbox-wrapper">Set as sent <input class="checkbox" type="checkbox" name="set_as_sent" id="locker" onclick="disableElements(this)"{% if ote.order.isSent %} checked disabled{% endif %}></div>
                 </td>
             </tr>
             {% endif %}
@@ -55,6 +54,7 @@
         <table class="mainTable">
             <thead>
                 <tr>
+                    <th>Nr</th>
                     <th>Serial</th>
                     <th>Manufacturer</th>
                     <th>Model</th>
@@ -69,6 +69,8 @@
             <tbody>
                 {% for computer in ote.computers %}
                 <tr>
+                    {{ ote.increment }}
+                    <td>{{ ote.count }}</td>
                     <td>{{ computer.computer_serial }}</td>
                     <td>{{ computer.f_manufacturer.manufacturer_name }}</td>
                     <td>{{ computer.f_model.model_name }}</td>
@@ -77,7 +79,7 @@
                     <td>{{ computer.f_ram_size.ram_size_text }}</td>
                     <td>{{ computer.other }}</td>
                     <td>
-                        <select name="status_{{ computer.id_computer }}" class="blockableSelect">
+                        <select name="status_{{ computer.id_computer }}" class="blockableSelect"{% if ote.order.isSent %} disabled{% endif %}>
                             <option value="In-Preperation"{% if computer.f_id_comp_ord.is_ready == 0 %} selected{% endif %}>In-Preperation</option>
                             <option value="Ready"{% if computer.f_id_comp_ord.is_ready == 1 %} selected{% endif %}>Ready</option>
                         </select>

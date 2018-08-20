@@ -279,7 +279,6 @@ def ord_assign(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    print(data)
     assignComputersToOrderUsingDict(data)
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
@@ -295,7 +294,6 @@ def categories(request):
     if request.method == 'GET':
         print("This was GET request")
     categories = get_categories_list()
-    print(categories)
     template = loader.get_template('items.html')
     return HttpResponse(template.render({'items': categories}, request))
 

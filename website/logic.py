@@ -913,20 +913,19 @@ def get_categories_list():
 
 def save_category(name):
     if name != "":
-        category = Categories(category_name=name)
-        category.save()
+        Categories.objects.get_or_create(category_name=name)
 
 
 def edit_category(data):
     cat = Categories.objects.get(id_category=data["ItemId"])
-    if cat.permanent == 0:
+    if cat.permanent != 1:
         cat.category_name = data["ItemName"]
         cat.save()
 
 
 def deleteCategory(index):
     cat = Categories.objects.get(id_category=index)
-    if cat.permanent == 0:
+    if cat.permanent != 1:
         cat.delete()
 
 
@@ -941,8 +940,7 @@ def get_types_list():
 
 def save_type(name):
     if name != "":
-        typ = Types(type_name=name)
-        typ.save()
+        Types.objects.get_or_create(type_name=name)
 
 
 def edit_type(data):
@@ -967,8 +965,7 @@ def get_testers_list():
 
 def save_tester(name):
     if name != "":
-        tester = Testers(tester_name=name)
-        tester.save()
+        Testers.objects.get_or_create(tester_name=name)
 
 
 def edit_tester(data):
@@ -1405,6 +1402,7 @@ class Order:
         self._set_computer_count()
         self._set_testers()
 
+
     def get_isReady(self):
         count = CompOrd.objects.filter(f_order_id_to_order=self.id, is_ready=0).count()
         return not count >= 1
@@ -1486,6 +1484,11 @@ class OrderToEdit:
         self._get_computers_from_order()
         self._get_testers()
         self.error_list = []
+        self.count = 0
+
+    def increment(self):
+        self.count += 1
+        return ''
 
     def _get_order(self, index):
         ord = Orders.objects.get(id_order=index)
@@ -1510,7 +1513,6 @@ class OrderToEdit:
         return "\r\n".join(self.error_list)
 
     def set_new_data(self, data_dict):
-        print(data_dict)
         def _validate():
             fieldnames = (
                 'order_id',
@@ -1535,8 +1537,12 @@ class OrderToEdit:
             order.order_name = new_order_name
             client = Clients.objects.get_or_create(client_name=new_client_name)[0]
             order.f_id_client = client
-            order.isReady = new_is_sent_status
+            order.is_sent = new_is_sent_status
             order.save()
+            sale = None
+            if new_is_sent_status == 1:
+                sale = Sales(date_of_sale=timezone.now(), f_id_client=order.f_id_client)
+                sale.save()
             OrdTes.objects.filter(f_order=order).delete()
             for tester_name in testers:
                 tester = Testers.objects.get(tester_name=tester_name)
@@ -1547,6 +1553,14 @@ class OrderToEdit:
                 compord = CompOrd.objects.get(id_comp_ord=computer.f_id_comp_ord.id_comp_ord)
                 compord.is_ready = status_holder.value
                 compord.save()
+                computer.f_sale = sale
+                computer.save()
+
+            """
+            if new_is_sent_status==1:
+                for status_holder in statuses:
+                    computer = Computers.objects.get(id_computer=status_holder.computer_id)
+            """
 
         _validate()
         if len(self.error_list) == 0:
@@ -1558,8 +1572,7 @@ class OrderToEdit:
             if 'set_as_sent' in data_dict:
                 received_is_sent_status = data_dict.pop('set_as_sent')[0]
                 if received_is_sent_status == 'on':
-                    new_is_sent_status=1
-            print(new_is_sent_status)
+                    new_is_sent_status = 1
             statuses = []
             for key, value in data_dict.items():
                 if 'status' in key:
