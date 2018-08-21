@@ -461,6 +461,7 @@ class AutoFiltersFromComputers:
     def _get_serials(self):
         serials = self.computers.values('computer_serial').distinct()
         self.serials = [a['computer_serial'] for a in serials]
+        self.serials.sort()
 
     def _get_manufacturers(self):
         manufacturers = self.computers.values('f_manufacturer').distinct()
@@ -469,6 +470,7 @@ class AutoFiltersFromComputers:
         for id in manufacturers_id:
             man = Manufacturers.objects.get(id_manufacturer=id)
             self.manufacturers.append(man.manufacturer_name)
+        self.manufacturers.sort()
 
     def _getModels(self):
         models = self.computers.values('f_model').distinct()
@@ -477,6 +479,7 @@ class AutoFiltersFromComputers:
         for id in models_id:
             mod = Models.objects.get(id_model=id)
             self.models.append(mod.model_name)
+        self.models.sort()
 
     def _getCpus(self):
         cpus = self.computers.values('f_cpu').distinct()
@@ -488,6 +491,7 @@ class AutoFiltersFromComputers:
             else:
                 cpu = Cpus.objects.get(id_cpu=id)
                 self.cpus.append(cpu.cpu_name)
+        self.cpus.sort()
 
     def _getRams(self):
         rams = self.computers.values('f_ram_size').distinct()
@@ -499,6 +503,7 @@ class AutoFiltersFromComputers:
             else:
                 ram = RamSizes.objects.get(id_ram_size=id)
                 self.rams.append(ram.ram_size_text)
+        self.rams.sort()
 
     def _getGpus(self):
         gpus = self.computers.values('f_gpu').distinct()
@@ -510,6 +515,7 @@ class AutoFiltersFromComputers:
             else:
                 gpu = Gpus.objects.get(id_gpu=id)
                 self.gpus.append(gpu.gpu_name)
+        self.gpus.sort()
 
     def _getScreens(self):
         screens = self.computers.values("f_diagonal").distinct()
@@ -521,10 +527,12 @@ class AutoFiltersFromComputers:
             else:
                 screen = Diagonals.objects.get(id_diagonal=id)
                 self.screens.append(screen.diagonal_text)
+        self.screens.sort()
 
     def _getOther(self):
         others = self.computers.values("other").distinct()
         self.others = [a['other'] for a in others]
+        self.others.sort()
 
 
 class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
@@ -539,6 +547,7 @@ class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
     def _getPrice(self):
         prices = self.computers.values("price").distinct()
         self.prices = [a['price'] for a in prices]
+        self.prices.sort()
 
     def _getDateOfSale(self):
         sales = self.computers.values("f_sale").distinct()
@@ -551,6 +560,7 @@ class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
                 sale = Sales.objects.get(id_sale=id)
                 self.dates.append(sale.getDate())
         self.dates = list(set(self.dates))
+        self.dates.sort()
 
     def _getClients(self):
         sales = self.computers.values("f_sale").distinct()
@@ -563,6 +573,7 @@ class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
                 sale = Sales.objects.get(id_sale=id)
                 self.clients.append(sale.f_id_client.client_name)
         self.clients = list(set(self.clients))
+        self.clients.sort()
 
 
 class CatTyp:
@@ -1435,17 +1446,88 @@ class Order:
             return statuses[0]
 
 
+class OrdersClassAutoFilter:
+
+    def __init__(self, orders):
+        self.names = []
+        self.clients = []
+        self.qtys = []
+        self.dates = []
+        self.testers = []
+        self.statuses = []
+        for order in orders:
+            self.names.append(order.name)
+            self.clients.append(order.client)
+            self.qtys.append(order.count)
+            self.dates.append(order.date)
+            self.testers.extend(order.testers)
+            self.statuses.append(order.get_status())
+        self.names = self.removeDuplicatesAndSort(self.names)
+        self.clients = self.removeDuplicatesAndSort(self.clients)
+        self.qtys = self.removeDuplicatesAndSort(self.qtys)
+        self.dates = self.removeDuplicatesAndSort(self.dates)
+        self.testers = self.removeDuplicatesAndSort(self.testers)
+        self.statuses = self.removeDuplicatesAndSort(self.statuses)
+
+    def removeDuplicatesAndSort(self, lst):
+        lst = list(set(lst))
+        lst.sort()
+        return lst
+
+
 class OrdersClass:
 
     def __init__(self):
         self.order_list = []
         self._set_orders()
+        self.autoFilters = OrdersClassAutoFilter(self.order_list)
 
     def _set_orders(self):
         orders = Orders.objects.all()
         for ord in orders:
             order = Order(ord)
             self.order_list.append(order)
+
+    def filter(self, data_dict):
+        keys = ('ord-af', 'clt-af', 'qty-af', 'dat-af', 'tes-af', 'sta-af')
+        new_dict = {}
+        if 'orders' in data_dict:
+            data_dict.pop('orders')
+        for key in keys:
+            if key in data_dict:
+                new_dict[key] = data_dict.pop(key)
+        for key, value in new_dict.items():
+            if key == 'ord-af':
+                print('ord-af')
+                for order in self.order_list[:]:
+                    if not order.name in new_dict['ord-af']:
+                        self.order_list.remove(order)
+            elif key == 'clt-af':
+                print('clt-af')
+                for order in self.order_list[:]:
+                    if not order.client in new_dict['clt-af']:
+                        self.order_list.remove(order)
+            elif key == 'qty-af':
+                print('qty-af')
+                for order in self.order_list[:]:
+                    if not str(order.count) in new_dict['qty-af']:
+                        self.order_list.remove(order)
+            elif key == 'dat-af':
+                print('dat-af')
+                for order in self.order_list[:]:
+                    if not str(order.date) in new_dict['dat-af']:
+                        self.order_list.remove(order)
+            elif key == 'tes-af':
+                print('tes-af')
+                for order in self.order_list[:]:
+                    if not all(x in order.testers for x in new_dict['tes-af']):
+                        self.order_list.remove(order)
+            elif key == 'sta-af':
+                print('sta-af')
+                for order in self.order_list[:]:
+                    if not order.get_status() in new_dict['sta-af']:
+                        self.order_list.remove(order)
+        self.autoFilters = OrdersClassAutoFilter(self.order_list)
 
 
 class PossibleOrders:
@@ -1454,7 +1536,12 @@ class PossibleOrders:
         self._set_orders()
 
     def _set_orders(self):
-        self.orders = [record[0] for record in Orders.objects.values_list("order_name")]
+        # self.orders = [record[0] for record in Orders.objects.values_list("order_name")]
+        self.orders = []
+        orders = Orders.objects.all()
+        for order in orders:
+            if order.is_sent != 1:
+                self.orders.append(order.order_name)
 
 
 def assignComputersToOrderUsingDict(dict):

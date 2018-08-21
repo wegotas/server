@@ -52,6 +52,7 @@ def index(request):
     elif isOrder:
         counter = Counter()
         orders = OrdersClass()
+        orders.filter(data_dict)
         return render(request, 'orders.html', {
             "counter": counter,
             "cattyp": cattyp,
