@@ -545,8 +545,18 @@ class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
         super(AutoFiltersFromSoldComputers, self).__init__(computers)
 
     def _getPrice(self):
+        """
+        def toStr(objct):
+            if objct is None:
+                return ''
+            else:
+                return str(objct)
+
         prices = self.computers.values("price").distinct()
-        self.prices = [a['price'] for a in prices]
+        self.prices = [toStr(a['price']) for a in prices]
+        """
+        prices = self.computers.values("price").distinct()
+        self.prices = [str(a['price']) for a in prices]
         self.prices.sort()
 
     def _getDateOfSale(self):
@@ -1209,6 +1219,11 @@ class AutoFilter():
             elif key == 'dos-af':
                 computers = computers.filter(f_sale__date_of_sale__in=value)
             elif key == 'pri-af':
+                '''
+                for idx in range(len(value)):
+                    if value[idx] == '':
+                        value[idx] = None
+                '''
                 computers = computers.filter(price__in=value)
         return computers
 

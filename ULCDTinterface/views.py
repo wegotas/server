@@ -56,6 +56,10 @@ def process_data(request):
             dict_to_send['HDD Cover'] = existing_computer.hdd_cover
             dict_to_send['RAM Cover'] = existing_computer.ram_cover
             dict_to_send['Other'] = existing_computer.other
+            if existing_computer.f_id_comp_ord is not None:
+                print('This is not None')
+            else:
+                print('This is None')
             return JsonResponse(dict_to_send)
         except Exception as e:
             if str(e) == 'Computers matching query does not exist.':
