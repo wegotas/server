@@ -304,7 +304,7 @@ class Computer_record():
         return gpu
 
     def _hddSizes_save_and_get(self, value):
-        hddSize = HddSizes.objects.get_or_create(hdd_size_text=value)[0]
+        hddSize = HddSizes.objects.get_or_create(hdd_sizes_name=value)[0]
         hddSize.save()
         return hddSize
 

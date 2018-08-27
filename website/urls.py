@@ -22,5 +22,6 @@ urlpatterns = [
     path('test/edit/', views.tes_edit, name='testEdit'),
     path('test/', views.testers, name='testers'),
     path('cat_to_sold/', views.cat_to_sold, name='cat_to_sold'),
+    # path('main/', views.main, name='main'),
     path('', views.index, name='index')
 ]

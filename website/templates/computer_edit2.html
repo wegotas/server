@@ -214,14 +214,14 @@ input:read-only {
                 <th>HDD:</th>
                 <td>
                     <!--
-                    <input type="text" name="hdd_size_text" value="{{ computer.f_hdd_size.hdd_size_text }}">
+                    <input type="text" name="hdd_sizes_name" value="{{ computer.f_hdd_size.hdd_sizes_name }}">
                     -->
-                    <input list="hdd_sizes" name="hdd_size_text" value="{{ computer.f_hdd_size.hdd_size_text }}">
+                    <input list="hdd_sizes" name="hdd_sizes_name" value="{{ computer.f_hdd_size.hdd_sizes_name }}">
                     <datalist id="hdd_sizes">
                         {% for hdd in rc.hdds %}
                         <option
                                 value="{{ hdd }}"
-                                {% if hdd == computer.f_hdd_size.hdd_size_text %} selected="selected"{% endif %}
+                                {% if hdd == computer.f_hdd_size.hdd_sizes_name %} selected="selected"{% endif %}
                         ></option>
                         {% endfor %}
                     </datalist>

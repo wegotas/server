@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main page</title>
+    <meta name="description" content="Write some words to describe your html page">
+    <link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/leaf.png' %}">
+    <script type="text/javascript" src="{% static 'index.js' %}"></script>
+</head>
+<body>
+    {% include 'searchSubTemplate.html' %}
+    <div class="blended_grid">
+        {% include 'navbarSubTemplate.html' %}
+        <div>
+            {% include 'leftMenuSubTemplate.html' %}
+            {% include 'tableSubTemplate.html' %}
+        </div>
+    </div>
+</body>
+</html>

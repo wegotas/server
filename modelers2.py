@@ -110,7 +110,7 @@ class Gpus(models.Model):
 
 class HddSizes(models.Model):
     id_hdd_sizes = models.AutoField(primary_key=True)
-    hdd_size_text = models.CharField(max_length=45)
+    hdd_sizes_name = models.CharField(max_length=45)
 
     class Meta:
         managed = False

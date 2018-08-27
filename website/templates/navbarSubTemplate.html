@@ -1,0 +1,25 @@
+{% block 'navbar' %}
+<div class="navbar">
+    {% for ct in cattyp.innerList %}
+    <div class="dropdown">
+        <button href="laptops/" class="dropbtn">{{ ct.type }}&#9660;</button>
+        <div class="dropdown-content">
+            {% for cat in ct.innerList %}
+            <a href="?type={{ ct.type }}&cat={{ cat }}&sold=False">{{ cat }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    <a href="?sold=True">Sold</a>
+    <a href="?orders=True">Orders</a>
+    <div class="dropdown">
+        <button href="" class="dropbtn">Data storage&#9660;</button>
+        <div class="dropdown-content">
+            <a href="">2.5mm</a>
+            <a href="">3.5mm</a>
+            <a href="">SSD</a>
+            <a href="">kita</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

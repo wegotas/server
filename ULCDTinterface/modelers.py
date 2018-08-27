@@ -13,7 +13,7 @@ class Bioses(models.Model):
     bios_text = models.CharField(max_length=45)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'BIOSes'
 
 
@@ -78,7 +78,7 @@ class CompOrd(models.Model):
     f_order_id_to_order = models.ForeignKey('Orders', models.DO_NOTHING, db_column='f_order_id_to_order')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Comp/Ord'
 
 
@@ -97,15 +97,15 @@ class Computers(models.Model):
     f_diagonal = models.ForeignKey('Diagonals', models.DO_NOTHING, blank=True, null=True)
     f_license = models.ForeignKey('Licenses', models.DO_NOTHING, blank=True, null=True)
     f_camera = models.ForeignKey(CameraOptions, models.DO_NOTHING, blank=True, null=True)
-    cover = models.CharField(max_length=45, blank=True, null=True)
-    display = models.CharField(max_length=45, blank=True, null=True)
-    bezel = models.CharField(max_length=45, blank=True, null=True)
-    keyboard = models.CharField(max_length=45, blank=True, null=True)
-    mouse = models.CharField(max_length=45, blank=True, null=True)
-    sound = models.CharField(max_length=45, blank=True, null=True)
-    cdrom = models.CharField(max_length=45, blank=True, null=True)
-    hdd_cover = models.CharField(max_length=45, blank=True, null=True)
-    ram_cover = models.CharField(max_length=45, blank=True, null=True)
+    cover = models.CharField(max_length=125, blank=True, null=True)
+    display = models.CharField(max_length=125, blank=True, null=True)
+    bezel = models.CharField(max_length=125, blank=True, null=True)
+    keyboard = models.CharField(max_length=125, blank=True, null=True)
+    mouse = models.CharField(max_length=125, blank=True, null=True)
+    sound = models.CharField(max_length=125, blank=True, null=True)
+    cdrom = models.CharField(max_length=125, blank=True, null=True)
+    hdd_cover = models.CharField(max_length=125, blank=True, null=True)
+    ram_cover = models.CharField(max_length=125, blank=True, null=True)
     other = models.CharField(max_length=300, blank=True, null=True)
     f_tester = models.ForeignKey('Testers', models.DO_NOTHING, blank=True, null=True)
     date = models.DateField() # models.DateTimeField(blank=True, null=True)
@@ -135,6 +135,25 @@ class Diagonals(models.Model):
         db_table = 'Diagonals'
 
 
+class Document(models.Model):
+    document_id = models.AutoField(primary_key=True)
+    document = models.CharField(max_length=100)
+    uploaded_at = models.DateField()
+
+    class Meta:
+        managed = True
+        db_table = 'Document'
+
+
+class FormFactor(models.Model):
+    form_factor_id = models.AutoField(primary_key=True)
+    form_factor_name = models.CharField(db_column='Form_factor_name', max_length=45)  # Field name made lowercase.
+
+    class Meta:
+        managed = True
+        db_table = 'Form_factor'
+
+
 class Gpus(models.Model):
     id_gpu = models.AutoField(primary_key=True)
     gpu_name = models.CharField(max_length=45)
@@ -144,22 +163,61 @@ class Gpus(models.Model):
         db_table = 'GPUs'
 
 
-class HddSizes(models.Model):
-    id_hdd_sizes = models.AutoField(primary_key=True)
-    hdd_size_text = models.CharField(max_length=45)
+class HddModels(models.Model):
+    hdd_models_id = models.AutoField(primary_key=True)
+    hdd_models_name = models.CharField(max_length=60)
 
     class Meta:
         managed = True
-        db_table = 'HDD_sizes'
+        db_table = 'Hdd_models'
 
 
-class Hdds(models.Model):
+class HddOrder(models.Model):
+    order_id = models.AutoField(primary_key=True)
+    order_name = models.CharField(max_length=45)
+    date_of_order = models.DateField(blank=True, null=True)
+    f_order_status = models.ForeignKey('OrderStatus', models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'Hdd_order'
+
+
+class HddSerials(models.Model):
     id_hdd = models.AutoField(primary_key=True)
     hdd_serial = models.CharField(max_length=45)
 
     class Meta:
         managed = True
-        db_table = 'HDDs'
+        db_table = 'Hdd_serials'
+
+
+class HddSizes(models.Model):
+    hdd_sizes_id = models.AutoField(primary_key=True)
+    hdd_sizes_name = models.CharField(max_length=45)
+
+    class Meta:
+        managed = True
+        db_table = 'Hdd_sizes'
+
+
+class Hdds(models.Model):
+    hdd_id = models.AutoField(primary_key=True)
+    hdd_serial = models.CharField(max_length=45, blank=True, null=True)
+    health = models.IntegerField(blank=True, null=True)
+    days_on = models.IntegerField(blank=True, null=True)
+    tar_member_name = models.CharField(max_length=200, blank=True, null=True)
+    f_lot = models.ForeignKey('Lots', models.DO_NOTHING, blank=True, null=True)
+    f_hdd_models = models.ForeignKey(HddModels, models.DO_NOTHING, blank=True, null=True)
+    f_hdd_sizes = models.ForeignKey(HddSizes, models.DO_NOTHING, blank=True, null=True)
+    f_lock_state = models.ForeignKey('LockState', models.DO_NOTHING, blank=True, null=True)
+    f_speed = models.ForeignKey('Speed', models.DO_NOTHING, blank=True, null=True)
+    f_form_factor = models.ForeignKey(FormFactor, models.DO_NOTHING, blank=True, null=True)
+    f_hdd_order = models.ForeignKey(HddOrder, models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'Hdds'
 
 
 class Licenses(models.Model):
@@ -169,6 +227,25 @@ class Licenses(models.Model):
     class Meta:
         managed = True
         db_table = 'Licenses'
+
+
+class LockState(models.Model):
+    lock_state_id = models.AutoField(primary_key=True)
+    lock_state_name = models.CharField(max_length=45)
+
+    class Meta:
+        managed = True
+        db_table = 'Lock_state'
+
+
+class Lots(models.Model):
+    lot_id = models.AutoField(primary_key=True)
+    lot_name = models.CharField(max_length=45)
+    date_of_lot = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'Lots'
 
 
 class Manufacturers(models.Model):
@@ -195,8 +272,18 @@ class OrdTes(models.Model):
     f_id_tester = models.ForeignKey('Testers', models.DO_NOTHING, db_column='f_id_tester')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Ord/Tes'
+
+
+class OrderStatus(models.Model):
+    order_status_id = models.AutoField(primary_key=True)
+    order_status_name = models.CharField(max_length=500)
+    is_shown = models.IntegerField()
+
+    class Meta:
+        managed = True
+        db_table = 'Order_status'
 
 
 class Orders(models.Model):
@@ -207,7 +294,7 @@ class Orders(models.Model):
     f_id_client = models.ForeignKey(Clients, models.DO_NOTHING, db_column='f_id_client')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Orders'
 
 
@@ -243,6 +330,15 @@ class Sales(models.Model):
             return "N/A"
         else:
             return self.date_of_sale.strftime('%Y-%m-%d')
+
+
+class Speed(models.Model):
+    speed_id = models.AutoField(primary_key=True)
+    speed_name = models.CharField(max_length=45)
+
+    class Meta:
+        managed = True
+        db_table = 'Speed'
 
 
 class Testers(models.Model):
@@ -284,7 +380,7 @@ class AuthGroup(models.Model):
         managed = True
         db_table = 'auth_group'
 
-"""
+
 class AuthGroupPermissions(models.Model):
     group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
     permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
@@ -293,7 +389,7 @@ class AuthGroupPermissions(models.Model):
         managed = True
         db_table = 'auth_group_permissions'
         unique_together = (('group', 'permission'),)
-"""
+
 
 class AuthPermission(models.Model):
     name = models.CharField(max_length=255)
@@ -322,7 +418,7 @@ class AuthUser(models.Model):
         managed = True
         db_table = 'auth_user'
 
-"""
+
 class AuthUserGroups(models.Model):
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
@@ -331,8 +427,8 @@ class AuthUserGroups(models.Model):
         managed = True
         db_table = 'auth_user_groups'
         unique_together = (('user', 'group'),)
-"""
-"""
+
+
 class AuthUserUserPermissions(models.Model):
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
@@ -341,7 +437,7 @@ class AuthUserUserPermissions(models.Model):
         managed = True
         db_table = 'auth_user_user_permissions'
         unique_together = (('user', 'permission'),)
-"""
+
 
 class BatToComp(models.Model):
     id_bat_to_comp = models.AutoField(primary_key=True)
@@ -400,7 +496,7 @@ class DjangoSession(models.Model):
 class HddToComp(models.Model):
     id_hdd_to_comp = models.AutoField(primary_key=True)
     f_id_computer_hdd_to_com = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer_hdd_to_com', blank=True, null=True)
-    f_id_hdd_hdd_to_com = models.ForeignKey(Hdds, models.DO_NOTHING, db_column='f_id_hdd_hdd_to_com', blank=True, null=True)
+    f_id_hdd_hdd_to_com = models.ForeignKey(HddSerials, models.DO_NOTHING, db_column='f_id_hdd_hdd_to_com', blank=True, null=True)
 
     class Meta:
         managed = True

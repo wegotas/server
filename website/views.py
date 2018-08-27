@@ -9,7 +9,8 @@ from rest_framework.parsers import JSONParser
 from django.db.utils import IntegrityError
 
 
-def index(request):
+'''
+def main(request):
     print("Paging")
     if request.method == 'POST':
         print("This was POST request")
@@ -101,6 +102,105 @@ def index(request):
             "poscat": possible_categories,
             "po": po,
         })
+'''
+
+
+def index(request):
+    print('test')
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+        # return render(request, 'main.html')
+    isSold = getIsSold(request)
+    isOrder = getIsOrder(request)
+    data_dict = request.GET.copy()
+    qty = getQty(data_dict)
+    page = getPage(data_dict)
+    keyword = getKeyword(data_dict)
+    autoFilters = AutoFilter(data_dict)
+    cattyp = CatTyp()
+    if isSold:
+        possible_categories = None
+        qtySelect = QtySelect()
+        qtySelect.setDefaultSelect(qty)
+        computers = Computers.objects.exclude(f_sale__isnull=True)
+        computers = autoFilters.filter(computers)
+        if keyword is not None:
+            computers = search(keyword, computers)
+        af = AutoFiltersFromSoldComputers(computers)
+        paginator = Paginator(computers, qty)
+        computers = paginator.get_page(page)
+        counter = Counter()
+        counter.count = qty * (page - 1)
+        category_querySet = Categories.objects.values_list('category_name')
+        possible_categories = []
+        for query_member in category_querySet:
+            possible_categories.append(query_member[0])
+        # cattyp = CatTyp()
+        # removeKeyword(request)
+        return render(request, 'main.html', {
+            'computers': computers,
+            "counter": counter,
+            "qtySelect": qtySelect,
+            "autoFilters": af,
+            "cattyp": cattyp,
+            "poscat": possible_categories})
+    elif isOrder:
+        counter = Counter()
+        orders = OrdersClass()
+        orders.filter(data_dict)
+        return render(request, 'main.html', {
+            "counter": counter,
+            "cattyp": cattyp,
+            "orders": orders
+        })
+    else:
+        typ = getType(data_dict)
+        cat = getCat(data_dict)
+        removeSold(data_dict)
+        possible_categories = None
+        if cat or typ:
+            qtySelect = QtySelect()
+            qtySelect.setDefaultSelect(qty)
+            typeRecord = Types.objects.filter(type_name=typ)[:1].get()
+            catRecord = Categories.objects.filter(category_name=cat)[:1].get()
+            computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category,
+                                                 f_sale=None).exclude(f_id_comp_ord__isnull=False).exclude(
+                f_sale__isnull=False)
+            computers = autoFilters.filter(computers)
+            if keyword is not None:
+                computers = search(keyword, computers)
+            af = AutoFiltersFromComputers(computers)
+            paginator = Paginator(computers, qty)
+            computers = paginator.get_page(page)
+            counter = Counter()
+            counter.count = qty * (page - 1)
+            category_querySet = Categories.objects.values_list('category_name')
+            possible_categories = []
+            for query_member in category_querySet:
+                possible_categories.append(query_member[0])
+            po = PossibleOrders()
+        else:
+            af = None
+            computers = None
+            counter = None
+            qtySelect = None
+            autoFilters = None
+            possible_types = None
+            po = PossibleOrders()
+        # cattyp = CatTyp()
+        # removeKeyword(request)
+        return render(request, 'main.html', {
+            'computers': computers,
+            "counter": counter,
+            "qtySelect": qtySelect,
+            "autoFilters": af,
+            "cattyp": cattyp,
+            "poscat": possible_categories,
+            "po": po,
+        })
+
 
 def look(request, int_index):
     print("LOOK ")

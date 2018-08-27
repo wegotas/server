@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
-from ULCDTinterface.modelers import Categories, Types, Testers, Computers, CameraOptions, Licenses
+from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp, CompOrd, OrdTes, Orders
 from ULCDTinterface.logic import Computer_record
 import json
 from urllib.parse import unquote
@@ -56,10 +56,20 @@ def process_data(request):
             dict_to_send['HDD Cover'] = existing_computer.hdd_cover
             dict_to_send['RAM Cover'] = existing_computer.ram_cover
             dict_to_send['Other'] = existing_computer.other
-            if existing_computer.f_id_comp_ord is not None:
-                print('This is not None')
-            else:
-                print('This is None')
+            dict_to_send['Category'] = existing_computer.f_category.category_name
+            dict_to_send['Type'] = existing_computer.f_type.type_name
+            dict_to_send['Previuos tester'] = existing_computer.f_tester.tester_name
+            if existing_computer.f_id_comp_ord:
+                order_id = existing_computer.f_id_comp_ord.f_order_id_to_order.id_order
+                ordtesses = OrdTes.objects.filter(f_order=order_id)
+                testers = []
+                for ordtes in ordtesses:
+                    testers.append(ordtes.f_id_tester.tester_name)
+                dict_to_send['Testers'] = testers
+                dict_to_send['Order name'] = existing_computer.f_id_comp_ord.f_order_id_to_order.order_name
+                dict_to_send['Current status'] = "In-Preperation" if existing_computer.f_id_comp_ord.is_ready == 0 else "Ready"
+                dict_to_send['Statusses'] = ["In-Preperation", "Ready"]
+                dict_to_send['Client'] = existing_computer.f_id_comp_ord.f_order_id_to_order.f_id_client.client_name
             return JsonResponse(dict_to_send)
         except Exception as e:
             if str(e) == 'Computers matching query does not exist.':

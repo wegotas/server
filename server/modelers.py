@@ -49,6 +49,7 @@ class CameraOptions(models.Model):
 class Categories(models.Model):
     id_category = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=45)
+    permanent = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -133,7 +134,7 @@ class Gpus(models.Model):
 
 class HddSizes(models.Model):
     id_hdd_sizes = models.AutoField(primary_key=True)
-    hdd_size_text = models.CharField(max_length=45)
+    hdd_sizes_name = models.CharField(max_length=45)
 
     class Meta:
         managed = False
@@ -374,3 +375,4 @@ class RamToComp(models.Model):
     class Meta:
         managed = False
         db_table = 'ram_to_comp'
+

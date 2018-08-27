@@ -113,7 +113,7 @@ class Edit_computer_record():
         self._camera_option_save(self.data_dict.pop("option_name", "")[0])
         self._diagonal_save(self.data_dict.pop("diagonal_text", "")[0])
         self._gpu_save(self.data_dict.pop("gpu_name", "")[0])
-        self._hddsize_save(self.data_dict.pop("hdd_size_text", "")[0])
+        self._hddsize_save(self.data_dict.pop("hdd_sizes_name", "")[0])
         self._license_save(self.data_dict.pop("license_name", "")[0])
         self._manufacturer_save(self.data_dict.pop("manufacturer_name", "")[0])
         self._model_save(self.data_dict.pop("model_name", "")[0])
@@ -284,7 +284,7 @@ class Edit_computer_record():
         self.gpu = Gpus.objects.get_or_create(gpu_name=value)[0]
 
     def _hddsize_save(self, value):
-        self.hddsize = HddSizes.objects.get_or_create(hdd_size_text=value)[0]
+        self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name=value)[0]
 
     def _license_save(self, value):
         self.license = Licenses.objects.get_or_create(license_name=value)[0]
@@ -310,7 +310,7 @@ def edit_post(data_dict):
     cpu = data_dict.pop("cpu_name", "")[0]
     gpu = data_dict.pop("gpu_name", "")[0]
     ram_size = data_dict.pop("ram_size_text", "")[0]
-    hdd_size = data_dict.pop("hdd_size_text", "")[0]
+    hdd_size = data_dict.pop("hdd_sizes_name", "")[0]
     diagonal = data_dict.pop("diagonal_text", "")[0]
     license_name = data_dict.pop("license_name", "")[0]
     option_name = data_dict.pop("option_name", "")[0]
@@ -764,6 +764,9 @@ def changeCategoriesUsingDict(dict):
 
 
 def createExcelFile(indexes):
+    unwantedCommentsParts = ('ok', '\t', '-', '0k', 'Ok,' 'ok;', 'Ok;', 'oik', 'oko', 'ok,', '\n', '+', 'ook', '\nok', '0k', 'n;', 'n,', 'n ', 'other', )
+    unwantedComments = ('o', 'n', 'k', 'NULL', 'None', 'ko')
+
     memfile = io.BytesIO()
     workbook = xlsxwriter.Workbook(memfile)
     worksheet = workbook.add_worksheet()
@@ -863,7 +866,7 @@ def _get_gpu_name(computer):
 def _get_hdd_size(computer):
     hdd_size = ""
     try:
-        hdd_size = computer.f_hdd_size.hdd_size_text
+        hdd_size = computer.f_hdd_size.hdd_sizes_name
     except:
         hdd_size = "N/A"
     return hdd_size
@@ -1097,7 +1100,7 @@ class record_to_add():
         self.ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data.get("ram_size_text"))[0]
 
     def _save_and_get_hdd_size(self):
-        self.hddsize = HddSizes.objects.get_or_create(hdd_size_text=self.data.get("hdd_size_text"))[0]
+        self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name=self.data.get("hdd_sizes_name"))[0]
 
     def _save_and_get_diagonal(self):
         self.diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data.get("diagonal_text"))[0]
@@ -1171,7 +1174,7 @@ class RecordChoices:
         self.rams = [record[0] for record in RamSizes.objects.values_list("ram_size_text")]
 
     def _set_hdds(self):
-        self.hdds = [record[0] for record in HddSizes.objects.values_list("hdd_size_text")]
+        self.hdds = [record[0] for record in HddSizes.objects.values_list("hdd_sizes_name")]
 
     def _set_diagonals(self):
         self.diagonals = [record[0] for record in Diagonals.objects.values_list("diagonal_text")]
@@ -1694,3 +1697,4 @@ class StatusHolder:
             self.value = self.statuses.index(value)
         except ValueError:
             pass
+
