@@ -1,0 +1,255 @@
+{% block 'hdds' %}
+<div class="menu2">
+    <div id="filter" class="menu-div">
+        <div class="item">
+            <button type="button" class="button img-button" onclick="applyAFs()">Filter</button>
+        </div>
+    </div>
+</div>
+<div class="pageContent">
+    <table class="main-table">
+        <thead>
+            <tr class="header-row">
+                <th>Nr.</th>
+                <th>
+                    <div class="tooltip">Serial:{% if 'ser-af' in hh.changedKeys %}*{% endif %}</div>
+                    <button type="button" onclick="autoFilterMenu('af-Serial')">&#8642;</button>
+                    <div id="af-Serial" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'ser-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'ser-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="ser-af">
+                            {% for afChoice in hh.autoFilters.serials %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Model{% if 'mod-af' in hh.changedKeys %}*{% endif %}
+                    <button type="button" onclick="autoFilterMenu('af-Model')">&#8642;</button>
+                    <div id="af-Model" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'mod-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'mod-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="mod-af">
+                            {% for afChoice in hh.autoFilters.models %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Size{% if 'siz-af' in hh.changedKeys %}*{% endif %}
+                    <button type="button" onclick="autoFilterMenu('af-Size')">&#8642;</button>
+                    <div id="af-Size" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'siz-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'siz-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="siz-af">
+                            {% for afChoice in hh.autoFilters.sizes %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Lock state{% if 'loc-af' in hh.changedKeys %}*{% endif %}
+                    <button type="button" onclick="autoFilterMenu('af-Lock')">&#8642;</button>
+                    <div id="af-Lock" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'loc-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'loc-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="loc-af">
+                            {% for afChoice in hh.autoFilters.locks %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Speed{% if 'spe-af' in hh.changedKeys %}*{% endif %}
+                    <button type="button" onclick="autoFilterMenu('af-Speed')">&#8642;</button>
+                    <div id="af-Speed" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'spe-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'spe-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="spe-af">
+                            {% for afChoice in hh.autoFilters.speeds %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Form factor{% if 'for-af' in hh.changedKeys %}*{% endif %}
+                    <button type="button" onclick="autoFilterMenu('af-Form')">&#8642;</button>
+                    <div id="af-Form" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'for-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'for-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="for-af">
+                            {% for afChoice in hh.autoFilters.forms %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Health{% if 'hp-af' in hh.changedKeys %}*{% endif %}
+                    <button type="button" onclick="autoFilterMenu('af-Health')">&#8642;</button>
+                    <div id="af-Health" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'hp-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'hp-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="hp-af">
+                            {% for afChoice in hh.autoFilters.healths %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Days on{% if 'day-af' in hh.changedKeys %}*{% endif %}
+                    <button type="button" onclick="autoFilterMenu('af-Days')">&#8642;</button>
+                    <div id="af-Days" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'day-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'day-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="day-af">
+                            {% for afChoice in hh.autoFilters.days %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Lot</th>
+                <th>Order</th>
+                <th>Actions:</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hdd in hh.hdds %}
+            <tr>
+                {{ hh.increment }}
+                <td>{{ hh.count }}</td>
+                <td>{{ hdd.hdd_serial }}</td>
+                <td>{{ hdd.f_hdd_models.hdd_models_name }}</td>
+                <td>{{ hdd.f_hdd_sizes.hdd_sizes_name }}</td>
+                <td>{{ hdd.f_lock_state.lock_state_name }}</td>
+                <td>{{ hdd.f_speed.speed_name }}</td>
+                <td>{{ hdd.f_form_factor.form_factor_name }}</td>
+                <td>{{ hdd.health }}%</td>
+                <td>{{ hdd.days_on }} d.</td>
+                <td>{{ hdd.f_lot.lot_name }}</td>
+                <td>{{ hdd.f_order.order_name }}</td>
+                <td>
+                    <button type="button" onclick="editHdd({{ hdd.hdd_id }}, 1)">Edit</button>
+                    <button type="button" onclick="deleteHddFromIndex({{ hdd.hdd_id }})">Delete</button>
+                    <button type="button" onclick="viewPDFfromIndex({{ hdd.hdd_id }})" {% if hdd.tar_member_name is None %}
+                            disabled{% endif %}>Pdf
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

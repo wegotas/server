@@ -84,9 +84,6 @@ input:read-only {
             <tr>
                 <th>Category:</th>
                 <td>
-                    <!--
-                    <input type="text" name="category_name" value="{{ computer.f_category.category_name }}">
-                    -->
                     <select name="category_name">
                         {% for category in rc.categories %}
                         <option
@@ -102,29 +99,13 @@ input:read-only {
             <tr>
                 <th>Manufacturer:</th>
                 <td>
-                    <!--
-                    <input type="text" name="manufacturer_name" value="{{ computer.f_manufacturer.manufacturer_name }}">
-                    -->
-                    <!--
-                    <select name="manufacturer_name">
-                        {% for manufacturer in rc.manufacturers %}
-                        <option
-                                value="{{ manufacturer }}"
-                                {% if manufacturer == computer.f_manufacturer.manufacturer_name %} selected="selected"{% endif %}
-                        >
-                            {{ manufacturer }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    -->
-
                     <input list="manufacturers" name="manufacturer_name" value="{{ computer.f_manufacturer.manufacturer_name }}">
                     <datalist id="manufacturers">
                         {% for manufacturer in rc.manufacturers %}
                         <option
                                 value="{{ manufacturer }}"
                                 {% if manufacturer == computer.f_manufacturer.manufacturer_name %} selected="selected"{% endif %}
-                        ></option>
+                        >{{ manufacturer }}</option>
                         {% endfor %}
                     </datalist>
                 </td>
@@ -132,28 +113,13 @@ input:read-only {
             <tr>
                 <th>Model:</th>
                 <td>
-                    <!--
-                    <input type="text" name="model_name" value="{{ computer.f_model.model_name }}">
-                    -->
-                    <!--
-                    <select name="model_name">
-                        {% for model in rc.models %}
-                        <option
-                                value="{{ category }}"
-                                {% if model == computer.f_model.model_name %} selected="selected"{% endif %}
-                        >
-                            {{ model }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    -->
                     <input list="models" name="model_name" value="{{ computer.f_model.model_name }}">
                     <datalist id="models">
                         {% for model in rc.models %}
                         <option
                                 value="{{ model }}"
                                 {% if model == computer.f_model.model_name %} selected="selected"{% endif %}
-                        ></option>
+                        >{{ model }}</option>
                         {% endfor %}
                     </datalist>
                 </td>
@@ -170,7 +136,7 @@ input:read-only {
                         <option
                                 value="{{ cpu }}"
                                 {% if cpu == computer.f_cpu.cpu_name %} selected="selected"{% endif %}
-                        ></option>
+                        >{{ cpu }}</option>
                         {% endfor %}
                     </datalist>
                 </td>
@@ -187,7 +153,7 @@ input:read-only {
                         <option
                                 value="{{ gpu }}"
                                 {% if gpu == computer.f_gpu.gpu_name %} selected="selected"{% endif %}
-                        ></option>
+                        >{{ gpu }}</option>
                         {% endfor %}
                     </datalist>
                 </td>
@@ -204,7 +170,7 @@ input:read-only {
                         <option
                                 value="{{ ram }}"
                                 {% if ram == computer.f_ram_size.ram_size_text %} selected="selected"{% endif %}
-                        ></option>
+                        >{{ ram }}</option>
                         {% endfor %}
                     </datalist>
                 </td>
@@ -222,7 +188,7 @@ input:read-only {
                         <option
                                 value="{{ hdd }}"
                                 {% if hdd == computer.f_hdd_size.hdd_sizes_name %} selected="selected"{% endif %}
-                        ></option>
+                        >{{ hdd }}</option>
                         {% endfor %}
                     </datalist>
                 </td>
@@ -239,7 +205,7 @@ input:read-only {
                         <option
                                 value="{{ diagonal }}"
                                 {% if diagonal == computer.f_diagonal.diagonal_text %} selected="selected"{% endif %}
-                        ></option>
+                        >{{ diagonal }}</option>
                         {% endfor %}
                     </datalist>
                 </td>
@@ -247,13 +213,9 @@ input:read-only {
             <tr>
                 <th>License:</th>
                 <td>
-                    <!--
-                    <input type="text" name="license_name" value="{{ computer.f_license.license_name }}">
-                    -->
                     <select name="license_name">
                         {% for license in rc.licenses %}
                         <option
-                                value="{{ category }}"
                                 {% if license == computer.f_license.license_name %} selected="selected"{% endif %}
                         >
                             {{ license }}
@@ -265,14 +227,10 @@ input:read-only {
             <tr>
                 <th>Camera:</th>
                 <td>
-                    <!--
-                    <input type="text" name="option_name" value="{{ computer.f_camera.option_name }}">
-                    -->
-                    <select name="option_name" value="">
+                    <select name="option_name">
                         <option value="" selected="selected" disabled hidden>Choose camera option</option>
                         {% for camera in rc.cameras %}
                         <option
-                                value="{{ manufacturer }}"
                                 {% if camera == computer.f_camera.option_name %} selected="selected"{% endif %}
                         >
                             {{ camera }}
@@ -344,13 +302,10 @@ input:read-only {
             <tr>
                 <th>Tester:</th>
                 <td>
-                    <!--
-                    <input type="text" name="tester_name" value="{{ computer.f_tester.tester_name }}">
-                    -->
-                    <select name="tester_name" value="">
+                    <select name="tester_name">
                         {% for tester in rc.testers %}
+                        {{ tester.tester_name }}
                         <option
-                                value="{{ manufacturer }}"
                                 {% if tester == computer.f_tester.tester_name %} selected="selected"{% endif %}
                         >
                             {{ tester }}

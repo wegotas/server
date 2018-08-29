@@ -1,5 +1,3 @@
-var listenerisAdded = false;
-
 function edit(index) {
   var editWindow = window.open(window.location.origin+'/website/edit/'+index+'/', "", "width=400,height=650");
 }

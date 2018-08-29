@@ -109,6 +109,7 @@ class Edit_computer_record():
 
     def __init__(self, data_dict):
         self.data_dict = data_dict
+        print(self.data_dict)
         self.data_dict.pop("edit", "")
         self.data_dict.pop("edit.x", "")
         self.data_dict.pop("edit.y", "")
@@ -124,11 +125,14 @@ class Edit_computer_record():
         self._diagonal_save(self.data_dict.pop("diagonal_text", "")[0])
         self._gpu_save(self.data_dict.pop("gpu_name", "")[0])
         self._hddsize_save(self.data_dict.pop("hdd_sizes_name", "")[0])
+        print('license name')
+        print(data_dict['license_name'])
         self._license_save(self.data_dict.pop("license_name", "")[0])
         self._manufacturer_save(self.data_dict.pop("manufacturer_name", "")[0])
         self._model_save(self.data_dict.pop("model_name", "")[0])
         self.motherboard = self.data_dict.pop("motherboard_serial", "")[0]
         self._ramsize_save(self.data_dict.pop("ram_size_text", "")[0])
+        self.computer = Computers.objects.get(id_computer=self.data_dict.pop("id_computer", "")[0])
         if "client_name" in data_dict:
             self._client_save(self.data_dict.pop("client_name", "")[0])
             self._sale_save(self.data_dict.pop("date_of_sale", "")[0])
@@ -194,6 +198,7 @@ class Edit_computer_record():
         return key.split("_")[2]
 
     def _computer_save(self):
+        """"
         self.computer = Computers(
             id_computer=self.data_dict.pop("id_computer", "")[0],
             computer_serial=self.data_dict.pop("serial", "")[0],
@@ -223,7 +228,38 @@ class Edit_computer_record():
             f_bios=self.bios,
             motherboard_serial=self.motherboard
         )
+        """
+        # self.computer.id_computer = self.data_dict.pop("id_computer", "")[0]
+        self.computer.computer_serial = self.data_dict.pop("serial", "")[0]
+        self.computer.f_type = self.type
+        self.computer.f_category = self.category
+        self.computer.f_manufacturer = self.manufacturer
+        self.computer.f_model = self.model
+        self.computer.f_cpu = self.cpu
+        self.computer.f_gpu = self.gpu
+        self.computer.f_ram_size = self.ramsize
+        self.computer.f_hdd_size = self.hddsize
+        self.computer.f_diagonal = self.diagonal
+        self.computer.f_license = self.license
+        print(self.license)
+        self.computer.f_camera = self.camera_option
+        print(self.camera_option)
+        self.computer.cover = self.data_dict.pop("cover", "")[0]
+        self.computer.display = self.data_dict.pop("display", "")[0]
+        self.computer.bezel = self.data_dict.pop("bezel", "")[0]
+        self.computer.keyboard = self.data_dict.pop("keyboard", "")[0]
+        self.computer.mouse = self.data_dict.pop("mouse", "")[0]
+        self.computer.sound = self.data_dict.pop("sound", "")[0]
+        self.computer.cdrom = self.data_dict.pop("cdrom", "")[0]
+        self.computer.hdd_cover = self.data_dict.pop("hdd_cover", "")[0]
+        self.computer.ram_cover = self.data_dict.pop("ram_cover", "")[0]
+        self.computer.other = self.data_dict.pop("other", "")[0]
+        self.computer.f_tester = self.tester
+        self.computer.date = self.data_dict.pop("date", "")[0]
+        self.computer.f_bios = self.bios
+        self.computer.motherboard_serial = self.motherboard
         self.computer.save()
+        print('_computer_save')
 
     def _computer_sold_save(self):
         self.computer = Computers(
@@ -959,12 +995,14 @@ def _get_camera_option(computer):
         camera_option = "N/A"
     return camera_option
 
+
 class item:
 
     def __init__(self, item_id, item_name, permanence=0):
         self.id = item_id
         self.name = item_name
         self.permanence = bool(permanence)
+
 
 def get_categories_list():
     cats = Categories.objects.all()
@@ -1152,6 +1190,7 @@ class record_to_add():
         self.tester = Testers.objects.get_or_create(tester_name=self.data.get("tester_name"))[0]
 
     def _save_computer(self):
+        print(self.hddsize)
         computer = Computers(
             computer_serial=self.data.get("serial"),
             f_type=self.typ,
@@ -2697,8 +2736,10 @@ class HddOrdersHolder:
 
     def set_orders(self):
         orders = HddOrder.objects.all()
+        print(orders)
         self.orders = []
         for order in orders:
-            count = Hdds.objects.filter(f_order=order).count()
+            print(order)
+            count = Hdds.objects.filter(f_hdd_order=order).count()
             oh = HddOrderHolder(order.order_id, order.order_name, order.date_of_order, order.f_order_status.order_status_name, count)
             self.orders.append(oh)

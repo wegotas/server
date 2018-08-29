@@ -106,7 +106,7 @@ def main(request):
 
 
 def index(request):
-    print('test')
+    print('index')
     if request.method == 'POST':
         print("This was POST request")
     if request.method == 'GET':
@@ -114,12 +114,26 @@ def index(request):
         # return render(request, 'main.html')
     isSold = getIsSold(request)
     isOrder = getIsOrder(request)
+
     data_dict = request.GET.copy()
     qty = getQty(data_dict)
     page = getPage(data_dict)
     keyword = getKeyword(data_dict)
     autoFilters = AutoFilter(data_dict)
     cattyp = CatTyp()
+    if 'lots' in request.GET:
+        lh = LotsHolder()
+        lh.filter(request.GET.copy())
+        return render(request, 'main.html', {"cattyp": cattyp,'lh': lh})
+    elif 'hdds' in request.GET:
+        hh = HddHolder()
+        hh.filter(request.GET.copy())
+        return render(request, 'main.html', {"cattyp": cattyp,'hh': hh})
+    elif 'hdd_orders' in request.GET:
+        # oh = 'placeholder'
+        oh = HddOrdersHolder()
+        oh.filter(request.GET.copy())
+        return render(request, 'main.html', {"cattyp": cattyp,'oh': oh})
     if isSold:
         possible_categories = None
         qtySelect = QtySelect()
@@ -235,6 +249,7 @@ def edit(request, int_index):
         batteries = get_batteries(int_index)
         rams = get_rams(int_index)
         hdds = get_hdds(int_index)
+        print(rc.manufacturers)
         return HttpResponse(
             template.render({'computer': computer,
                              'bat_list': batteries,

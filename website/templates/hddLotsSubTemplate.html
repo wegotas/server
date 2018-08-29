@@ -1,0 +1,112 @@
+{% block 'hddLots' %}
+<div class="menu2">
+    <div id="filter" class="menu-div">
+        <div class="item">
+            <button type="button" class="button img-button" onclick="applyAFs()">Filter</button>
+            <button type="button" class="button img-button" onclick="importNewLot(1)">Import new lot</button>
+        </div>
+    </div>
+</div>
+<div class="pageContent">
+    <table class="main-table">
+        <thead>
+            <tr class="header-row">
+                <th>Nr.</th>
+                <th>Lot Name:
+                    <button type="button" onclick="autoFilterMenu('af-Name')">&#8642;</button>
+                    <div id="af-Name" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'nam-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'nam-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="nam-af">
+                            {% for afChoice in lh.autoFilters.lots_names %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Date:
+                    <button type="button" onclick="autoFilterMenu('af-Date')">&#8642;</button>
+                    <div id="af-Date" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'day-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'day-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="day-af">
+                            {% for afChoice in lh.autoFilters.dates_of_lots %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice|date:"c" }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Count:
+                    <button type="button" onclick="autoFilterMenu('af-Count')">&#8642;</button>
+                    <div id="af-Count" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'cnt-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword"
+                                       oninput="filterKeywordChange(this, 'cnt-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="cnt-af">
+                            {% for afChoice in lh.autoFilters.counts %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Actions:</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lot in lh.lots %}
+            <tr >
+                {{ lh.increment }}
+                <td>{{ lh.count }}</td>
+                <td>{{ lot.lot_name }}</td>
+                <td>{{ lot.date_of_lot|date:"c" }}</td>
+                <td>{{ lot.count }}</td>
+                <td>
+                    <button type="button" onclick="lot_content({{ lot.lot_id }})">Content</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
