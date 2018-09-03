@@ -6,103 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.shortcuts import render
 from rest_framework.parsers import JSONParser
-from django.db.utils import IntegrityError
-
-
-'''
-def main(request):
-    print("Paging")
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
-    isSold = getIsSold(request)
-    isOrder = getIsOrder(request)
-    data_dict = request.GET.copy()
-    qty = getQty(data_dict)
-    page = getPage(data_dict)
-    keyword = getKeyword(data_dict)
-    autoFilters = AutoFilter(data_dict)
-    cattyp = CatTyp()
-    if isSold:
-        possible_categories = None
-        qtySelect = QtySelect()
-        qtySelect.setDefaultSelect(qty)
-        computers = Computers.objects.exclude(f_sale__isnull=True)
-        computers = autoFilters.filter(computers)
-        if keyword is not None:
-            computers = search(keyword, computers)
-        af = AutoFiltersFromSoldComputers(computers)
-        paginator = Paginator(computers, qty)
-        computers = paginator.get_page(page)
-        counter = Counter()
-        counter.count = qty * (page - 1)
-        category_querySet = Categories.objects.values_list('category_name')
-        possible_categories = []
-        for query_member in category_querySet:
-            possible_categories.append(query_member[0])
-        # cattyp = CatTyp()
-        # removeKeyword(request)
-        return render(request, 'sold.html', {
-            'computers': computers,
-            "counter": counter,
-            "qtySelect": qtySelect,
-            "autoFilters": af,
-            "cattyp": cattyp,
-            "poscat": possible_categories})
-    elif isOrder:
-        counter = Counter()
-        orders = OrdersClass()
-        orders.filter(data_dict)
-        return render(request, 'orders.html', {
-            "counter": counter,
-            "cattyp": cattyp,
-            "orders": orders
-        })
-    else:
-        typ = getType(data_dict)
-        cat = getCat(data_dict)
-        removeSold(data_dict)
-        possible_categories = None
-        if cat or typ:
-            qtySelect = QtySelect()
-            qtySelect.setDefaultSelect(qty)
-            typeRecord = Types.objects.filter(type_name=typ)[:1].get()
-            catRecord = Categories.objects.filter(category_name=cat)[:1].get()
-            computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category, f_sale=None).exclude(f_id_comp_ord__isnull=False).exclude(f_sale__isnull=False)
-            computers = autoFilters.filter(computers)
-            if keyword is not None:
-                computers = search(keyword, computers)
-            af = AutoFiltersFromComputers(computers)
-            paginator = Paginator(computers, qty)
-            computers = paginator.get_page(page)
-            counter = Counter()
-            counter.count = qty*(page-1)
-            category_querySet = Categories.objects.values_list('category_name')
-            possible_categories = []
-            for query_member in category_querySet:
-                possible_categories.append(query_member[0])
-            po = PossibleOrders()
-        else:
-            af = None
-            computers = None
-            counter = None
-            qtySelect = None
-            autoFilters = None
-            possible_types = None
-            po = PossibleOrders()
-        # cattyp = CatTyp()
-        # removeKeyword(request)
-        return render(request, 'index.html', {
-            'computers': computers,
-            "counter": counter,
-            "qtySelect": qtySelect,
-            "autoFilters": af,
-            "cattyp": cattyp,
-            "poscat": possible_categories,
-            "po": po,
-        })
-'''
+from website.forms import *
 
 
 def index(request):
@@ -586,3 +490,150 @@ def edit_order(request, int_index):
         print("This was GET request")
     template = loader.get_template('order_edit.html')
     return HttpResponse(template.render({"ote": ote}), request)
+
+
+@csrf_exempt
+def strip_order(request, int_index):
+    print("Strip computer from order")
+    if request.method == 'POST':
+        print("This was POST request")
+        ctsoo = ComputerToStripOfOrder(int_index)
+        ctsoo.strip()
+        return HttpResponse(status=200)
+    if request.method == 'GET':
+        print("This was GET request")
+        return HttpResponse('This should not be returned', status=404)
+
+
+@csrf_exempt
+def hdd_edit(request, int_index):
+    print('hdd_edit')
+    hte = HddToEdit(int_index)
+    if request.method == 'POST':
+        print('POST method')
+        hte.process_edit(int_index, request.POST.copy())
+        return render(request, 'success.html')
+    if request.method == 'GET':
+        print('GET method')
+        return render(request, 'hdd_edit.html', {'hte': hte})
+
+
+@csrf_exempt
+def hdd_delete(request, int_index):
+    print('hdd_delete')
+    htd = HddToDelete(pk=int_index)
+    if request.method == 'POST':
+        print('POST method')
+        htd.delete()
+        if htd.success:
+            print('success')
+            return render(request, 'success.html')
+        else:
+            print('Failed deletion')
+            print(htd.message)
+            return render(request, 'failure.html', {'message': htd.message}, status=404)
+    if request.method == 'GET':
+        print('GET method')
+        return HttpResponse('<p>You should not be here.</p><p>What are you doing over here?</p>', status=404)
+
+
+def view_pdf(request, int_index):
+    print('Index is: ' + str(int_index))
+    print('view_pdf')
+    pv = PDFViewer(int_index)
+    if request.method == 'POST':
+        print('POST request')
+    elif request.method == 'GET':
+        print('GET request')
+        if pv.success:
+            return HttpResponse(pv.pdf_content, content_type='application/pdf')
+        else:
+            return render(request, 'failure.html', {'message': "Failed to fetch pdf.\r\nMost likely cause is that pdf is nonexistant."}, status=404)
+
+
+@csrf_exempt
+def hdd_order_content(request, int_index):
+    print(int_index)
+    print('hdd_order_edit')
+    hoch = HddOrderContentHolder(int_index)
+    if request.method == 'POST':
+        print('POST method')
+        try:
+            hoch.edit(request.POST.copy())
+            return render(request, 'success.html')
+        except Exception as e:
+            return render(request, 'failure.html', {'message': str(e)}, status=404)
+    if request.method == 'GET':
+        print('GET method')
+        hoch.filter(request.GET.copy())
+        return render(request, 'hdd_order_content.html', {'hoch': hoch})
+
+
+@csrf_exempt
+def hdd_delete_order(request, int_index):
+    print(int_index)
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')
+        hod = HddOrderToDelete(int_index)
+        hod.delete()
+        if hod.success:
+            return render(request, 'success.html')
+        return render(request, 'failure.html', {'message': hod.message}, status=404)
+
+
+@csrf_exempt
+def hdd_order(request):
+    print("order upload")
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            print("Valid")
+            hop = HddOrderProcessor(request.FILES['document'])
+            if hop.message != '':
+                return render(request, 'failure.html', {'message': hop.message})
+            else:
+                return render(request, 'success.html')
+        else:
+            print("Invalid")
+            return render(request, 'uploader.html', {'form': form})
+    else:
+        form = DocumentForm()
+        return render(request, 'uploader.html', {'form': form})
+
+
+@csrf_exempt
+def tar(request):
+    print("tar upload")
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            print("Valid")
+            tp = TarProcessor(request.FILES['document'])
+            tp.process_data()
+            return render(request, 'success.html')
+        else:
+            return render(request, 'uploader.html', {'form': form})
+    else:
+        form = DocumentForm()
+        return render(request, 'uploader.html', {'form': form})
+
+
+@csrf_exempt
+def lot_content(request, int_index):
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')
+        lch = LotContentHolder(int_index)
+        lch.filter(request.GET.copy())
+        return render(request, 'lot_content.html', {'lch': lch})
+
+@csrf_exempt
+def success(request):
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')
+        return render(request, 'success.html')

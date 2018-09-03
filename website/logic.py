@@ -771,7 +771,7 @@ def diagonal_deletion_if_exists(diagonal):
 
 def hdd_size_deletion_if_exists(hdd_size):
     if hdd_size is not None:
-        if not Computers.objects.filter(f_hdd_size=hdd_size.id_hdd_sizes).exists():
+        if not Computers.objects.filter(f_hdd_size=hdd_size.hdd_sizes_id).exists():
             hdd_size.delete()
 
 
@@ -1446,7 +1446,7 @@ class NewOrder:
             for tester_name in tester_names:
                 tester = Testers.objects.get(tester_name=tester_name)
                 ord_tes = OrdTes(
-                    f_order=order,
+                    f_hdd_order=order,
                     f_id_tester=tester
                 )
                 ord_tes.save()
@@ -1519,7 +1519,7 @@ class Order:
 
     def _set_testers(self):
         self.testers = []
-        variables = OrdTes.objects.filter(f_order=self.id)
+        variables = OrdTes.objects.filter(f_hdd_order=self.id)
         for variable in variables:
             self.testers.append(variable.f_id_tester.tester_name)
 
@@ -1726,10 +1726,10 @@ class OrderToEdit:
             if new_is_sent_status == 1:
                 sale = Sales(date_of_sale=timezone.now(), f_id_client=order.f_id_client)
                 sale.save()
-            OrdTes.objects.filter(f_order=order).delete()
+            OrdTes.objects.filter(f_hdd_order=order).delete()
             for tester_name in testers:
                 tester = Testers.objects.get(tester_name=tester_name)
-                new_ordtes = OrdTes(f_order=order, f_id_tester=tester)
+                new_ordtes = OrdTes(f_hdd_order=order, f_id_tester=tester)
                 new_ordtes.save()
             for status_holder in statuses:
                 computer = Computers.objects.get(id_computer=status_holder.computer_id)
@@ -1764,6 +1764,32 @@ class OrderToEdit:
             for status in statuses:
                 data_dict.pop('status_'+status.computer_id)
             _save()
+
+
+class ComputerToStripOfOrder:
+
+    def __init__(self, index):
+        self.computer = Computers.objects.get(id_computer=index)
+        self.comordId = self.computer.f_id_comp_ord.id_comp_ord
+        self.success = False
+
+    def strip(self):
+        try:
+            print('First')
+            self.computer.f_id_comp_ord = None
+            print('Second')
+            self.computer.save()
+            print('Third')
+            self.compord = CompOrd.objects.get(id_comp_ord=self.comordId)
+            print('Fourth')
+            self.compord.delete()
+            print('Fifth')
+            self.success = True
+            print('Try end')
+        except Exception as e:
+            print(str(e))
+            self.success = False
+            print('except end')
 
 
 class StatusHolder:
@@ -2195,18 +2221,25 @@ class HddOrderToDelete:
     def __init__(self, index):
         self.message = ''
         self.order = HddOrder.objects.get(order_id=index)
-        self.hdds = Hdds.objects.filter(f_order=self.order)
+        self.hdds = Hdds.objects.filter(f_hdd_order=self.order)
+        self.success = False
 
     def delete(self):
-        self.hdds.update(f_order=None)
-        self.order.delete()
+        try:
+            self.hdds.update(f_hdd_order=None)
+            self.order.delete()
+            self.success = True
+        except Exception as e:
+            self.message = str(e)
+            self.success = False
+
 
 
 class HddOrderContentHolder:
 
     def __init__(self, index):
         self.hdd_order = HddOrder.objects.get(order_id=index)
-        self.hdds = Hdds.objects.filter(f_order=self.hdd_order)
+        self.hdds = Hdds.objects.filter(f_hdd_order=self.hdd_order)
         self.autoFilters = HddAutoFilterOptions(self.hdds)
         self.changedKeys = []
         self.available_statuses = OrderStatus.objects.filter(is_shown=1)
@@ -2344,7 +2377,10 @@ class HddToDelete:
             """
             'QuerySet' object has no attribute 'f_lot'
             """
-            os.system('tar -vf ' + os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.hdd.f_lot.lot_name + '.tar') + ' --delete "' + self.hdd.tar_member_name + '"')
+            try:
+                os.system('tar -vf ' + os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.hdd.f_lot.lot_name + '.tar') + ' --delete "' + self.hdd.tar_member_name + '"')
+            except:
+                pass
             self.hdd.delete()
             self.success = True
             print('Succesful deletion')
@@ -2610,10 +2646,10 @@ class HddOrderProcessor:
                     model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
                     hdds = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
                     if hdds.exists():
-                        if hdds[0].f_order is not None:
+                        if hdds[0].f_hdd_order is not None:
                             isMissing = True
-                            textToWrite += 'SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_order.order_name
-                        hdds.update(f_order=hddOrder)
+                            textToWrite += 'SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_hdd_order.order_name
+                        hdds.update(f_hdd_order=hddOrder)
                     else:
                         model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
                         size = HddSizes.objects.get_or_create(hdd_sizes_name=line_array[3])[0]
@@ -2629,7 +2665,7 @@ class HddOrderProcessor:
                             f_lock_state=lock_state,
                             f_speed=speed,
                             f_form_factor=form_factor,
-                            f_order=hddOrder
+                            f_hdd_order=hddOrder
                         )
                         hdd.save()
             textToWrite += '===============================================\r\n'
@@ -2645,8 +2681,8 @@ class HddOrderProcessor:
     def get_hdd_order(self, txtFileName):
         hddOrders = HddOrder.objects.filter(order_name=txtFileName.replace('.txt', ''))
         if hddOrders.exists():
-            hdds = Hdds.objects.filter(f_order=hddOrders[0].order_id)
-            hdds.update(f_order=None)
+            hdds = Hdds.objects.filter(f_hdd_order=hddOrders[0].order_id)
+            hdds.update(f_hdd_order=None)
             hddOrders[0].delete()
         orderStatus = OrderStatus.objects.get(order_status_id=3)
         print(orderStatus)

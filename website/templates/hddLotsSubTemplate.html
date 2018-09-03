@@ -12,8 +12,7 @@
         <thead>
             <tr class="header-row">
                 <th>Nr.</th>
-                <th>Lot Name:
-                    <button type="button" onclick="autoFilterMenu('af-Name')">&#8642;</button>
+                <th>Lot Name:<button type="button" class="filter-button" onclick="autoFilterMenu('af-Name')">&#8642;</button>
                     <div id="af-Name" class="autofilter">
                         <div class="af-top">
                             <div class="af-checkbkox">
@@ -38,8 +37,7 @@
                         </div>
                     </div>
                 </th>
-                <th>Date:
-                    <button type="button" onclick="autoFilterMenu('af-Date')">&#8642;</button>
+                <th>Date:<button type="button" class="filter-button" onclick="autoFilterMenu('af-Date')">&#8642;</button>
                     <div id="af-Date" class="autofilter">
                         <div class="af-top">
                             <div class="af-checkbkox">
@@ -64,8 +62,7 @@
                         </div>
                     </div>
                 </th>
-                <th>Count:
-                    <button type="button" onclick="autoFilterMenu('af-Count')">&#8642;</button>
+                <th>Count:<button type="button" class="filter-button" onclick="autoFilterMenu('af-Count')">&#8642;</button>
                     <div id="af-Count" class="autofilter">
                         <div class="af-top">
                             <div class="af-checkbkox">
@@ -93,9 +90,9 @@
                 <th>Actions:</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="records">
             {% for lot in lh.lots %}
-            <tr >
+            <tr class="row">
                 {{ lh.increment }}
                 <td>{{ lh.count }}</td>
                 <td>{{ lot.lot_name }}</td>

@@ -102,7 +102,7 @@ class AFManager {
         filterButton.style.display = "none";
     }
   }
-
+/*
   formNewUrlWithAFURLaddon(url) {
     var splittedArray = url.split("?");
     var mainURL = splittedArray[0];
@@ -125,6 +125,37 @@ class AFManager {
     console.log(attributes);
     console.log(this.getAFURLaddon());
     return mainURL + "?"+ attributes.join("&") +"&" + this.getAFURLaddon();
+  }
+*/
+
+  formNewUrlWithAFURLaddon(url) {
+    var splittedArray = url.split("?");
+    var mainURL = splittedArray[0];
+    var attributesString = splittedArray[1];
+    if (attributesString == null) {
+    	console.log('No attributes');
+    	return mainURL + '?' + this.getAFURLaddon();
+    }
+    else {
+	    console.log(mainURL);
+	    console.log(attributesString);
+	    var attributes = attributesString.split("&");
+	    console.log(attributes);
+	    for (var i = attributes.length -1; i > -1; i--) {
+	    	console.log("Attribute: " + attributes[i]);
+	      for (var j = 0; j < this.possible_fieldnames.length; j++) {
+	      	console.log("Fieldname: " + this.possible_fieldnames[j]);
+	      	if ( attributes[i].includes(this.possible_fieldnames[j])) {
+	        		console.log("Removing");
+	        		attributes.splice(i, 1)
+	        		break;
+	       	}
+	      }
+	    }
+	    console.log(attributes);
+	    console.log(this.getAFURLaddon());
+	    return mainURL + "?"+ attributes.join("&") +"&" + this.getAFURLaddon();
+    }
   }
 
   getAFURLaddon() {
@@ -160,6 +191,7 @@ window.onload = function() {load()}
 
 function load() {
   collectSelectedAF();
+  lockStatuses();
   search_textbox = document.getElementById('search_input');
   search_textbox.addEventListener('keyup', function(event) {
     event.preventDefault();
@@ -451,4 +483,134 @@ function getCatSoldParams() {
     stringArray.push("id="+selected_records[i]);
   }
   return "?" + stringArray.join('&');
+}
+
+function editHdd(index, URLremovalToken) {
+	URLtoWorkWith = location.href.slice(0, -1);
+	parts = URLtoWorkWith.split('/');
+	for (var i =0; i<URLremovalToken; i++) {
+		parts.pop();
+	}
+	var editHddWindow = window.open(parts.join('/') + '/hdd_edit/'+index+'/', "", "width=620,height=340");
+}
+
+function deleteHddFromIndex(index) {
+ if (confirm('Do you really want to delete this hdd?')) {
+    URLtoWorkWith = location.href;
+    parts = URLtoWorkWith.split('/');
+    parts.pop();
+    URLtoWorkWith = parts.join('/');
+    console.log(URLtoWorkWith);
+    URLtoWorkWith = URLtoWorkWith + '/hdd_delete/' + index + '/';
+    console.log(URLtoWorkWith);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', URLtoWorkWith);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState != 4) return;
+      if (xhr.status == 200) {
+        console.log(xhr.responseText);
+        parts = URLtoWorkWith.split('/');
+        parts.pop();
+        parts.pop();
+        parts.pop();
+        var infoWindow = window.open(parts.join('/') + '/success/',"", "width=620,height=340");
+        setTimeout(location.reload(), 1000);
+      }
+      else if (xhr.status == 440) {
+        alert(xhr.responseText);
+      }
+    }
+  }
+}
+
+function viewPDFfromIndex(index) {
+  URLtoWorkWith = location.href;
+  parts = URLtoWorkWith.split('/');
+  parts.pop();
+  URLtoWorkWith = parts.join('/');
+  console.log(URLtoWorkWith);
+  URLtoWorkWith = URLtoWorkWith + '/view_pdf/' + index + '/';
+  console.log(URLtoWorkWith);
+  var pdfWindow = window.open(URLtoWorkWith, "", "width=700,height=800");
+}
+
+function hdd_order_content(index) {
+  var hddOrderContentWindow = window.open('hdd_order_content/'+index+'/', "", "width=1100,height=650");
+}
+
+function hdd_delete_order(index) {
+  var contentWindow = window.open('hdd_delete_order/'+index+'/', "", "width=1100,height=650");
+  setTimeout(function(){ location.reload(); }, 1500);
+}
+
+function hddOrderOtherCheck(checkbox) {
+  statusSelection = document.getElementById('status_selection');
+  statusSelection.disabled = checkbox.checked;
+  otherSelection = document.getElementById('other_selection');
+  otherSelection.disabled = !(checkbox.checked)
+}
+
+function lockStatuses() {
+  checkbox = document.getElementById('other_checkbox');
+  if (checkbox) {
+    hddOrderOtherCheck(checkbox);
+  }
+}
+
+function importNewHddOrder(URLremovalToken) {
+  URLtoWorkWith = location.href;
+  parts = URLtoWorkWith.split('/');
+  for (var i =0; i<URLremovalToken; i++) {
+    parts.pop();
+  }
+  var importOrderWindow = window.open(parts.join('/') + '/new_hdd_order/', "", "width=360,height=100");
+}
+
+function importNewLot(URLremovalToken) {
+	URLtoWorkWith = location.href;
+	parts = URLtoWorkWith.split('/');
+	for (var i =0; i<URLremovalToken; i++) {
+		parts.pop();
+	}
+	var importTarWindow = window.open(parts.join('/') + '/tar/', "", "width=360,height=100");
+}
+
+function lot_content(index) {
+  var contentWindow = window.open('content/'+index+'/', "", "width=1100,height=650");
+}
+
+function viewPDFfromHddEdit(index) {
+  URLtoWorkWith = location.href;
+  URLtoWorkWith = URLtoWorkWith.replace('/hdd_edit/', '/view_pdf/');
+  console.log(URLtoWorkWith);
+  var pdfWindow = window.open(URLtoWorkWith, "", "width=700,height=800");
+}
+
+function deleteHddFromHddEdit(index) {
+	if (confirm('Do you really want to delete this hdd?')) {
+		var xhr = new XMLHttpRequest();
+		URLtoWorkWith = location.href;
+		URLtoWorkWith = URLtoWorkWith.replace('/hdd_edit/', '/hdd_delete/');
+		xhr.open('POST', URLtoWorkWith, true);
+		xhr.send();
+		xhr.onreadystatechange = function(e) {
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+          console.log('Close down window');
+          parts = URLtoWorkWith.split('/');
+          parts.pop();
+          parts.pop();
+          parts.pop();
+          var infoWindow = window.open(parts.join('/') + '/success/',"", "width=620,height=340");
+          window.close();
+        }
+        if (xhr.status == 404) {
+          console.log('Throw new pages content');
+          document.getElementsByTagName('body')[0].innerHTML = xhr.responseText;
+        }
+      }
+	}
+  }
 }
