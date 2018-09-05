@@ -21,8 +21,8 @@
                     <option value="{{ item.order_status_name }}"{% if item.order_status_name == hoch.hdd_order.f_order_status.order_status_name %} selected="selected"{% endif %}>{{ item.order_status_name }}</option>
                     {% endfor %}
                 </select>
-                <input id="other_checkbox" type="checkbox" class="checkbox" onclick="hddOrderOtherCheck(this)"{% if hoch.hdd_order.f_order_status.is_shown == 0 %} checked{% endif %}>
-                <input id="other_selection" type="text" name="other_name" placeholder="other" {% if hoch.hdd_order.f_order_status.is_shown == 0 %} value="{{ hoch.hdd_order.f_order_status.order_status_name }}" {% endif %}disabled>
+                <input id="other_checkbox" type="checkbox" class="checkbox" onclick="hddOrderOtherCheck(this)"{% if hoch.hdd_order.f_hdd_order_status.is_shown == 0 %} checked{% endif %}>
+                <input id="other_selection" type="text" name="other_name" placeholder="other" {% if hoch.hdd_order.f_hdd_order_status.is_shown == 0 %} value="{{ hoch.hdd_order.f_order_status.order_status_name }}" {% endif %}disabled>
             </div>
             <br><br><br><br><br>
         </div>

@@ -34,7 +34,6 @@ def index(request):
         hh.filter(request.GET.copy())
         return render(request, 'main.html', {"cattyp": cattyp,'hh': hh})
     elif 'hdd_orders' in request.GET:
-        # oh = 'placeholder'
         oh = HddOrdersHolder()
         oh.filter(request.GET.copy())
         return render(request, 'main.html', {"cattyp": cattyp,'oh': oh})
@@ -162,6 +161,35 @@ def edit(request, int_index):
                              "rc": rc}, request))
 
 @csrf_exempt
+def edit_by_serial(request, serial):
+    print("EDIT ")
+    print(serial)
+    rc = RecordChoices()
+    if request.method == 'POST':
+        print("This was POST request")
+        ecr = Edit_computer_record(request.POST.copy())
+        return HttpResponse("Success", request)
+
+    if request.method == 'GET':
+        print("This was GET request")
+        template = loader.get_template('computer_edit2.html')
+        computer = Computers.objects.get(computer_serial=serial)
+        print('before int_index')
+        int_index = computer.id_computer
+        print('after int_index')
+        print(int_index)
+        print('Before batteries')
+        batteries = get_batteries(int_index)
+        rams = get_rams(int_index)
+        hdds = get_hdds(int_index)
+        return HttpResponse(
+            template.render({'computer': computer,
+                             'bat_list': batteries,
+                             "ram_list": rams,
+                             "hdd_list": hdds,
+                             "rc": rc}, request))
+
+@csrf_exempt
 def delete(request, int_index):
     print("DELETE")
     if request.method == 'POST':
@@ -275,6 +303,22 @@ def mass_excel(request):
     response.write(excel_file.getvalue())
     response["Content-Disposition"] = "attachment; filename=computers.xlsx"
     excel_file.close()
+    return response
+
+
+@csrf_exempt
+def mass_csv(request):
+    print("Mass csv")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    csv_file = createCsvFile(data)
+    response = HttpResponse(content_type="application/ms-excel")
+    response.write(csv_file.getvalue())
+    response["Content-Disposition"] = "attachment; filename=computers.csv"
+    csv_file.close()
     return response
 
 
@@ -531,7 +575,8 @@ def hdd_delete(request, int_index):
         else:
             print('Failed deletion')
             print(htd.message)
-            return render(request, 'failure.html', {'message': htd.message}, status=404)
+            # return render('message': htd.message, status=404)
+            return HttpResponse(htd.message, status=404)
     if request.method == 'GET':
         print('GET method')
         return HttpResponse('<p>You should not be here.</p><p>What are you doing over here?</p>', status=404)
@@ -593,6 +638,26 @@ def hdd_order(request):
             hop = HddOrderProcessor(request.FILES['document'])
             if hop.message != '':
                 return render(request, 'failure.html', {'message': hop.message})
+            else:
+                return render(request, 'success.html')
+        else:
+            print("Invalid")
+            return render(request, 'uploader.html', {'form': form})
+    else:
+        form = DocumentForm()
+        return render(request, 'uploader.html', {'form': form})
+
+
+@csrf_exempt
+def hdd_orderAlt(request):
+    print("Alternative order upload")
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            print("Valid")
+            ahop = AlternativeHddOrderProcessor(request.FILES['document'])
+            if ahop.message != '':
+                return render(request, 'failure.html', {'message': ahop.message})
             else:
                 return render(request, 'success.html')
         else:

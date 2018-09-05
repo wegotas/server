@@ -180,11 +180,6 @@
                     <table class="main-table" id="contents-table">
                         <thead>
                             <tr class="header-row">
-                                <!--
-                                <th>
-                                    <input type="checkbox" name="" value="">
-                                </th>
-                                -->
                                 <th>Nr.</th>
                                 <th>Order name<button type="button" class="filter-button" onclick="autoFilterMenu('af-Order')">&#8642;</button>
                                     <div id="af-Order" class="autofilter">
@@ -336,11 +331,6 @@
                         <tbody id="records">
                             {% for order in orders.order_list %}
                             <tr class="row">
-                                <!--
-                                <td>
-                                    <input type="checkbox" name="" value="" onclick="">
-                                </td>
-                                -->
                                 {{ counter.increment }}
                                 <td>{{ counter.count }}</td>
                                 <td>{{ order.name }}</td>

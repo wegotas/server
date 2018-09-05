@@ -2,11 +2,14 @@
 <div class="menu2">
     <div id="filter" class="menu-div">
         <div class="item">
+            {% if lh.lots %}
             <button type="button" class="button img-button" onclick="applyAFs()">Filter</button>
+            {% endif %}
             <button type="button" class="button img-button" onclick="importNewLot(1)">Import new lot</button>
         </div>
     </div>
 </div>
+{% if lh.lots %}
 <div class="pageContent">
     <table class="main-table">
         <thead>
@@ -106,4 +109,5 @@
         </tbody>
     </table>
 </div>
+{% endif %}
 {% endblock %}

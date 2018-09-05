@@ -14,6 +14,7 @@ from threading import Thread
 import tarfile
 import datetime
 from subprocess import call
+import csv
 
 
 class Bat_holder():
@@ -109,7 +110,6 @@ class Edit_computer_record():
 
     def __init__(self, data_dict):
         self.data_dict = data_dict
-        print(self.data_dict)
         self.data_dict.pop("edit", "")
         self.data_dict.pop("edit.x", "")
         self.data_dict.pop("edit.y", "")
@@ -125,8 +125,6 @@ class Edit_computer_record():
         self._diagonal_save(self.data_dict.pop("diagonal_text", "")[0])
         self._gpu_save(self.data_dict.pop("gpu_name", "")[0])
         self._hddsize_save(self.data_dict.pop("hdd_sizes_name", "")[0])
-        print('license name')
-        print(data_dict['license_name'])
         self._license_save(self.data_dict.pop("license_name", "")[0])
         self._manufacturer_save(self.data_dict.pop("manufacturer_name", "")[0])
         self._model_save(self.data_dict.pop("model_name", "")[0])
@@ -198,37 +196,6 @@ class Edit_computer_record():
         return key.split("_")[2]
 
     def _computer_save(self):
-        """"
-        self.computer = Computers(
-            id_computer=self.data_dict.pop("id_computer", "")[0],
-            computer_serial=self.data_dict.pop("serial", "")[0],
-            f_type=self.type,
-            f_category=self.category,
-            f_manufacturer=self.manufacturer,
-            f_model=self.model,
-            f_cpu=self.cpu,
-            f_gpu=self.gpu,
-            f_ram_size=self.ramsize,
-            f_hdd_size=self.hddsize,
-            f_diagonal=self.diagonal,
-            f_license=self.license,
-            f_camera=self.camera_option,
-            cover=self.data_dict.pop("cover", "")[0],
-            display=self.data_dict.pop("display", "")[0],
-            bezel=self.data_dict.pop("bezel", "")[0],
-            keyboard=self.data_dict.pop("keyboard", "")[0],
-            mouse=self.data_dict.pop("mouse", "")[0],
-            sound=self.data_dict.pop("sound", "")[0],
-            cdrom=self.data_dict.pop("cdrom", "")[0],
-            hdd_cover=self.data_dict.pop("hdd_cover", "")[0],
-            ram_cover=self.data_dict.pop("ram_cover", "")[0],
-            other=self.data_dict.pop("other", "")[0],
-            f_tester=self.tester,
-            date=self.data_dict.pop("date", "")[0],
-            f_bios=self.bios,
-            motherboard_serial=self.motherboard
-        )
-        """
         # self.computer.id_computer = self.data_dict.pop("id_computer", "")[0]
         self.computer.computer_serial = self.data_dict.pop("serial", "")[0]
         self.computer.f_type = self.type
@@ -241,9 +208,7 @@ class Edit_computer_record():
         self.computer.f_hdd_size = self.hddsize
         self.computer.f_diagonal = self.diagonal
         self.computer.f_license = self.license
-        print(self.license)
         self.computer.f_camera = self.camera_option
-        print(self.camera_option)
         self.computer.cover = self.data_dict.pop("cover", "")[0]
         self.computer.display = self.data_dict.pop("display", "")[0]
         self.computer.bezel = self.data_dict.pop("bezel", "")[0]
@@ -885,6 +850,63 @@ def createExcelFile(indexes):
     return memfile
 
 
+def createCsvFile(indexes):
+    unwantedCommentParts = ('\t', '\n', 'oko', 'ook', 'oik', 'ok', '-', 'Ok,', 'ok,', '+', '0k', 'n,', 'other')
+    unwantedComments = (None, 'o', 'n', 'k', 'NULL', 'None', 'ko')
+
+    def getProccessedString(string):
+        for comment in unwantedComments:
+            if string == comment:
+                return ''
+        for commentPart in unwantedCommentParts:
+            string = string.replace(commentPart, '')
+        return string.strip(' ,;')
+
+    def formCommentPart(field, title=None):
+        value = getProccessedString(field)
+        if title is None:
+            return value
+        if value != '':
+            return ', '+title+': '+value
+        return ''
+
+    def formComment(computer):
+        commentToReturn = getProccessedString(computer.other)
+        commentToReturn += formCommentPart(computer.cover, 'cover')
+        commentToReturn += formCommentPart(computer.display, 'display')
+        commentToReturn += formCommentPart(computer.bezel, 'bezel')
+        commentToReturn += formCommentPart(computer.keyboard, 'keyboard')
+        commentToReturn += formCommentPart(computer.mouse, 'mouse')
+        commentToReturn += formCommentPart(computer.sound, 'sound')
+        commentToReturn += formCommentPart(computer.cdrom, 'cdrom')
+        commentToReturn += formCommentPart(computer.hdd_cover, 'hdd_cover')
+        commentToReturn += formCommentPart(computer.ram_cover, 'ram_cover')
+        return commentToReturn.strip(' ,;')
+
+    memfile = io.StringIO()
+    fieldnames = ["S/N", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Batteries', 'LCD', 'Optical', 'COA', 'Cam', 'Comment', 'Price']
+    writer = csv.DictWriter(memfile, fieldnames=fieldnames)
+    writer.writeheader()
+    for int_index in indexes:
+        computer = Computers.objects.get(id_computer=int_index)
+        writer.writerow({
+            "S/N": _get_serial(computer),
+            'Manufacturer': _get_manufacturer(computer),
+            'Model': _get_model(computer),
+            'CPU': _get_cpu_name(computer),
+            'RAM': _get_ram_size(computer),
+            'GPU': _get_gpu_name(computer),
+            'HDD': _get_hdd_size(computer),
+            'Batteries': _get_battery_time(int_index),
+            'LCD': _get_diagonal(computer),
+            'Optical': _get_cdrom(computer),
+            'COA': _get_license(computer),
+            'Cam': _get_camera_option(computer),
+            'Comment': formComment(computer),
+            'Price': ''
+        })
+    return memfile
+
 def _get_serial(computer):
     serial = ""
     try:
@@ -950,8 +972,6 @@ def _get_hdd_size(computer):
 
 def _get_battery_time(int_index):
     bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=int_index)
-    for con in bat_to_comps:
-        print(con.f_bat_bat_to_com.expected_time)
     if len(bat_to_comps) > 2:
         return "~1h."
     elif len(bat_to_comps) < 1:
@@ -1085,7 +1105,6 @@ class record_to_add():
 
     def __init__(self, data_dict):
         self.data = data_dict
-        print(self.data)
         self.error_list = []
 
     def get_error_message(self):
@@ -1190,7 +1209,6 @@ class record_to_add():
         self.tester = Testers.objects.get_or_create(tester_name=self.data.get("tester_name"))[0]
 
     def _save_computer(self):
-        print(self.hddsize)
         computer = Computers(
             computer_serial=self.data.get("serial"),
             f_type=self.typ,
@@ -1519,7 +1537,7 @@ class Order:
 
     def _set_testers(self):
         self.testers = []
-        variables = OrdTes.objects.filter(f_hdd_order=self.id)
+        variables = OrdTes.objects.filter(f_order=self.id)
         for variable in variables:
             self.testers.append(variable.f_id_tester.tester_name)
 
@@ -1595,32 +1613,26 @@ class OrdersClass:
                 new_dict[key] = data_dict.pop(key)
         for key, value in new_dict.items():
             if key == 'ord-af':
-                print('ord-af')
                 for order in self.order_list[:]:
                     if not order.name in new_dict['ord-af']:
                         self.order_list.remove(order)
             elif key == 'clt-af':
-                print('clt-af')
                 for order in self.order_list[:]:
                     if not order.client in new_dict['clt-af']:
                         self.order_list.remove(order)
             elif key == 'qty-af':
-                print('qty-af')
                 for order in self.order_list[:]:
                     if not str(order.count) in new_dict['qty-af']:
                         self.order_list.remove(order)
             elif key == 'dat-af':
-                print('dat-af')
                 for order in self.order_list[:]:
                     if not str(order.date) in new_dict['dat-af']:
                         self.order_list.remove(order)
             elif key == 'tes-af':
-                print('tes-af')
                 for order in self.order_list[:]:
                     if not all(x in order.testers for x in new_dict['tes-af']):
                         self.order_list.remove(order)
             elif key == 'sta-af':
-                print('sta-af')
                 for order in self.order_list[:]:
                     if not order.get_status() in new_dict['sta-af']:
                         self.order_list.remove(order)
@@ -1775,21 +1787,13 @@ class ComputerToStripOfOrder:
 
     def strip(self):
         try:
-            print('First')
             self.computer.f_id_comp_ord = None
-            print('Second')
             self.computer.save()
-            print('Third')
             self.compord = CompOrd.objects.get(id_comp_ord=self.comordId)
-            print('Fourth')
             self.compord.delete()
-            print('Fifth')
             self.success = True
-            print('Try end')
         except Exception as e:
-            print(str(e))
             self.success = False
-            print('except end')
 
 
 class StatusHolder:
@@ -1816,17 +1820,17 @@ def on_start():
 def start_tar_observer():
     observer = Observer()
     log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
-    logging.basicConfig(filename=log_position, level=logging.DEBUG, format="%(asctime)-15s %(threadName)s:%(message)s")
+    logging.basicConfig(filename=log_position, level=logging.WARNING, format="%(asctime)-15s %(threadName)s:%(message)s")
     observer.schedule(TarAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
-    logging.debug("Start of tar observer")
+    logging.warning("Start of tar observer")
     observer.start()
     try:
         while True:
             time.sleep(10)
     except KeyboardInterrupt:
-        logging.debug('Ending observer, due to keyboard interupt')
+        logging.warning('Ending observer, due to keyboard interupt')
         observer.stop()
-        logging.debug('Observer ended')
+        logging.warning('Observer ended')
     observer.join()
 
 
@@ -1834,13 +1838,13 @@ class TarAndLogHandler(PatternMatchingEventHandler):
     patterns = ['*.tar']
 
     def process(self, event):
-        logging.debug(event.src_path)
-        logging.debug(event.event_type)
+        logging.warning(event.src_path)
+        logging.warning(event.event_type)
         index = 0
         tp = TarProcessor(event.src_path, os.path.basename(event.src_path).replace('.tar', ''))
         tp.process_data()
-        logging.debug(index)
-        logging.debug('_________________________________________')
+        logging.warning(index)
+        logging.warning('_________________________________________')
 
     def on_created(self, event):
         if not event.is_directory:
@@ -1850,17 +1854,17 @@ class TarAndLogHandler(PatternMatchingEventHandler):
 def start_txt_observer():
     observer = Observer()
     log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
-    logging.basicConfig(filename=log_position, level=logging.DEBUG, format="%(asctime)-15s %(threadName)s:%(message)s")
+    logging.basicConfig(filename=log_position, level=logging.WARNING, format="%(asctime)-15s %(threadName)s:%(message)s")
     observer.schedule(TxtAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
-    logging.debug("Start of txt observer")
+    logging.warning("Start of txt observer")
     observer.start()
     try:
         while True:
             time.sleep(10)
     except KeyboardInterrupt:
-        logging.debug('Ending observer, due to keyboard interupt')
+        logging.warning('Ending observer, due to keyboard interupt')
         observer.stop()
-        logging.debug('Observer ended')
+        logging.warning('Observer ended')
     observer.join()
 
 
@@ -1868,12 +1872,12 @@ class TxtAndLogHandler(PatternMatchingEventHandler):
     patterns = ['*.txt']
 
     def process(self, event):
-        logging.debug(event.src_path)
-        logging.debug(event.event_type)
+        logging.warning(event.src_path)
+        logging.warning(event.event_type)
         index = 0
         hop = HddOrderProcessor(event.src_path)
-        logging.debug(index)
-        logging.debug('_________________________________________')
+        logging.warning(index)
+        logging.warning('_________________________________________')
 
     def on_created(self, event):
         if not event.is_directory:
@@ -1901,10 +1905,10 @@ class HddWriter:
 
     def _save_hdd(self, line_array, model, size, lock_state, speed, form_factor):
         if Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
-            logging.debug("Such hdd allready exists")
+            logging.warning("Such hdd allready exists")
             existing_hdd = Hdds.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
-            logging.debug(existing_hdd)
-            logging.debug(existing_hdd.__dict__)
+            logging.warning(existing_hdd)
+            logging.warning(existing_hdd.__dict__)
             hdd = Hdds(
                 hdd_id=existing_hdd.hdd_id,
                 hdd_serial=line_array[1],
@@ -2187,15 +2191,12 @@ class LotContentHolder:
         self.changedKeys = []
 
     def filter(self, data_dict):
-        # print(data_dict)
         keys = ('siz-af', 'loc-af', 'day-af', 'for-af', 'spe-af', 'mod-af', 'hp-af', 'ser-af')
         new_dict = {}
         for key in keys:
             if key in data_dict:
                 new_dict[key] = data_dict.pop(key)
-        # print(new_dict)
         for key, value in new_dict.items():
-            # print(key + ' ' + str(value))
             self.changedKeys.append(key)
             if key == 'siz-af':
                 self.hdds = self.hdds.filter(f_hdd_sizes__hdd_sizes_name__in=new_dict[key])
@@ -2271,7 +2272,6 @@ class HddOrderContentHolder:
             self.autoFilters = HddAutoFilterOptions(self.hdds)
 
     def edit(self, data_dict):
-        print(data_dict)
         order = self._get_order(data_dict)
         if order:
             old_order = self.hdd_order.f_order_status
@@ -2283,12 +2283,8 @@ class HddOrderContentHolder:
 
     def _get_order(self, data_dict):
         if 'status_name' in data_dict:
-            print('status_name')
-            print(data_dict['status_name'])
             return OrderStatus.objects.filter(order_status_name=data_dict['status_name'])[0]
         elif 'other_name' in data_dict:
-            print('other_name')
-            print(data_dict['other_name'])
             newOrderStatus = OrderStatus(
                 order_status_name=data_dict['other_name'],
                 is_shown=0
@@ -2324,7 +2320,6 @@ class HddToEdit:
         self.form_factors.sort()
 
     def process_edit(self, index, data_dict):
-        # print(index)
         model = self.get_or_save_model(data_dict.pop('model')[0])
         size = self.get_or_save_size(data_dict.pop('size')[0])
         state = self.get_or_save_state(data_dict.pop('state')[0])
@@ -2404,7 +2399,6 @@ class TarProcessor:
 
     def process_data(self):
         self._save_and_set_lots()
-        # print(type(self.tar))
         for member in self.tar.getmembers():
             if '.txt' in member.name:
                 file = self.tar.extractfile(member)
@@ -2424,20 +2418,16 @@ class TarProcessor:
                                             isMissing = True
                                             tarmember_to_remove = self.get_tarmember_name(line_array)
                                             if tarmember_to_remove is not None:
-                                                print(type(tarmember_to_remove))
                                                 tarmember_to_remove = self.get_tarmember_name(line_array)
                                                 try:
                                                     new_tar.getmember(tarmember_to_remove)
                                                     os.system('tar -vf '+new_tarfile_loc+' --delete "'+tarmember_to_remove+'"')
-                                                    print('After deletion')
                                                 except:
-                                                    print('File opening or its deletion had failed')
+                                                    print('Tarfile opening or its deletion had failed')
                                                     pass
                                             filename = tarmember.name
                                             file = self.tar.extractfile(tarmember)
                                             new_tar.addfile(tarmember, file)
-                                            print('Added tarmember:')
-                                            print(tarmember)
                                             self._update_existing_hdd(line_array, filename)
                                             textToWrite += 'SN: ' + line_array[1] + '| info updated. File updated.\r\n'
                                         else:
@@ -2543,10 +2533,10 @@ class TarProcessor:
 
     def _save_hdd(self, line_array, model, size, lock_state, speed, form_factor):
         if Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
-            logging.debug("Such hdd allready exists")
+            logging.warning("Such hdd allready exists")
             existing_hdd = Hdds.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
-            logging.debug(existing_hdd)
-            logging.debug(existing_hdd.__dict__)
+            logging.warning(existing_hdd)
+            logging.warning(existing_hdd.__dict__)
             hdd = Hdds(
                 hdd_id=existing_hdd.hdd_id,
                 hdd_serial=line_array[1],
@@ -2625,8 +2615,6 @@ class HddOrderProcessor:
 
     def __init__(self, txtObject):
         self.message = ''
-        print(type(txtObject))
-        print(txtObject)
         if type(txtObject) is str:
             filename = os.path.basename(txtObject)
             txtObject = open(txtObject, "r")
@@ -2685,7 +2673,55 @@ class HddOrderProcessor:
             hdds.update(f_hdd_order=None)
             hddOrders[0].delete()
         orderStatus = OrderStatus.objects.get(order_status_id=3)
-        print(orderStatus)
+        hddOrder = HddOrder(
+            order_name=txtFileName.replace('.txt', ''),
+            date_of_order=timezone.now().today().date(),
+            f_order_status=orderStatus
+        )
+        hddOrder.save()
+        return hddOrder
+
+
+class AlternativeHddOrderProcessor:
+
+    def __init__(self, txtObject):
+        self.message = ''
+        if type(txtObject) is str:
+            filename = os.path.basename(txtObject)
+            txtObject = open(txtObject, "r")
+        else:
+            filename = txtObject._name
+        firstline = self.getFirstLine(txtObject)
+        isValid = self.isHeaderValid(firstline)
+        print(isValid)
+
+
+    def getFirstLine(self, txtObject):
+        line = txtObject.readline()
+        txtObject.seek(0)
+        return line.strip()
+
+    def isHeaderValid(self, line):
+        headers = [b'Serial number', b'Model', b'Capacity', b'Lock', b'Speed', b'Size', b'Health', b'Power_On', b'Interface', b'Notes', b'Manufacturer', b'Family', b'Width', b'Height', b'Length', b'Weight', b'Spinup', b'PowerSeek', b'PowerIdle', b'PowerStandby', b'Inspection Date']
+        for header in headers:
+            if header not in line:
+                print(header)
+                return False
+        return True
+
+
+    def isValid(self, line_array):
+        if line_array[7].replace("%", "").strip().isdigit() and line_array[8].strip().isdigit():
+            return True
+        return False
+
+    def get_hdd_order(self, txtFileName):
+        hddOrders = HddOrder.objects.filter(order_name=txtFileName.replace('.txt', ''))
+        if hddOrders.exists():
+            hdds = Hdds.objects.filter(f_hdd_order=hddOrders[0].order_id)
+            hdds.update(f_hdd_order=None)
+            hddOrders[0].delete()
+        orderStatus = OrderStatus.objects.get(order_status_id=3)
         hddOrder = HddOrder(
             order_name=txtFileName.replace('.txt', ''),
             date_of_order=timezone.now().today().date(),
@@ -2739,32 +2775,25 @@ class HddOrdersHolder:
         return ''
 
     def filter(self, data_dict):
-        # print(data_dict)
         keys = ('hon-af', 'dat-af', 'cnt-af', 'ost-af')
         new_dict = {}
         for key in keys:
             if key in data_dict:
                 new_dict[key] = data_dict.pop(key)
-        print(new_dict)
         for key, value in new_dict.items():
             if key == 'hon-af':
-                print('It is hon-af')
                 for order in self.orders[:]:
-                    print(order.order_name)
                     if not order.order_name in new_dict[key]:
                         self.orders.remove(order)
             elif key == 'dat-af':
-                print('It is dat-af')
                 for order in self.orders[:]:
                     if not str(order.date_of_order) in new_dict[key]:
                         self.orders.remove(order)
             elif key == 'cnt-af':
-                print('It is cnt-af')
                 for order in self.orders[:]:
                     if not str(order.count) in new_dict[key]:
                         self.orders.remove(order)
             elif key == 'ost-af':
-                print('It is ost-af')
                 for order in self.orders[:]:
                     if not str(order.order_status_name) in new_dict[key]:
                         self.orders.remove(order)
@@ -2772,10 +2801,8 @@ class HddOrdersHolder:
 
     def set_orders(self):
         orders = HddOrder.objects.all()
-        print(orders)
         self.orders = []
         for order in orders:
-            print(order)
             count = Hdds.objects.filter(f_hdd_order=order).count()
             oh = HddOrderHolder(order.order_id, order.order_name, order.date_of_order, order.f_order_status.order_status_name, count)
             self.orders.append(oh)

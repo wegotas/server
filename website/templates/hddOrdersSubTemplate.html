@@ -2,11 +2,15 @@
 <div class="menu2">
     <div id="filter" class="menu-div">
         <div class="item">
+            {% if oh.orders %}
             <button type="button" class="button img-button" onclick="applyAFs()">Filter</button>
+            {% endif %}
             <button type="button" class="button img-button" onclick="importNewHddOrder(1)">Import new order</button>
+            <button type="button" class="button img-button" onclick="importNewHddOrderAlt(1)">Import new order Alt</button>
         </div>
     </div>
 </div>
+{% if oh.orders %}
 <div class="pageContent">
     <table class="main-table">
         <thead>
@@ -133,4 +137,5 @@
         </tbody>
     </table>
 </div>
+{% endif %}
 {% endblock %}

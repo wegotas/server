@@ -102,31 +102,6 @@ class AFManager {
         filterButton.style.display = "none";
     }
   }
-/*
-  formNewUrlWithAFURLaddon(url) {
-    var splittedArray = url.split("?");
-    var mainURL = splittedArray[0];
-    var attributesString = splittedArray[1];
-    console.log(mainURL);
-    console.log(attributesString);
-    var attributes = attributesString.split("&");
-    console.log(attributes);
-    for (var i = attributes.length -1; i > -1; i--) {
-      console.log("Attribute: " + attributes[i]);
-      for (var j = 0; j < this.possible_fieldnames.length; j++) {
-        console.log("Fieldname: " + this.possible_fieldnames[j]);
-        if ( attributes[i].includes(this.possible_fieldnames[j])) {
-          console.log("Removing");
-          attributes.splice(i, 1)
-          break;
-        }
-      }
-    }
-    console.log(attributes);
-    console.log(this.getAFURLaddon());
-    return mainURL + "?"+ attributes.join("&") +"&" + this.getAFURLaddon();
-  }
-*/
 
   formNewUrlWithAFURLaddon(url) {
     var splittedArray = url.split("?");
@@ -247,8 +222,7 @@ function edit(index) {
 }
 
 function editOrder(index) {
-  console.log(index);
-  var editWindow = window.open('edit_order/'+index+'/', "", "width=720,height=650");
+  var editWindow = window.open('edit_order/'+index+'/', "", "width=1000,height=650");
 }
 
 function autoFilterMenu(filterDivId){
@@ -412,6 +386,31 @@ function mass_excel() {
   }
 }
 
+function mass_csv() {
+  var xhr = new XMLHttpRequest();
+  var runAsync = true ;
+  indexArray = JSON.stringify(selected_records);
+  xhr.open('POST', 'mass_csv/', true);
+  xhr.responseType = "arraybuffer";
+  xhr.send(indexArray);
+  xhr.onreadystatechange = function(e) {
+    if (xhr.readyState === 4) {
+      console.log(xhr.response);
+      const link = document.createElement( 'a' );
+      link.style.display = 'none';
+      document.body.appendChild( link );
+
+      const blob = new Blob( [ xhr.response ], { type: '‘application/octet-binary' } );
+      const objectURL = URL.createObjectURL( blob );
+
+      link.href = objectURL;
+      link.href = URL.createObjectURL( blob );
+      link.download = 'data.csv';
+      link.click();
+      }
+  }
+}
+
 function mass_catchange(element) {
   if (confirm("Do you really want do move these records to another category?")) {
     var xhr = new XMLHttpRequest();
@@ -510,7 +509,6 @@ function deleteHddFromIndex(index) {
     xhr.onreadystatechange = function() {
       if (xhr.readyState != 4) return;
       if (xhr.status == 200) {
-        console.log(xhr.responseText);
         parts = URLtoWorkWith.split('/');
         parts.pop();
         parts.pop();
@@ -565,7 +563,16 @@ function importNewHddOrder(URLremovalToken) {
   for (var i =0; i<URLremovalToken; i++) {
     parts.pop();
   }
-  var importOrderWindow = window.open(parts.join('/') + '/new_hdd_order/', "", "width=360,height=100");
+  var importOrderWindow = window.open(parts.join('/') + '/new_hdd_order/', "", "width=380,height=100");
+}
+
+function importNewHddOrderAlt(URLremovalToken) {
+  URLtoWorkWith = location.href;
+  parts = URLtoWorkWith.split('/');
+  for (var i =0; i<URLremovalToken; i++) {
+    parts.pop();
+  }
+  var importOrderWindow = window.open(parts.join('/') + '/new_hdd_orderAlt/', "", "width=380,height=100");
 }
 
 function importNewLot(URLremovalToken) {
@@ -574,7 +581,7 @@ function importNewLot(URLremovalToken) {
 	for (var i =0; i<URLremovalToken; i++) {
 		parts.pop();
 	}
-	var importTarWindow = window.open(parts.join('/') + '/tar/', "", "width=360,height=100");
+	var importTarWindow = window.open(parts.join('/') + '/tar/', "", "width=380,height=100");
 }
 
 function lot_content(index) {
@@ -598,7 +605,6 @@ function deleteHddFromHddEdit(index) {
 		xhr.onreadystatechange = function(e) {
       if (xhr.readyState == 4) {
         if (xhr.status == 200) {
-          console.log('Close down window');
           parts = URLtoWorkWith.split('/');
           parts.pop();
           parts.pop();
@@ -607,7 +613,6 @@ function deleteHddFromHddEdit(index) {
           window.close();
         }
         if (xhr.status == 404) {
-          console.log('Throw new pages content');
           document.getElementsByTagName('body')[0].innerHTML = xhr.responseText;
         }
       }
