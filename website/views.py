@@ -174,11 +174,7 @@ def edit_by_serial(request, serial):
         print("This was GET request")
         template = loader.get_template('computer_edit2.html')
         computer = Computers.objects.get(computer_serial=serial)
-        print('before int_index')
         int_index = computer.id_computer
-        print('after int_index')
-        print(int_index)
-        print('Before batteries')
         batteries = get_batteries(int_index)
         rams = get_rams(int_index)
         hdds = get_hdds(int_index)
@@ -634,7 +630,6 @@ def hdd_order(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            print("Valid")
             hop = HddOrderProcessor(request.FILES['document'])
             if hop.message != '':
                 return render(request, 'failure.html', {'message': hop.message})
@@ -654,7 +649,6 @@ def hdd_orderAlt(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            print("Valid")
             ahop = AlternativeHddOrderProcessor(request.FILES['document'])
             if ahop.message != '':
                 return render(request, 'failure.html', {'message': ahop.message})
@@ -677,6 +671,23 @@ def tar(request):
             print("Valid")
             tp = TarProcessor(request.FILES['document'])
             tp.process_data()
+            return render(request, 'success.html')
+        else:
+            return render(request, 'uploader.html', {'form': form})
+    else:
+        form = DocumentForm()
+        return render(request, 'uploader.html', {'form': form})
+
+
+@csrf_exempt
+def tarAlt(request):
+    print("tar upload")
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            print("Valid")
+            atp = AlternativeTarProcessor(request.FILES['document'])
+            atp.process_data()
             return render(request, 'success.html')
         else:
             return render(request, 'uploader.html', {'form': form})

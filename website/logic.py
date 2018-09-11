@@ -2369,9 +2369,6 @@ class HddToDelete:
 
     def delete(self):
         try:
-            """
-            'QuerySet' object has no attribute 'f_lot'
-            """
             try:
                 os.system('tar -vf ' + os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.hdd.f_lot.lot_name + '.tar') + ' --delete "' + self.hdd.tar_member_name + '"')
             except:
@@ -2595,6 +2592,192 @@ class TarProcessor:
         return form_factor_to_return
 
 
+class AlternativeTarProcessor:
+    headers = ['Serial number', 'Health', 'Power_On', 'Model', 'Capacity', 'Lock', 'Speed', 'Size']
+
+    def __init__(self, inMemoryFile, filename=None):
+        if filename is None:
+            self.lot_name = inMemoryFile._name.replace('.tar', '')
+            self.tar = tarfile.open(fileobj=inMemoryFile.file)
+            self.fileLoc = ''
+        else:
+            self.lot_name = filename.replace('.tar', '')
+            self.tar = tarfile.open(inMemoryFile)
+            self.fileLoc = filename
+        self.message = ''
+        self.txtFile = self.getTxtFile()
+        self.firstline = self.getFirstLine(self.txtFile)
+
+    def process_data(self):
+        with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
+            textToWrite = '* importing lot ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *\r\n'
+            if self.isHeaderValid(self.firstline):
+                self._save_and_set_lots()
+                self.fileHeaderIndexes = self.getFileHeaderIndexes(self.firstline.split('@'))
+                isMissing = False
+                new_tarfile_loc = os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
+                with tarfile.open(new_tarfile_loc, 'a') as new_tar:
+                    for line in self.txtFile.readlines():
+                        try:
+                            try:
+                                line = line.decode('utf-8')
+                            except:
+                                pass
+                            line_array = line.split('@')
+                            if self.isValid(line_array):
+                                tarmember = self.get_tar_member_by_serial(line_array[self.fileHeaderIndexes['Serial number']])
+                                if self._hdd_exists(line_array):
+                                    print('Hdd exists')
+                                    isMissing = True
+                                    if tarmember is not None:
+                                        print("Tarmember is present")
+                                        tarmember_to_remove = self.get_tarmember_name(line_array)
+                                        if tarmember_to_remove is not None:
+                                            tarmember_to_remove = self.get_tarmember_name(line_array)
+                                            try:
+                                                new_tar.getmember(tarmember_to_remove)
+                                                os.system(
+                                                    'tar -vf ' + new_tarfile_loc + ' --delete "' + tarmember_to_remove + '"')
+                                            except:
+                                                print('Tarfile opening or its deletion had failed')
+                                                pass
+                                        filename = tarmember.name
+                                        file = self.tar.extractfile(tarmember)
+                                        new_tar.addfile(tarmember, file)
+                                        self._update_existing_hdd(line_array, filename)
+                                        textToWrite += 'SN: ' + line_array[1] + '| info updated. File updated.\r\n'
+                                    else:
+                                        print("Tarmember is not present")
+                                        self._update_existing_hdd_without_file(line_array)
+                                        textToWrite += 'SN: ' + line_array[self.fileHeaderIndexes['Serial number']] + '| Record info updated. File info not changed.\r\n'
+                                else:
+                                    print('Hdd doesn\'t exist')
+                                    if tarmember is not None:
+                                        print("Tarmember is present")
+                                        file = self.tar.extractfile(tarmember)
+                                        filename = tarmember.name
+                                        new_tar.addfile(tarmember, file)
+                                        self._save_new_hdd(line_array, filename)
+                                    else:
+                                        isMissing = True
+                                        print("Tarmember is not present")
+                                        textToWrite += 'SN: ' + line_array[self.fileHeaderIndexes['Serial number']] + '| skipped. Not present in database. No file associated.\r\n'
+                        except Exception as e:
+                            isMissing = True
+                            textToWrite += '\r\n Error: ' + str(e) + ' \r\n'
+            else:
+                textToWrite += 'All required fields in '+self.lot_name+' were not found:\n'+str(self.headers)
+                textToWrite += '===============================================\r\n'
+                logfile.write(textToWrite)
+                self.message = textToWrite
+
+    def get_tarmember_name(self, line_array):
+        model = HddModels.objects.get_or_create(hdd_models_name=self.fileHeaderIndexes['Model'])[0]
+        hdd = Hdds.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
+        return hdd.tar_member_name
+
+    def _save_and_set_lots(self):
+        try:
+            self.lot = Lots.objects.get(lot_name=self.lot_name)
+        except Lots.DoesNotExist:
+            self.lot = Lots(
+                lot_name=self.lot_name,
+                date_of_lot=timezone.now().today().date()
+            )
+            self.lot.save()
+
+    def getTxtFile(self):
+        for member in self.tar.getmembers():
+            if '.txt' in member.name:
+                file = self.tar.extractfile(member)
+                return file
+
+    def getFirstLine(self, txtObject):
+        line = txtObject.readline()
+        return line.strip().decode('utf8')
+
+    def isHeaderValid(self, line):
+        for header in self.headers:
+            if header not in line:
+                return False
+        return True
+
+    def getFileHeaderIndexes(self, file_headers):
+        fileHeaderIndexes = dict()
+        for i in range(len(self.headers)):
+            fileHeaderIndexes[self.headers[i]] = file_headers.index(self.headers[i])
+        return fileHeaderIndexes
+
+    def isValid(self, line_array):
+        if line_array[self.fileHeaderIndexes['Health']].replace("%", "").strip().isdigit() and line_array[self.fileHeaderIndexes['Power_On']].strip().isdigit():
+            return True
+        return False
+
+    def get_tar_member_by_serial(self, serial):
+        for member in self.tar.getmembers():
+            if '(S-N ' + serial + ')' in member.name:
+                return member
+        return None
+
+    def _hdd_exists(self, line_array):
+        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
+        hdd = Hdds.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)
+        return hdd.exists()
+
+    def _save_new_hdd(self, line_array, filename):
+        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
+        size = HddSizes.objects.get_or_create(hdd_sizes_name=line_array[self.fileHeaderIndexes['Capacity']])[0]
+        lock_state = LockState.objects.get_or_create(lock_state_name=line_array[self.fileHeaderIndexes['Lock']])[0]
+        speed = Speed.objects.get_or_create(speed_name=line_array[self.fileHeaderIndexes['Speed']])[0]
+        form_factor = FormFactor.objects.get_or_create(form_factor_name=line_array[self.fileHeaderIndexes['Size']])[0]
+        hdd = Hdds(
+            hdd_serial=line_array[self.fileHeaderIndexes['Serial number']],
+            health=line_array[self.fileHeaderIndexes['Health']].replace("%", ""),
+            days_on=line_array[self.fileHeaderIndexes['Power_On']],
+            tar_member_name=filename,
+            f_lot=self.lot,
+            f_hdd_models=model,
+            f_hdd_sizes=size,
+            f_lock_state=lock_state,
+            f_speed=speed,
+            f_form_factor=form_factor
+        )
+        hdd.save()
+
+    def _update_existing_hdd_without_file(self, line_array):
+        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
+        hdd = Hdds.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
+        size = self._save_and_get_size(line_array[self.fileHeaderIndexes['Capacity']])
+        lock_state = self._save_and_get_lock_state(line_array[self.fileHeaderIndexes['Lock']])
+        speed = self._save_and_get_speed(line_array[self.fileHeaderIndexes['Speed']])
+        form_factor = self._save_and_get_form_factor(line_array[self.fileHeaderIndexes['Size']])
+        hdd.f_hdd_sizes = size
+        hdd.f_lock_state = lock_state
+        hdd.f_speed = speed
+        hdd.f_form_factor = form_factor
+        hdd.health = line_array[self.fileHeaderIndexes['Health']].replace("%", "")
+        hdd.days_on = line_array[self.fileHeaderIndexes['Power_On']]
+        hdd.f_lot = self.lot
+        hdd.save()
+
+    def _update_existing_hdd(self, line_array, filename):
+        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
+        hdd = Hdds.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
+        size = self._save_and_get_size(line_array[self.fileHeaderIndexes['Capacity']])
+        lock_state = self._save_and_get_lock_state(line_array[self.fileHeaderIndexes['Lock']])
+        speed = self._save_and_get_speed(line_array[self.fileHeaderIndexes['Speed']])
+        form_factor = self._save_and_get_form_factor(line_array[self.fileHeaderIndexes['Size']])
+        hdd.f_hdd_sizes = size
+        hdd.f_lock_state = lock_state
+        hdd.f_speed = speed
+        hdd.f_form_factor = form_factor
+        hdd.health = line_array[self.fileHeaderIndexes['Health']].replace("%", "")
+        hdd.days_on = line_array[self.fileHeaderIndexes['Power_On']]
+        hdd.tar_member_name = filename
+        hdd.f_lot = self.lot
+        hdd.save()
+
+
 class PDFViewer:
 
     def __init__(self, pk):
@@ -2623,7 +2806,7 @@ class HddOrderProcessor:
         hddOrder = self.get_hdd_order(filename)
         with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
             isMissing = False
-            textToWrite = '* importing order ' + filename.replace('.txt', '')+ ' || ' + str(datetime.date.today()) + ' *\r\n'
+            textToWrite = '* importing order ' + filename.replace('.txt', '') + ' || ' + str(datetime.date.today()) + ' *\r\n'
             for line in txtObject.readlines():
                 try:
                     line = line.decode('utf-8')
@@ -2683,6 +2866,12 @@ class HddOrderProcessor:
 
 
 class AlternativeHddOrderProcessor:
+    '''
+    headers = ['Serial number', 'Model', 'Capacity', 'Lock', 'Speed', 'Size', 'Health', 'Power_On', 'Interface',
+               'Notes', 'Manufacturer', 'Family', 'Width', 'Height', 'Length', 'Weight', 'Spinup', 'PowerSeek',
+               'PowerIdle', 'PowerStandby', 'Inspection Date']
+    '''
+    headers = ['Serial number', 'Health', 'Power_On', 'Model', 'Capacity', 'Lock', 'Speed', 'Size']
 
     def __init__(self, txtObject):
         self.message = ''
@@ -2692,26 +2881,75 @@ class AlternativeHddOrderProcessor:
         else:
             filename = txtObject._name
         firstline = self.getFirstLine(txtObject)
-        isValid = self.isHeaderValid(firstline)
-        print(isValid)
+        # isValid = self.isHeaderValid(firstline)
+        # if isValid:
+        if self.isHeaderValid(firstline):
+            file_headers = firstline.split('@')
+            self.fileHeaderIndexes = self.getFileHeaderIndexes(file_headers)
+            hddOrder = self.get_hdd_order(filename)
+            with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
+                isMissing = False
+                textToWrite = '* importing order ' + filename.replace('.txt', '') + ' || ' + str(
+                    datetime.date.today()) + ' *\r\n'
+                for line in txtObject.readlines():
+                    try:
+                        line = line.decode('utf-8')
+                    except:
+                        pass
+                    line_array = line.split('@')
+                    if self.isValid(line_array):
+                        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
+                        hdds = Hdds.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)
+                        if hdds.exists():
+                            if hdds[0].f_hdd_order is not None:
+                                isMissing = True
+                                textToWrite += 'SN: ' + hdds[
+                                    0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_hdd_order.order_name +'\r\n'
+                            hdds.update(f_hdd_order=hddOrder)
+                        else:
+                            size = HddSizes.objects.get_or_create(hdd_sizes_name=line_array[self.fileHeaderIndexes['Capacity']])[0]
+                            lock_state = LockState.objects.get_or_create(lock_state_name=line_array[self.fileHeaderIndexes['Lock']])[0]
+                            speed = Speed.objects.get_or_create(speed_name=line_array[self.fileHeaderIndexes['Speed']])[0]
+                            form_factor = FormFactor.objects.get_or_create(form_factor_name=line_array[self.fileHeaderIndexes['Size']])[0]
+                            hdd = Hdds(
+                                hdd_serial=line_array[self.fileHeaderIndexes['Serial number']],
+                                health=line_array[self.fileHeaderIndexes['Health']].replace("%", ""),
+                                days_on=line_array[self.fileHeaderIndexes['Power_On']],
+                                f_hdd_models=model,
+                                f_hdd_sizes=size,
+                                f_lock_state=lock_state,
+                                f_speed=speed,
+                                f_form_factor=form_factor,
+                                f_hdd_order=hddOrder
+                            )
+                            hdd.save()
+                    else:
+                        textToWrite += 'Hdd with S/N: '+line_array[self.fileHeaderIndexes['Serial number']] + ' most likely has incorrect health and days_on, because they were not found to be numbers.\r\n'
+                textToWrite += '===============================================\r\n'
+                if isMissing:
+                    logfile.write(textToWrite)
+                    self.message = textToWrite
+        else:
+            self.message = 'All required fields in '+filename+' were not found:\n'+str(self.headers)
 
+    def getFileHeaderIndexes(self, file_headers):
+        fileHeaderIndexes = dict()
+        for i in range(len(self.headers)):
+            fileHeaderIndexes[self.headers[i]] = file_headers.index(self.headers[i])
+        return fileHeaderIndexes
 
     def getFirstLine(self, txtObject):
         line = txtObject.readline()
-        txtObject.seek(0)
-        return line.strip()
+        return line.strip().decode('utf8')
 
     def isHeaderValid(self, line):
-        headers = [b'Serial number', b'Model', b'Capacity', b'Lock', b'Speed', b'Size', b'Health', b'Power_On', b'Interface', b'Notes', b'Manufacturer', b'Family', b'Width', b'Height', b'Length', b'Weight', b'Spinup', b'PowerSeek', b'PowerIdle', b'PowerStandby', b'Inspection Date']
-        for header in headers:
+        for header in self.headers:
             if header not in line:
-                print(header)
                 return False
         return True
 
-
     def isValid(self, line_array):
-        if line_array[7].replace("%", "").strip().isdigit() and line_array[8].strip().isdigit():
+        if line_array[self.fileHeaderIndexes['Health']].replace("%", "").strip().isdigit() and line_array[self.fileHeaderIndexes['Power_On']].strip().isdigit():
             return True
         return False
 

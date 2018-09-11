@@ -36,6 +36,7 @@ urlpatterns = [
     path('new_hdd_order/', views.hdd_order, name='new_hdd_order'),
     path('new_hdd_orderAlt/', views.hdd_orderAlt, name='new_hdd_orderAlt'),
     path('tar/', views.tar, name='tar'),
+    path('tarAlt/', views.tarAlt, name='tarAlt'),
     path('content/<int:int_index>/', views.lot_content, name='lot_content'),
     path('success/', views.success, name='success'),
     # path('content/<int:int_index>/', views.lot_content, name='lot_content'),

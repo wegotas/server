@@ -584,6 +584,15 @@ function importNewLot(URLremovalToken) {
 	var importTarWindow = window.open(parts.join('/') + '/tar/', "", "width=380,height=100");
 }
 
+function importNewLotAlt(URLremovalToken) {
+	URLtoWorkWith = location.href;
+	parts = URLtoWorkWith.split('/');
+	for (var i =0; i<URLremovalToken; i++) {
+		parts.pop();
+	}
+	var importTarWindow = window.open(parts.join('/') + '/tarAlt/', "", "width=380,height=100");
+}
+
 function lot_content(index) {
   var contentWindow = window.open('content/'+index+'/', "", "width=1100,height=650");
 }
