@@ -1809,12 +1809,10 @@ class StatusHolder:
 
 def on_start():
     print("on start")
-    if os.environ['RUN_ON_START']:
-        os.environ['RUN_ON_START'] = 'False'
-        tarThread = Thread(target=start_tar_observer)
-        tarThread.start()
-        txtThread = Thread(target=start_txt_observer)
-        txtThread.start()
+    tarThread = Thread(target=start_tar_observer)
+    txtThread = Thread(target=start_txt_observer)
+    txtThread.start()
+    tarThread.start()
 
 
 def start_tar_observer():
@@ -1840,10 +1838,8 @@ class TarAndLogHandler(PatternMatchingEventHandler):
     def process(self, event):
         logging.warning(event.src_path)
         logging.warning(event.event_type)
-        index = 0
-        tp = TarProcessor(event.src_path, os.path.basename(event.src_path).replace('.tar', ''))
-        tp.process_data()
-        logging.warning(index)
+        atp = AlternativeTarProcessor(event.src_path, os.path.basename(event.src_path).replace('.tar', ''))
+        atp.process_data()
         logging.warning('_________________________________________')
 
     def on_created(self, event):
@@ -1853,6 +1849,7 @@ class TarAndLogHandler(PatternMatchingEventHandler):
 
 def start_txt_observer():
     observer = Observer()
+    print('Starting txt observer')
     log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
     logging.basicConfig(filename=log_position, level=logging.WARNING, format="%(asctime)-15s %(threadName)s:%(message)s")
     observer.schedule(TxtAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
@@ -1874,9 +1871,7 @@ class TxtAndLogHandler(PatternMatchingEventHandler):
     def process(self, event):
         logging.warning(event.src_path)
         logging.warning(event.event_type)
-        index = 0
-        hop = HddOrderProcessor(event.src_path)
-        logging.warning(index)
+        ahop = AlternativeHddOrderProcessor(event.src_path)
         logging.warning('_________________________________________')
 
     def on_created(self, event):
@@ -1908,7 +1903,6 @@ class HddWriter:
             logging.warning("Such hdd allready exists")
             existing_hdd = Hdds.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
             logging.warning(existing_hdd)
-            logging.warning(existing_hdd.__dict__)
             hdd = Hdds(
                 hdd_id=existing_hdd.hdd_id,
                 hdd_serial=line_array[1],
@@ -2627,10 +2621,8 @@ class AlternativeTarProcessor:
                             if self.isValid(line_array):
                                 tarmember = self.get_tar_member_by_serial(line_array[self.fileHeaderIndexes['Serial number']])
                                 if self._hdd_exists(line_array):
-                                    print('Hdd exists')
                                     isMissing = True
                                     if tarmember is not None:
-                                        print("Tarmember is present")
                                         tarmember_to_remove = self.get_tarmember_name(line_array)
                                         if tarmember_to_remove is not None:
                                             tarmember_to_remove = self.get_tarmember_name(line_array)
@@ -2647,20 +2639,16 @@ class AlternativeTarProcessor:
                                         self._update_existing_hdd(line_array, filename)
                                         textToWrite += 'SN: ' + line_array[1] + '| info updated. File updated.\r\n'
                                     else:
-                                        print("Tarmember is not present")
                                         self._update_existing_hdd_without_file(line_array)
                                         textToWrite += 'SN: ' + line_array[self.fileHeaderIndexes['Serial number']] + '| Record info updated. File info not changed.\r\n'
                                 else:
-                                    print('Hdd doesn\'t exist')
                                     if tarmember is not None:
-                                        print("Tarmember is present")
                                         file = self.tar.extractfile(tarmember)
                                         filename = tarmember.name
                                         new_tar.addfile(tarmember, file)
                                         self._save_new_hdd(line_array, filename)
                                     else:
                                         isMissing = True
-                                        print("Tarmember is not present")
                                         textToWrite += 'SN: ' + line_array[self.fileHeaderIndexes['Serial number']] + '| skipped. Not present in database. No file associated.\r\n'
                         except Exception as e:
                             isMissing = True
@@ -2874,6 +2862,7 @@ class AlternativeHddOrderProcessor:
     headers = ['Serial number', 'Health', 'Power_On', 'Model', 'Capacity', 'Lock', 'Speed', 'Size']
 
     def __init__(self, txtObject):
+        print('Constructor initiated')
         self.message = ''
         if type(txtObject) is str:
             filename = os.path.basename(txtObject)
@@ -2940,7 +2929,12 @@ class AlternativeHddOrderProcessor:
 
     def getFirstLine(self, txtObject):
         line = txtObject.readline()
-        return line.strip().decode('utf8')
+        string = line.strip()
+        try:
+            string = string.decode('utf8')
+        except:
+            pass
+        return string
 
     def isHeaderValid(self, line):
         for header in self.headers:
@@ -2956,16 +2950,25 @@ class AlternativeHddOrderProcessor:
     def get_hdd_order(self, txtFileName):
         hddOrders = HddOrder.objects.filter(order_name=txtFileName.replace('.txt', ''))
         if hddOrders.exists():
+            print('Such hdd orders exists')
             hdds = Hdds.objects.filter(f_hdd_order=hddOrders[0].order_id)
             hdds.update(f_hdd_order=None)
             hddOrders[0].delete()
         orderStatus = OrderStatus.objects.get(order_status_id=3)
+        '''
         hddOrder = HddOrder(
             order_name=txtFileName.replace('.txt', ''),
             date_of_order=timezone.now().today().date(),
             f_order_status=orderStatus
         )
         hddOrder.save()
+        '''
+        hddOrder = HddOrder.objects.create(
+            order_name=txtFileName.replace('.txt', ''),
+            date_of_order=timezone.now().today().date(),
+            f_order_status=orderStatus
+        )
+        print('Hdd order saved')
         return hddOrder
 
 
@@ -3044,3 +3047,7 @@ class HddOrdersHolder:
             count = Hdds.objects.filter(f_hdd_order=order).count()
             oh = HddOrderHolder(order.order_id, order.order_name, order.date_of_order, order.f_order_status.order_status_name, count)
             self.orders.append(oh)
+
+
+def serialToQRToPrint(*args):
+    print()

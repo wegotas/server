@@ -2,8 +2,6 @@ from django.urls import path
 from . import views
 from .logic import on_start
 
-on_start()
-
 urlpatterns = [
     path('look/<int:int_index>/', views.look, name='look'),
     path('edit/<int:int_index>/', views.edit, name='edit'),
@@ -42,3 +40,5 @@ urlpatterns = [
     # path('content/<int:int_index>/', views.lot_content, name='lot_content'),
     path('', views.index, name='index')
 ]
+
+on_start()
