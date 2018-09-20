@@ -713,3 +713,18 @@ def success(request):
     if request.method == 'GET':
         print('GET method')
         return render(request, 'success.html')
+
+@csrf_exempt
+def serial_processing(request, serial):
+    print(serial)
+    manufacturer, model, entity_serial = serial.split('_')
+    print("Manufacturer:")
+    print(manufacturer)
+    print('Model:')
+    print(model)
+    print("Entity serial:")
+    print(entity_serial)
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')

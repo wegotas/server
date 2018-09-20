@@ -56,12 +56,52 @@ class Categories(models.Model):
         managed = True
         db_table = 'Categories'
 
-    def get_values():
+    def get_values(self):
         categories = Categories.objects.all()
         cat_dict = dict()
         for category in categories:
             cat_dict[category.id_category] = category.category_name
         return cat_dict
+
+
+class ChargerCategories(models.Model):
+    charger_category_id = models.AutoField(primary_key=True)
+    watts = models.IntegerField(blank=True, null=True)
+    acinvoltsmin = models.DecimalField(db_column='ACinVoltsMin', max_digits=10, decimal_places=0, blank=True, null=True)  # Field name made lowercase.
+    acinvoltsmax = models.DecimalField(db_column='ACinVoltsMax', max_digits=10, decimal_places=0, blank=True, null=True)  # Field name made lowercase.
+    acinampers = models.DecimalField(db_column='ACinAmpers', max_digits=10, decimal_places=0, blank=True, null=True)  # Field name made lowercase.
+    acinhzmin = models.IntegerField(db_column='ACinHzMin', blank=True, null=True)  # Field name made lowercase.
+    acinhzmax = models.IntegerField(db_column='ACinHzMax', blank=True, null=True)  # Field name made lowercase.
+    dcoutvoltsmin = models.DecimalField(db_column='DCoutVoltsMin', max_digits=10, decimal_places=0, blank=True, null=True)  # Field name made lowercase.
+    dcoutvoltsmax = models.DecimalField(db_column='DCoutVoltsMax', max_digits=10, decimal_places=0, blank=True, null=True)  # Field name made lowercase.
+    dcoutampers = models.DecimalField(db_column='DCoutAmpers', max_digits=10, decimal_places=0, blank=True, null=True)  # Field name made lowercase.
+    connector_inner_diameter = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    connector_outer_diameter = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    connector_contacts_qty = models.IntegerField(blank=True, null=True)
+    originality_status = models.IntegerField(blank=True, null=True)
+    used_status = models.IntegerField(blank=True, null=True)
+    charger_model = models.CharField(max_length=45, blank=True, null=True)
+    f_manufacturer = models.ForeignKey('Manufacturers', models.DO_NOTHING, blank=True, null=True)
+
+    def is_original(self):
+        return bool(self.originality_status)
+
+    def is_used(self):
+        return bool(self.used_status)
+
+    class Meta:
+        managed = False
+        db_table = 'Charger_categories'
+
+
+class Chargers(models.Model):
+    charger_id = models.AutoField(primary_key=True)
+    charger_serial = models.CharField(max_length=45, blank=True, null=True)
+    f_charger_category = models.ForeignKey(ChargerCategories, models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Chargers'
 
 
 class Clients(models.Model):
@@ -359,7 +399,7 @@ class Testers(models.Model):
         managed = True
         db_table = 'Testers'
 
-    def get_values():
+    def get_values(self):
         testers = Testers.objects.all()
         tes_dict = dict()
         for tester in testers:
@@ -375,7 +415,7 @@ class Types(models.Model):
         managed = True
         db_table = 'Types'
 
-    def get_values():
+    def get_values(self):
         types = Types.objects.all()
         typ_dict = dict()
         for type in types:

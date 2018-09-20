@@ -6,6 +6,7 @@ urlpatterns = [
     path('look/<int:int_index>/', views.look, name='look'),
     path('edit/<int:int_index>/', views.edit, name='edit'),
     path('by_serial/<slug:serial>/', views.edit_by_serial, name='edit_by_serial'),
+    path('serial/<slug:serial>/', views.serial_processing, name='edit_by_serial'),
     path('edit_order/<int:int_index>/', views.edit_order, name='edit_order'),
     path('strip_order/<int:int_index>/', views.strip_order, name='strip_order'),
     path('delete/<int:int_index>/', views.delete, name='delete'),
