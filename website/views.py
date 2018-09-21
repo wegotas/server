@@ -716,15 +716,14 @@ def success(request):
 
 @csrf_exempt
 def serial_processing(request, serial):
-    print(serial)
-    manufacturer, model, entity_serial = serial.split('_')
-    print("Manufacturer:")
-    print(manufacturer)
-    print('Middle section:')
-    print(model)
-    print("Entity serial:")
-    print(entity_serial)
+    csp = ChargerSerialProcessor(serial)
     if request.method == 'POST':
         print('POST method')
     if request.method == 'GET':
         print('GET method')
+        # csp.proccess()
+        if csp.check_serial_existance():
+            print('Such serial exists')
+        else:
+            print('Such serial is non-existant')
+            return render(request, 'charger_nonexistant.html')

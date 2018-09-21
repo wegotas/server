@@ -1,4 +1,4 @@
-from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp, CompOrd, OrdTes, Orders, Document, FormFactor, HddModels, HddOrder, HddSerials, LockState, Lots, OrderStatus, Speed
+from ULCDTinterface.modelers import * # Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp, CompOrd, OrdTes, Orders, Document, FormFactor, HddModels, HddOrder, HddSerials, LockState, Lots, OrderStatus, Speed
 import xlsxwriter
 import io
 from django.utils import timezone
@@ -3048,6 +3048,52 @@ class HddOrdersHolder:
             oh = HddOrderHolder(order.order_id, order.order_name, order.date_of_order, order.f_order_status.order_status_name, count)
             self.orders.append(oh)
 
-
+"""
+WORK IN PROGRESS
+This method reserved for printing over the network qr codes in batches.
+Input comes from mass selections on website and prints those codes.
+"""
 def serialToQRToPrint(*args):
     print()
+
+class ChargerSerialProcessor:
+
+    def __init__(self, serial):
+        # print(serial)
+        self.manufacturer, middle_section, self.charger_serial = serial.split('_')
+        self.power, self.connector_type = middle_section.split('W', 1)
+        self.message = ''
+
+    def check_serial_existance(self):
+        charger = Chargers.objects.filter(charger_serial=self.charger_serial)
+        return charger.exists()
+
+    def proccess(self):
+        if self._is_category_existing():
+            print('Such charger category allready exists')
+            self._proccess_existing_charger()
+        else:
+            print('No such charger category  exist')
+            self._proccess_new_charger()
+
+    def _is_category_existing(self):
+        charger_category = ChargerCategories.objects.filter(f_manufacturer__manufacturer_name=self.manufacturer,
+                                                              watts=self.power, connector_type=self.connector_type)
+        return charger_category.exists()
+
+    def _proccess_existing_charger(self):
+        charger_category = ChargerCategories.objects.get(f_manufacturer__manufacturer_name=self.manufacturer, watts=self.power, connector_type=self.connector_type)
+        charger = Chargers.objects.get_or_create(charger_serial=self.charger_serial,
+                                                 f_charger_category=charger_category)[0]
+        print('End of existing_charger')
+
+    def _proccess_new_charger(self):
+        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=self.manufacturer)[0]
+        new_charger_category = ChargerCategories.objects.create(watts=self.power,
+                                                                f_manufacturer=manufacturer,
+                                                                connector_type=self.connector_type
+                                                                )
+        new_charger = Chargers.objects.get_or_create(charger_serial=self.charger_serial,
+                                                     f_charger_category=new_charger_category)[0]
+        print('End of new_charger')
+
