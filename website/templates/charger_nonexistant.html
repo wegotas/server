@@ -3,27 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Non-existant charger</title>
-     <script type="text/javascript">
-    function closeWindow() {
-        if (confirm("Close Window?")) {
-            self.close();
-        }
-    }
-
-    function quitBox(cmd) {
-        if (cmd=='quit') {
-            open(location, '_self').close();
-        }
-        return false;
-    }
-    </script>
 </head>
 <body>
     <p>Such charger was not found.</p>
     <p>What kind of action you would like to take?</p>
     <form method="post">
         <button type="submit">Add this charger to the system</button>
-        <button type="button" onclick="quitBox('quit')">Ignore</button>
     </form>
 </body>
 </html>

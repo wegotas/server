@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Charger view</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'charger.css' %}">
+    <script type="text/javascript" src="{% static 'charger.js' %}"></script>
+</head>
+<body>
+    <h3 align="center">Overlook of charger category</h3>
+    <table align="center">
+        <tbody class="charger-table">
+            <tr>
+                <th>Serial:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.charger_serial }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr>
+                <th>Manufacturer:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.f_manufacturer.manufacturer_name }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr>
+                <th>Total:</th>
+                <td>
+                    <input type="text" value="{{ ch.qty }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr>
+                <th>Watts:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.watts }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr>
+                <th>DC Out Volts Minimum:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.dcoutvoltsmin }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr>
+                <th>DC Out Volts Maximum:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.dcoutvoltsmax }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>AC in Volts Minimum:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.acinvoltsmin }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>AC in Volts Maximum:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.acinvoltsmax }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>AC in Ampers:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.acinampers }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>AC in Hz Minimum:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.acinhzmin }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>AC in Hz Maximum:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.acinhzmax }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>DC Out Ampers:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.dcoutampers }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>Connector inner diameter:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.connector_inner_diameter }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>Connector outer diameter:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.connector_outer_diameter }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>Connector contacts qty:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.connector_contacts_qty }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>Originality status:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.originality_status }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>Used status:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.used_status }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr class="detail">
+                <th>Connector type:</th>
+                <td>
+                    <input type="text" value="{{ ch.charger.f_charger_category.connector_type }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <button id="detail-button" onclick="toggleDetails()">&nbsp;&#8643; Show more details &#8642;&nbsp;</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

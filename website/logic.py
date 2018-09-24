@@ -3097,3 +3097,49 @@ class ChargerSerialProcessor:
                                                      f_charger_category=new_charger_category)[0]
         print('End of new_charger')
 
+
+class ChargerHolder:
+
+    def __init__(self, serial):
+        self.charger = Chargers.objects.get(charger_serial=serial.split('_')[2])
+        self.qty = Chargers.objects.filter(f_charger_category=self.charger.f_charger_category).count()
+        '''
+        self.id = charger.charger_id
+        self.serial = charger.charger_serial
+        self.manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
+        self.watts = charger.f_charger_category.watts
+        self.ACinVoltsMin = charger.f_charger_category.acinvoltsmin
+        self.ACinVoltsMax = charger.f_charger_category.acinvoltsmax
+        self.ACinAmpers = charger.f_charger_category.acinampers
+        self.ACinHzMin = charger.f_charger_category.acinhzmin
+        self.ACinHzMax = charger.f_charger_category.acinhzmax
+        self.DCOutVoltsMin = charger.f_charger_category.dcoutvoltsmin
+        self.DCOutVoltsMax = charger.f_charger_category.dcoutvoltsmax
+        self.DCoutAmpers = charger.f_charger_category.dcoutampers
+        self.connector_inner_diameter = charger.f_charger_category.connector_inner_diameter
+        self.connector_outer_diameter = charger.f_charger_category.connector_outer_diameter
+        self.connector_contacts_qty = charger.f_charger_category.connector_contacts_qty
+        self.originality_status = charger.f_charger_category.originality_status
+        self.used_status = charger.f_charger_category.used_status
+        self.connector_type = charger.f_charger_category.connector_type
+        
+        print(self.id)
+        print(self.serial)
+        print(self.manufacturer)
+        print(self.watts)
+        print(self.ACinVoltsMin)
+        print(self.ACinVoltsMax )
+        print(self.ACinAmpers)
+        print(self.ACinHzMin)
+        print(self.ACinHzMax)
+        print(self.DCOutVoltsMin)
+        print(self.DCOutVoltsMax)
+        print(self.DCoutAmpers)
+        print(self.connector_inner_diameter)
+        print(self.connector_outer_diameter)
+        print(self.connector_contacts_qty)
+        print(self.originality_status)
+        print(self.used_status)
+        print(self.connector_type)
+        
+        '''

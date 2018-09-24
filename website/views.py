@@ -706,6 +706,7 @@ def lot_content(request, int_index):
         lch.filter(request.GET.copy())
         return render(request, 'lot_content.html', {'lch': lch})
 
+
 @csrf_exempt
 def success(request):
     if request.method == 'POST':
@@ -714,16 +715,24 @@ def success(request):
         print('GET method')
         return render(request, 'success.html')
 
+
 @csrf_exempt
 def serial_processing(request, serial):
     csp = ChargerSerialProcessor(serial)
     if request.method == 'POST':
         print('POST method')
+        csp.proccess()
+        if csp.message == '':
+            return render(request, 'success.html')
+        else:
+            return render(request, 'failure.html', {'message': csp.message})
     if request.method == 'GET':
         print('GET method')
         # csp.proccess()
         if csp.check_serial_existance():
             print('Such serial exists')
+            ch = ChargerHolder(serial)
+            return render(request, 'charger_view.html', {'ch': ch})
         else:
             print('Such serial is non-existant')
             return render(request, 'charger_nonexistant.html')
