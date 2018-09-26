@@ -6,3 +6,24 @@
 .detail {
     display: none;
 }
+
+.inputbox {
+    width: 150px;
+}
+
+#searchbox {
+    border-radius: 3px;
+}
+
+.charger-serial {
+    width: 140px;
+}
+
+.edit-button {
+    width: 60px;
+}
+
+.delete-button {
+    color: red;
+    margin-right: 30px;
+}

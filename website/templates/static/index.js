@@ -628,3 +628,12 @@ function deleteHddFromHddEdit(index) {
 	}
   }
 }
+
+function edit_charger(index, URLremovalToken) {
+    URLtoWorkWith = location.href;
+    parts = URLtoWorkWith.split('/');
+	for (var i =0; i<URLremovalToken; i++) {
+		parts.pop();
+	}
+    var editChargerWindow = window.open(parts.join('/') + '/edit_charger/'+index+'/', "", "width=700,height=620");
+}

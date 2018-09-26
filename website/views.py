@@ -18,13 +18,14 @@ def index(request):
         # return render(request, 'main.html')
     isSold = getIsSold(request)
     isOrder = getIsOrder(request)
-
+    isChargers = getIsChargers(request)
     data_dict = request.GET.copy()
     qty = getQty(data_dict)
     page = getPage(data_dict)
     keyword = getKeyword(data_dict)
     autoFilters = AutoFilter(data_dict)
     cattyp = CatTyp()
+
     if 'lots' in request.GET:
         lh = LotsHolder()
         lh.filter(request.GET.copy())
@@ -63,6 +64,13 @@ def index(request):
             "autoFilters": af,
             "cattyp": cattyp,
             "poscat": possible_categories})
+    if isChargers:
+        cch = ChargerCategoriesHolder()
+        return render(request, 'main.html', {
+            'cch': cch,
+            "cattyp": cattyp,
+            "cch": cch
+        })
     elif isOrder:
         counter = Counter()
         orders = OrdersClass()
@@ -731,8 +739,18 @@ def serial_processing(request, serial):
         # csp.proccess()
         if csp.check_serial_existance():
             print('Such serial exists')
-            ch = ChargerHolder(serial)
+            ch = ChargerHolder(serial=serial)
             return render(request, 'charger_view.html', {'ch': ch})
         else:
             print('Such serial is non-existant')
             return render(request, 'charger_nonexistant.html')
+
+@csrf_exempt
+def edit_charger(request, int_index):
+    print(int_index)
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')
+        ccte = ChargerCategoryToEdit(int_index)
+        return render(request, 'charger_edit.html', {'ccte': ccte})

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Charger edit</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'charger.css' %}">
+    <script type="text/javascript" src="{% static 'charger.js' %}"></script>
+</head>
+<body>
+    <form action="" method="post">
+        <div align="center">
+            <input name="edit" value="Edit" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAGqElEQVRYhbWXbWxT1xnHf/deX/vaTkLMixMMMaSjQCgaUBIqJsqAvVRtQWvL2k2j66ZtQmWLkLYhUanSpnXTNLX7guhg6160Voh+6bRpRZq0rqLaqq5rEQU6Ci0JL8GEvBE7iWNfn3PvOfvgl9hp46WwPdK1Zek59//z/zzPc+41ALY9+WsWrbv7Nss0fjo8MtiyYkGUn9z/SUKWhVQKX2kAAqaBbZkYhsFMIX3F06+e4/WLw8yftyBjmvafldZHssMp+benvkF2oK8mPwDQmFiK1vqIbVkbfU/iCkHYDgDwxedeIys8AHauXUL35pUzigPYlkleCFxRIBI0yUn9AOjuyPzEvVv2Hxp65QePUpjIVPJNAK00SqkOrXykFEgpKwlCSoQQCCHwfa+ueDk8zyvlK5TyUUrdidbHmlraopu+fwDTDtYCKK1QSqG0QngC6U0JSSkQsoCQBXzfnyWARMhCWZymwT5uf++NLksUXmyPL7I2Pv7jSm6g6IAqQRhIIfC8agcEUojKP5sVgO8hhcD3fZz0CFsP7UOnR1h+R+eOU1seefZ+VdjTunINfzx/ughQcUAZSE/WAHhSIGQRQKnZOeB7HkIKTO3TdeyXpAf7sQ0D+/SbbLza87hqWXxxvS48c3ciUQJQUwBaa7TWlZt9acMKXFkU7lzaMiuA8voNTS4du3fRlx8he+oUPuCPjhCZGHvabGzcvMJxvlUF4KN0sb0uDGboGcqwLN7Mdz+/flai5RgYm+RMaoT2RsnD814lY68hfvAg1156iZ5Dh1Ceh5ISkU5vb3CclwNl4rILAHnp8cDBPxENBeuKfVTkhMTQigNbBgjJXmKZVxCNXTR/s5vk1q28tX8/2fffRxkGfj4/agEs/czDBMINT4B2oiGD0fEsGhCe/7EvrWHPqjTbFvQic30oMYIa+xd6+BjGwk0kH9mNcF1G33133AgGd9RsgSt84nPjLFwQr6mDjxPLwmkei53Ay6XwxTAahVYCo9BP9OqPSIe2svCxXQS77nqm97lfXarpAoCB0exNCQM4lscT8eMoN4V0+zFMB7+QARTBcDtauTSOvcCFG0Mctx79x4XFt1XNgVm2WL34etsZ5qsehJvCtBy0kmiVJxBqxbAc/MI4457D70e/wKSCN0+8U9uGtxIbmgfZ1ngSkUuhlcAKtSLzlzEMG9tpw5M30L7L78a+Q8ZrQgMa/jcAc+wC3178OtIt7nuo4Q48MYTy8wQbOtC6gPbzvDb5KU7kOwGFBtC6ahLqmwfoTr5FxLuEdFMEo7cDCuVlsZ3FmGYIT4wxIBp4Pr2roqO1RqNv3YFt86+zPnwGkUth2s0EQq3I3GUM08YOL8YTI3h+gWeHdpPzg8AUAJoPF+GqhTG2r24jYJqzAviEO4EvO9C5i0RjG/HcQZRyCUaXobxJtJ+nsPArPNj+IFdGsxw90Vsa91Q5UNWGT96zhuTchlk7MH7eQIllOE37UPlelN+L7SQAE63ymA3tJNftY4lpA9AzNMY/Lw2iS1VY2gJdAYgGi09Co5kso2P/fSbMk3lMKwgBBx3rxAzFMCc+wHevIz2PdKybiYEMycQCAMK2iVJqmgMfUQOuEGQmJuurK4/5pgLLAcsGy8aKrYXmDkj9gULzfUzoVmQ2X1lSPndqa0D7FYDyAE7E55KIz62r33+tj+d/+wY7d2xmjhPEsIJgBTHtGJE1T9HktNA27QG2vN3TukBXTcIiQs+VAXr7BuoCnD97mp8dfplfvPBXDv/8e3R1rePCNZ/hSYFhDADF9dFIiE3rO4p3L2npktSMW5CIx2huitYFuH7p30QiEYTn8/eTQ9z12TUsiRgsmZZnWVMdpcsOMK0L/GkATsgmWCrImUK4eR56aCd79uwhuSRZXBf+cJ7B1DYorUtaumoSVjtQKoL3elKcvXC1LkBjYiWdi1bx9rl+3j7XP3NeQ5j7Pn1n8fa63HF66iyoHkTlIly9PMnq5cm6ADcTNSdv2YHqR4/xdw5jO7d2MtYLcaMRCFV+B/bu3cv4ohgnJ7gsNWv/cvoDoqb4vwGk0iuBuN8eMS7f89UvYxw5ciQolW677urPHR9SP8z5uoniG5MJGKULoLqjZ3o71ZWPKWPLR78ClGUg1jWbR1c3mQcciysBYI5tGvcmI8aGry01zwIxoIGiT0GKdWLNBEWtGCUhDcXXAMADJOACk0AGmANsB14MACPAb4CjQBiIlL7DgFMFYpdgAlUg5T71qv6prBIVQKEk7gJ5IFe68oD7H2IQ88amog00AAAAAElFTkSuQmCC" type="image">
+        </div>
+        <table align="center">
+            <thead>
+                <th colspan="4" align="center">Category information</th>
+            </thead>
+            <tbody class="charger-table">
+                <tr>
+                    <th>Manufacturer:</th>
+                    <td>
+                        <input list="manufacturers" name="manufacturer_name" class="inputbox" value="{{ ccte.chargerCategory.f_manufacturer.manufacturer_name }}">
+                        <datalist id="manufacturers">
+                            {% for manufacturer in ccte.uniqueManufacturers %}
+                            <option
+                                    value="{{ manufacturer }}"
+                                    {% if ccte.chargerCategory.f_manufacturer.manufacturer_name == manufacturer %} selected="selected"{% endif %}
+                            >{{ manufacturer }}</option>
+                            {% endfor %}
+                        </datalist>
+                    </td>
+                    <th>Total:</th>
+                    <td>
+                        <input type="text" class="inputbox" value="{{ ccte.qty }}" disabled="disabled">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Connector type:</th>
+                    <td>
+                        <input list="connector_types" name="connector_type" class="inputbox" value="{{ ccte.chargerCategory.connector_type }}">
+                        <datalist id="connector_types">
+
+                        </datalist>
+                    </td>
+                    <th>Watts:</th>
+                    <td>
+                        <input type="text" name="watts" class="inputbox" value="{{ ccte.chargerCategory.watts }}">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Connector inner diameter:</th>
+                    <td>
+                        <input type="text" name="connector_inner_diameter" class="inputbox" value="{{ ccte.chargerCategory.connector_inner_diameter }}">
+                    </td>
+                    <th>Connector outer diameter:</th>
+                    <td>
+                        <input type="text" name="connector_outer_diameter" class="inputbox" value="{{ ccte.chargerCategory.connector_outer_diameter }}">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Originality status:</th>
+                    <td>
+                        <input list="originality_statuses" name="is_original" class="inputbox" value="{{ ccte.chargerCategory.is_original }}">
+                        <datalist id="originality_statuses">
+                            <option
+                                    value="True"
+                                    {% if ccte.chargerCategory.is_original == "True" %} selected="selected"{% endif %}
+                            >True
+                            </option>
+                            <option
+                                    value="False"
+                                    {% if ccte.chargerCategory.is_original == "False" %} selected="selected"{% endif %}
+                            >False
+                            </option>
+                        </datalist>
+                    </td>
+                    <th>Used status:</th>
+                    <td>
+                        <input list="used_statuses" name="is_used" class="inputbox" value="{{ ccte.chargerCategory.is_used }}">
+                        <datalist id="used_statuses">
+                            <option
+                                    value="True"
+                                    {% if ccte.chargerCategory.is_used == "True" %} selected="selected"{% endif %}
+                            >
+                            True</option>
+                            <option
+                                    value="False"
+                                    {% if ccte.chargerCategory.is_used == "False" %} selected="selected"{% endif %}
+                            >False</option>
+                        </datalist>
+                    </td>
+                </tr>
+                <tr>
+                    <th>DC Out Volts Minimum:</th>
+                    <td>
+                        <input type="text" name="dcoutvoltsmin" class="inputbox" value="{{ ccte.chargerCategory.dcoutvoltsmin }}">
+                    </td>
+                    <th>DC Out Volts Maximum:</th>
+                    <td>
+                        <input type="text" name="dcoutvoltsmax" class="inputbox" value="{{ ccte.chargerCategory.dcoutvoltsmax }}">
+                    </td>
+                </tr>
+                <tr>
+                    <th>DC Out Ampers:</th>
+                    <td>
+                        <input type="text" name="dcoutampers" class="inputbox" value="{{ ccte.chargerCategory.dcoutampers }}">
+                    </td>
+                    <th>Connector contacts qty:</th>
+                    <td>
+                        <input type="text" name="connector_contacts_qty" class="inputbox" value="{{ ccte.chargerCategory.connector_contacts_qty }}">
+                    </td>
+                </tr>
+                <tr>
+                    <th>AC in Volts Minimum:</th>
+                    <td>
+                        <input type="text" name="acinvoltsmin" class="inputbox" value="{{ ccte.chargerCategory.acinvoltsmin }}">
+                    </td>
+                    <th>AC in Volts Maximum:</th>
+                    <td>
+                        <input type="text" name="acinvoltsmax" class="inputbox" value="{{ ccte.chargerCategory.acinvoltsmax }}">
+                    </td>
+                </tr>
+                <tr>
+                    <th>AC in Hz Minimum:</th>
+                    <td>
+                        <input type="text" name="acinhzmin" class="inputbox" value="{{ ccte.chargerCategory.acinhzmin }}">
+                    </td>
+                    <th>AC in Hz Maximum:</th>
+                    <td>
+                        <input type="text" name="acinhzmax" class="inputbox" value="{{ ccte.chargerCategory.acinhzmax }}">
+                    </td>
+                </tr>
+                <tr>
+                    <th>AC in Ampers:</th>
+                    <td>
+                        <input type="text" name="acinampers" class="inputbox" value="{{ ccte.chargerCategory.acinampers }}">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <br>
+    <div align="center">
+        <b>Chargers and their serials</b>
+    </div>
+    <div align="center">
+        <input type="text" id="searchbox" placeholder="serial searchbox">
+    </div>
+    {% for charger in ccte.chargers %}
+    <div align="center" class="charger-container">
+        <input class="charger-serial" type="text" value="{{ charger.charger_serial }}" disabled="disabled">
+        <button class="edit-button" onclick="toggleDisabled(this)">Edit&nbsp;</button>
+        <button onclick="printQR({{ charger.charger_id }})">Print QR</button>
+        <button onclick="deleteCharger({{ charger.charger_id }})" class="delete-button">X</button>
+    </div>
+    {% endfor %}
+</body>
+</html>

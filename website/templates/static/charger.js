@@ -1,3 +1,5 @@
+window.onload = function() {load()}
+
 function toggleDetails() {
     var button = document.getElementById("detail-button");
     var details = document.getElementsByClassName('detail');
@@ -11,4 +13,47 @@ function toggleDetails() {
     for (detail of details) {
         detail.style.display = display;
     }
+}
+
+function load() {
+    searchbox = document.getElementById('searchbox');
+    if (searchbox) {
+        searchbox.addEventListener('keyup', function(event) {
+            event.preventDefault();
+            search_using_keyword();
+        })
+    }
+}
+
+function search_using_keyword() {
+    keyword = document.getElementById('searchbox').value;
+    chargerContainers = document.getElementsByClassName("charger-container");
+    for (container of chargerContainers) {
+        chargerSerial = container.getElementsByClassName("charger-serial")[0].value;
+        if (chargerSerial.includes(keyword)) {
+            container.style.display = "block";
+        } else {
+            container.style.display = "none";
+        }
+    }
+}
+
+function toggleDisabled(button) {
+    button.innerHTML.includes()
+    inputbox = button.parentElement.getElementsByClassName('charger-serial')[0]
+    if (inputbox.disabled) {
+        inputbox.disabled = false;
+        button.innerHTML= 'Save';
+    } else {
+        inputbox.disabled = true;
+        button.innerHTML= 'Edit&nbsp;';
+    }
+}
+
+function printQR(index) {
+    console.log(index);
+}
+
+function deleteCharger(index) {
+    console.log(index);
 }

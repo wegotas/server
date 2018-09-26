@@ -646,6 +646,15 @@ def getIsOrder(request):
         else:
             return False
 
+def getIsChargers(request):
+    if request.GET.get('chargers') is None:
+        return False
+    else:
+        if request.GET.get('chargers') == "True":
+            return True
+        else:
+            return False
+
 
 def getQty(data_dict):
     if data_dict.get('qty') is None:
@@ -3059,7 +3068,6 @@ def serialToQRToPrint(*args):
 class ChargerSerialProcessor:
 
     def __init__(self, serial):
-        # print(serial)
         self.manufacturer, middle_section, self.charger_serial = serial.split('_')
         self.power, self.connector_type = middle_section.split('W', 1)
         self.message = ''
@@ -3100,46 +3108,53 @@ class ChargerSerialProcessor:
 
 class ChargerHolder:
 
-    def __init__(self, serial):
-        self.charger = Chargers.objects.get(charger_serial=serial.split('_')[2])
+    def __init__(self, serial=None):
+        if serial:
+            self.charger = Chargers.objects.get(charger_serial=serial.split('_')[2])
         self.qty = Chargers.objects.filter(f_charger_category=self.charger.f_charger_category).count()
-        '''
-        self.id = charger.charger_id
-        self.serial = charger.charger_serial
-        self.manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
-        self.watts = charger.f_charger_category.watts
-        self.ACinVoltsMin = charger.f_charger_category.acinvoltsmin
-        self.ACinVoltsMax = charger.f_charger_category.acinvoltsmax
-        self.ACinAmpers = charger.f_charger_category.acinampers
-        self.ACinHzMin = charger.f_charger_category.acinhzmin
-        self.ACinHzMax = charger.f_charger_category.acinhzmax
-        self.DCOutVoltsMin = charger.f_charger_category.dcoutvoltsmin
-        self.DCOutVoltsMax = charger.f_charger_category.dcoutvoltsmax
-        self.DCoutAmpers = charger.f_charger_category.dcoutampers
-        self.connector_inner_diameter = charger.f_charger_category.connector_inner_diameter
-        self.connector_outer_diameter = charger.f_charger_category.connector_outer_diameter
-        self.connector_contacts_qty = charger.f_charger_category.connector_contacts_qty
-        self.originality_status = charger.f_charger_category.originality_status
-        self.used_status = charger.f_charger_category.used_status
-        self.connector_type = charger.f_charger_category.connector_type
-        
-        print(self.id)
-        print(self.serial)
-        print(self.manufacturer)
-        print(self.watts)
-        print(self.ACinVoltsMin)
-        print(self.ACinVoltsMax )
-        print(self.ACinAmpers)
-        print(self.ACinHzMin)
-        print(self.ACinHzMax)
-        print(self.DCOutVoltsMin)
-        print(self.DCOutVoltsMax)
-        print(self.DCoutAmpers)
-        print(self.connector_inner_diameter)
-        print(self.connector_outer_diameter)
-        print(self.connector_contacts_qty)
-        print(self.originality_status)
-        print(self.used_status)
-        print(self.connector_type)
-        
-        '''
+
+
+class ChargerCategoryHolder:
+
+    def __init__(self, chargerCategory):
+        self.chargerCategory = chargerCategory
+        self.qty = Chargers.objects.filter(f_charger_category=self.chargerCategory).count()
+
+
+class ChargerCategoriesHolder:
+
+    def __init__(self):
+        self.count = 0
+        chargerCategories = ChargerCategories.objects.all()
+        self.chargerCategories = []
+        for cat in chargerCategories:
+            cch = ChargerCategoryHolder(cat)
+            self.chargerCategories.append(cch)
+
+    def increment(self):
+        self.count += 1
+        return ''
+
+
+class ChargerCategoryToEdit:
+
+    def __init__(self, index):
+        self.chargerCategory = ChargerCategories.objects.get(charger_category_id=index)
+        # print(self.chargerCategory)
+        self.qty = Chargers.objects.filter(f_charger_category=self.chargerCategory).count()
+        self.chargers = Chargers.objects.filter(f_charger_category=self.chargerCategory).order_by('charger_serial')
+        self.counter = 0
+        self.uniqueManufacturers()
+
+    def increment(self):
+        self.counter += 1
+        return ''
+
+    def isSecond(self):
+        return bool(self.counter%2)
+
+    def uniqueManufacturers(self):
+        manufacturers_list = []
+        for man in Manufacturers.objects.all():
+            manufacturers_list.append(man.manufacturer_name)
+        return manufacturers_list
