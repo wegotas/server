@@ -3140,11 +3140,95 @@ class ChargerCategoryToEdit:
 
     def __init__(self, index):
         self.chargerCategory = ChargerCategories.objects.get(charger_category_id=index)
-        # print(self.chargerCategory)
         self.qty = Chargers.objects.filter(f_charger_category=self.chargerCategory).count()
         self.chargers = Chargers.objects.filter(f_charger_category=self.chargerCategory).order_by('charger_serial')
         self.counter = 0
-        self.uniqueManufacturers()
+        self.message = ''
+
+    def proccess(self, data_dict):
+        required_string_fields = ('manufacturer_name', 'connector_type')
+        required_string_values = [None, None]
+        required_boolean_fields = ('is_original', 'is_used')
+        required_boolean_values = [None, None]
+        required_integer_fields = ('connector_contacts_qty', 'watts')
+        required_integer_values = [None, None]
+        required_decimal_fields = ('connector_inner_diameter', 'connector_outer_diameter', 'dcoutvoltsmax', 'dcoutampers', 'dcoutvoltsmin')
+        required_decimal_values = [None, None, None, None, None]
+        optional_integer_fields = ('acinhzmin', 'acinhzmax')
+        optional_integer_values = (None, None)
+        optional_decimal_fields = ('acinampers', 'acinvoltsmin', 'acinvoltsmax')
+        optional_decimal_values = (None, None, None)
+        try:
+            for index in range(len(required_string_fields)):
+                required_string_values[index] = self._get_required_string_field_value(data_dict,
+                                                                                      required_string_fields[index])
+            for index in range(len(required_boolean_fields)):
+                required_boolean_values[index] = self._get_required_bool_field_value(data_dict, required_boolean_fields[index])
+            for index in range(len(required_integer_fields)):
+                required_integer_values[index] = self._get_required_integer_field_value(data_dict, required_integer_fields[index])
+            for index in range(len(required_decimal_fields)):
+                required_decimal_values[index] = self._get_required_decimal_field_value(data_dict,
+                                                                                        required_decimal_fields[index])
+            print(required_decimal_values)
+        except Exception as e:
+            self.message = str(e)
+
+    def _get_required_string_field_value(self, data_dict, field_name):
+        try:
+            value = data_dict.pop(field_name, '')[0]
+            if self._is_string_valid(value):
+                return value
+            else:
+                self.message += 'Value in '+field_name+' can\'t be empty string or None\r\n'
+        except:
+            self.message += 'Failed to retrieve '+field_name+'\r\n'
+
+    def _get_required_bool_field_value(self, data_dict, field_name):
+        try:
+            value = data_dict.pop(field_name, '')[0]
+            if self._is_bool_valid(value):
+                return self._string_to_bool(value)
+            else:
+                self.message += 'Value in '+field_name+' can be either \'True\' or \'False\'\r\n'
+        except:
+            self.message += 'Failed to retrieve ' + field_name + '\r\n'
+
+    def _get_required_integer_field_value(self, data_dict, field_name):
+        try:
+            value = data_dict.pop(field_name, '')[0]
+            if value.isdigit():
+                return int(value)
+            else:
+                self.message += 'Value in '+field_name+' must be an integer\r\n'
+        except:
+            self.message += 'Failed to retrieve ' + field_name + '\r\n'
+
+    def _get_required_decimal_field_value(self, data_dict, field_name):
+        try:
+            value = data_dict.pop(field_name, '')[0]
+            value = value.replace(',', '.')
+            if value.replace('.', '', 1).isdigit():
+                return float(value)
+            else:
+                self.message += 'Value in '+field_name+' can\'t be empty string or None\r\n'
+        except:
+            self.message += 'Failed to retrieve ' + field_name + '\r\n'
+
+    def _string_to_bool(self, string):
+        if string.lower() in ['true', '1', 't', 'y', 'yes']:
+            return True
+        if string.lower() in ['false', '0', 'n', 'f', 'no']:
+            return False
+
+    def _is_bool_valid(self, string):
+        if string.lower() in ['true', '1', 't', 'y', 'yes', 'false', '0', 'n', 'f', 'no']:
+            return True
+        return False
+
+    def _is_string_valid(self, string):
+        if string == '' or string.lower() == 'none':
+            return False
+        return True
 
     def increment(self):
         self.counter += 1
@@ -3153,8 +3237,60 @@ class ChargerCategoryToEdit:
     def isSecond(self):
         return bool(self.counter%2)
 
-    def uniqueManufacturers(self):
+    def unique_manufacturers(self):
         manufacturers_list = []
         for man in Manufacturers.objects.all():
             manufacturers_list.append(man.manufacturer_name)
+        manufacturers_list.sort()
         return manufacturers_list
+
+    def _unique_values_returner(self, column_name):
+        holder = []
+        for tupple_holder in ChargerCategories.objects.values_list(column_name).distinct():
+            holder.append(tupple_holder[0])
+        return holder
+
+    def unique_originality_statuses(self):
+        return [True, False]
+
+    def unique_used_statuses(self):
+        return [True, False]
+
+    def unique_connector_types(self):
+        return self._unique_values_returner('connector_type')
+
+    def unique_watts(self):
+        return self._unique_values_returner('watts')
+
+    def unique_connectors_inner_diameter(self):
+        return self._unique_values_returner('connector_inner_diameter')
+
+    def unique_connectors_outer_diameter(self):
+        return self._unique_values_returner('connector_outer_diameter')
+
+    def unique_dcoutvoltsmin(self):
+        return self._unique_values_returner('dcoutvoltsmin')
+
+    def unique_dcoutvoltsmax(self):
+        return self._unique_values_returner('dcoutvoltsmax')
+
+    def unique_dcoutampers(self):
+        return self._unique_values_returner('dcoutampers')
+
+    def unique_connector_contacts_qtys(self):
+        return self._unique_values_returner('connector_contacts_qty')
+
+    def unique_acinvoltsmins(self):
+        return self._unique_values_returner('acinvoltsmin')
+
+    def unique_acinvoltsmaxs(self):
+        return self._unique_values_returner('acinvoltsmax')
+
+    def unique_acinhzmins(self):
+        return self._unique_values_returner('acinhzmin')
+
+    def unique_acinhzmaxs(self):
+        return self._unique_values_returner('acinhzmax')
+
+    def unique_acinamperses(self):
+        return self._unique_values_returner('acinampers')

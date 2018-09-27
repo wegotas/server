@@ -750,6 +750,8 @@ def edit_charger(request, int_index):
     print(int_index)
     if request.method == 'POST':
         print('POST method')
+        ccte = ChargerCategoryToEdit(int_index)
+        ccte.proccess(request.POST.copy())
     if request.method == 'GET':
         print('GET method')
         ccte = ChargerCategoryToEdit(int_index)

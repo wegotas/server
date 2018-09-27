@@ -22,11 +22,11 @@
                     <td>
                         <input list="manufacturers" name="manufacturer_name" class="inputbox" value="{{ ccte.chargerCategory.f_manufacturer.manufacturer_name }}">
                         <datalist id="manufacturers">
-                            {% for manufacturer in ccte.uniqueManufacturers %}
+                            {% for value in ccte.unique_manufacturers %}
                             <option
-                                    value="{{ manufacturer }}"
-                                    {% if ccte.chargerCategory.f_manufacturer.manufacturer_name == manufacturer %} selected="selected"{% endif %}
-                            >{{ manufacturer }}</option>
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.f_manufacturer.manufacturer_name == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
                             {% endfor %}
                         </datalist>
                     </td>
@@ -40,22 +40,51 @@
                     <td>
                         <input list="connector_types" name="connector_type" class="inputbox" value="{{ ccte.chargerCategory.connector_type }}">
                         <datalist id="connector_types">
-
+                            {% for value in ccte.unique_connector_types %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.connector_type == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
                         </datalist>
                     </td>
                     <th>Watts:</th>
                     <td>
-                        <input type="text" name="watts" class="inputbox" value="{{ ccte.chargerCategory.watts }}">
+                        <input list="wattses" name="watts" class="inputbox" value="{{ ccte.chargerCategory.watts }}">
+                        <datalist id="wattses">
+                            {% for value in ccte.unique_watts %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.watts == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                 </tr>
                 <tr>
                     <th>Connector inner diameter:</th>
                     <td>
-                        <input type="text" name="connector_inner_diameter" class="inputbox" value="{{ ccte.chargerCategory.connector_inner_diameter }}">
+                        <input list="inner_diameters" name="connector_inner_diameter" class="inputbox" value="{{ ccte.chargerCategory.connector_inner_diameter }}">
+                        <datalist id="inner_diameters">
+                            {% for value in ccte.unique_connectors_inner_diameter %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.connector_inner_diameter == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                     <th>Connector outer diameter:</th>
                     <td>
-                        <input type="text" name="connector_outer_diameter" class="inputbox" value="{{ ccte.chargerCategory.connector_outer_diameter }}">
+                        <input list="outer_diameters" name="connector_outer_diameter" class="inputbox" value="{{ ccte.chargerCategory.connector_outer_diameter }}">
+                        <datalist id="outer_diameters">
+                            {% for value in ccte.unique_connectors_outer_diameter %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.connector_outer_diameter == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                 </tr>
                 <tr>
@@ -63,78 +92,143 @@
                     <td>
                         <input list="originality_statuses" name="is_original" class="inputbox" value="{{ ccte.chargerCategory.is_original }}">
                         <datalist id="originality_statuses">
+                            {% for value in ccte.unique_originality_statuses %}
                             <option
-                                    value="True"
-                                    {% if ccte.chargerCategory.is_original == "True" %} selected="selected"{% endif %}
-                            >True
-                            </option>
-                            <option
-                                    value="False"
-                                    {% if ccte.chargerCategory.is_original == "False" %} selected="selected"{% endif %}
-                            >False
-                            </option>
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.is_original == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
                         </datalist>
                     </td>
                     <th>Used status:</th>
                     <td>
                         <input list="used_statuses" name="is_used" class="inputbox" value="{{ ccte.chargerCategory.is_used }}">
                         <datalist id="used_statuses">
+                            {% for value in ccte.unique_used_statuses %}
                             <option
-                                    value="True"
-                                    {% if ccte.chargerCategory.is_used == "True" %} selected="selected"{% endif %}
-                            >
-                            True</option>
-                            <option
-                                    value="False"
-                                    {% if ccte.chargerCategory.is_used == "False" %} selected="selected"{% endif %}
-                            >False</option>
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.is_used == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
                         </datalist>
                     </td>
                 </tr>
                 <tr>
                     <th>DC Out Volts Minimum:</th>
                     <td>
-                        <input type="text" name="dcoutvoltsmin" class="inputbox" value="{{ ccte.chargerCategory.dcoutvoltsmin }}">
+                        <input list="dcoutvoltsmins" name="dcoutvoltsmin" class="inputbox" value="{{ ccte.chargerCategory.dcoutvoltsmin }}">
+                        <datalist id="dcoutvoltsmins">
+                            {% for value in ccte.unique_dcoutvoltsmin %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.dcoutvoltsmin == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                     <th>DC Out Volts Maximum:</th>
                     <td>
-                        <input type="text" name="dcoutvoltsmax" class="inputbox" value="{{ ccte.chargerCategory.dcoutvoltsmax }}">
+                        <input list="dcoutvoltsmaxs" name="dcoutvoltsmax" class="inputbox" value="{{ ccte.chargerCategory.dcoutvoltsmax }}">
+                        <datalist id="dcoutvoltsmaxs">
+                            {% for value in ccte.unique_dcoutvoltsmax %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.dcoutvoltsmax == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                 </tr>
                 <tr>
                     <th>DC Out Ampers:</th>
                     <td>
-                        <input type="text" name="dcoutampers" class="inputbox" value="{{ ccte.chargerCategory.dcoutampers }}">
+                        <input list="dcoutamperses" name="dcoutampers" class="inputbox" value="{{ ccte.chargerCategory.dcoutampers }}">
+                        <datalist id="dcoutamperses">
+                            {% for dcoutamper in ccte.unique_dcoutampers %}
+                            <option
+                                    value="{{ dcoutamper }}"
+                                    {% if ccte.chargerCategory.dcoutampers == dcoutamper %} selected="selected"{% endif %}
+                            >{{ dcoutamper }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                     <th>Connector contacts qty:</th>
                     <td>
-                        <input type="text" name="connector_contacts_qty" class="inputbox" value="{{ ccte.chargerCategory.connector_contacts_qty }}">
+                        <input list="connector_contacts_qtys" name="connector_contacts_qty" class="inputbox" value="{{ ccte.chargerCategory.connector_contacts_qty }}">
+                        <datalist id="connector_contacts_qtys">
+                            {% for value in ccte.unique_connector_contacts_qtys %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.connector_contacts_qty == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                 </tr>
                 <tr>
                     <th>AC in Volts Minimum:</th>
                     <td>
-                        <input type="text" name="acinvoltsmin" class="inputbox" value="{{ ccte.chargerCategory.acinvoltsmin }}">
+                        <input list="acinvoltsmins" name="acinvoltsmin" class="inputbox" value="{{ ccte.chargerCategory.acinvoltsmin }}">
+                        <datalist id="acinvoltsmins">
+                            {% for value in ccte.unique_acinvoltsmins %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.acinvoltsmin == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                     <th>AC in Volts Maximum:</th>
                     <td>
-                        <input type="text" name="acinvoltsmax" class="inputbox" value="{{ ccte.chargerCategory.acinvoltsmax }}">
+                        <input list="acinvoltsmaxs" name="acinvoltsmax" class="inputbox" value="{{ ccte.chargerCategory.acinvoltsmax }}">
+                        <datalist id="acinvoltsmaxs">
+                            {% for value in ccte.unique_acinvoltsmaxs %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.acinvoltsmax == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                 </tr>
                 <tr>
                     <th>AC in Hz Minimum:</th>
                     <td>
-                        <input type="text" name="acinhzmin" class="inputbox" value="{{ ccte.chargerCategory.acinhzmin }}">
+                        <input list="acinhzmins" name="acinhzmin" class="inputbox" value="{{ ccte.chargerCategory.acinhzmin }}">
+                        <datalist id="acinhzmins">
+                            {% for value in ccte.unique_acinhzmins %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.acinhzmin == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                     <th>AC in Hz Maximum:</th>
                     <td>
-                        <input type="text" name="acinhzmax" class="inputbox" value="{{ ccte.chargerCategory.acinhzmax }}">
+                        <input list="acinhzmaxs" name="acinhzmax" class="inputbox" value="{{ ccte.chargerCategory.acinhzmax }}">
+                        <datalist id="acinhzmaxs">
+                            {% for value in ccte.unique_acinhzmaxs %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.acinhzmax == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                 </tr>
                 <tr>
                     <th>AC in Ampers:</th>
                     <td>
-                        <input type="text" name="acinampers" class="inputbox" value="{{ ccte.chargerCategory.acinampers }}">
+                        <input list="acinamperses" name="acinampers" class="inputbox" value="{{ ccte.chargerCategory.acinampers }}">
+                        <datalist id="acinamperses">
+                            {% for value in ccte.unique_acinamperses %}
+                            <option
+                                    value="{{ value }}"
+                                    {% if ccte.chargerCategory.acinampers == value %} selected="selected"{% endif %}
+                            >{{ value }}</option>
+                            {% endfor %}
+                        </datalist>
                     </td>
                 </tr>
             </tbody>
