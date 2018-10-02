@@ -38,13 +38,27 @@ function search_using_keyword() {
     }
 }
 
-function toggleDisabled(button) {
+function toggleDisabled(button, index) {
     button.innerHTML.includes()
     inputbox = button.parentElement.getElementsByClassName('charger-serial')[0]
     if (inputbox.disabled) {
         inputbox.disabled = false;
         button.innerHTML= 'Save';
     } else {
+        serial = inputbox.value
+        var xhr = new XMLHttpRequest();
+        var objectToSend = {};
+        objectToSend["Index"] = index;
+        objectToSend["Serial"] = serial;
+        object = JSON.stringify(objectToSend);
+        console.log(objectToSend);
+        xhr.open('POST', 'edit/', true);
+        xhr.send(object);
+        xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+                console.log("Edit sent");
+            }
+        }
         inputbox.disabled = true;
         button.innerHTML= 'Edit&nbsp;';
     }
@@ -52,8 +66,29 @@ function toggleDisabled(button) {
 
 function printQR(index) {
     console.log(index);
+    var xhr = new XMLHttpRequest();
+    var objectToSend = {};
+    objectToSend["Index"] = index;
+    object = JSON.stringify(objectToSend);
+    xhr.open('POST', 'print/', true);
+    xhr.send(object);
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            console.log("Edit sent");
+        }
+    }
 }
 
 function deleteCharger(index) {
-    console.log(index);
+    var xhr = new XMLHttpRequest();
+    var objectToSend = {};
+    objectToSend["Index"] = index;
+    object = JSON.stringify(objectToSend);
+    xhr.open('POST', 'delete/', true);
+    xhr.send(object);
+    xhr.onreadystatechange = function(e) {
+      if (xhr.readyState === 4) {
+        location.reload();
+      }
+    }
 }

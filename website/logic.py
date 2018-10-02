@@ -15,6 +15,13 @@ import tarfile
 import datetime
 from subprocess import call
 import csv
+import qrcode
+from PIL import Image, ImageDraw, ImageFont
+import subprocess
+import io
+import signal
+from django.db.models import ProtectedError
+from django.db.utils import IntegrityError
 
 
 class Bat_holder():
@@ -3135,6 +3142,48 @@ class ChargerCategoriesHolder:
         self.count += 1
         return ''
 
+    def unique_manufacturers(self):
+        holder = []
+        for chargerCategory in self.chargerCategories:
+            holder.append(chargerCategory.chargerCategory.f_manufacturer.manufacturer_name)
+        return list(set(holder))
+
+    def unique_watts(self):
+        holder = []
+        for chargerCategory in self.chargerCategories:
+            holder.append(chargerCategory.chargerCategory.watts)
+        return list(set(holder))
+
+    def unique_dcoutvoltsmin(self):
+        holder = []
+        for chargerCategory in self.chargerCategories:
+            holder.append(chargerCategory.chargerCategory.dcoutvoltsmin)
+        return list(set(holder))
+
+    def unique_dcoutvoltsmax(self):
+        holder = []
+        for chargerCategory in self.chargerCategories:
+            holder.append(chargerCategory.chargerCategory.dcoutvoltsmax)
+        return list(set(holder))
+
+    def unique_counts(self):
+        holder = []
+        for chargerCategory in self.chargerCategories:
+            holder.append(chargerCategory.qty)
+        return list(set(holder))
+
+    def unique_originals(self):
+        holder = []
+        for chargerCategory in self.chargerCategories:
+            holder.append(chargerCategory.chargerCategory.is_original())
+        return list(set(holder))
+
+    def unique_used(self):
+        holder = []
+        for chargerCategory in self.chargerCategories:
+            holder.append(chargerCategory.chargerCategory.is_used())
+        return list(set(holder))
+
 
 class ChargerCategoryToEdit:
 
@@ -3144,6 +3193,7 @@ class ChargerCategoryToEdit:
         self.chargers = Chargers.objects.filter(f_charger_category=self.chargerCategory).order_by('charger_serial')
         self.counter = 0
         self.message = ''
+        self.isValidData = True
 
     def proccess(self, data_dict):
         required_string_fields = ('manufacturer_name', 'connector_type')
@@ -3152,26 +3202,92 @@ class ChargerCategoryToEdit:
         required_boolean_values = [None, None]
         required_integer_fields = ('connector_contacts_qty', 'watts')
         required_integer_values = [None, None]
-        required_decimal_fields = ('connector_inner_diameter', 'connector_outer_diameter', 'dcoutvoltsmax', 'dcoutampers', 'dcoutvoltsmin')
+        required_decimal_fields = ('connector_inner_diameter', 'connector_outer_diameter', 'dcoutvoltsmin', 'dcoutvoltsmax', 'dcoutampers')
         required_decimal_values = [None, None, None, None, None]
         optional_integer_fields = ('acinhzmin', 'acinhzmax')
-        optional_integer_values = (None, None)
+        optional_integer_values = [None, None]
         optional_decimal_fields = ('acinampers', 'acinvoltsmin', 'acinvoltsmax')
-        optional_decimal_values = (None, None, None)
+        optional_decimal_values = [None, None, None]
         try:
             for index in range(len(required_string_fields)):
                 required_string_values[index] = self._get_required_string_field_value(data_dict,
                                                                                       required_string_fields[index])
             for index in range(len(required_boolean_fields)):
-                required_boolean_values[index] = self._get_required_bool_field_value(data_dict, required_boolean_fields[index])
+                required_boolean_values[index] = self._get_required_bool_field_value(data_dict,
+                                                                                     required_boolean_fields[index])
             for index in range(len(required_integer_fields)):
-                required_integer_values[index] = self._get_required_integer_field_value(data_dict, required_integer_fields[index])
+                required_integer_values[index] = self._get_required_integer_field_value(data_dict,
+                                                                                        required_integer_fields[index])
             for index in range(len(required_decimal_fields)):
                 required_decimal_values[index] = self._get_required_decimal_field_value(data_dict,
                                                                                         required_decimal_fields[index])
-            print(required_decimal_values)
+            for index in range(len(optional_integer_fields)):
+                optional_integer_values[index] = self._get_optional_decimal_field_value(data_dict,
+                                                                                        optional_integer_fields[index])
+            for index in range(len(optional_decimal_fields)):
+                optional_decimal_values[index] = self._get_optional_decimal_field_value(data_dict,
+                                                                                        optional_decimal_fields[index])
+            if self.isValidData:
+                print('Charger edit data passed is valid')
+                print(self.message)
+                self._save(required_string_values,
+                           required_boolean_values,
+                           required_integer_values,
+                           required_decimal_values,
+                           optional_integer_values,
+                           optional_decimal_values)
+            else:
+                print('Charger edit data passed is wrong')
+                print(self.message)
         except Exception as e:
+            self.isValidData = False
             self.message = str(e)
+
+    def _save(self, rsv, rbv, riv, rdv, oiv, odv):
+
+        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=rsv[0])[0]
+        self.chargerCategory.f_manufacturer = manufacturer
+        self.chargerCategory.watts = riv[1]
+        self.chargerCategory.acinvoltsmin = odv[1]
+        self.chargerCategory.acinvoltsmax = odv[2]
+        self.chargerCategory.acinampers = odv[0]
+        self.chargerCategory.acinhzmin = oiv[0]
+        self.chargerCategory.acinhzmax = oiv[1]
+        self.chargerCategory.dcoutvoltsmin = rdv[2]
+        self.chargerCategory.dcoutvoltsmax = rdv[3]
+        self.chargerCategory.dcoutampers = rdv[4]
+        self.chargerCategory.connector_inner_diameter = rdv[0]
+        self.chargerCategory.connector_outer_diameter = rdv[1]
+        self.chargerCategory.connector_contacts_qty = riv[0]
+        self.chargerCategory.originality_status = rbv[0]
+        self.chargerCategory.used_status = rbv[1]
+        self.chargerCategory.connector_type = rsv[1]
+        self.chargerCategory.save()
+
+    def _get_optional_decimal_field_value(self, data_dict, field_name):
+        try:
+            value = data_dict.pop(field_name, '')[0]
+            value = value.replace(',', '.')
+            if value == '' or value.lower() == 'none':
+                return None
+            if value.replace('.', '', 1).isdigit():
+                return float(value)
+            else:
+                self.message += 'Value in '+field_name+' should be decimal number, empty string or None\r\n'
+        except:
+            self.message += 'Failed to retrieve ' + field_name + '\r\n'
+
+    def _get_optional_integer_field_value(self, data_dict, field_name):
+        try:
+            value = data_dict.pop(field_name, '')[0]
+            if value == '' or value.lower() == 'none':
+                return None
+            if value.isdigit():
+                return int(value)
+            else:
+                self.message += 'Value in '+field_name+' should be an integer\r\n'
+        except:
+            self.message += 'Failed to retrieve ' + field_name + '\r\n'
 
     def _get_required_string_field_value(self, data_dict, field_name):
         try:
@@ -3179,9 +3295,11 @@ class ChargerCategoryToEdit:
             if self._is_string_valid(value):
                 return value
             else:
-                self.message += 'Value in '+field_name+' can\'t be empty string or None\r\n'
+                self.message += 'Value in '+field_name+' shouldn\'t be empty string or None\r\n'
+                self.isValidData = False
         except:
             self.message += 'Failed to retrieve '+field_name+'\r\n'
+            self.isValidData = False
 
     def _get_required_bool_field_value(self, data_dict, field_name):
         try:
@@ -3190,8 +3308,10 @@ class ChargerCategoryToEdit:
                 return self._string_to_bool(value)
             else:
                 self.message += 'Value in '+field_name+' can be either \'True\' or \'False\'\r\n'
+                self.isValidData = False
         except:
             self.message += 'Failed to retrieve ' + field_name + '\r\n'
+            self.isValidData = False
 
     def _get_required_integer_field_value(self, data_dict, field_name):
         try:
@@ -3200,8 +3320,10 @@ class ChargerCategoryToEdit:
                 return int(value)
             else:
                 self.message += 'Value in '+field_name+' must be an integer\r\n'
+                self.isValidData = False
         except:
             self.message += 'Failed to retrieve ' + field_name + '\r\n'
+            self.isValidData = False
 
     def _get_required_decimal_field_value(self, data_dict, field_name):
         try:
@@ -3210,9 +3332,11 @@ class ChargerCategoryToEdit:
             if value.replace('.', '', 1).isdigit():
                 return float(value)
             else:
-                self.message += 'Value in '+field_name+' can\'t be empty string or None\r\n'
+                self.message += 'Value in '+field_name+'  should be decimal number. Not empty string or None\r\n'
+                self.isValidData = False
         except:
             self.message += 'Failed to retrieve ' + field_name + '\r\n'
+            self.isValidData = False
 
     def _string_to_bool(self, string):
         if string.lower() in ['true', '1', 't', 'y', 'yes']:
@@ -3294,3 +3418,137 @@ class ChargerCategoryToEdit:
 
     def unique_acinamperses(self):
         return self._unique_values_returner('acinampers')
+
+
+class ChargerSerialEditor:
+
+    def __init__(self, data):
+        self.index = data['Index']
+        self.serial = data['Serial']
+        print('Index')
+        print(self.index)
+        print('Serial')
+        print(self.serial)
+
+    def proccess(self):
+        charger = Chargers.objects.get(charger_id=self.index)
+        charger.charger_serial = self.serial
+        charger.save()
+
+
+class SerialPrinter:
+
+    def __init__(self, data):
+        int_index = data['Index']
+        charger = Chargers.objects.get(charger_id=int_index)
+        manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
+        power = charger.f_charger_category.watts
+        connector_type = charger.f_charger_category.connector_type
+        serial = charger.charger_serial
+        full_serial = manufacturer + '_' + str(power) + 'W' + connector_type + '_' + serial
+        base_url = 'http://192.168.8.254:8000/website/serial/'
+        # print(full_serial)
+        self.qr_gen = Qrgenerator(base_url, [full_serial])
+
+    def print(self):
+        self.qr_gen.print_as_singular()
+
+
+class Qrgenerator:
+
+    def __init__(self, base_url, serials):
+        self.base_url = base_url
+        self.serials = serials
+
+    def print_as_pairs(self):
+        print('This is print as pairs')
+
+    def print_as_singular(self):
+        # lpr = subprocess.Popen("/usr/bin/lpr", stdin=subprocess.PIPE)
+        for serial in self.serials:
+            image = self._formImagePair(serial, None)
+            # self._sendToPrint(image)
+            imgByteArr = io.BytesIO()
+            image.save(imgByteArr, format='PNG')
+            # lpr.stdin.write(imgByteArr.getvalue())
+            # subprocess.call(['lrp', imgByteArr.getvalue()])
+            # os.system(b'lrp '+imgByteArr.getvalue())
+            # lpr.stdin.write(imgByteArr)
+
+    def _generateQR(self, serial):
+        qrImg = qrcode.make(self.base_url + serial + '/')
+        qrImg.thumbnail((410, 410), Image.ANTIALIAS)
+        return qrImg
+
+    def _formPrintableSerial(self, serial):
+        if len(serial) > 7:
+            return '..' + serial[-6:]
+        return serial
+
+    def _generateTxtImg(self, serial):
+        textImg = Image.new('RGB', (410, 120), color=(255, 255, 255))
+        fnt = ImageFont.truetype("VeraMono.ttf", size=48)
+        drawer = ImageDraw.Draw(textImg)
+        printableSerial = self._formPrintableSerial(serial).upper()
+        w, h = drawer.textsize(printableSerial, font=fnt)
+        drawer.text(((410 - w) / 2, -1), printableSerial, font=fnt, fill=(0, 0, 0))
+        return textImg
+
+    def _fromSerialToImage(self, serial):
+        qrImg = self._generateQR(serial)
+        textImg = self._generateTxtImg(serial)
+        image = Image.new('RGB', (350, 400), color=(255, 255, 255))
+        image.paste(qrImg, (-30, -30))
+        image.paste(textImg, (-30, 350))
+        return image
+
+    def _formImagePair(self, firstSerial, secondSerial=None):
+        firstImage = self._fromSerialToImage(firstSerial)
+        # margin is meant to determine how much additional space is added to the all sides of a image.
+        # The idea is hat as dimensions of image increase printer resizes image during printing to fit to it's standard, therefore dimensions of QR itself on the printed sticker decrease.
+        margin = 10
+        padding = 50
+        heightDisplacement = -14
+        width, height = firstImage.size
+        pairImage = Image.new('RGB', (width + margin, int(height * 2) + 10 + (margin * 2) + padding),
+                              color=(255, 255, 255))
+        pairImage.paste(firstImage, (int(margin * 0.5), int(0 + (margin * 0.5) + heightDisplacement)))
+        if secondSerial is not None:
+            secondImage = self._fromSerialToImage(secondSerial)
+            pairImage.paste(secondImage,
+                            (int(margin * 0.5), int((width * 1.15) + margin + heightDisplacement) + padding))
+        return pairImage
+
+    def _sendToPrint(self, image):
+        imgByteArr = io.BytesIO()
+        image.save(imgByteArr, format='PNG')
+        lpr = subprocess.Popen("/usr/bin/lpr", stdin=subprocess.PIPE)
+        lpr.stdin.write(imgByteArr.getvalue())
+
+class ChargerToDelete:
+
+    def __init__(self, data):
+        self.charger = Chargers.objects.get(charger_id=data['Index'])
+
+    def delete(self):
+        self.charger.delete()
+
+class ChargerCategoryToDelete:
+
+    def __init__(self, int_index):
+        print(int_index)
+        self.charger_category = ChargerCategories.objects.get(charger_category_id=int_index)
+        self.message = ''
+        self.success = False
+
+    def delete(self):
+        # self.charger_category.delete()
+        try:
+            self.charger_category.delete()
+            self.success = True
+        except ProtectedError as e:
+            self.success = False
+            self.message += 'Failed to delete category:\r\n' + str(e)
+        except IntegrityError as e:
+            self.success = False
+            self.message += 'Failed to delete category:\r\nMost probable cause is that category still has chargers in it\r\n' + str(e)

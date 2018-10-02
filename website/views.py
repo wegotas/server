@@ -65,6 +65,7 @@ def index(request):
             "cattyp": cattyp,
             "poscat": possible_categories})
     if isChargers:
+        # PRIDETI FILTRAVIMA
         cch = ChargerCategoriesHolder()
         return render(request, 'main.html', {
             'cch': cch,
@@ -745,14 +746,65 @@ def serial_processing(request, serial):
             print('Such serial is non-existant')
             return render(request, 'charger_nonexistant.html')
 
+
 @csrf_exempt
 def edit_charger(request, int_index):
-    print(int_index)
     if request.method == 'POST':
         print('POST method')
         ccte = ChargerCategoryToEdit(int_index)
         ccte.proccess(request.POST.copy())
+        if ccte.isValidData:
+            return render(request, 'success.html')
+        else:
+             return render(request, 'failure.html', {'message': ccte.message})
     if request.method == 'GET':
         print('GET method')
         ccte = ChargerCategoryToEdit(int_index)
         return render(request, 'charger_edit.html', {'ccte': ccte})
+
+
+@csrf_exempt
+def edit_charger_serial(request, int_index):
+    print('edit_charger_serial')
+    if request.method == 'POST':
+        print('POST method')
+        cse = ChargerSerialEditor(JSONParser().parse(request))
+        cse.proccess()
+    if request.method == 'GET':
+        print('GET method')
+
+@csrf_exempt
+def print_charger_serial(request, int_index):
+    print('print_charger_serial')
+    if request.method == 'POST':
+        print('POST method')
+        sp = SerialPrinter(JSONParser().parse(request))
+        sp.print()
+    if request.method == 'GET':
+        print('GET method')
+
+
+@csrf_exempt
+def delete_charger(request, int_index):
+    print('delete_charger')
+    if request.method == 'POST':
+        print('POST method')
+        ctd = ChargerToDelete(JSONParser().parse(request))
+        ctd.delete()
+    if request.method == 'GET':
+        print('GET method')
+
+
+@csrf_exempt
+def delete_charger_category(request, int_index):
+    print('print_charger_serial')
+    if request.method == 'POST':
+        print('POST method')
+        cctd = ChargerCategoryToDelete(int_index)
+        cctd.delete()
+        if cctd.success:
+            return render(request, 'success.html')
+        else:
+            return HttpResponse(cctd.message, status=404)
+    if request.method == 'GET':
+        print('GET method')

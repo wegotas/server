@@ -516,7 +516,7 @@ function deleteHddFromIndex(index) {
         var infoWindow = window.open(parts.join('/') + '/success/',"", "width=620,height=340");
         setTimeout(location.reload(), 1000);
       }
-      else if (xhr.status == 440) {
+      else if (xhr.status == 404) {
         alert(xhr.responseText);
       }
     }
@@ -636,4 +636,40 @@ function edit_charger(index, URLremovalToken) {
 		parts.pop();
 	}
     var editChargerWindow = window.open(parts.join('/') + '/edit_charger/'+index+'/', "", "width=700,height=620");
+}
+
+function delete_charger(index, URLremovalToken) {
+    /*
+    URLtoWorkWith = location.href;
+    parts = URLtoWorkWith.split('/');
+	for (var i =0; i<URLremovalToken; i++) {
+		parts.pop();
+	}
+    var editChargerWindow = window.open(parts.join('/') + '/delete_charger/'+index+'/', "", "width=700,height=620");
+    */
+    if (confirm('Do you really want to delete this charger?')) {
+        URLtoWorkWith = location.href;
+        parts = URLtoWorkWith.split('/');
+        for (var i =0; i<URLremovalToken; i++) {
+            parts.pop();
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', parts.join('/') + '/delete_charger_cat/'+index+'/');
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                console.log(xhr.status);
+                if (xhr.status == 200) {
+                    parts = URLtoWorkWith.split('/');
+                    parts.pop();
+                    var infoWindow = window.open(parts.join('/') + '/success/',"", "width=620,height=340");
+                    setTimeout(location.reload(), 1000);
+                }
+                if (xhr.status == 404) {
+                    alert(xhr.responseText);
+                }
+            }
+        }
+    }
 }
