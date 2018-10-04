@@ -22,6 +22,10 @@ import io
 import signal
 from django.db.models import ProtectedError
 from django.db.utils import IntegrityError
+import socket
+import tempfile
+import pathlib
+import math
 
 
 class Bat_holder():
@@ -3138,6 +3142,45 @@ class ChargerCategoriesHolder:
             cch = ChargerCategoryHolder(cat)
             self.chargerCategories.append(cch)
 
+    def filter(self, data_dict):
+        keys = ('man-af', 'watts-af', 'dcmin-af', 'dcmax-af', 'count-af', 'orig-af', 'used-af')
+        new_dict = {}
+        if 'chargers' in data_dict:
+            data_dict.pop('chargers')
+        for key in keys:
+            if key in data_dict:
+                new_dict[key] = data_dict.pop(key)
+        for key, value in new_dict.items():
+            if key == 'man-af':
+                for cat in self.chargerCategories[:]:
+                    if not cat.chargerCategory.f_manufacturer.manufacturer_name in new_dict['man-af']:
+                        self.chargerCategories.remove(cat)
+            if key == 'watts-af':
+                for cat in self.chargerCategories[:]:
+                    if not str(cat.chargerCategory.watts) in new_dict['watts-af']:
+                        self.chargerCategories.remove(cat)
+            if key == 'dcmin-af':
+                for cat in self.chargerCategories[:]:
+                    if not str(cat.chargerCategory.dcoutvoltsmin) in new_dict['dcmin-af']:
+                        self.chargerCategories.remove(cat)
+            if key == 'dcmax-af':
+                for cat in self.chargerCategories[:]:
+                    if not str(cat.chargerCategory.dcoutvoltsmax) in new_dict['dcmax-af']:
+                        self.chargerCategories.remove(cat)
+            if key == 'count-af':
+                for cat in self.chargerCategories[:]:
+                    if not str(cat.qty) in new_dict['count-af']:
+                        self.chargerCategories.remove(cat)
+            if key == 'orig-af':
+                for cat in self.chargerCategories[:]:
+                    if not str(cat.chargerCategory.is_original()) in new_dict['orig-af']:
+                        self.chargerCategories.remove(cat)
+            if key == 'used-af':
+                for cat in self.chargerCategories[:]:
+                    if not str(cat.chargerCategory.is_used()) in new_dict['used-af']:
+                        self.chargerCategories.remove(cat)
+
+
     def increment(self):
         self.count += 1
         return ''
@@ -3425,10 +3468,6 @@ class ChargerSerialEditor:
     def __init__(self, data):
         self.index = data['Index']
         self.serial = data['Serial']
-        print('Index')
-        print(self.index)
-        print('Serial')
-        print(self.serial)
 
     def proccess(self):
         charger = Chargers.objects.get(charger_id=self.index)
@@ -3445,13 +3484,32 @@ class SerialPrinter:
         power = charger.f_charger_category.watts
         connector_type = charger.f_charger_category.connector_type
         serial = charger.charger_serial
-        full_serial = manufacturer + '_' + str(power) + 'W' + connector_type + '_' + serial
-        base_url = 'http://192.168.8.254:8000/website/serial/'
+        self.full_serial = manufacturer + '_' + str(power) + 'W' + connector_type + '_' + serial
+        self.base_url = 'http://192.168.8.254:8000/website/serial/'
         # print(full_serial)
-        self.qr_gen = Qrgenerator(base_url, [full_serial])
+
 
     def print(self):
+        self.qr_gen = Qrgenerator(self.base_url, [self.full_serial])
         self.qr_gen.print_as_singular()
+
+
+class DualSerialPrinter:
+
+    def __init__(self, data):
+        self.final_serials = []
+        for member in data:
+            charger = Chargers.objects.get(charger_id=member)
+            manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
+            power = charger.f_charger_category.watts
+            connector_type = charger.f_charger_category.connector_type
+            serial = charger.charger_serial
+            self.final_serials.append(manufacturer + '_' + str(power) + 'W' + connector_type + '_' + serial)
+        self.base_url = 'http://192.168.8.254:8000/website/serial/'
+
+    def print(self):
+        self.qr_gen = Qrgenerator(self.base_url, self.final_serials)
+        self.qr_gen.print_as_pairs()
 
 
 class Qrgenerator:
@@ -3462,18 +3520,41 @@ class Qrgenerator:
 
     def print_as_pairs(self):
         print('This is print as pairs')
+        '''
+        for index in range(self._get_pair_cycles()):
+            first, second = self._get_serial_pair(index)
+            serial_pair = self._get_serial_pair(index)
+            image = self._formImagePair(serial_pair[0], serial_pair[1])
+            with tempfile.NamedTemporaryFile() as temp:
+                imgByteArr = io.BytesIO()
+                image.save(imgByteArr, format='PNG')
+                temp.write(imgByteArr.getvalue())
+                subprocess.call(['lpr', temp.name])
+        '''
+
+    def _get_pair_cycles(self):
+        # Returns how many cycles of pairs of images should be done.
+        # example: 1 serial=1cycle  2 serials=1 cycle, 3serials=2 cycles and so on.
+        return math.ceil(len(self.serials) / 2)
+
+    def _get_serial_pair(self, index):
+        first = self.serials[index*2]
+        try:
+            second = self.serials[index*2+1]
+        except IndexError:
+            second = None
+        return first, second
 
     def print_as_singular(self):
-        # lpr = subprocess.Popen("/usr/bin/lpr", stdin=subprocess.PIPE)
         for serial in self.serials:
-            image = self._formImagePair(serial, None)
-            # self._sendToPrint(image)
-            imgByteArr = io.BytesIO()
-            image.save(imgByteArr, format='PNG')
-            # lpr.stdin.write(imgByteArr.getvalue())
-            # subprocess.call(['lrp', imgByteArr.getvalue()])
-            # os.system(b'lrp '+imgByteArr.getvalue())
-            # lpr.stdin.write(imgByteArr)
+            '''
+            # image = self._formImagePair(serial, None)
+            with tempfile.NamedTemporaryFile() as temp:
+                imgByteArr = io.BytesIO()
+                image.save(imgByteArr, format='PNG')
+                temp.write(imgByteArr.getvalue())
+                subprocess.call(['lpr', temp.name])
+            '''
 
     def _generateQR(self, serial):
         qrImg = qrcode.make(self.base_url + serial + '/')

@@ -29,15 +29,15 @@ def index(request):
     if 'lots' in request.GET:
         lh = LotsHolder()
         lh.filter(request.GET.copy())
-        return render(request, 'main.html', {"cattyp": cattyp,'lh': lh})
+        return render(request, 'main.html', {"cattyp": cattyp, 'lh': lh})
     elif 'hdds' in request.GET:
         hh = HddHolder()
         hh.filter(request.GET.copy())
-        return render(request, 'main.html', {"cattyp": cattyp,'hh': hh})
+        return render(request, 'main.html', {"cattyp": cattyp, 'hh': hh})
     elif 'hdd_orders' in request.GET:
         oh = HddOrdersHolder()
         oh.filter(request.GET.copy())
-        return render(request, 'main.html', {"cattyp": cattyp,'oh': oh})
+        return render(request, 'main.html', {"cattyp": cattyp, 'oh': oh})
     if isSold:
         possible_categories = None
         qtySelect = QtySelect()
@@ -67,6 +67,7 @@ def index(request):
     if isChargers:
         # PRIDETI FILTRAVIMA
         cch = ChargerCategoriesHolder()
+        cch.filter(request.GET.copy())
         return render(request, 'main.html', {
             'cch': cch,
             "cattyp": cattyp,
@@ -780,6 +781,18 @@ def print_charger_serial(request, int_index):
         print('POST method')
         sp = SerialPrinter(JSONParser().parse(request))
         sp.print()
+    if request.method == 'GET':
+        print('GET method')
+
+
+@csrf_exempt
+def print_chargers_serials(request, int_index):
+    print('print_chargers_serials')
+    if request.method == 'POST':
+        print('POST method')
+        # print(JSONParser().parse(request))
+        dsp = DualSerialPrinter(JSONParser().parse(request))
+        dsp.print()
     if request.method == 'GET':
         print('GET method')
 

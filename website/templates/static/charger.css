@@ -27,3 +27,8 @@
     color: red;
     margin-right: 30px;
 }
+
+#printButton {
+    margin: 5px;
+    display: none;
+}

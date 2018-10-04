@@ -1,4 +1,5 @@
 window.onload = function() {load()}
+var selected_serials = [];
 
 function toggleDetails() {
     var button = document.getElementById("detail-button");
@@ -22,6 +23,10 @@ function load() {
             event.preventDefault();
             search_using_keyword();
         })
+    }
+    checkboxes = document.getElementsByClassName('record-chkbx');
+    for (checkbox of checkboxes) {
+        checkbox.checked = false;
     }
 }
 
@@ -51,7 +56,6 @@ function toggleDisabled(button, index) {
         objectToSend["Index"] = index;
         objectToSend["Serial"] = serial;
         object = JSON.stringify(objectToSend);
-        console.log(objectToSend);
         xhr.open('POST', 'edit/', true);
         xhr.send(object);
         xhr.onreadystatechange = function(e) {
@@ -91,4 +95,24 @@ function deleteCharger(index) {
         location.reload();
       }
     }
+}
+
+function serialSelect(checkbox) {
+    if (checkbox.checked){
+        selected_serials.push(checkbox.value);
+    } else {
+        selected_serials.splice(selected_serials.indexOf(checkbox.value), 1);
+    }
+    if (selected_serials.length>0) {
+      document.getElementById("printButton").style.display = "inline-block";
+    } else {
+      document.getElementById("printButton").style.display = "none";
+    }
+}
+
+function printSelectedSerials() {
+    var xhr = new XMLHttpRequest();
+    object = JSON.stringify(selected_serials);
+    xhr.open('POST', 'print_serials/', true);
+    xhr.send(object);
 }

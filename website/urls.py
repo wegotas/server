@@ -10,6 +10,7 @@ urlpatterns = [
     path('serial/<slug:serial>/', views.serial_processing, name='edit_by_serial'),
     path('edit_charger/<int:int_index>/edit/', views.edit_charger_serial, name='edit_charger'),
     path('edit_charger/<int:int_index>/print/', views.print_charger_serial, name='print_charger'),
+    path('edit_charger/<int:int_index>/print_serials/', views.print_chargers_serials, name='print_chargers_serials'),
     path('edit_charger/<int:int_index>/delete/', views.delete_charger, name='delete_charger'),
     path('edit_charger/<int:int_index>/', views.edit_charger, name='edit_charger'),
     path('edit_order/<int:int_index>/', views.edit_order, name='edit_order'),
