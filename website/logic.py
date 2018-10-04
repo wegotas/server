@@ -3519,7 +3519,6 @@ class Qrgenerator:
         self.serials = serials
 
     def print_as_pairs(self):
-        print('This is print as pairs')
         '''
         for index in range(self._get_pair_cycles()):
             first, second = self._get_serial_pair(index)
