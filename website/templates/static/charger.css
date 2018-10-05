@@ -32,3 +32,11 @@
     margin: 5px;
     display: none;
 }
+
+.charger-container {
+    display: block;
+}
+
+.header {
+    display: block;
+}

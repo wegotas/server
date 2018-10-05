@@ -162,7 +162,6 @@ def edit(request, int_index):
         batteries = get_batteries(int_index)
         rams = get_rams(int_index)
         hdds = get_hdds(int_index)
-        print(rc.manufacturers)
         return HttpResponse(
             template.render({'computer': computer,
                              'bat_list': batteries,
@@ -779,8 +778,8 @@ def print_charger_serial(request, int_index):
     print('print_charger_serial')
     if request.method == 'POST':
         print('POST method')
-        sp = SerialPrinter(JSONParser().parse(request))
-        sp.print()
+        csp = ChargerSingleSerialPrinter(JSONParser().parse(request))
+        csp.print()
     if request.method == 'GET':
         print('GET method')
 
@@ -791,8 +790,8 @@ def print_chargers_serials(request, int_index):
     if request.method == 'POST':
         print('POST method')
         # print(JSONParser().parse(request))
-        dsp = DualSerialPrinter(JSONParser().parse(request))
-        dsp.print()
+        cdsp = ChargerDualSerialPrinter(JSONParser().parse(request))
+        cdsp.print()
     if request.method == 'GET':
         print('GET method')
 
@@ -819,5 +818,15 @@ def delete_charger_category(request, int_index):
             return render(request, 'success.html')
         else:
             return HttpResponse(cctd.message, status=404)
+    if request.method == 'GET':
+        print('GET method')
+
+# print_computer_qr
+@csrf_exempt
+def print_computer_qr(request, int_index):
+    print('print_computer_qr')
+    if request.method == 'POST':
+        print('POST method')
+        cssp = ComputerSingleSerialPrinter(JSONParser().parse(request))
     if request.method == 'GET':
         print('GET method')

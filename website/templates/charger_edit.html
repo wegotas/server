@@ -239,22 +239,39 @@
     <div align="center">
         <b>Chargers and their serials</b>
     </div>
+    <!--
     <div align="center">
         <input type="text" id="searchbox" placeholder="serial searchbox">
     </div>
+    -->
     <div align="center">
         <button id="printButton" onclick="printSelectedSerials()">Print selected serials as QRs</button>
     </div>
-    {% for charger in ccte.chargers %}
-    <div align="center" class="charger-container">
-        <input name="" value="{{ charger.charger_id }}" type="checkbox" class="record-chkbx" onclick="serialSelect(this)">
-        <input class="charger-serial" type="text" value="{{ charger.charger_serial }}">
-        <button class="edit-button" onclick="toggleDisabled(this, {{ charger.charger_id }})">Edit&nbsp;</button>
-        <!--
-        <button onclick="printQR({{ charger.charger_id }})">Print QR</button>
-        -->
-        <button onclick="deleteCharger({{ charger.charger_id }})" class="delete-button">X</button>
-    </div>
-    {% endfor %}
+    <table align="center">
+        <thead>
+            <tr class="header">
+                <td><input name="" type="checkbox" onclick="selectAllSerials(this)"></td>
+                <td colspan="3"><input type="text" id="searchbox" placeholder="serial searchbox"></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for charger in ccte.chargers %}
+            <tr class="charger-container">
+                <td>
+                    <input name="" value="{{ charger.charger_id }}" type="checkbox" class="record-chkbx" onclick="serialSelect(this)">
+                </td>
+                <td>
+                    <input class="charger-serial" type="text" value="{{ charger.charger_serial }}">
+                </td>
+                <td>
+                    <button class="edit-button" onclick="toggleDisabled(this, {{ charger.charger_id }})">Edit&nbsp;</button>
+                </td>
+                <td>
+                    <button onclick="deleteCharger({{ charger.charger_id }})" class="delete-button">X</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

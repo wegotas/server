@@ -151,3 +151,6 @@ header {
     height: 70px;
 }
 
+.pic-button:hover{
+    cursor: pointer;
+}

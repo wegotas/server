@@ -69,7 +69,6 @@ function toggleDisabled(button, index) {
 }
 
 function printQR(index) {
-    console.log(index);
     var xhr = new XMLHttpRequest();
     var objectToSend = {};
     objectToSend["Index"] = index;
@@ -78,7 +77,7 @@ function printQR(index) {
     xhr.send(object);
     xhr.onreadystatechange = function(e) {
         if (xhr.readyState === 4) {
-            console.log("Edit sent");
+            console.log("sent");
         }
     }
 }
@@ -110,9 +109,19 @@ function serialSelect(checkbox) {
     }
 }
 
+function selectAllSerials(checkbox) {
+    checkboxes = document.getElementsByClassName('record-chkbx');
+    for (chckbx of checkboxes) {
+        if (chckbx.parentElement.parentElement.style.display != 'none'){
+            chckbx.checked = checkbox.checked;
+        }
+    }
+}
+
 function printSelectedSerials() {
     var xhr = new XMLHttpRequest();
     object = JSON.stringify(selected_serials);
     xhr.open('POST', 'print_serials/', true);
     xhr.send(object);
 }
+

@@ -5,6 +5,7 @@ from .logic import on_start
 urlpatterns = [
     path('look/<int:int_index>/', views.look, name='look'),
     path('edit/<int:int_index>/', views.edit, name='edit'),
+    path('edit/<int:int_index>/print_qr/', views.print_computer_qr, name='print_computer_qr'),
     path('delete_charger_cat/<int:int_index>/', views.delete_charger_category, name='edit'),
     path('by_serial/<slug:serial>/', views.edit_by_serial, name='edit_by_serial'),
     path('serial/<slug:serial>/', views.serial_processing, name='edit_by_serial'),

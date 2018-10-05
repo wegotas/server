@@ -56,7 +56,7 @@ class Categories(models.Model):
         managed = True
         db_table = 'Categories'
 
-    def get_values(self):
+    def get_values():
         categories = Categories.objects.all()
         cat_dict = dict()
         for category in categories:
@@ -399,7 +399,7 @@ class Testers(models.Model):
         managed = True
         db_table = 'Testers'
 
-    def get_values(self):
+    def get_values():
         testers = Testers.objects.all()
         tes_dict = dict()
         for tester in testers:
@@ -415,7 +415,7 @@ class Types(models.Model):
         managed = True
         db_table = 'Types'
 
-    def get_values(self):
+    def get_values():
         types = Types.objects.all()
         typ_dict = dict()
         for type in types:

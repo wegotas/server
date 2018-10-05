@@ -3475,41 +3475,69 @@ class ChargerSerialEditor:
         charger.save()
 
 
-class SerialPrinter:
+class ChargerSingleSerialPrinter:
 
     def __init__(self, data):
-        int_index = data['Index']
+        # int_index = data['Index']
+        # charger = Chargers.objects.get(charger_id=int_index)
+        # manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
+        # power = charger.f_charger_category.watts
+        # connector_type = charger.f_charger_category.connector_type
+        # serial = charger.charger_serial
+        # self.full_serial = manufacturer + '_' + str(power) + 'W' + connector_type + '_' + serial
+        self.full_serial = self._form_serial(data['Index'])
+        self.base_url = 'http://192.168.8.254:8000/website/serial/'
+
+    def _form_serial(self, int_index):
         charger = Chargers.objects.get(charger_id=int_index)
         manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
         power = charger.f_charger_category.watts
         connector_type = charger.f_charger_category.connector_type
         serial = charger.charger_serial
-        self.full_serial = manufacturer + '_' + str(power) + 'W' + connector_type + '_' + serial
-        self.base_url = 'http://192.168.8.254:8000/website/serial/'
-        # print(full_serial)
-
+        full_serial = manufacturer + '_' + str(power) + 'W' + connector_type + '_' + serial
+        return full_serial
 
     def print(self):
         self.qr_gen = Qrgenerator(self.base_url, [self.full_serial])
         self.qr_gen.print_as_singular()
 
 
-class DualSerialPrinter:
+class ChargerDualSerialPrinter:
 
     def __init__(self, data):
         self.final_serials = []
         for member in data:
-            charger = Chargers.objects.get(charger_id=member)
-            manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
-            power = charger.f_charger_category.watts
-            connector_type = charger.f_charger_category.connector_type
-            serial = charger.charger_serial
-            self.final_serials.append(manufacturer + '_' + str(power) + 'W' + connector_type + '_' + serial)
+            # charger = Chargers.objects.get(charger_id=member)
+            # manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
+            # power = charger.f_charger_category.watts
+            # connector_type = charger.f_charger_category.connector_type
+            # serial = charger.charger_serial
+            full_serial = self._form_serial(data['Index'])
+            self.final_serials.append(full_serial)
         self.base_url = 'http://192.168.8.254:8000/website/serial/'
+
+    def _form_serial(self, int_index):
+        charger = Chargers.objects.get(charger_id=int_index)
+        manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
+        power = charger.f_charger_category.watts
+        connector_type = charger.f_charger_category.connector_type
+        serial = charger.charger_serial
+        full_serial = manufacturer + '_' + str(power) + 'W' + connector_type + '_' + serial
+        return full_serial
 
     def print(self):
         self.qr_gen = Qrgenerator(self.base_url, self.final_serials)
         self.qr_gen.print_as_pairs()
+
+
+class ComputerSingleSerialPrinter:
+
+    def __init__(self, data):
+        int_index = data['Index']
+        print(int_index)
+        '''
+        !!! This part needs finishing !!!
+        '''
 
 
 class Qrgenerator:
@@ -3519,8 +3547,9 @@ class Qrgenerator:
         self.serials = serials
 
     def print_as_pairs(self):
+        print('print_as_pairs')
+        print(self.serials)
         '''
-        print('Useless print')
         for index in range(self._get_pair_cycles()):
             first, second = self._get_serial_pair(index)
             serial_pair = self._get_serial_pair(index)
@@ -3546,8 +3575,11 @@ class Qrgenerator:
         return first, second
 
     def print_as_singular(self):
+        print('print_as_singular')
+        print(self.serials)
+        '''
         for serial in self.serials:
-            '''
+            
             # image = self._formImagePair(serial, None)
             with tempfile.NamedTemporaryFile() as temp:
                 imgByteArr = io.BytesIO()
