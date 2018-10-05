@@ -821,7 +821,7 @@ def delete_charger_category(request, int_index):
     if request.method == 'GET':
         print('GET method')
 
-# print_computer_qr
+
 @csrf_exempt
 def print_computer_qr(request, int_index):
     print('print_computer_qr')
