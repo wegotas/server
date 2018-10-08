@@ -3569,20 +3569,14 @@ class Qrgenerator:
         self.serials = serials
 
     def print_as_pairs(self):
-        print('print_as_pairs')
-        print(self.serials)
         for index in range(self._get_pair_cycles()):
-            first, second = self._get_serial_pair(index)
             serial_pair = self._get_serial_pair(index)
             image = self._formImagePair(serial_pair[0], serial_pair[1])
-            image.save('test.png')
-            '''
             with tempfile.NamedTemporaryFile() as temp:
                 imgByteArr = io.BytesIO()
                 image.save(imgByteArr, format='PNG')
                 temp.write(imgByteArr.getvalue())
                 subprocess.call(['lpr', temp.name])
-            '''
 
     def _get_pair_cycles(self):
         # Returns how many cycles of pairs of images should be done.

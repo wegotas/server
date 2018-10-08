@@ -334,8 +334,6 @@ def mass_qr_print(request):
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
-    # data = JSONParser().parse(request)
-    # print(data)
     cmsp = ComputerMultipleSerialPrinter(JSONParser().parse(request))
     cmsp.print()
 

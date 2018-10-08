@@ -71,7 +71,10 @@ class Computer_record():
             self.success = False
 
     def _price_get(self, price):
-        return price.replace(",", ".")
+        try:
+            return float(price.replace(',', '.'))
+        except ValueError:
+            return 0
 
     def _bat_to_comp_relation_creation(self, bat):
         bat_to_comp, created = BatToComp.objects.get_or_create(
