@@ -411,6 +411,15 @@ function mass_csv() {
   }
 }
 
+function mass_qr_print() {
+    var xhr = new XMLHttpRequest();
+    var runAsync = true ;
+    indexArray = JSON.stringify(selected_records);
+    xhr.open('POST', 'mass_qr_print/', true);
+    xhr.responseType = "arraybuffer";
+    xhr.send(indexArray);
+}
+
 function mass_catchange(element) {
   if (confirm("Do you really want do move these records to another category?")) {
     var xhr = new XMLHttpRequest();

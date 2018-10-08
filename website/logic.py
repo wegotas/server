@@ -3533,11 +3533,33 @@ class ChargerDualSerialPrinter:
 class ComputerSingleSerialPrinter:
 
     def __init__(self, data):
-        int_index = data['Index']
-        print(int_index)
-        '''
-        !!! This part needs finishing !!!
-        '''
+        self.full_serial = self._form_serial(data['Index'])
+        self.base_url = 'http://192.168.8.254:8000/website/by_serial/'
+
+    def _form_serial(self, int_index):
+        computer = Computers.objects.get(id_computer=int_index)
+        return computer.computer_serial
+
+    def print(self):
+        self.qr_gen = Qrgenerator(self.base_url, [self.full_serial])
+        self.qr_gen.print_as_singular()
+
+
+class ComputerMultipleSerialPrinter:
+
+    def __init__(self, data):
+        self.final_serials = []
+        for member in data:
+            self.final_serials.append(self._form_serial(member))
+        self.base_url = 'http://192.168.8.254:8000/website/by_serial/'
+
+    def _form_serial(self, int_index):
+        computer = Computers.objects.get(id_computer=int_index)
+        return computer.computer_serial
+
+    def print(self):
+        self.qr_gen = Qrgenerator(self.base_url, self.final_serials)
+        self.qr_gen.print_as_pairs()
 
 
 class Qrgenerator:
@@ -3549,17 +3571,18 @@ class Qrgenerator:
     def print_as_pairs(self):
         print('print_as_pairs')
         print(self.serials)
-        '''
         for index in range(self._get_pair_cycles()):
             first, second = self._get_serial_pair(index)
             serial_pair = self._get_serial_pair(index)
             image = self._formImagePair(serial_pair[0], serial_pair[1])
+            image.save('test.png')
+            '''
             with tempfile.NamedTemporaryFile() as temp:
                 imgByteArr = io.BytesIO()
                 image.save(imgByteArr, format='PNG')
                 temp.write(imgByteArr.getvalue())
                 subprocess.call(['lpr', temp.name])
-        '''
+            '''
 
     def _get_pair_cycles(self):
         # Returns how many cycles of pairs of images should be done.
@@ -3577,16 +3600,14 @@ class Qrgenerator:
     def print_as_singular(self):
         print('print_as_singular')
         print(self.serials)
-        '''
         for serial in self.serials:
             
-            # image = self._formImagePair(serial, None)
+            image = self._formImagePair(serial, None)
             with tempfile.NamedTemporaryFile() as temp:
                 imgByteArr = io.BytesIO()
                 image.save(imgByteArr, format='PNG')
                 temp.write(imgByteArr.getvalue())
                 subprocess.call(['lpr', temp.name])
-            '''
 
     def _generateQR(self, serial):
         qrImg = qrcode.make(self.base_url + serial + '/')

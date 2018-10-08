@@ -328,6 +328,19 @@ def mass_csv(request):
 
 
 @csrf_exempt
+def mass_qr_print(request):
+    print("Mass csv")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    # data = JSONParser().parse(request)
+    # print(data)
+    cmsp = ComputerMultipleSerialPrinter(JSONParser().parse(request))
+    cmsp.print()
+
+
+@csrf_exempt
 def cat_change(request):
     print("Mass cat_change")
     if request.method == 'POST':
@@ -828,5 +841,6 @@ def print_computer_qr(request, int_index):
     if request.method == 'POST':
         print('POST method')
         cssp = ComputerSingleSerialPrinter(JSONParser().parse(request))
+        cssp.print()
     if request.method == 'GET':
         print('GET method')

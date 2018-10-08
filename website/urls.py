@@ -20,6 +20,7 @@ urlpatterns = [
     path('mass_delete/', views.mass_delete, name='mass_delete'),
     path('mass_excel/', views.mass_excel, name='mass_excel'),
     path('mass_csv/', views.mass_csv, name='mass_csv'),
+    path('mass_qr_print/', views.mass_qr_print, name='mass_qr_print'),
     path('cat_change/', views.cat_change, name='cat_change'),
     path('ord_assign/', views.ord_assign, name='ord_assign'),
     path('new_record/', views.new_record, name='new_record'),
