@@ -152,6 +152,10 @@ class Edit_computer_record():
             self._computer_save()
 
     def _process_batteries(self):
+        bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer.id_computer)
+        print(self.computer.id_computer)
+        print(bat_to_comps)
+        bat_to_comps.delete()
         while len(self.data_dict) > 2:
             key = next(iter(self.data_dict))
             dbindex = self.get_dbindex(key)
@@ -164,14 +168,12 @@ class Edit_computer_record():
                 expected_time=time
             )[0]
             battery.save()
-
-            old_battocomp = BatToComp.objects.get(id_bat_to_comp=dbindex)
             new_battocomp = BatToComp(
-                id_bat_to_comp=old_battocomp.id_bat_to_comp,
                 f_id_computer_bat_to_com=self.computer,
                 f_bat_bat_to_com=battery
             )
             new_battocomp.save()
+
 
     def _process_ram_and_hdd_serials(self):
         processed_key_list = []
@@ -238,8 +240,9 @@ class Edit_computer_record():
         print('_computer_save')
 
     def _computer_sold_save(self):
+        print(self.data_dict)
         self.computer = Computers(
-            id_computer=self.data_dict.pop("id_computer", "")[0],
+            id_computer=self.computer.id_computer,
             computer_serial=self.data_dict.pop("serial", "")[0],
             f_type=self.type,
             f_category=self.category,
