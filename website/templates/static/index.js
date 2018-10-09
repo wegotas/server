@@ -33,11 +33,6 @@ class AFHolder {
     }
     return parametersList.join("&");
   }
-
-  debug() {
-    console.log(this.id_name);
-    console.log(this.items);
-  }
 }
 
 class AFManager {
@@ -108,28 +103,29 @@ class AFManager {
     var mainURL = splittedArray[0];
     var attributesString = splittedArray[1];
     if (attributesString == null) {
-    	console.log('No attributes');
+        console.log(mainURL + '?' + this.getAFURLaddon());
     	return mainURL + '?' + this.getAFURLaddon();
     }
     else {
-	    console.log(mainURL);
-	    console.log(attributesString);
 	    var attributes = attributesString.split("&");
-	    console.log(attributes);
 	    for (var i = attributes.length -1; i > -1; i--) {
-	    	console.log("Attribute: " + attributes[i]);
 	      for (var j = 0; j < this.possible_fieldnames.length; j++) {
-	      	console.log("Fieldname: " + this.possible_fieldnames[j]);
 	      	if ( attributes[i].includes(this.possible_fieldnames[j])) {
-	        		console.log("Removing");
-	        		attributes.splice(i, 1)
-	        		break;
+	            attributes.splice(i, 1);
+	        	break;
 	       	}
 	      }
 	    }
-	    console.log(attributes);
-	    console.log(this.getAFURLaddon());
-	    return mainURL + "?"+ attributes.join("&") +"&" + this.getAFURLaddon();
+	    /*This part removes empty strings from the array*/
+	    for (var i=attributes.length-1; i >= 0; i--) {
+            if (attributes[i] === "") {
+                attributes.splice(i, 1);
+            }
+        }
+        console.log(mainURL + "?"+ attributes.join("&") + this.getAFURLaddon());
+        console.log(attributes.join("&"));
+        console.log(this.getAFURLaddon());
+	    return mainURL + "?"+ attributes.join("&")  + this.getAFURLaddon();
     }
   }
 
@@ -138,14 +134,11 @@ class AFManager {
     for (var i = 0; i < this.filter_list.length; i++) {
       parametersList.push(this.filter_list[i].getParameters());
     }
-    return parametersList.join("&");
-  }
-
-  debug() {
-    for (var i=0; i<this.filter_list.length; i++){
-      this.filter_list[i].debug();
+    var stringToReturn = parametersList.join("&");
+    if (stringToReturn != "") {
+        stringToReturn = "&" + stringToReturn;
     }
-    console.log("________________________________________");
+    return stringToReturn;
   }
 }
 
@@ -290,7 +283,6 @@ function formationOfURL(parameterString) {
     pattern = new RegExp(regString, "g");
     href = href.replace(pattern, "");
   }
-  console.log(href + parameterString)
   return href + parameterString;
 }
 
@@ -299,15 +291,11 @@ function loadPage(newURL) {
 }
 
 function search_using_keyword() {
-  console.log("search_using_keyword called");
   variable1 = document.getElementById("search_input");
-  console.log(variable1);
   variable2 = variable1.value;
-  console.log(variable2);
   searchKeyword = document.getElementById("search_input").value;
   if (searchKeyword !== '') {
     href = remove_keyword();
-    console.log(href);
     if (href.indexOf('?') !== -1) {
       location.href = href + '&keyword=' + searchKeyword
     }
@@ -370,7 +358,6 @@ function mass_excel() {
   xhr.send(indexArray);
   xhr.onreadystatechange = function(e) {
     if (xhr.readyState === 4) {
-      console.log(xhr.response);
       const link = document.createElement( 'a' );
       link.style.display = 'none';
       document.body.appendChild( link );
@@ -395,7 +382,6 @@ function mass_csv() {
   xhr.send(indexArray);
   xhr.onreadystatechange = function(e) {
     if (xhr.readyState === 4) {
-      console.log(xhr.response);
       const link = document.createElement( 'a' );
       link.style.display = 'none';
       document.body.appendChild( link );
@@ -508,9 +494,7 @@ function deleteHddFromIndex(index) {
     parts = URLtoWorkWith.split('/');
     parts.pop();
     URLtoWorkWith = parts.join('/');
-    console.log(URLtoWorkWith);
     URLtoWorkWith = URLtoWorkWith + '/hdd_delete/' + index + '/';
-    console.log(URLtoWorkWith);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', URLtoWorkWith);
     xhr.setRequestHeader("Content-type", "application/json");
@@ -537,9 +521,7 @@ function viewPDFfromIndex(index) {
   parts = URLtoWorkWith.split('/');
   parts.pop();
   URLtoWorkWith = parts.join('/');
-  console.log(URLtoWorkWith);
   URLtoWorkWith = URLtoWorkWith + '/view_pdf/' + index + '/';
-  console.log(URLtoWorkWith);
   var pdfWindow = window.open(URLtoWorkWith, "", "width=700,height=800");
 }
 
@@ -609,7 +591,6 @@ function lot_content(index) {
 function viewPDFfromHddEdit(index) {
   URLtoWorkWith = location.href;
   URLtoWorkWith = URLtoWorkWith.replace('/hdd_edit/', '/view_pdf/');
-  console.log(URLtoWorkWith);
   var pdfWindow = window.open(URLtoWorkWith, "", "width=700,height=800");
 }
 
@@ -648,14 +629,6 @@ function edit_charger(index, URLremovalToken) {
 }
 
 function delete_charger(index, URLremovalToken) {
-    /*
-    URLtoWorkWith = location.href;
-    parts = URLtoWorkWith.split('/');
-	for (var i =0; i<URLremovalToken; i++) {
-		parts.pop();
-	}
-    var editChargerWindow = window.open(parts.join('/') + '/delete_charger/'+index+'/', "", "width=700,height=620");
-    */
     if (confirm('Do you really want to delete this charger?')) {
         URLtoWorkWith = location.href;
         parts = URLtoWorkWith.split('/');
@@ -668,7 +641,6 @@ function delete_charger(index, URLremovalToken) {
         xhr.send();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
-                console.log(xhr.status);
                 if (xhr.status == 200) {
                     parts = URLtoWorkWith.split('/');
                     parts.pop();

@@ -174,7 +174,6 @@ class Edit_computer_record():
             )
             new_battocomp.save()
 
-
     def _process_ram_and_hdd_serials(self):
         processed_key_list = []
         for key, value in self.data_dict.items():
@@ -2191,12 +2190,13 @@ class HddAutoFilterOptions:
     def _get_healths(self, hdds):
         healths = hdds.values('health').distinct()
         self.healths = [a['health'] for a in healths]
-        self.healths.sort()
+        #self.healths.sort()
+        self.healths = sorted(self.healths, key=lambda x: (x is None, x), reverse=True)
 
     def _get_days(self, hdds):
         days = hdds.values('days_on').distinct()
         self.days = [a['days_on'] for a in days]
-        self.days.sort()
+        self.days = sorted(self.days, key=lambda x: (x is None, x), reverse=True)
 
 
 class LotContentHolder:
