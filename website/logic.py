@@ -1341,12 +1341,13 @@ class AutoFilter():
             elif key == 'dos-af':
                 computers = computers.filter(f_sale__date_of_sale__in=value)
             elif key == 'pri-af':
-                '''
-                for idx in range(len(value)):
-                    if value[idx] == '':
-                        value[idx] = None
-                '''
-                computers = computers.filter(price__in=value)
+                for i in range(len(value)):
+                    if value[i] == 'None':
+                        value[i] = None
+                query = Q(price__in=value)
+                if None in value:
+                    query |= Q(price__isnull=True)
+                computers = computers.filter(query)
         return computers
 
 
@@ -3099,24 +3100,32 @@ class ChargerSerialProcessor:
             self._proccess_new_charger()
 
     def _is_category_existing(self):
-        charger_category = ChargerCategories.objects.filter(f_manufacturer__manufacturer_name=self.manufacturer,
-                                                              watts=self.power, connector_type=self.connector_type)
+        charger_category = ChargerCategories.objects.filter(
+            f_manufacturer__manufacturer_name=self.manufacturer,
+            watts=self.power,
+            connector_type=self.connector_type
+        )
         return charger_category.exists()
 
     def _proccess_existing_charger(self):
         charger_category = ChargerCategories.objects.get(f_manufacturer__manufacturer_name=self.manufacturer, watts=self.power, connector_type=self.connector_type)
-        charger = Chargers.objects.get_or_create(charger_serial=self.charger_serial,
-                                                 f_charger_category=charger_category)[0]
+        charger = Chargers.objects.get_or_create(
+            charger_serial=self.charger_serial,
+            f_charger_category=charger_category
+        )[0]
         print('End of existing_charger')
 
     def _proccess_new_charger(self):
         manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=self.manufacturer)[0]
-        new_charger_category = ChargerCategories.objects.create(watts=self.power,
-                                                                f_manufacturer=manufacturer,
-                                                                connector_type=self.connector_type
-                                                                )
-        new_charger = Chargers.objects.get_or_create(charger_serial=self.charger_serial,
-                                                     f_charger_category=new_charger_category)[0]
+        new_charger_category = ChargerCategories.objects.create(
+            watts=self.power,
+            f_manufacturer=manufacturer,
+            connector_type=self.connector_type
+        )
+        new_charger = Chargers.objects.get_or_create(
+            charger_serial=self.charger_serial,
+            f_charger_category=new_charger_category
+        )[0]
         print('End of new_charger')
 
 

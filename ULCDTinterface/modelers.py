@@ -78,8 +78,8 @@ class ChargerCategories(models.Model):
     connector_inner_diameter = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
     connector_outer_diameter = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
     connector_contacts_qty = models.IntegerField(blank=True, null=True)
-    originality_status = models.IntegerField(blank=True, null=True)
-    used_status = models.IntegerField(blank=True, null=True)
+    originality_status = models.IntegerField(blank=True, null=True, default=False)
+    used_status = models.IntegerField(blank=True, null=True, default=True)
     connector_type = models.CharField(max_length=45, blank=True, null=True)
     f_manufacturer = models.ForeignKey('Manufacturers', models.DO_NOTHING, blank=True, null=True)
 
