@@ -3682,7 +3682,6 @@ class ChargerCategoryToDelete:
         self.success = False
 
     def delete(self):
-        # self.charger_category.delete()
         try:
             self.charger_category.delete()
             self.success = True
