@@ -205,7 +205,8 @@ def edit(request, int_index):
     if request.method == 'POST':
         print("This was POST request")
         ecr = Edit_computer_record(request.POST.copy())
-        return HttpResponse("Success", request)
+        # return HttpResponse("Success", request)
+        return render(request, 'success.html')
 
     if request.method == 'GET':
         print("This was GET request")
@@ -235,7 +236,8 @@ def edit_by_serial(request, serial):
     if request.method == 'POST':
         print("This was POST request")
         ecr = Edit_computer_record(request.POST.copy())
-        return HttpResponse("Success", request)
+        # return HttpResponse("Success", request)
+        return render(request, 'success.html')
 
     if request.method == 'GET':
         print("This was GET request")
@@ -569,7 +571,8 @@ def new_record(request):
         rta = record_to_add(request.POST.copy())
         rta.save()
         if rta.isSaved():
-            return HttpResponse("Success", request)
+            # return HttpResponse("Success", request)
+            return render(request, 'success.html')
         else:
             template = loader.get_template('new_record.html')
             return HttpResponse(
@@ -600,7 +603,8 @@ def cat_to_sold(request):
         executor = ExecutorOfCatToSold(request.POST.copy())
         if executor.validated:
             executor.write_to_database()
-            return HttpResponse("Success", request)
+            # return HttpResponse("Success", request)
+            return render(request, 'success.html')
         else:
             computers = computersForCatToSold(request.GET.copy())
             template = loader.get_template('catToSold.html')
@@ -634,7 +638,8 @@ def new_order(request):
         no = NewOrder(request.POST.copy())
         no.save()
         if no.isSaved():
-            return HttpResponse("Success", request)
+            # return HttpResponse("Success", request)
+            return render(request, 'success.html')
         else:
             template = loader.get_template('new_order.html')
             return HttpResponse(
@@ -665,7 +670,8 @@ def edit_order(request, int_index):
         print("This was POST request")
         ote.set_new_data(request.POST.copy())
         if ote.isSaved():
-            return HttpResponse("Success", request)
+            # return HttpResponse("Success", request)
+            return render(request, 'success.html')
         else:
             template = loader.get_template('order_edit.html')
             return HttpResponse(
@@ -966,10 +972,17 @@ def serial_processing(request, serial):
         if csp.check_serial_existance():
             print('Such serial exists')
             ch = ChargerHolder(serial=serial)
-            return render(request, 'charger_view.html', {'ch': ch})
+            return render(
+                request,
+                'charger_view.html',
+                {'ch': ch}
+            )
         else:
             print('Such serial is non-existant')
-            return render(request, 'charger_nonexistant.html')
+            return render(
+                request,
+                'charger_nonexistant.html'
+            )
 
 
 @csrf_exempt
@@ -979,13 +992,24 @@ def edit_charger(request, int_index):
         ccte = ChargerCategoryToEdit(int_index)
         ccte.proccess(request.POST.copy())
         if ccte.isValidData:
-            return render(request, 'success.html')
+            return render(
+                request,
+                'success.html'
+            )
         else:
-             return render(request, 'failure.html', {'message': ccte.message})
+             return render(
+                 request,
+                 'failure.html',
+                 {'message': ccte.message}
+             )
     if request.method == 'GET':
         print('GET method')
         ccte = ChargerCategoryToEdit(int_index)
-        return render(request, 'charger_edit.html', {'ccte': ccte})
+        return render(
+            request,
+            'charger_edit.html',
+            {'ccte': ccte}
+        )
 
 
 @csrf_exempt
@@ -1040,7 +1064,10 @@ def delete_charger_category(request, int_index):
         cctd = ChargerCategoryToDelete(int_index)
         cctd.delete()
         if cctd.success:
-            return render(request, 'success.html')
+            return render(
+                request,
+                'success.html'
+            )
         else:
             return HttpResponse(cctd.message, status=404)
     if request.method == 'GET':
