@@ -775,6 +775,7 @@ def hdd_order_content(request, int_index):
     if request.method == 'GET':
         print('GET method')
         hoch.filter(request.GET.copy())
+        print(hoch.hdd_order.f_order_status.is_shown)
         return render(
             request,
             'hdd_order_content.html',
