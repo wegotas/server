@@ -297,10 +297,10 @@ function search_using_keyword() {
   if (searchKeyword !== '') {
     href = remove_keyword();
     if (href.indexOf('?') !== -1) {
-      location.href = href + '&keyword=' + searchKeyword
+      location.href = href + '&keyword=' + urlify(searchKeyword)
     }
     else {
-      location.href = href + '?keyword=' + searchKeyword
+      location.href = href + '?keyword=' + urlify(searchKeyword)
     }
   }
 }
@@ -442,9 +442,14 @@ function mass_sold() {
   launchCatToSoldWindow();
 }
 
+function urlify (url) {
+    urlToReturn = url.split('#').join('%23');
+    return urlToReturn;
+}
+
 function applyAFs() {
   newURL = afmanager.formNewUrlWithAFURLaddon(location.href);
-  loadPage(newURL);
+  loadPage(urlify(newURL));
 }
 
 function launchCatWindow() {

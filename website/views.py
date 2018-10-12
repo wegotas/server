@@ -15,7 +15,6 @@ def index(request):
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
-        # return render(request, 'main.html')
     isSold = getIsSold(request)
     isOrder = getIsOrder(request)
     isChargers = getIsChargers(request)
@@ -29,15 +28,39 @@ def index(request):
     if 'lots' in request.GET:
         lh = LotsHolder()
         lh.filter(request.GET.copy())
-        return render(request, 'main.html', {"cattyp": cattyp, 'lh': lh})
+        return render(
+            request,
+            'main.html',
+            {
+                "cattyp": cattyp,
+                'lh': lh
+            }
+        )
+
     elif 'hdds' in request.GET:
         hh = HddHolder()
         hh.filter(request.GET.copy())
-        return render(request, 'main.html', {"cattyp": cattyp, 'hh': hh})
+        return render(
+            request,
+            'main.html',
+            {
+                "cattyp": cattyp,
+                'hh': hh
+            }
+        )
+
     elif 'hdd_orders' in request.GET:
         oh = HddOrdersHolder()
         oh.filter(request.GET.copy())
-        return render(request, 'main.html', {"cattyp": cattyp, 'oh': oh})
+        return render(
+            request,
+            'main.html',
+            {
+                "cattyp": cattyp,
+                'oh': oh
+            }
+        )
+
     if isSold:
         possible_categories = None
         qtySelect = QtySelect()
@@ -57,31 +80,46 @@ def index(request):
             possible_categories.append(query_member[0])
         # cattyp = CatTyp()
         # removeKeyword(request)
-        return render(request, 'main.html', {
-            'computers': computers,
-            "counter": counter,
-            "qtySelect": qtySelect,
-            "autoFilters": af,
-            "cattyp": cattyp,
-            "poscat": possible_categories})
+        return render(
+            request,
+            'main.html',
+            {
+                'computers': computers,
+                "counter": counter,
+                "qtySelect": qtySelect,
+                "autoFilters": af,
+                "cattyp": cattyp,
+                "poscat": possible_categories
+            }
+        )
+
     if isChargers:
         # PRIDETI FILTRAVIMA
         cch = ChargerCategoriesHolder()
         cch.filter(request.GET.copy())
-        return render(request, 'main.html', {
-            'cch': cch,
-            "cattyp": cattyp,
-            "cch": cch
-        })
+        return render(
+            request,
+            'main.html',
+            {
+                'cch': cch,
+                "cattyp": cattyp
+            }
+        )
+
     elif isOrder:
         counter = Counter()
         orders = OrdersClass()
         orders.filter(data_dict)
-        return render(request, 'main.html', {
-            "counter": counter,
-            "cattyp": cattyp,
-            "orders": orders
-        })
+        return render(
+            request,
+            'main.html',
+            {
+                "counter": counter,
+                "cattyp": cattyp,
+                "orders": orders
+            }
+        )
+
     else:
         typ = getType(data_dict)
         cat = getCat(data_dict)
@@ -92,9 +130,12 @@ def index(request):
             qtySelect.setDefaultSelect(qty)
             typeRecord = Types.objects.filter(type_name=typ)[:1].get()
             catRecord = Categories.objects.filter(category_name=cat)[:1].get()
-            computers = Computers.objects.filter(f_type=typeRecord.id_type, f_category=catRecord.id_category,
-                                                 f_sale=None).exclude(f_id_comp_ord__isnull=False).exclude(
-                f_sale__isnull=False)
+            computers = Computers.objects.filter(
+                f_type=typeRecord.id_type,
+                f_category=catRecord.id_category,
+                f_sale=None
+            ).exclude(f_id_comp_ord__isnull=False)\
+                .exclude(f_sale__isnull=False)
             computers = autoFilters.filter(computers)
             if keyword is not None:
                 computers = search(keyword, computers)
@@ -118,15 +159,19 @@ def index(request):
             po = PossibleOrders()
         # cattyp = CatTyp()
         # removeKeyword(request)
-        return render(request, 'main.html', {
-            'computers': computers,
-            "counter": counter,
-            "qtySelect": qtySelect,
-            "autoFilters": af,
-            "cattyp": cattyp,
-            "poscat": possible_categories,
-            "po": po,
-        })
+        return render(
+            request,
+            'main.html',
+            {
+                'computers': computers,
+                "counter": counter,
+                "qtySelect": qtySelect,
+                "autoFilters": af,
+                "cattyp": cattyp,
+                "poscat": possible_categories,
+                "po": po,
+            }
+        )
 
 
 def look(request, int_index):
@@ -141,10 +186,17 @@ def look(request, int_index):
         rams = get_rams(int_index)
         hdds = get_hdds(int_index)
         return HttpResponse(
-            template.render({'computer': computer,
-                             'bat_list': batteries,
-                             "ram_list": rams,
-                             "hdd_list": hdds}, request))
+            template.render(
+                {
+                    'computer': computer,
+                    'bat_list': batteries,
+                    "ram_list": rams,
+                    "hdd_list": hdds
+                },
+                request
+            )
+        )
+
 
 @csrf_exempt
 def edit(request, int_index):
@@ -163,11 +215,17 @@ def edit(request, int_index):
         rams = get_rams(int_index)
         hdds = get_hdds(int_index)
         return HttpResponse(
-            template.render({'computer': computer,
-                             'bat_list': batteries,
-                             "ram_list": rams,
-                             "hdd_list": hdds,
-                             "rc": rc}, request))
+            template.render(
+                {
+                    'computer': computer,
+                    'bat_list': batteries,
+                    "ram_list": rams,
+                    "hdd_list": hdds,
+                    "rc": rc
+                 },
+                request
+            )
+        )
 
 @csrf_exempt
 def edit_by_serial(request, serial):
@@ -188,11 +246,17 @@ def edit_by_serial(request, serial):
         rams = get_rams(int_index)
         hdds = get_hdds(int_index)
         return HttpResponse(
-            template.render({'computer': computer,
-                             'bat_list': batteries,
-                             "ram_list": rams,
-                             "hdd_list": hdds,
-                             "rc": rc}, request))
+            template.render(
+                {
+                    'computer': computer,
+                    'bat_list': batteries,
+                    "ram_list": rams,
+                    "hdd_list": hdds,
+                    "rc": rc
+                },
+                request
+            )
+        )
 
 @csrf_exempt
 def delete(request, int_index):
@@ -375,7 +439,12 @@ def categories(request):
         print("This was GET request")
     categories = get_categories_list()
     template = loader.get_template('items.html')
-    return HttpResponse(template.render({'items': categories}, request))
+    return HttpResponse(
+        template.render(
+            {'items': categories},
+            request
+        )
+    )
 
 
 @csrf_exempt
@@ -411,7 +480,12 @@ def types(request):
         print("This was GET request")
     types = get_types_list()
     template = loader.get_template('items.html')
-    return HttpResponse(template.render({'items': types}, request))
+    return HttpResponse(
+        template.render(
+            {'items': types},
+            request
+        )
+    )
 
 
 @csrf_exempt
@@ -447,7 +521,12 @@ def testers(request):
         print("This was GET request")
     testers = get_testers_list()
     template = loader.get_template('items.html')
-    return HttpResponse(template.render({'items': testers}, request))
+    return HttpResponse(
+        template.render(
+            {'items': testers},
+            request
+        )
+    )
 
 
 @csrf_exempt
@@ -460,7 +539,12 @@ def delTes(request, int_index):
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('items.html')
-    return HttpResponse(template.render({'items': testers}, request))
+    return HttpResponse(
+        template.render(
+            {'items': testers},
+            request
+        )
+    )
 
 
 @csrf_exempt
@@ -488,11 +572,24 @@ def new_record(request):
             return HttpResponse("Success", request)
         else:
             template = loader.get_template('new_record.html')
-            return HttpResponse(template.render({"rtac": rc, "error_message": rta.get_error_message()}, request))
+            return HttpResponse(
+                template.render(
+                    {
+                        "rtac": rc,
+                        "error_message": rta.get_error_message()
+                    },
+                    request
+                )
+            )
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('new_record.html')
-    return HttpResponse(template.render({"rc": rc}), request)
+    return HttpResponse(
+        template.render(
+            {"rc": rc}
+        ),
+        request
+    )
 
 
 @csrf_exempt
@@ -507,12 +604,25 @@ def cat_to_sold(request):
         else:
             computers = computersForCatToSold(request.GET.copy())
             template = loader.get_template('catToSold.html')
-            return HttpResponse(template.render({'computers': computers, "error_message": executor.get_error_message()}), request)
+            return HttpResponse(
+                template.render(
+                    {
+                        'computers': computers,
+                        "error_message": executor.get_error_message()
+                    }
+                ),
+                request
+            )
     if request.method == 'GET':
         print("This was GET request")
         computers = computersForCatToSold(request.GET.copy())
         template = loader.get_template('catToSold.html')
-        return HttpResponse(template.render({'computers': computers}), request)
+        return HttpResponse(
+            template.render(
+                {'computers': computers}
+            ),
+            request
+        )
 
 
 @csrf_exempt
@@ -527,11 +637,24 @@ def new_order(request):
             return HttpResponse("Success", request)
         else:
             template = loader.get_template('new_order.html')
-            return HttpResponse(template.render({"noc": noc, "error_message": no.get_error_message()}), request)
+            return HttpResponse(
+                template.render(
+                    {
+                        "noc": noc,
+                        "error_message": no.get_error_message()
+                    }
+                ),
+                request
+            )
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('new_order.html')
-    return HttpResponse(template.render({"noc": noc}), request)
+    return HttpResponse(
+        template.render(
+            {"noc": noc}
+        ),
+        request
+    )
 
 
 @csrf_exempt
@@ -545,11 +668,22 @@ def edit_order(request, int_index):
             return HttpResponse("Success", request)
         else:
             template = loader.get_template('order_edit.html')
-            return HttpResponse(template.render({"ote": ote, "error_message": ote.get_error_message()}), request)
+            return HttpResponse(
+                template.render(
+                    {
+                        "ote": ote,
+                        "error_message": ote.get_error_message()
+                    }
+                ),
+                request
+            )
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('order_edit.html')
-    return HttpResponse(template.render({"ote": ote}), request)
+    return HttpResponse(
+        template.render({"ote": ote}),
+        request
+    )
 
 
 @csrf_exempt
@@ -575,7 +709,11 @@ def hdd_edit(request, int_index):
         return render(request, 'success.html')
     if request.method == 'GET':
         print('GET method')
-        return render(request, 'hdd_edit.html', {'hte': hte})
+        return render(
+            request,
+            'hdd_edit.html',
+            {'hte': hte}
+        )
 
 
 @csrf_exempt
@@ -609,7 +747,12 @@ def view_pdf(request, int_index):
         if pv.success:
             return HttpResponse(pv.pdf_content, content_type='application/pdf')
         else:
-            return render(request, 'failure.html', {'message': "Failed to fetch pdf.\r\nMost likely cause is that pdf is nonexistant."}, status=404)
+            return render(
+                request,
+                'failure.html',
+                {'message': "Failed to fetch pdf.\r\nMost likely cause is that pdf is nonexistant."},
+                status=404
+            )
 
 
 @csrf_exempt
@@ -623,11 +766,20 @@ def hdd_order_content(request, int_index):
             hoch.edit(request.POST.copy())
             return render(request, 'success.html')
         except Exception as e:
-            return render(request, 'failure.html', {'message': str(e)}, status=404)
+            return render(
+                request,
+                'failure.html',
+                {'message': str(e)},
+                status=404
+            )
     if request.method == 'GET':
         print('GET method')
         hoch.filter(request.GET.copy())
-        return render(request, 'hdd_order_content.html', {'hoch': hoch})
+        return render(
+            request,
+            'hdd_order_content.html',
+            {'hoch': hoch}
+        )
 
 
 @csrf_exempt
@@ -641,7 +793,12 @@ def hdd_delete_order(request, int_index):
         hod.delete()
         if hod.success:
             return render(request, 'success.html')
-        return render(request, 'failure.html', {'message': hod.message}, status=404)
+        return render(
+            request,
+            'failure.html',
+            {'message': hod.message},
+            status=404
+        )
 
 
 @csrf_exempt
@@ -657,10 +814,18 @@ def hdd_order(request):
                 return render(request, 'success.html')
         else:
             print("Invalid")
-            return render(request, 'uploader.html', {'form': form})
+            return render(
+                request,
+                'uploader.html',
+                {'form': form}
+            )
     else:
         form = DocumentForm()
-        return render(request, 'uploader.html', {'form': form})
+        return render(
+            request,
+            'uploader.html',
+            {'form': form}
+        )
 
 
 @csrf_exempt
@@ -671,15 +836,30 @@ def hdd_orderAlt(request):
         if form.is_valid():
             ahop = AlternativeHddOrderProcessor(request.FILES['document'])
             if ahop.message != '':
-                return render(request, 'failure.html', {'message': ahop.message})
+                return render(
+                    request,
+                    'failure.html',
+                    {'message': ahop.message}
+                )
             else:
-                return render(request, 'success.html')
+                return render(
+                    request,
+                    'success.html'
+                )
         else:
             print("Invalid")
-            return render(request, 'uploader.html', {'form': form})
+            return render(
+                request,
+                'uploader.html',
+                {'form': form}
+            )
     else:
         form = DocumentForm()
-        return render(request, 'uploader.html', {'form': form})
+        return render(
+            request,
+            'uploader.html',
+            {'form': form}
+        )
 
 
 @csrf_exempt
@@ -691,12 +871,23 @@ def tar(request):
             print("Valid")
             tp = TarProcessor(request.FILES['document'])
             tp.process_data()
-            return render(request, 'success.html')
+            return render(
+                request,
+                'success.html'
+            )
         else:
-            return render(request, 'uploader.html', {'form': form})
+            return render(
+                request,
+                'uploader.html',
+                {'form': form}
+            )
     else:
         form = DocumentForm()
-        return render(request, 'uploader.html', {'form': form})
+        return render(
+            request,
+            'uploader.html',
+            {'form': form}
+        )
 
 
 @csrf_exempt
@@ -708,12 +899,23 @@ def tarAlt(request):
             print("Valid")
             atp = AlternativeTarProcessor(request.FILES['document'])
             atp.process_data()
-            return render(request, 'success.html')
+            return render(
+                request,
+                'success.html'
+            )
         else:
-            return render(request, 'uploader.html', {'form': form})
+            return render(
+                request,
+                'uploader.html',
+                {'form': form}
+            )
     else:
         form = DocumentForm()
-        return render(request, 'uploader.html', {'form': form})
+        return render(
+            request,
+            'uploader.html',
+            {'form': form}
+        )
 
 
 @csrf_exempt
@@ -724,7 +926,11 @@ def lot_content(request, int_index):
         print('GET method')
         lch = LotContentHolder(int_index)
         lch.filter(request.GET.copy())
-        return render(request, 'lot_content.html', {'lch': lch})
+        return render(
+            request,
+            'lot_content.html',
+            {'lch': lch}
+        )
 
 
 @csrf_exempt
@@ -733,7 +939,10 @@ def success(request):
         print('POST method')
     if request.method == 'GET':
         print('GET method')
-        return render(request, 'success.html')
+        return render(
+            request,
+            'success.html'
+        )
 
 
 @csrf_exempt
@@ -745,7 +954,11 @@ def serial_processing(request, serial):
         if csp.message == '':
             return render(request, 'success.html')
         else:
-            return render(request, 'failure.html', {'message': csp.message})
+            return render(
+                request,
+                'failure.html',
+                {'message': csp.message}
+            )
     if request.method == 'GET':
         print('GET method')
         # csp.proccess()

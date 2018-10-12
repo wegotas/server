@@ -1313,6 +1313,7 @@ class AutoFilter():
     keys = ('man-af', 'sr-af', 'scr-af', 'ram-af', 'gpu-af', 'mod-af', 'cpu-af', 'oth-af', 'cli-af', 'dos-af', 'pri-af')
 
     def __init__(self, data_dict):
+        print(data_dict)
         self.filter_dict = {}
         for key in self.keys:
             if key in data_dict:
