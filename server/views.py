@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse, QueryDict
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from server.modelers import Computers, Types, Categories
+from server.modelers import Computers, Types, Categories, Testers
 import datetime
 import json
 from urllib.parse import parse_qs, unquote
@@ -178,9 +178,14 @@ def aux_data(request):
             typ_dict[type.id_types] = type.type_name
         print(typ_dict)
         print("___________________________")
+        testers = Testers.objects.all()
+        test_dict = dict()
+        for tester in testers:
+            test_dict[tester.id_tester] = tester.tester_name
         dict_dict = dict()
         dict_dict["cat_dict"] = cat_dict
         dict_dict["typ_dict"] = typ_dict
+        dict_dict["tes_dict"] = test_dict
         print(dict_dict)
         return JsonResponse(dict_dict)
 
