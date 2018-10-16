@@ -571,7 +571,6 @@ def new_record(request):
         rta = record_to_add(request.POST.copy())
         rta.save()
         if rta.isSaved():
-            # return HttpResponse("Success", request)
             return render(request, 'success.html')
         else:
             template = loader.get_template('new_record.html')
@@ -603,7 +602,6 @@ def cat_to_sold(request):
         executor = ExecutorOfCatToSold(request.POST.copy())
         if executor.validated:
             executor.write_to_database()
-            # return HttpResponse("Success", request)
             return render(request, 'success.html')
         else:
             computers = computersForCatToSold(request.GET.copy())
