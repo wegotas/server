@@ -1762,10 +1762,10 @@ class OrderToEdit:
             if new_is_sent_status == 1:
                 sale = Sales(date_of_sale=timezone.now(), f_id_client=order.f_id_client)
                 sale.save()
-            OrdTes.objects.filter(f_hdd_order=order).delete()
+            OrdTes.objects.filter(f_order=order).delete()
             for tester_name in testers:
                 tester = Testers.objects.get(tester_name=tester_name)
-                new_ordtes = OrdTes(f_hdd_order=order, f_id_tester=tester)
+                new_ordtes = OrdTes(f_order=order, f_id_tester=tester)
                 new_ordtes.save()
             for status_holder in statuses:
                 computer = Computers.objects.get(id_computer=status_holder.computer_id)
