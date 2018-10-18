@@ -3695,6 +3695,17 @@ class HddOrderContentCsv:
         self.hdds = Hdds.objects.filter(f_hdd_order=self.order).order_by('f_hdd_sizes__hdd_sizes_name', 'f_form_factor__form_factor_name')
 
     def createCsvFile(self):
+        '''
+        Since you can address those columns which have fieldnames, and there is a summary table which has no names,
+        following rule is used:
+        1) columns which should be created, but other than that contain nothing within them
+        have empty string fieldname ''
+        2) fieldnames which should not have header, but still can generate summary table have fieldnames out of spaces.
+        ' ' one space simbolising first column
+        '  ' two spaces simbolising second column
+        '   ' three spaces simbolising third column
+        3) columns which do have headers, have apropriate fieldnames to their headers.
+        '''
         memfile = io.StringIO()
         fieldnames = ['', ' ', '  ', '   ', '', 'Serial number', 'Model', 'Size', 'Lock', 'Speed', 'Form factor', 'Health', 'Days on']
         writer = csv.DictWriter(memfile, fieldnames=fieldnames)
