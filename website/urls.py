@@ -39,6 +39,7 @@ urlpatterns = [
     path('hdd_delete/<int:int_index>/', views.hdd_delete, name='hdd_delete'),
     path('view_pdf/<int:int_index>/', views.view_pdf, name='view_pdf'),
     path('hdd_order_content/<int:int_index>/', views.hdd_order_content, name='hdd_order_content'),
+    path('hdd_order_content/<int:int_index>/csv/', views.hdd_order_content_csv, name='hdd_order_content_csv'),
     path('hdd_delete_order/<int:int_index>/', views.hdd_delete_order, name='hdd_delete_order'),
     path('new_hdd_order/', views.hdd_order, name='new_hdd_order'),
     path('new_hdd_orderAlt/', views.hdd_orderAlt, name='new_hdd_orderAlt'),

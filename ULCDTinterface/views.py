@@ -17,6 +17,7 @@ def aux_data(request):
         dict_dict["cat_dict"] = Categories.get_values()
         dict_dict["typ_dict"] = Types.get_values()
         dict_dict["tes_dict"] = Testers.get_values()
+        print(dict_dict)
         return JsonResponse(dict_dict)
 
 @csrf_exempt
@@ -70,6 +71,7 @@ def process_data(request):
                 dict_to_send['Current status'] = "In-Preperation" if existing_computer.f_id_comp_ord.is_ready == 0 else "Ready"
                 dict_to_send['Statusses'] = ["In-Preperation", "Ready"]
                 dict_to_send['Client'] = existing_computer.f_id_comp_ord.f_order_id_to_order.f_id_client.client_name
+                print(testers)
             return JsonResponse(dict_to_send)
         except Exception as e:
             if str(e) == 'Computers matching query does not exist.':

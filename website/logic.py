@@ -1775,12 +1775,6 @@ class OrderToEdit:
                 computer.f_sale = sale
                 computer.save()
 
-            """
-            if new_is_sent_status==1:
-                for status_holder in statuses:
-                    computer = Computers.objects.get(id_computer=status_holder.computer_id)
-            """
-
         _validate()
         if len(self.error_list) == 0:
             order_id = data_dict.pop('order_id')[0]
@@ -3692,3 +3686,49 @@ class ChargerCategoryToDelete:
         except IntegrityError as e:
             self.success = False
             self.message += 'Failed to delete category:\r\nMost probable cause is that category still has chargers in it\r\n' + str(e)
+
+
+class HddOrderContentCsv:
+
+    def __init__(self, int_index):
+        self.order = HddOrder.objects.get(order_id=int_index)
+        self.hdds = Hdds.objects.filter(f_hdd_order=self.order).order_by('f_hdd_sizes__hdd_sizes_name', 'f_form_factor__form_factor_name')
+
+    def createCsvFile(self):
+        memfile = io.StringIO()
+        fieldnames = ['', ' ', '  ', '   ', '', 'Serial number', 'Model', 'Size', 'Lock', 'Speed', 'Form factor', 'Health', 'Days on']
+        writer = csv.DictWriter(memfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for index in range(len(self.hdds)):
+            hdd = self.hdds[index]
+            triplet = self._get_aux_table_row(index)
+            writer.writerow(
+                {
+                    ' ': triplet[0],
+                    '  ': triplet[1],
+                    '   ': triplet[2],
+                    'Serial number': hdd.hdd_serial,
+                    'Model': hdd.f_hdd_models.hdd_models_name,
+                    'Size': hdd.f_hdd_sizes.hdd_sizes_name,
+                    'Lock': hdd.f_lock_state.lock_state_name,
+                    'Speed': hdd.f_speed.speed_name,
+                    'Form factor': hdd.f_form_factor.form_factor_name,
+                    'Health': hdd.health,
+                    'Days on': hdd.days_on
+                }
+            )
+        return memfile
+
+    def _get_aux_table_row(self, index):
+        if index == 0:
+            return 'Date', 'Client', 'Order No'
+        if index == 1:
+            return self.order.date_of_order, '####', '####'
+        if index == 3:
+            return 'Drive size', 'Capacity', 'Quantity'
+        if index > 3 and index <= 3 + self.hdds.values('f_hdd_sizes', 'f_form_factor').distinct().count():
+            valuelist = self.hdds.values('f_hdd_sizes', 'f_form_factor').distinct()
+            formfactor = FormFactor.objects.get(form_factor_id=valuelist[index-4]['f_form_factor'])
+            hddsize = HddSizes.objects.get(hdd_sizes_id=valuelist[index-4]['f_hdd_sizes'])
+            return formfactor.form_factor_name, hddsize.hdd_sizes_name, self.hdds.filter(f_hdd_sizes=hddsize, f_form_factor=formfactor).count()
+        return '', '', ''

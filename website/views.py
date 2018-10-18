@@ -786,6 +786,20 @@ def hdd_order_content(request, int_index):
             {'hoch': hoch}
         )
 
+@csrf_exempt
+def hdd_order_content_csv(request, int_index):
+    print('hdd_order_content_csv')
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')
+        hocc = HddOrderContentCsv(int_index)
+        csv_file = hocc.createCsvFile()
+        response = HttpResponse(content_type="application/ms-excel")
+        response.write(csv_file.getvalue())
+        response["Content-Disposition"] = "attachment; filename=computers.csv"
+        csv_file.close()
+        return response
 
 @csrf_exempt
 def hdd_delete_order(request, int_index):

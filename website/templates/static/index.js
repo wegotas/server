@@ -659,3 +659,24 @@ function delete_charger(index, URLremovalToken) {
         }
     }
 }
+
+function download_hdd_order_csv(index) {
+    var xhr = new XMLHttpRequest();
+    var runAsync = true ;
+    xhr.open('GET', 'csv/', true);
+    xhr.responseType = "arraybuffer";
+    xhr.send();
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            const link = document.createElement( 'a' );
+            link.style.display = 'none';
+            document.body.appendChild( link );
+            const blob = new Blob( [ xhr.response ], { type: '‘application/octet-binary' } );
+            const objectURL = URL.createObjectURL( blob );
+            link.href = objectURL;
+            link.href = URL.createObjectURL( blob );
+            link.download = 'hdd_order.csv';
+            link.click();
+        }
+    }
+}
