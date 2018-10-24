@@ -234,7 +234,8 @@ function load() {
   search_textbox.addEventListener('keyup', function(event) {
     event.preventDefault();
     searchoptions.toggle_search_button();
-    if (event.keyCode === 13) {
+    search_button = document.getElementById('search_button');
+    if (event.keyCode === 13 && !search_button.disabled) {
       search_using_keyword();
     }
   })
