@@ -1,0 +1,15 @@
+{% block 'cateogorySearchOptions' %}
+<div class="search-categories">
+    {% for option in so.options %}
+    <div class="option-row">
+        <div id="option-title">{{ option.title }}:</div>
+        {% for item in option.content_list %}
+        <div class="option-cell">
+            <input class="option-checkbox" type="checkbox" onclick="process_option(this)" name="{{ option.tagname }}" value="">
+            <div class="option-fieldname">{{ item }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

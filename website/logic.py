@@ -1313,7 +1313,6 @@ class AutoFilter():
     keys = ('man-af', 'sr-af', 'scr-af', 'ram-af', 'gpu-af', 'mod-af', 'cpu-af', 'oth-af', 'cli-af', 'dos-af', 'pri-af')
 
     def __init__(self, data_dict):
-        print(data_dict)
         self.filter_dict = {}
         for key in self.keys:
             if key in data_dict:
@@ -3671,7 +3670,6 @@ class ChargerToDelete:
 class ChargerCategoryToDelete:
 
     def __init__(self, int_index):
-        print(int_index)
         self.charger_category = ChargerCategories.objects.get(charger_category_id=int_index)
         self.message = ''
         self.success = False
@@ -3743,3 +3741,57 @@ class HddOrderContentCsv:
             hddsize = HddSizes.objects.get(hdd_sizes_id=valuelist[index-4]['f_hdd_sizes'])
             return formfactor.form_factor_name, hddsize.hdd_sizes_name, self.hdds.filter(f_hdd_sizes=hddsize, f_form_factor=formfactor).count()
         return '', '', ''
+
+
+class OptionSelection:
+
+    def __init__(self, title, tagname, content_list, search_method):
+        self.title = title
+        self.tagname = tagname
+        self.content_list = content_list
+        self.search_method = search_method
+
+    def search(self, computers, lst):
+        return self.search_method(computers, lst)
+
+
+class SearchOptions:
+
+    def __init__(self):
+        self.options = []
+        self.set_categories()
+        self.set_statuses()
+
+    def set_categories(self):
+        def search_method(computers, lst):
+            return computers.filter(f_category__category_name__in=lst)
+
+        categories = Categories.objects.all().values_list('category_name', flat=True)
+        categorySelection = OptionSelection('Categories', 'cat', categories, search_method)
+        self.options.append(categorySelection)
+
+
+    def set_statuses(self):
+        no_status = 'No status'
+        ordered = 'Ordered'
+        sold = 'Sold'
+        choices = [no_status, ordered, sold]
+
+        def search_method(computers, lst):
+            query = None
+            if ordered in lst:
+                query = Q(f_sale__isnull=True, f_id_comp_ord__isnull=False)
+            if sold in lst:
+                if query == None:
+                    query = Q(f_sale__isnull=False)
+                else:
+                    query = query | Q(f_sale__isnull=False)
+            if no_status in lst:
+                if query == None:
+                    query = Q(f_id_comp_ord__isnull=True, f_sale__isnull=True)
+                else:
+                    query = query | Q(f_id_comp_ord__isnull=True, f_sale__isnull=True)
+            return computers.filter(query)
+
+        statusesSelection = OptionSelection('Status', 'stat', choices, search_method)
+        self.options.append(statusesSelection)

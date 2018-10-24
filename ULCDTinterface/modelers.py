@@ -40,7 +40,7 @@ class Cpus(models.Model):
 
 class CameraOptions(models.Model):
     id_camera_options = models.AutoField(db_column='id_ camera_options', primary_key=True)  # Field renamed to remove unsuitable characters.
-    option_name = models.CharField(max_length=3)
+    option_name = models.CharField(max_length=6)
 
     class Meta:
         managed = True

@@ -24,6 +24,7 @@ def index(request):
     keyword = getKeyword(data_dict)
     autoFilters = AutoFilter(data_dict)
     cattyp = CatTyp()
+    so = SearchOptions()
 
     if 'lots' in request.GET:
         lh = LotsHolder()
@@ -33,7 +34,8 @@ def index(request):
             'main.html',
             {
                 "cattyp": cattyp,
-                'lh': lh
+                'lh': lh,
+                'so': so
             }
         )
 
@@ -45,7 +47,8 @@ def index(request):
             'main.html',
             {
                 "cattyp": cattyp,
-                'hh': hh
+                'hh': hh,
+                'so': so
             }
         )
 
@@ -57,11 +60,54 @@ def index(request):
             'main.html',
             {
                 "cattyp": cattyp,
-                'oh': oh
+                'oh': oh,
+                'so': so
             }
         )
 
-    if isSold:
+    if isChargers:
+        # PRIDETI FILTRAVIMA
+        cch = ChargerCategoriesHolder()
+        cch.filter(request.GET.copy())
+        return render(
+            request,
+            'main.html',
+            {
+                'cch': cch,
+                "cattyp": cattyp,
+                'so': so
+            }
+        )
+
+    if keyword:
+        computers = Computers.objects.all()
+        computers = search(keyword, computers)
+        for option in so.options:
+            computers = option.search(computers, data_dict.pop(option.tagname, ""))
+        counter = Counter()
+        qtySelect = QtySelect()
+        af = AutoFiltersFromComputers(computers)
+        category_querySet = Categories.objects.values_list('category_name')
+        possible_categories = []
+        for query_member in category_querySet:
+            possible_categories.append(query_member[0])
+        po = PossibleOrders()
+        return render(
+            request,
+            'main.html',
+            {
+                'computers': computers,
+                "counter": counter,
+                "qtySelect": qtySelect,
+                "autoFilters": af,
+                "cattyp": cattyp,
+                "poscat": possible_categories,
+                "po": po,
+                'so': so
+            }
+        )
+
+    elif isSold:
         possible_categories = None
         qtySelect = QtySelect()
         qtySelect.setDefaultSelect(qty)
@@ -78,8 +124,6 @@ def index(request):
         possible_categories = []
         for query_member in category_querySet:
             possible_categories.append(query_member[0])
-        # cattyp = CatTyp()
-        # removeKeyword(request)
         return render(
             request,
             'main.html',
@@ -89,20 +133,8 @@ def index(request):
                 "qtySelect": qtySelect,
                 "autoFilters": af,
                 "cattyp": cattyp,
-                "poscat": possible_categories
-            }
-        )
-
-    if isChargers:
-        # PRIDETI FILTRAVIMA
-        cch = ChargerCategoriesHolder()
-        cch.filter(request.GET.copy())
-        return render(
-            request,
-            'main.html',
-            {
-                'cch': cch,
-                "cattyp": cattyp
+                "poscat": possible_categories,
+                'so': so
             }
         )
 
@@ -116,7 +148,8 @@ def index(request):
             {
                 "counter": counter,
                 "cattyp": cattyp,
-                "orders": orders
+                "orders": orders,
+                'so': so
             }
         )
 
@@ -170,6 +203,7 @@ def index(request):
                 "cattyp": cattyp,
                 "poscat": possible_categories,
                 "po": po,
+                'so': so
             }
         )
 

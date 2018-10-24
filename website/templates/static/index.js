@@ -4,7 +4,7 @@ var filters_selected = 0;
 var selected_filters = [];
 
 
-class AFHolder {
+class Holder {
   constructor(id_name) {
     this.id_name = id_name;
     this.items = [];
@@ -33,6 +33,78 @@ class AFHolder {
     }
     return parametersList.join("&");
   }
+}
+
+class SearchOptions {
+    constructor() {
+        this.options_list = [];
+    }
+
+    set_option_row_count() {
+        this.option_row_count = document.getElementsByClassName("option-row").length;
+    }
+
+    addOption(tagname, text) {
+        var found = false;
+        for (var i=0; i<this.options_list.length; i++) {
+            if(this.options_list[i].id_name == tagname) {
+                found = true;
+                this.options_list[i].add(text);
+                break;
+            }
+        }
+        if(!found){
+            var option = new Holder(tagname);
+            option.add(text);
+            this.options_list.push(option);
+        }
+        this.toggle_search_button();
+    }
+
+    removeOption(tagname, text) {
+        for (var i=0; i<this.options_list.length; i++) {
+            if(this.options_list[i].id_name == tagname) {
+                this.options_list[i].remove(text);
+                if(this.options_list[i].length()==0){
+                    this.options_list.splice(i, 1);
+                }
+                break;
+            }
+        }
+        this.toggle_search_button();
+    }
+
+    toggle_search_button() {
+        var search_button = document.getElementById('search_button');
+        var searchKeyword = document.getElementById("search_input").value;
+        if (this.options_list.length >= this.option_row_count && searchKeyword !== '' ){
+            search_button.disabled = false;
+        } else {
+            search_button.disabled = true;
+        }
+    }
+
+    getOptionsAddon() {
+        var parametersList = [];
+        for (var i = 0; i < this.options_list.length; i++) {
+            parametersList.push(this.options_list[i].getParameters());
+        }
+        var stringToReturn = parametersList.join("&");
+        if (stringToReturn != "") {
+            stringToReturn = "&" + stringToReturn;
+        }
+        return stringToReturn;
+    }
+
+    process_option(checkbox) {
+        var tagname = checkbox.name;
+        var text = checkbox.parentElement.getElementsByClassName("option-fieldname")[0].innerText;
+        if (checkbox.checked) {
+            this.addOption(tagname, text);
+        } else {
+            this.removeOption(tagname, text);
+        }
+    }
 }
 
 class AFManager {
@@ -71,7 +143,7 @@ class AFManager {
       }
     }
     if(!found){
-      var filter = new AFHolder(filter_name);
+      var filter = new Holder(filter_name);
       filter.add(value);
       this.filter_list.push(filter);
     }
@@ -122,9 +194,6 @@ class AFManager {
                 attributes.splice(i, 1);
             }
         }
-        console.log(mainURL + "?"+ attributes.join("&") + this.getAFURLaddon());
-        console.log(attributes.join("&"));
-        console.log(this.getAFURLaddon());
 	    return mainURL + "?"+ attributes.join("&")  + this.getAFURLaddon();
     }
   }
@@ -143,6 +212,7 @@ class AFManager {
 }
 
 var afmanager = new AFManager();
+var searchoptions = new SearchOptions();
 
 function manButPress() {
     var button = document.getElementById("manual-filter-button");
@@ -163,10 +233,12 @@ function load() {
   search_textbox = document.getElementById('search_input');
   search_textbox.addEventListener('keyup', function(event) {
     event.preventDefault();
+    searchoptions.toggle_search_button();
     if (event.keyCode === 13) {
       search_using_keyword();
     }
   })
+  searchoptions.set_option_row_count();
 }
 
 function remove_keyword() {
@@ -290,19 +362,19 @@ function loadPage(newURL) {
   window.location = newURL;
 }
 
+function toggle_category_choices() {
+    categoryChoices = document.getElementsByClassName("search-categories")[0];
+    categoryChoices.classList.toggle("show");
+}
+
 function search_using_keyword() {
-  variable1 = document.getElementById("search_input");
-  variable2 = variable1.value;
-  searchKeyword = document.getElementById("search_input").value;
-  if (searchKeyword !== '') {
+    variable1 = document.getElementById("search_input");
+    variable2 = variable1.value;
+    searchKeyword = document.getElementById("search_input").value;
+    searchAddon = searchoptions.getOptionsAddon();
+    URLtoWorkWith = location.href.split('?')[0]
     href = remove_keyword();
-    if (href.indexOf('?') !== -1) {
-      location.href = href + '&keyword=' + urlify(searchKeyword)
-    }
-    else {
-      location.href = href + '?keyword=' + urlify(searchKeyword)
-    }
-  }
+    location.href = URLtoWorkWith + '?keyword=' + urlify(searchKeyword) + urlify(searchAddon)
 }
 
 function search() {
@@ -679,4 +751,8 @@ function download_hdd_order_csv(index) {
             link.click();
         }
     }
+}
+
+function process_option(checkbox) {
+    searchoptions.process_option(checkbox);
 }

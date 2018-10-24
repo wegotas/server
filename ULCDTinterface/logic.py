@@ -10,7 +10,7 @@ class Computer_record():
         self.success = None
         try:
             self.category = self._category_get(data_dict["Category"])
-            self.type = self._type_get(data_dict["Computer type"])
+            self.type = self._type_get(data_dict["System Type"])
             self.tester = self._tester_get(data_dict["Tester"])
             self.bios = self._bios_save_and_get(data_dict["BIOS"])
             self.cpu = self._cpus_save_and_get(data_dict["CPU"])
@@ -32,7 +32,6 @@ class Computer_record():
                 self.sale = self._sale_save_and_get(self.client)
                 self.computer = self._computer_sold_save_and_get(data_dict)
                 self.message += "Sold have been processed\n"
-
             else:
                 self.computer = self._computer_save_and_get(data_dict)
             bat1 = self._battery_save_and_get(
@@ -271,6 +270,175 @@ class Computer_record():
             computer.save()
             self.message += "New record has been added\n"
             return computer
+
+    def _category_get(self, value):
+        return Categories.objects.get(category_name=value)
+
+    def _type_get(self, value):
+        return Types.objects.get(type_name=value)
+
+    def _tester_get(self, value):
+        return Testers.objects.get(tester_name=value)
+
+    def _bios_save_and_get(self, value):
+        bios = Bioses.objects.get_or_create(bios_text=value)[0]
+        bios.save()
+        return bios
+
+    def _cpus_save_and_get(self, value):
+        cpu = Cpus.objects.get_or_create(cpu_name=value)[0]
+        cpu.save()
+        return cpu
+
+    def _camera_option_save_and_get(self, value):
+        option = CameraOptions.objects.get_or_create(option_name=value)[0]
+        option.save()
+        return option
+
+    def _diagonals_save_and_get(self, value):
+        diagonal = Diagonals.objects.get_or_create(diagonal_text=value)[0]
+        diagonal.save()
+        return diagonal
+
+    def _gpus_save_and_get(self, value):
+        gpu = Gpus.objects.get_or_create(gpu_name=value)[0]
+        gpu.save()
+        return gpu
+
+    def _hddSizes_save_and_get(self, value):
+        hddSize = HddSizes.objects.get_or_create(hdd_sizes_name=value)[0]
+        hddSize.save()
+        return hddSize
+
+    def _licenses_save_and_get(self, value):
+        license = Licenses.objects.get_or_create(license_name=value)[0]
+        license.save()
+        return license
+
+    def _manufacturers_save_and_get(self, value):
+        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=value)[0]
+        manufacturer.save()
+        return manufacturer
+
+    def _models_save_and_get(self, value):
+        model = Models.objects.get_or_create(model_name=value)[0]
+        model.save()
+        return model
+
+    def _ramSizes_save_and_get(self, value):
+        ramSize = RamSizes.objects.get_or_create(ram_size_text=value)[0]
+        ramSize.save()
+        return ramSize
+
+class Computer_record2():
+
+    def __init__(self, data_dict):
+        print("in Computer_record2")
+        print(data_dict)
+        self.message = ""
+        self.success = None
+        try:
+            self.category = self._category_get(data_dict['Others']["Category"])
+            self.type = self._type_get(data_dict['SystemInfo']["System Type"])
+            self.tester = self._tester_get(data_dict['Others']["Tester"])
+            self.bios = self._bios_save_and_get(data_dict['SystemInfo']["BIOS"])
+            self.cpu = self._cpus_save_and_get(data_dict['Processor']['Model'])
+            self.camera_option = self._camera_option_save_and_get(data_dict['Others']["Camera"])
+
+            self.diagonal = self._diagonals_save_and_get(data_dict['Display']['Diagonal'])
+            self.gpu = self._gpus_save_and_get(data_dict["GPU"]['Integrated'])
+            self.hddsize = self._hddSizes_save_and_get('N/A')
+            self.license = self._licenses_save_and_get(data_dict['Others']["License"])
+            self.manufacturer = self._manufacturers_save_and_get(data_dict['SystemInfo']["Manufacturer"])
+            self.model = self._models_save_and_get(data_dict['SystemInfo']['Model'])
+            self.motherboard = data_dict['SystemInfo']["MB Serial"]
+            self.ramsize = self._ramSizes_save_and_get(data_dict['RAM']['RAM Capacity'])
+            self.is_sold = data_dict['Others']['isSold']
+            self.timenow = timezone.now()
+            self.computer = self._computer_save_and_get(data_dict)
+
+            self.message += "Success"
+            self.success = True
+        except decimal.InvalidOperation as e:
+            self.message += "Failure decimal\nPossible reason:\n"
+            self.message += str(e)
+            self.success = False
+        except Exception as e:
+            self.message += "Failure exception\nPossible reason:\n"
+            self.message += str(e)
+            self.success = False
+
+    def _computer_save_and_get(self, data):
+        try:
+            existing_computer = Computers.objects.get(computer_serial=data['SystemInfo']['Serial Number'])
+            computer = Computers(
+                id_computer=existing_computer.id_computer,
+                computer_serial=data['SystemInfo']['Serial Number'],
+                f_type=self.type,
+                f_category=self.category,
+                f_manufacturer=self.manufacturer,
+                f_model=self.model,
+                f_cpu=self.cpu,
+                f_gpu=self.gpu,
+                f_ram_size=self.ramsize,
+                # f_hdd_size=self.hddsize,
+                f_diagonal=self.diagonal,
+                f_license=self.license,
+                f_camera=self.camera_option,
+                cover='N/A',
+                display='N/A',
+                bezel='N/A',
+                keyboard='N/A',
+                mouse='N/A',
+                sound='N/A',
+                cdrom='N/A',
+                hdd_cover='N/A',
+                ram_cover='N/A',
+                other='N/A',
+                f_tester=self.tester,
+                date=self.timenow,
+                f_bios=self.bios,
+                motherboard_serial=self.motherboard,
+                # price=self.price
+            )
+            computer.save()
+            self.message += "Existing record has been updated\n"
+            return computer
+        except Computers.DoesNotExist:
+            print("No computer with such serial, inserting a new record")
+            computer = Computers(
+                computer_serial=data['SystemInfo']['Serial Number'],
+                f_type=self.type,
+                f_category=self.category,
+                f_manufacturer=self.manufacturer,
+                f_model=self.model,
+                f_cpu=self.cpu,
+                f_gpu=self.gpu,
+                f_ram_size=self.ramsize,
+                # f_hdd_size=self.hddsize,
+                f_diagonal=self.diagonal,
+                f_license=self.license,
+                f_camera=self.camera_option,
+                cover='N/A',
+                display='N/A',
+                bezel='N/A',
+                keyboard='N/A',
+                mouse='N/A',
+                sound='N/A',
+                cdrom='N/A',
+                hdd_cover='N/A',
+                ram_cover='N/A',
+                other='N/A',
+                f_tester=self.tester,
+                date=self.timenow,
+                f_bios=self.bios,
+                motherboard_serial=self.motherboard,
+                # price=self.price
+            )
+            computer.save()
+            self.message += "New record has been added\n"
+            return computer
+
 
     def _category_get(self, value):
         return Categories.objects.get(category_name=value)

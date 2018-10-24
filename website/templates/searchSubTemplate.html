@@ -2,8 +2,10 @@
 <div class="search">
     <div class="c-input">
         <input type="text" id="search_input" class="c-inputbox" name="search-keyword" placeholder="Search keyword">
-        <button class="c-button" type="button" onclick="search_using_keyword()">Search</button>
+        <button class="c-midbutton" type="button" onclick="toggle_category_choices()">Options show/hide</button>
+        <button class="c-endbutton" type="button" onclick="search_using_keyword()" id="search_button" disabled="disabled">Search</button>
     </div>
+    {% include 'categorySearchOptionsSubtemplate.html' %}
      <!--
      <div class="c-man-filter-placeholder">
          <div>

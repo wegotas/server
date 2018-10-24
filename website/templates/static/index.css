@@ -151,16 +151,67 @@ background: transparent;
   border: 2px solid #F22613;
 }
 
-.c-button {
+.c-midbutton {
+  border: 1px solid darkgrey;
+  height: 26px;
+  border-radius: 2px 2px 2px 2px;
+}
+
+.c-endbutton {
   border: 1px solid darkgrey;
   height: 26px;
   border-radius: 2px 4px 10px 2px;
 }
 
-.c-button:hover {
+
+.c-midbutton:hover {
   background-color: #F22613;
   color: white;
   border: 1px solid black;
+}
+
+.c-endbutton:hover {
+  background-color: #F22613;
+  color: white;
+  border: 1px solid black;
+}
+
+.search-categories {
+    display: none;
+    border: 1px solid darkgrey;
+    border-radius: 8px;
+}
+
+#option-title {
+    display: inline-block;
+    height: 100%;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.option-row {
+    margin: 5px
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.option-cell {
+    display: inline-block;
+    border-radius: 2px;
+    vertical-align: top;
+    margin: 5px;
+}
+
+.option-checkbox {
+  display: inline;
+}
+
+.option-checkbox:hover {
+  outline: 1px solid red;
+}
+
+.option-fieldname {
+  display: inline;
 }
 
 .c-man-filter-placeholder {
