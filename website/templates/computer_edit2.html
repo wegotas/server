@@ -309,7 +309,10 @@ input:read-only {
             <tr>
                 <th>Other</th>
                 <td>
-                    <input type="text" name="other" value="{{ computer.other }}">
+                    <!--
+                    <input type="text" name="other" value="{{ computer.other|linebreaksbr }}">
+                    -->
+                    <textarea rows="4" cols="37" type="text" name="other" style="resize: none;">{{ computer.other }}</textarea>
                 </td>
             </tr>
             <tr>

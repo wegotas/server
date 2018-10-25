@@ -418,6 +418,7 @@ background: transparent;
   width: 90%;
   border-radius: 6px;
   border: 2px solid #85BDE4;
+  text-align: center;
 }
 
 .main-table th {

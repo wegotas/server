@@ -23,6 +23,10 @@ class Batteries(models.Model):
     serial = models.CharField(max_length=45)
     wear_out = models.CharField(max_length=45)
     expected_time = models.CharField(max_length=45)
+    model = models.CharField(max_length=45, blank=True, null=True)
+    current_wh = models.CharField(max_length=45, blank=True, null=True)
+    maximum_wh = models.CharField(max_length=45, blank=True, null=True)
+    factory_wh = models.CharField(max_length=45, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -165,6 +169,12 @@ class Computers(models.Model):
             return "N/A"
         else:
             return self.date.strftime('%Y-%m-%d')
+
+    def getOther2lines(self):
+        if '\n' in self.other:
+            otherList = self.other.split('\n')
+            return otherList[0]+'\n' + otherList[1]
+        return self.other
 
 
 class Diagonals(models.Model):
@@ -561,3 +571,45 @@ class RamToComp(models.Model):
     class Meta:
         managed = True
         db_table = 'ram_to_comp'
+
+
+class RamSticks(models.Model):
+    id_ram_stick = models.AutoField(primary_key=True)
+    serial_number = models.CharField(max_length=45)
+    capacity = models.CharField(max_length=10)
+    clock = models.CharField(max_length=10)
+    type = models.CharField(max_length=10)
+
+    class Meta:
+        managed = True
+        db_table = 'RAM_sticks'
+
+
+class RamSticksToComps(models.Model):
+    id_ram_stick_to_comp = models.AutoField(primary_key=True)
+    f_id_ram_stick = models.ForeignKey(RamSticks, models.DO_NOTHING, db_column='f_id_ram_stick')
+    f_id_computer = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer')
+
+    class Meta:
+        managed = True
+        db_table = 'RAM_sticks_to_comps'
+
+
+class GpuTypes(models.Model):
+    id_gpu_type = models.AutoField(primary_key=True)
+    gpu_type_name = models.CharField(max_length=45, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'GPU_types'
+
+
+class Computergpus(models.Model):
+    id_computergpu = models.AutoField(primary_key=True)
+    f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer', blank=True, null=True)
+    f_id_gpu = models.ForeignKey('Gpus', models.DO_NOTHING, db_column='f_id_gpu', blank=True, null=True)
+    f_id_gpu_type = models.ForeignKey('GpuTypes', models.DO_NOTHING, db_column='f_id_gpu_type', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'ComputerGPUS'

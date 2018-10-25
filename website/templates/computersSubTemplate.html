@@ -290,7 +290,7 @@
                 <td>{{ computer.f_ram_size.ram_size_text }}</td>
                 <td>{{ computer.f_gpu.gpu_name }}</td>
                 <td>{{ computer.f_diagonal.diagonal_text }}</td>
-                <td>{{ computer.other }}</td>
+                <td>{{ computer.getOther2lines|linebreaksbr }}</td>
                 <td>
                     <button class="img-button" onclick="edit({{ computer.id_computer }})">
                         <img

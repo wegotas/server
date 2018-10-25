@@ -3770,7 +3770,6 @@ class SearchOptions:
         categorySelection = OptionSelection('Categories', 'cat', categories, search_method)
         self.options.append(categorySelection)
 
-
     def set_statuses(self):
         no_status = 'No status'
         ordered = 'Ordered'

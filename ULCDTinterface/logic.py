@@ -330,6 +330,7 @@ class Computer_record():
         ramSize.save()
         return ramSize
 
+
 class Computer_record2():
 
     def __init__(self, data_dict):
@@ -353,10 +354,37 @@ class Computer_record2():
             self.model = self._models_save_and_get(data_dict['SystemInfo']['Model'])
             self.motherboard = data_dict['SystemInfo']["MB Serial"]
             self.ramsize = self._ramSizes_save_and_get(data_dict['RAM']['RAM Capacity'])
-            self.is_sold = data_dict['Others']['isSold']
+            # self.is_sold = data_dict['Others']['isSold']
+            self.is_sold = False
             self.timenow = timezone.now()
             self.computer = self._computer_save_and_get(data_dict)
-
+            for id in range(self._get_highest_first_number(data_dict["Batteries"])):
+                print('id is:')
+                print(id)
+                print(str(id+1) + ' Battery Serial')
+                print(data_dict["Batteries"][str(id+1) + ' Battery Serial'])
+                print(str(id + 1) + ' Battery Model')
+                print(data_dict["Batteries"][str(id + 1) + ' Battery Model'])
+                print(str(id + 1) + ' Battery Current Wh')
+                print(data_dict["Batteries"][str(id + 1) + ' Battery Current Wh'])
+                print(str(id + 1) + ' Battery Maximum Wh')
+                print(data_dict["Batteries"][str(id + 1) + ' Battery Maximum Wh'])
+                print(str(id + 1) + ' Battery Factory Wh')
+                print(data_dict["Batteries"][str(id + 1) + ' Battery Factory Wh'])
+                print(str(id + 1) + ' Battery Wear Level')
+                print(data_dict["Batteries"][str(id + 1) + ' Battery Wear Level'])
+                print(str(id + 1) + ' Battery Estimated')
+                print(data_dict["Batteries"][str(id + 1) + ' Battery Estimated'])
+                battery = Batteries.objects.get_or_create(
+                    serial=data_dict["Batteries"][str(id+1) + ' Battery Serial'],
+                    wear_out=data_dict["Batteries"][str(id + 1) + ' Battery Wear Level'],
+                    expected_time=data_dict["Batteries"][str(id + 1) + ' Battery Estimated'],
+                    model=data_dict["Batteries"][str(id + 1) + ' Battery Model'],
+                    current_wh=data_dict["Batteries"][str(id + 1) + ' Battery Current Wh'],
+                    maximum_wh=data_dict["Batteries"][str(id + 1) + ' Battery Maximum Wh'],
+                    factory_wh=data_dict["Batteries"][str(id + 1) + ' Battery Factory Wh']
+                )[0]
+                self._bat_to_comp_relation_creation(battery)
             self.message += "Success"
             self.success = True
         except decimal.InvalidOperation as e:
@@ -394,7 +422,7 @@ class Computer_record2():
                 cdrom='N/A',
                 hdd_cover='N/A',
                 ram_cover='N/A',
-                other='N/A',
+                other=data["Others"]["Other"],
                 f_tester=self.tester,
                 date=self.timenow,
                 f_bios=self.bios,
@@ -428,7 +456,7 @@ class Computer_record2():
                 cdrom='N/A',
                 hdd_cover='N/A',
                 ram_cover='N/A',
-                other='N/A',
+                other=data["Others"]["Other"],
                 f_tester=self.tester,
                 date=self.timenow,
                 f_bios=self.bios,
@@ -438,6 +466,26 @@ class Computer_record2():
             computer.save()
             self.message += "New record has been added\n"
             return computer
+
+    def _bat_to_comp_relation_creation(self, bat):
+        bat_to_comp, created = BatToComp.objects.get_or_create(
+            f_id_computer_bat_to_com=self.computer,
+            f_bat_bat_to_com=bat
+        )
+
+    def _get_number_out_of_string(self, string):
+        variable = string.split()[0]
+        if variable.isdigit():
+            return int(variable)
+        return 0
+
+    def _get_highest_first_number(self, object):
+        highest = 1
+        for key in object.keys():
+            testing_number = self._get_number_out_of_string(key)
+            if testing_number > highest:
+                highest = testing_number
+        return highest
 
 
     def _category_get(self, value):

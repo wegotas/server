@@ -384,7 +384,7 @@
                                 <td>{{ computer.f_manufacturer.manufacturer_name }}</td>
                                 <td>{{ computer.f_model.model_name }}</td>
                                 <td>{{ computer.f_cpu.cpu_name }}</td>
-                                <td>{{ computer.other }}</td>
+                                <td>{{ computer.getOther2lines|linebreaksbr }}</td>
                                 <td>{{ computer.price }}</td>
                                 <td>{{ computer.f_sale.f_id_client.client_name }}</td>
                                 <td>{{ computer.f_sale.getDate }}</td>
