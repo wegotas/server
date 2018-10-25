@@ -361,6 +361,9 @@ class RamSizes(models.Model):
 class Rams(models.Model):
     id_ram = models.AutoField(primary_key=True)
     ram_serial = models.CharField(max_length=45)
+    capacity = models.CharField(max_length=10, blank=True, null=True)
+    clock = models.CharField(max_length=10, blank=True, null=True)
+    type = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -571,28 +574,6 @@ class RamToComp(models.Model):
     class Meta:
         managed = True
         db_table = 'ram_to_comp'
-
-
-class RamSticks(models.Model):
-    id_ram_stick = models.AutoField(primary_key=True)
-    serial_number = models.CharField(max_length=45)
-    capacity = models.CharField(max_length=10)
-    clock = models.CharField(max_length=10)
-    type = models.CharField(max_length=10)
-
-    class Meta:
-        managed = True
-        db_table = 'RAM_sticks'
-
-
-class RamSticksToComps(models.Model):
-    id_ram_stick_to_comp = models.AutoField(primary_key=True)
-    f_id_ram_stick = models.ForeignKey(RamSticks, models.DO_NOTHING, db_column='f_id_ram_stick')
-    f_id_computer = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer')
-
-    class Meta:
-        managed = True
-        db_table = 'RAM_sticks_to_comps'
 
 
 class GpuTypes(models.Model):

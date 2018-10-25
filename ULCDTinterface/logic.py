@@ -345,7 +345,6 @@ class Computer_record2():
             self.bios = self._bios_save_and_get(data_dict['SystemInfo']["BIOS"])
             self.cpu = self._cpus_save_and_get(data_dict['Processor']['Model'])
             self.camera_option = self._camera_option_save_and_get(data_dict['Others']["Camera"])
-
             self.diagonal = self._diagonals_save_and_get(data_dict['Display']['Diagonal'])
             self.gpu = self._gpus_save_and_get(data_dict["GPU"]['Integrated'])
             self.hddsize = self._hddSizes_save_and_get('N/A')
@@ -359,22 +358,6 @@ class Computer_record2():
             self.timenow = timezone.now()
             self.computer = self._computer_save_and_get(data_dict)
             for id in range(self._get_highest_first_number(data_dict["Batteries"])):
-                print('id is:')
-                print(id)
-                print(str(id+1) + ' Battery Serial')
-                print(data_dict["Batteries"][str(id+1) + ' Battery Serial'])
-                print(str(id + 1) + ' Battery Model')
-                print(data_dict["Batteries"][str(id + 1) + ' Battery Model'])
-                print(str(id + 1) + ' Battery Current Wh')
-                print(data_dict["Batteries"][str(id + 1) + ' Battery Current Wh'])
-                print(str(id + 1) + ' Battery Maximum Wh')
-                print(data_dict["Batteries"][str(id + 1) + ' Battery Maximum Wh'])
-                print(str(id + 1) + ' Battery Factory Wh')
-                print(data_dict["Batteries"][str(id + 1) + ' Battery Factory Wh'])
-                print(str(id + 1) + ' Battery Wear Level')
-                print(data_dict["Batteries"][str(id + 1) + ' Battery Wear Level'])
-                print(str(id + 1) + ' Battery Estimated')
-                print(data_dict["Batteries"][str(id + 1) + ' Battery Estimated'])
                 battery = Batteries.objects.get_or_create(
                     serial=data_dict["Batteries"][str(id+1) + ' Battery Serial'],
                     wear_out=data_dict["Batteries"][str(id + 1) + ' Battery Wear Level'],
@@ -385,6 +368,14 @@ class Computer_record2():
                     factory_wh=data_dict["Batteries"][str(id + 1) + ' Battery Factory Wh']
                 )[0]
                 self._bat_to_comp_relation_creation(battery)
+            for id in range(self._get_highest_first_number(data_dict["RAM"])):
+                ram = Rams.objects.get_or_create(
+                    ram_serial=data_dict["RAM"][str(id + 1) + ' Stick SN'],
+                    capacity=data_dict["RAM"][str(id + 1) + ' Stick Cap'],
+                    clock=data_dict["RAM"][str(id + 1) + ' Stick Clock'],
+                    type=data_dict["RAM"]['RAM Type']
+                )[0]
+                self._ram_to_comp_relation_creation(ram)
             self.message += "Success"
             self.success = True
         except decimal.InvalidOperation as e:
@@ -473,6 +464,12 @@ class Computer_record2():
             f_bat_bat_to_com=bat
         )
 
+    def _ram_to_comp_relation_creation(self, ram):
+        ram_to_comp = RamToComp.objects.get_or_create(
+            f_id_computer_ram_to_com=self.computer,
+            f_id_ram_ram_to_com=ram
+        )
+
     def _get_number_out_of_string(self, string):
         variable = string.split()[0]
         if variable.isdigit():
@@ -499,50 +496,40 @@ class Computer_record2():
 
     def _bios_save_and_get(self, value):
         bios = Bioses.objects.get_or_create(bios_text=value)[0]
-        bios.save()
         return bios
 
     def _cpus_save_and_get(self, value):
         cpu = Cpus.objects.get_or_create(cpu_name=value)[0]
-        cpu.save()
         return cpu
 
     def _camera_option_save_and_get(self, value):
         option = CameraOptions.objects.get_or_create(option_name=value)[0]
-        option.save()
         return option
 
     def _diagonals_save_and_get(self, value):
         diagonal = Diagonals.objects.get_or_create(diagonal_text=value)[0]
-        diagonal.save()
         return diagonal
 
     def _gpus_save_and_get(self, value):
         gpu = Gpus.objects.get_or_create(gpu_name=value)[0]
-        gpu.save()
         return gpu
 
     def _hddSizes_save_and_get(self, value):
         hddSize = HddSizes.objects.get_or_create(hdd_sizes_name=value)[0]
-        hddSize.save()
         return hddSize
 
     def _licenses_save_and_get(self, value):
         license = Licenses.objects.get_or_create(license_name=value)[0]
-        license.save()
         return license
 
     def _manufacturers_save_and_get(self, value):
         manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=value)[0]
-        manufacturer.save()
         return manufacturer
 
     def _models_save_and_get(self, value):
         model = Models.objects.get_or_create(model_name=value)[0]
-        model.save()
         return model
 
     def _ramSizes_save_and_get(self, value):
         ramSize = RamSizes.objects.get_or_create(ram_size_text=value)[0]
-        ramSize.save()
         return ramSize
