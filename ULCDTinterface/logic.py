@@ -1,4 +1,4 @@
-from ULCDTinterface.modelers import Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
+from ULCDTinterface.modelers import * # Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
 import datetime, decimal
 from django.utils import timezone
 
@@ -339,43 +339,11 @@ class Computer_record2():
         self.message = ""
         self.success = None
         try:
-            self.category = self._category_get(data_dict['Others']["Category"])
-            self.type = self._type_get(data_dict['SystemInfo']["System Type"])
-            self.tester = self._tester_get(data_dict['Others']["Tester"])
-            self.bios = self._bios_save_and_get(data_dict['SystemInfo']["BIOS"])
-            self.cpu = self._cpus_save_and_get(data_dict['Processor']['Model'])
-            self.camera_option = self._camera_option_save_and_get(data_dict['Others']["Camera"])
-            self.diagonal = self._diagonals_save_and_get(data_dict['Display']['Diagonal'])
-            self.gpu = self._gpus_save_and_get(data_dict["GPU"]['Integrated'])
-            self.hddsize = self._hddSizes_save_and_get('N/A')
-            self.license = self._licenses_save_and_get(data_dict['Others']["License"])
-            self.manufacturer = self._manufacturers_save_and_get(data_dict['SystemInfo']["Manufacturer"])
-            self.model = self._models_save_and_get(data_dict['SystemInfo']['Model'])
-            self.motherboard = data_dict['SystemInfo']["MB Serial"]
-            self.ramsize = self._ramSizes_save_and_get(data_dict['RAM']['RAM Capacity'])
-            # self.is_sold = data_dict['Others']['isSold']
-            self.is_sold = False
-            self.timenow = timezone.now()
+            self._one_to_many_connection_save(data_dict)
             self.computer = self._computer_save_and_get(data_dict)
-            for id in range(self._get_highest_first_number(data_dict["Batteries"])):
-                battery = Batteries.objects.get_or_create(
-                    serial=data_dict["Batteries"][str(id+1) + ' Battery Serial'],
-                    wear_out=data_dict["Batteries"][str(id + 1) + ' Battery Wear Level'],
-                    expected_time=data_dict["Batteries"][str(id + 1) + ' Battery Estimated'],
-                    model=data_dict["Batteries"][str(id + 1) + ' Battery Model'],
-                    current_wh=data_dict["Batteries"][str(id + 1) + ' Battery Current Wh'],
-                    maximum_wh=data_dict["Batteries"][str(id + 1) + ' Battery Maximum Wh'],
-                    factory_wh=data_dict["Batteries"][str(id + 1) + ' Battery Factory Wh']
-                )[0]
-                self._bat_to_comp_relation_creation(battery)
-            for id in range(self._get_highest_first_number(data_dict["RAM"])):
-                ram = Rams.objects.get_or_create(
-                    ram_serial=data_dict["RAM"][str(id + 1) + ' Stick SN'],
-                    capacity=data_dict["RAM"][str(id + 1) + ' Stick Cap'],
-                    clock=data_dict["RAM"][str(id + 1) + ' Stick Clock'],
-                    type=data_dict["RAM"]['RAM Type']
-                )[0]
-                self._ram_to_comp_relation_creation(ram)
+            self._many_to_many_connection_save(data_dict)
+
+
             self.message += "Success"
             self.success = True
         except decimal.InvalidOperation as e:
@@ -484,52 +452,125 @@ class Computer_record2():
                 highest = testing_number
         return highest
 
+    def _many_to_many_connection_save(self, data_dict):
+        def _save_batteries(battery_dict):
+            for id in range(self._get_highest_first_number(battery_dict)):
+                battery = Batteries.objects.get_or_create(
+                    serial=battery_dict[str(id + 1) + ' Battery Serial'],
+                    wear_out=battery_dict[str(id + 1) + ' Battery Wear Level'],
+                    expected_time=battery_dict[str(id + 1) + ' Battery Estimated'],
+                    model=battery_dict[str(id + 1) + ' Battery Model'],
+                    current_wh=battery_dict[str(id + 1) + ' Battery Current Wh'],
+                    maximum_wh=battery_dict[str(id + 1) + ' Battery Maximum Wh'],
+                    factory_wh=battery_dict[str(id + 1) + ' Battery Factory Wh']
+                )[0]
+                self._bat_to_comp_relation_creation(battery)
 
-    def _category_get(self, value):
-        return Categories.objects.get(category_name=value)
+        def _save_rams(ram_dict):
+            for id in range(self._get_highest_first_number(ram_dict)):
+                ram = Rams.objects.get_or_create(
+                    ram_serial=ram_dict[str(id + 1) + ' Stick SN'],
+                    capacity=ram_dict[str(id + 1) + ' Stick Cap'],
+                    clock=ram_dict[str(id + 1) + ' Stick Clock'],
+                    type=ram_dict['RAM Type']
+                )[0]
+                self._ram_to_comp_relation_creation(ram)
 
-    def _type_get(self, value):
-        return Types.objects.get(type_name=value)
+        def _save_gpus(gpu_dict):
+            for gpu_type_name, gpu_name in gpu_dict.items():
+                gpu_type = GpuTypes.objects.get_or_create(gpu_type_name=gpu_type_name)[0]
+                gpu = Gpus.objects.get_or_create(gpu_name=gpu_name)[0]
+                Computergpus.objects.get_or_create(
+                    f_id_computer=self.computer,
+                    f_id_gpu=gpu,
+                    f_id_gpu_type=gpu_type
+                )
 
-    def _tester_get(self, value):
-        return Testers.objects.get(tester_name=value)
+        def _save_processors(processor_dict):
+            for id in range(self._get_highest_first_number(processor_dict)):
+                manufacturer = Manufacturers.objects.get_or_create(
+                    manufacturer_name=processor_dict[str(id + 1) + ' Manufacturer'])[0]
+                processor = Processors.objects.get_or_create(
+                    f_manufacturer=manufacturer,
+                    model_name=processor_dict[str(id + 1) + ' Model'],
+                    stock_clock=processor_dict[str(id + 1) + ' Stock Clock'],
+                    max_clock=processor_dict[str(id + 1) + ' MAX Clock'],
+                    cores=int(processor_dict[str(id + 1) + ' Cores Amount']),
+                    threads=int(processor_dict[str(id + 1) + ' Thread Amount'])
+                )[0]
+                Computerprocessors.objects.get_or_create(
+                    f_id_computer=self.computer,
+                    f_id_processor=processor
+                )
 
-    def _bios_save_and_get(self, value):
-        bios = Bioses.objects.get_or_create(bios_text=value)[0]
-        return bios
+        _save_batteries(data_dict["Batteries"])
+        _save_rams(data_dict["RAM"])
 
-    def _cpus_save_and_get(self, value):
-        cpu = Cpus.objects.get_or_create(cpu_name=value)[0]
-        return cpu
+        '''
+        for id in range(self._get_highest_first_number(data_dict["RAM"])):
+            ram = Rams.objects.get_or_create(
+                ram_serial=data_dict["RAM"][str(id + 1) + ' Stick SN'],
+                capacity=data_dict["RAM"][str(id + 1) + ' Stick Cap'],
+                clock=data_dict["RAM"][str(id + 1) + ' Stick Clock'],
+                type=data_dict["RAM"]['RAM Type']
+            )[0]
+            self._ram_to_comp_relation_creation(ram)
+        '''
+        _save_gpus(data_dict["GPU"])
+        '''
+        for gpu_type_name, gpu_name in data_dict["GPU"].items():
+            gpu_type = GpuTypes.objects.get_or_create(gpu_type_name=gpu_type_name)[0]
+            gpu = Gpus.objects.get_or_create(gpu_name=gpu_name)[0]
+            Computergpus.objects.get_or_create(
+                f_id_computer=self.computer,
+                f_id_gpu=gpu,
+                f_id_gpu_type=gpu_type
+            )
+        '''
+        _save_processors(data_dict["Processor"])
+        '''
+        for id in range(self._get_highest_first_number(data_dict["Processor"])):
+            manufacturer = Manufacturers.objects.get_or_create(
+                manufacturer_name=data_dict["Processor"][str(id + 1) + ' Manufacturer'])[0]
+            processor = Processors.objects.get_or_create(
+                f_manufacturer=manufacturer,
+                model_name=data_dict["Processor"][str(id + 1) + ' Model'],
+                stock_clock=data_dict["Processor"][str(id + 1) + ' Stock Clock'],
+                max_clock=data_dict["Processor"][str(id + 1) + ' MAX Clock'],
+                cores=int(data_dict["Processor"][str(id + 1) + ' Cores Amount']),
+                threads=int(data_dict["Processor"][str(id + 1) + ' Thread Amount'])
+            )[0]
+            Computerprocessors.objects.get_or_create(
+                f_id_computer=self.computer,
+                f_id_processor=processor
+            )
+        '''
 
-    def _camera_option_save_and_get(self, value):
-        option = CameraOptions.objects.get_or_create(option_name=value)[0]
-        return option
+    def _one_to_many_connection_save(self, data_dict):
+        self.category = Categories.objects.get(category_name=data_dict['Others']["Category"])
+        self.type = Types.objects.get(type_name=data_dict['SystemInfo']["System Type"])
+        self.tester = Testers.objects.get(tester_name=data_dict['Others']["Tester"])
+        self.bios = Bioses.objects.get_or_create(bios_text=data_dict['SystemInfo']["BIOS"])[0]
+        self.cpu = Cpus.objects.get_or_create(cpu_name=data_dict['Processor']['1 Model'])[0]
+        self.camera_option = CameraOptions.objects.get_or_create(option_name=data_dict['Others']["Camera"])[0]
+        self.diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict['Display']['Diagonal'])[0]
+        self.gpu = Gpus.objects.get_or_create(gpu_name=data_dict["GPU"]['Integrated'])[0]
+        self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name='N/A')
+        self.license = Licenses.objects.get_or_create(license_name=data_dict['Others']["License"])[0]
+        self.manufacturer = Manufacturers.objects.get_or_create(
+            manufacturer_name=data_dict['SystemInfo']["Manufacturer"]
+        )[0]
+        self.model = Models.objects.get_or_create(model_name=data_dict['SystemInfo']['Model'])[0]
+        self.motherboard = data_dict['SystemInfo']["MB Serial"]
+        self.ramsize = RamSizes.objects.get_or_create(ram_size_text=data_dict['RAM']['RAM Capacity'])[0]
+        self.is_sold = False
+        self.timenow = timezone.now()
 
-    def _diagonals_save_and_get(self, value):
-        diagonal = Diagonals.objects.get_or_create(diagonal_text=value)[0]
-        return diagonal
-
-    def _gpus_save_and_get(self, value):
-        gpu = Gpus.objects.get_or_create(gpu_name=value)[0]
-        return gpu
-
-    def _hddSizes_save_and_get(self, value):
-        hddSize = HddSizes.objects.get_or_create(hdd_sizes_name=value)[0]
-        return hddSize
-
-    def _licenses_save_and_get(self, value):
-        license = Licenses.objects.get_or_create(license_name=value)[0]
-        return license
-
-    def _manufacturers_save_and_get(self, value):
-        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=value)[0]
-        return manufacturer
-
-    def _models_save_and_get(self, value):
-        model = Models.objects.get_or_create(model_name=value)[0]
-        return model
-
-    def _ramSizes_save_and_get(self, value):
-        ramSize = RamSizes.objects.get_or_create(ram_size_text=value)[0]
-        return ramSize
+        print('Diagonal')
+        print(data_dict["Display"]["Diagonal"])
+        print('Resolution')
+        print(data_dict["Display"]["Resolution"])
+        print('Category')
+        print(data_dict["Display"]["Category"])
+        print('Cable type')
+        print(data_dict["Display"]["Cable Type"])

@@ -94,7 +94,7 @@ class ChargerCategories(models.Model):
         return bool(self.used_status)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Charger_categories'
 
 
@@ -104,7 +104,7 @@ class Chargers(models.Model):
     f_charger_category = models.ForeignKey(ChargerCategories, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Chargers'
 
 
@@ -375,7 +375,7 @@ class Resolutions(models.Model):
     resolution_text = models.CharField(max_length=45)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Resolutions'
 
 
@@ -581,7 +581,7 @@ class GpuTypes(models.Model):
     gpu_type_name = models.CharField(max_length=45, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'GPU_types'
 
 
@@ -592,5 +592,67 @@ class Computergpus(models.Model):
     f_id_gpu_type = models.ForeignKey('GpuTypes', models.DO_NOTHING, db_column='f_id_gpu_type', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'ComputerGPUS'
+
+
+class Processors(models.Model):
+    id_processor = models.AutoField(primary_key=True)
+    f_manufacturer = models.ForeignKey(Manufacturers, models.DO_NOTHING, db_column='f_manufacturer')
+    model_name = models.CharField(max_length=45)
+    stock_clock = models.CharField(max_length=10)
+    max_clock = models.CharField(max_length=10)
+    cores = models.IntegerField()
+    threads = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'Processors'
+
+
+class Computerprocessors(models.Model):
+    id_computers_processors = models.AutoField(primary_key=True)
+    f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer')
+    f_id_processor = models.ForeignKey('Processors', models.DO_NOTHING, db_column='f_id_processor')
+
+    class Meta:
+        managed = False
+        db_table = 'ComputerProcessors'
+
+
+class Resolutioncategories(models.Model):
+    id_resolution_category = models.AutoField(primary_key=True)
+    resolution_category_name = models.CharField(max_length=20)
+
+    class Meta:
+        managed = False
+        db_table = 'ResolutionCategories'
+
+
+class Computerresolutions(models.Model):
+    id_computer_resolutions = models.AutoField(primary_key=True)
+    f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer')
+    f_id_resolution = models.ForeignKey('Resolutions', models.DO_NOTHING, db_column='f_id_resolution')
+    f_id_resolution_category = models.ForeignKey('Resoltioncategories', models.DO_NOTHING, db_column='f_id_resolution_category')
+
+    class Meta:
+        managed = False
+        db_table = 'ComputerResolutions'
+
+
+class Cabletypes(models.Model):
+    id_cable_types = models.AutoField(primary_key=True)
+    cable_type_name = models.CharField(max_length=20)
+
+    class Meta:
+        managed = False
+        db_table = 'CableTypes'
+
+
+class Matrixes(models.Model):
+    id_matrix = models.AutoField(primary_key=True)
+    id_cable_types = models.ForeignKey(Cabletypes, models.DO_NOTHING, db_column='id_cable_types')
+
+    class Meta:
+        managed = False
+        db_table = 'Matrixes'
