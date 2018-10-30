@@ -661,3 +661,32 @@ class Computergpus(models.Model):
     class Meta:
         managed = False
         db_table = 'Computergpus'
+
+
+class Observationcategory(models.Model):
+    id_observation_category = models.AutoField(primary_key=True)
+    category_name = models.CharField(max_length=45, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'ObservationCategory'
+
+
+class Observationsubcategory(models.Model):
+    id_observation_subcategory = models.AutoField(primary_key=True)
+    subcategory_name = models.CharField(max_length=45, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'ObservationSubCategory'
+
+
+class Observations(models.Model):
+    id_observation = models.AutoField(primary_key=True)
+    shortcode = models.CharField(unique=True, max_length=6, blank=True, null=True)
+    f_id_observation_category = models.ForeignKey(Observationcategory, models.DO_NOTHING, db_column='f_id_observation_category', blank=True, null=True)
+    f_id_observation_subcategory = models.ForeignKey(Observationsubcategory, models.DO_NOTHING, db_column='f_id_observation_subcategory', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Observations'
