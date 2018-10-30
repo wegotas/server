@@ -123,7 +123,7 @@ class Computer_record():
         return ram
 
     def _hdd_save_and_get(self, value):
-        hdd = Hdds.objects.get_or_create(hdd_serial=value)[0]
+        hdd = HddSerials.objects.get_or_create(hdd_serial=value)[0]
         hdd.save()
         return hdd
 
@@ -342,8 +342,6 @@ class Computer_record2():
             self._one_to_many_connection_save(data_dict)
             self.computer = self._computer_save_and_get(data_dict)
             self._many_to_many_connection_save(data_dict)
-
-
             self.message += "Success"
             self.success = True
         except decimal.InvalidOperation as e:
@@ -386,6 +384,8 @@ class Computer_record2():
                 date=self.timenow,
                 f_bios=self.bios,
                 motherboard_serial=self.motherboard,
+                f_id_matrix=self.matrix,
+                f_id_computer_resolutions=self.computer_resolution,
                 # price=self.price
             )
             computer.save()
@@ -420,23 +420,13 @@ class Computer_record2():
                 date=self.timenow,
                 f_bios=self.bios,
                 motherboard_serial=self.motherboard,
+                f_id_matrix=self.matrix,
+                f_id_computer_resolutions=self.computer_resolution,
                 # price=self.price
             )
             computer.save()
             self.message += "New record has been added\n"
             return computer
-
-    def _bat_to_comp_relation_creation(self, bat):
-        bat_to_comp, created = BatToComp.objects.get_or_create(
-            f_id_computer_bat_to_com=self.computer,
-            f_bat_bat_to_com=bat
-        )
-
-    def _ram_to_comp_relation_creation(self, ram):
-        ram_to_comp = RamToComp.objects.get_or_create(
-            f_id_computer_ram_to_com=self.computer,
-            f_id_ram_ram_to_com=ram
-        )
 
     def _get_number_out_of_string(self, string):
         variable = string.split()[0]
@@ -454,6 +444,7 @@ class Computer_record2():
 
     def _many_to_many_connection_save(self, data_dict):
         def _save_batteries(battery_dict):
+            BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer).delete()
             for id in range(self._get_highest_first_number(battery_dict)):
                 battery = Batteries.objects.get_or_create(
                     serial=battery_dict[str(id + 1) + ' Battery Serial'],
@@ -464,9 +455,13 @@ class Computer_record2():
                     maximum_wh=battery_dict[str(id + 1) + ' Battery Maximum Wh'],
                     factory_wh=battery_dict[str(id + 1) + ' Battery Factory Wh']
                 )[0]
-                self._bat_to_comp_relation_creation(battery)
+                BatToComp.objects.get_or_create(
+                    f_id_computer_bat_to_com=self.computer,
+                    f_bat_bat_to_com=battery
+                )
 
         def _save_rams(ram_dict):
+            RamToComp.objects.filter(f_id_computer_ram_to_com=self.computer).delete()
             for id in range(self._get_highest_first_number(ram_dict)):
                 ram = Rams.objects.get_or_create(
                     ram_serial=ram_dict[str(id + 1) + ' Stick SN'],
@@ -474,19 +469,28 @@ class Computer_record2():
                     clock=ram_dict[str(id + 1) + ' Stick Clock'],
                     type=ram_dict['RAM Type']
                 )[0]
-                self._ram_to_comp_relation_creation(ram)
+                RamToComp.objects.get_or_create(
+                    f_id_computer_ram_to_com=self.computer,
+                    f_id_ram_ram_to_com=ram
+                )
 
         def _save_gpus(gpu_dict):
-            for gpu_type_name, gpu_name in gpu_dict.items():
-                gpu_type = GpuTypes.objects.get_or_create(gpu_type_name=gpu_type_name)[0]
-                gpu = Gpus.objects.get_or_create(gpu_name=gpu_name)[0]
+            Computergpus.objects.filter(f_id_computer=self.computer).delete()
+            for id in range(self._get_highest_first_number(gpu_dict)):
+                manufacturer = Manufacturers.objects.get_or_create(
+                    manufacturer_name=gpu_dict[str(id + 1) + ' Manufacturer']
+                )
+                gpu = Gpus.objects.get_or_create(
+                    gpu_name=gpu_dict[str(id + 1) + ' Model'],
+                    f_id_manufacturer=manufacturer
+                )[0]
                 Computergpus.objects.get_or_create(
-                    f_id_computer=self.computer,
                     f_id_gpu=gpu,
-                    f_id_gpu_type=gpu_type
+                    f_id_computer=self.computer
                 )
 
         def _save_processors(processor_dict):
+            Computerprocessors.objects.filter(f_id_computer=self.computer).delete()
             for id in range(self._get_highest_first_number(processor_dict)):
                 manufacturer = Manufacturers.objects.get_or_create(
                     manufacturer_name=processor_dict[str(id + 1) + ' Manufacturer'])[0]
@@ -503,48 +507,34 @@ class Computer_record2():
                     f_id_processor=processor
                 )
 
+        def _save_drives(drives_dict):
+            Computerdrives.objects.filter(f_id_computer=self.computer).delete()
+            for id in range(self._get_highest_first_number(drives_dict)):
+                model = HddModels.objects.get_or_create(hdd_models_name=drives_dict[str(id + 1) + ' Drives SN'])[0]
+                size = HddSizes.objects.get_or_create(hdd_sizes_name=drives_dict[str(id + 1) + ' Drives Capacity'])[0]
+                lock_state = LockState.objects.get_or_create(lock_state_name=drives_dict[str(id + 1) + ' Drives Locked'])[0]
+                speed = Speed.objects.get_or_create(speed_name=drives_dict[str(id + 1) + ' Drives Speed'])[0]
+                form_factor = FormFactor.objects.get_or_create(form_factor_name=drives_dict[str(id + 1) + ' Drives Size'])[0]
+                drive = Drives.objects.get_or_create(
+                    hdd_serial=drives_dict[str(id + 1) + ' Drives SN'],
+                    health=drives_dict[str(id + 1) + ' Drives Health'].replace("%", ""),
+                    days_on=drives_dict[str(id + 1) + ' Drives PowerOn'],
+                    f_hdd_models=model,
+                    f_hdd_sizes=size,
+                    f_lock_state=lock_state,
+                    f_speed=speed,
+                    f_form_factor=form_factor
+                )[0]
+                Computerdrives.objects.get_or_create(
+                    f_id_computer=self.computer,
+                    f_drive=drive
+                )
+
         _save_batteries(data_dict["Batteries"])
         _save_rams(data_dict["RAM"])
-
-        '''
-        for id in range(self._get_highest_first_number(data_dict["RAM"])):
-            ram = Rams.objects.get_or_create(
-                ram_serial=data_dict["RAM"][str(id + 1) + ' Stick SN'],
-                capacity=data_dict["RAM"][str(id + 1) + ' Stick Cap'],
-                clock=data_dict["RAM"][str(id + 1) + ' Stick Clock'],
-                type=data_dict["RAM"]['RAM Type']
-            )[0]
-            self._ram_to_comp_relation_creation(ram)
-        '''
         _save_gpus(data_dict["GPU"])
-        '''
-        for gpu_type_name, gpu_name in data_dict["GPU"].items():
-            gpu_type = GpuTypes.objects.get_or_create(gpu_type_name=gpu_type_name)[0]
-            gpu = Gpus.objects.get_or_create(gpu_name=gpu_name)[0]
-            Computergpus.objects.get_or_create(
-                f_id_computer=self.computer,
-                f_id_gpu=gpu,
-                f_id_gpu_type=gpu_type
-            )
-        '''
         _save_processors(data_dict["Processor"])
-        '''
-        for id in range(self._get_highest_first_number(data_dict["Processor"])):
-            manufacturer = Manufacturers.objects.get_or_create(
-                manufacturer_name=data_dict["Processor"][str(id + 1) + ' Manufacturer'])[0]
-            processor = Processors.objects.get_or_create(
-                f_manufacturer=manufacturer,
-                model_name=data_dict["Processor"][str(id + 1) + ' Model'],
-                stock_clock=data_dict["Processor"][str(id + 1) + ' Stock Clock'],
-                max_clock=data_dict["Processor"][str(id + 1) + ' MAX Clock'],
-                cores=int(data_dict["Processor"][str(id + 1) + ' Cores Amount']),
-                threads=int(data_dict["Processor"][str(id + 1) + ' Thread Amount'])
-            )[0]
-            Computerprocessors.objects.get_or_create(
-                f_id_computer=self.computer,
-                f_id_processor=processor
-            )
-        '''
+        _save_drives(data_dict["Drives"])
 
     def _one_to_many_connection_save(self, data_dict):
         self.category = Categories.objects.get(category_name=data_dict['Others']["Category"])
@@ -554,7 +544,8 @@ class Computer_record2():
         self.cpu = Cpus.objects.get_or_create(cpu_name=data_dict['Processor']['1 Model'])[0]
         self.camera_option = CameraOptions.objects.get_or_create(option_name=data_dict['Others']["Camera"])[0]
         self.diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict['Display']['Diagonal'])[0]
-        self.gpu = Gpus.objects.get_or_create(gpu_name=data_dict["GPU"]['Integrated'])[0]
+        # self.gpu = Gpus.objects.get_or_create(gpu_name=data_dict["GPU"]['Integrated'])[0]
+        self.gpu = Gpus.objects.get_or_create(gpu_name='N/A')[0]
         self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name='N/A')
         self.license = Licenses.objects.get_or_create(license_name=data_dict['Others']["License"])[0]
         self.manufacturer = Manufacturers.objects.get_or_create(
@@ -566,11 +557,12 @@ class Computer_record2():
         self.is_sold = False
         self.timenow = timezone.now()
 
-        print('Diagonal')
-        print(data_dict["Display"]["Diagonal"])
-        print('Resolution')
-        print(data_dict["Display"]["Resolution"])
-        print('Category')
-        print(data_dict["Display"]["Category"])
-        print('Cable type')
-        print(data_dict["Display"]["Cable Type"])
+        resolution = Resolutions.objects.get_or_create(resolution_text=data_dict["Display"]["Resolution"])[0]
+        resolutionCategory = Resolutioncategories.objects.get_or_create(resolution_category_name=data_dict["Display"]["Category"])[0]
+        self.computer_resolution = Computerresolutions.objects.get_or_create(
+            f_id_resolution=resolution,
+            f_id_resolution_category=resolutionCategory
+        )[0]
+
+        cable_type = Cabletypes.objects.get_or_create(cable_type_name=data_dict["Display"]["Cable Type"])[0]
+        self.matrix = Matrixes.objects.get_or_create(f_id_cable_type=cable_type)[0]

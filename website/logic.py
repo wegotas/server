@@ -192,7 +192,7 @@ class Edit_computer_record():
                 processed_key_list.append(key)
             elif "hdd" in key:
                 dbindex = self.get_dbindex(key)
-                hdd = Hdds.objects.get_or_create(hdd_serial=value)[0]
+                hdd = Drives.objects.get_or_create(hdd_serial=value)[0]
                 old_hddtocomp = HddToComp.objects.get(id_hdd_to_comp=dbindex)
                 new_hddtocomp = HddToComp(
                     id_hdd_to_comp=old_hddtocomp.id_hdd_to_comp,
@@ -1916,11 +1916,11 @@ class HddWriter:
             self._save_hdd(line_array, model, size, lock_state, speed, form_factor)
 
     def _save_hdd(self, line_array, model, size, lock_state, speed, form_factor):
-        if Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
+        if Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
             logging.warning("Such hdd allready exists")
-            existing_hdd = Hdds.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
+            existing_hdd = Drives.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
             logging.warning(existing_hdd)
-            hdd = Hdds(
+            hdd = Drives(
                 hdd_id=existing_hdd.hdd_id,
                 hdd_serial=line_array[1],
                 health=line_array[7].replace("%", ""),
@@ -1934,7 +1934,7 @@ class HddWriter:
             )
             hdd.save()
         else:
-            hdd = Hdds(
+            hdd = Drives(
                 hdd_serial=line_array[1],
                 health=line_array[7].replace("%", ""),
                 days_on=line_array[8],
@@ -2030,7 +2030,7 @@ class LotsHolder:
         lots = Lots.objects.all()
         lots_to_return = []
         for lot in lots:
-            count = Hdds.objects.filter(f_lot=lot.lot_id).count()
+            count = Drives.objects.filter(f_lot=lot.lot_id).count()
             lh = LotHolder(lot.lot_id, lot.lot_name, lot.date_of_lot, count)
             lots_to_return.append(lh)
         return lots_to_return
@@ -2062,7 +2062,7 @@ class HddHolder:
 
     def __init__(self):
         self.count = 0
-        self.hdds = Hdds.objects.all()
+        self.hdds = Drives.objects.all()
         self.autoFilters = HddAutoFilterOptions(self.hdds)
         self.changedKeys = []
 
@@ -2198,7 +2198,7 @@ class LotContentHolder:
 
     def __init__(self, index):
         self.lot = Lots.objects.get(lot_id=index)
-        self.hdds = Hdds.objects.filter(f_lot=self.lot)
+        self.hdds = Drives.objects.filter(f_lot=self.lot)
         self.autoFilters = HddAutoFilterOptions(self.hdds)
         self.changedKeys = []
 
@@ -2234,7 +2234,7 @@ class HddOrderToDelete:
     def __init__(self, index):
         self.message = ''
         self.order = HddOrder.objects.get(order_id=index)
-        self.hdds = Hdds.objects.filter(f_hdd_order=self.order)
+        self.hdds = Drives.objects.filter(f_hdd_order=self.order)
         self.success = False
 
     def delete(self):
@@ -2252,7 +2252,7 @@ class HddOrderContentHolder:
 
     def __init__(self, index):
         self.hdd_order = HddOrder.objects.get(order_id=index)
-        self.hdds = Hdds.objects.filter(f_hdd_order=self.hdd_order)
+        self.hdds = Drives.objects.filter(f_hdd_order=self.hdd_order)
         self.autoFilters = HddAutoFilterOptions(self.hdds)
         self.changedKeys = []
         self.available_statuses = OrderStatus.objects.filter(is_shown=1)
@@ -2309,7 +2309,7 @@ class HddOrderContentHolder:
 class HddToEdit:
 
     def __init__(self, index):
-        self.hdd = Hdds.objects.get(hdd_id=index)
+        self.hdd = Drives.objects.get(hdd_id=index)
         self.get_sizes()
         self.get_states()
         self.get_speeds()
@@ -2337,7 +2337,7 @@ class HddToEdit:
         state = self.get_or_save_state(data_dict.pop('state')[0])
         speed = self.get_or_save_speed(data_dict.pop('speed')[0])
         form_factor = self.get_or_save_form_factor(data_dict.pop('form_factor')[0])
-        hdd = Hdds.objects.get(hdd_id=index)
+        hdd = Drives.objects.get(hdd_id=index)
         hdd.hdd_serial = data_dict.pop('serial')[0]
         hdd.health = data_dict.pop('health')[0]
         hdd.days_on = data_dict.pop('days')[0]
@@ -2373,9 +2373,9 @@ class HddToDelete:
 
     def __init__(self, pk=None, serial=None):
         if pk:
-            self.hdd = Hdds.objects.filter(hdd_id=pk)[0]
+            self.hdd = Drives.objects.filter(hdd_id=pk)[0]
         if serial:
-            self.hdd = Hdds.objects.filter(hdd_serial=serial)[0]
+            self.hdd = Drives.objects.filter(hdd_serial=serial)[0]
         self.success = False
         self.message = ''
 
@@ -2468,7 +2468,7 @@ class TarProcessor:
 
     def get_tarmember_name(self, line_array):
         model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-        hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
+        hdd = Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
         return hdd.tar_member_name
 
     def get_tar_member_by_serial(self, line_array):
@@ -2484,7 +2484,7 @@ class TarProcessor:
 
     def _update_existing_hdd_without_file(self, line_array):
         model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-        hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
+        hdd = Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
         size = self._save_and_get_size(line_array[3])
         lock_state = self._save_and_get_lock_state(line_array[4])
         speed = self._save_and_get_speed(line_array[5])
@@ -2500,7 +2500,7 @@ class TarProcessor:
 
     def _update_existing_hdd(self, line_array, filename):
         model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-        hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
+        hdd = Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
         size = self._save_and_get_size(line_array[3])
         lock_state = self._save_and_get_lock_state(line_array[4])
         speed = self._save_and_get_speed(line_array[5])
@@ -2521,7 +2521,7 @@ class TarProcessor:
         lock_state = self._save_and_get_lock_state(line_array[4])
         speed = self._save_and_get_speed(line_array[5])
         form_factor = self._save_and_get_form_factor(line_array[6])
-        hdd = Hdds(
+        hdd = Drives(
             hdd_serial=line_array[1],
             health=line_array[7].replace("%", ""),
             days_on=line_array[8],
@@ -2537,16 +2537,16 @@ class TarProcessor:
 
     def _hdd_exists(self, line_array):
         model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-        hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
+        hdd = Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
         return hdd.exists()
 
     def _save_hdd(self, line_array, model, size, lock_state, speed, form_factor):
-        if Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
+        if Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
             logging.warning("Such hdd allready exists")
-            existing_hdd = Hdds.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
+            existing_hdd = Drives.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
             logging.warning(existing_hdd)
             logging.warning(existing_hdd.__dict__)
-            hdd = Hdds(
+            hdd = Drives(
                 hdd_id=existing_hdd.hdd_id,
                 hdd_serial=line_array[1],
                 health=line_array[7].replace("%", ""),
@@ -2560,7 +2560,7 @@ class TarProcessor:
             )
             hdd.save()
         else:
-            hdd = Hdds(
+            hdd = Drives(
                 hdd_serial=line_array[1],
                 health=line_array[7].replace("%", ""),
                 days_on=line_array[8],
@@ -2679,7 +2679,7 @@ class AlternativeTarProcessor:
 
     def get_tarmember_name(self, line_array):
         model = HddModels.objects.get_or_create(hdd_models_name=self.fileHeaderIndexes['Model'])[0]
-        hdd = Hdds.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
+        hdd = Drives.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
         return hdd.tar_member_name
 
     def _save_and_set_lots(self):
@@ -2727,7 +2727,7 @@ class AlternativeTarProcessor:
 
     def _hdd_exists(self, line_array):
         model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
-        hdd = Hdds.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)
+        hdd = Drives.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)
         return hdd.exists()
 
     def _save_new_hdd(self, line_array, filename):
@@ -2736,7 +2736,7 @@ class AlternativeTarProcessor:
         lock_state = LockState.objects.get_or_create(lock_state_name=line_array[self.fileHeaderIndexes['Lock']])[0]
         speed = Speed.objects.get_or_create(speed_name=line_array[self.fileHeaderIndexes['Speed']])[0]
         form_factor = FormFactor.objects.get_or_create(form_factor_name=line_array[self.fileHeaderIndexes['Size']])[0]
-        hdd = Hdds(
+        hdd = Drives(
             hdd_serial=line_array[self.fileHeaderIndexes['Serial number']],
             health=line_array[self.fileHeaderIndexes['Health']].replace("%", ""),
             days_on=line_array[self.fileHeaderIndexes['Power_On']],
@@ -2752,7 +2752,7 @@ class AlternativeTarProcessor:
 
     def _update_existing_hdd_without_file(self, line_array):
         model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
-        hdd = Hdds.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
+        hdd = Drives.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
         size = self._save_and_get_size(line_array[self.fileHeaderIndexes['Capacity']])
         lock_state = self._save_and_get_lock_state(line_array[self.fileHeaderIndexes['Lock']])
         speed = self._save_and_get_speed(line_array[self.fileHeaderIndexes['Speed']])
@@ -2768,7 +2768,7 @@ class AlternativeTarProcessor:
 
     def _update_existing_hdd(self, line_array, filename):
         model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
-        hdd = Hdds.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
+        hdd = Drives.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
         size = self._save_and_get_size(line_array[self.fileHeaderIndexes['Capacity']])
         lock_state = self._save_and_get_lock_state(line_array[self.fileHeaderIndexes['Lock']])
         speed = self._save_and_get_speed(line_array[self.fileHeaderIndexes['Speed']])
@@ -2789,7 +2789,7 @@ class PDFViewer:
     def __init__(self, pk):
         self.success = False
         try:
-            hdd = Hdds.objects.get(hdd_id=pk)
+            hdd = Drives.objects.get(hdd_id=pk)
             tf = tarfile.open(os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), hdd.f_lot.lot_name + '.tar'))
             tarmember = tf.getmember(hdd.tar_member_name)
             pdf = tf.extractfile(tarmember)
@@ -2821,7 +2821,7 @@ class HddOrderProcessor:
                 line_array = line.split('@')
                 if self.isValid(line_array):
                     model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-                    hdds = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
+                    hdds = Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
                     if hdds.exists():
                         if hdds[0].f_hdd_order is not None:
                             isMissing = True
@@ -2833,7 +2833,7 @@ class HddOrderProcessor:
                         lock_state = LockState.objects.get_or_create(lock_state_name=line_array[4])[0]
                         speed = Speed.objects.get_or_create(speed_name=line_array[5])[0]
                         form_factor = FormFactor.objects.get_or_create(form_factor_name=line_array[6])[0]
-                        hdd = Hdds(
+                        hdd = Drives(
                             hdd_serial=line_array[1],
                             health=line_array[7].replace("%", ""),
                             days_on=line_array[8],
@@ -2858,7 +2858,7 @@ class HddOrderProcessor:
     def get_hdd_order(self, txtFileName):
         hddOrders = HddOrder.objects.filter(order_name=txtFileName.replace('.txt', ''))
         if hddOrders.exists():
-            hdds = Hdds.objects.filter(f_hdd_order=hddOrders[0].order_id)
+            hdds = Drives.objects.filter(f_hdd_order=hddOrders[0].order_id)
             hdds.update(f_hdd_order=None)
             hddOrders[0].delete()
         orderStatus = OrderStatus.objects.get(order_status_id=3)
@@ -2906,7 +2906,7 @@ class AlternativeHddOrderProcessor:
                     line_array = line.split('@')
                     if self.isValid(line_array):
                         model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
-                        hdds = Hdds.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)
+                        hdds = Drives.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)
                         if hdds.exists():
                             if hdds[0].f_hdd_order is not None:
                                 isMissing = True
@@ -2918,7 +2918,7 @@ class AlternativeHddOrderProcessor:
                             lock_state = LockState.objects.get_or_create(lock_state_name=line_array[self.fileHeaderIndexes['Lock']])[0]
                             speed = Speed.objects.get_or_create(speed_name=line_array[self.fileHeaderIndexes['Speed']])[0]
                             form_factor = FormFactor.objects.get_or_create(form_factor_name=line_array[self.fileHeaderIndexes['Size']])[0]
-                            hdd = Hdds(
+                            hdd = Drives(
                                 hdd_serial=line_array[self.fileHeaderIndexes['Serial number']],
                                 health=line_array[self.fileHeaderIndexes['Health']].replace("%", ""),
                                 days_on=line_array[self.fileHeaderIndexes['Power_On']],
@@ -2969,7 +2969,7 @@ class AlternativeHddOrderProcessor:
         hddOrders = HddOrder.objects.filter(order_name=txtFileName.replace('.txt', ''))
         if hddOrders.exists():
             print('Such hdd orders exists')
-            hdds = Hdds.objects.filter(f_hdd_order=hddOrders[0].order_id)
+            hdds = Drives.objects.filter(f_hdd_order=hddOrders[0].order_id)
             hdds.update(f_hdd_order=None)
             hddOrders[0].delete()
         orderStatus = OrderStatus.objects.get(order_status_id=3)
@@ -3062,7 +3062,7 @@ class HddOrdersHolder:
         orders = HddOrder.objects.all()
         self.orders = []
         for order in orders:
-            count = Hdds.objects.filter(f_hdd_order=order).count()
+            count = Drives.objects.filter(f_hdd_order=order).count()
             oh = HddOrderHolder(order.order_id, order.order_name, order.date_of_order, order.f_order_status.order_status_name, count)
             self.orders.append(oh)
 
@@ -3690,7 +3690,7 @@ class HddOrderContentCsv:
 
     def __init__(self, int_index):
         self.order = HddOrder.objects.get(order_id=int_index)
-        self.hdds = Hdds.objects.filter(f_hdd_order=self.order).order_by('f_hdd_sizes__hdd_sizes_name', 'f_form_factor__form_factor_name')
+        self.hdds = Drives.objects.filter(f_hdd_order=self.order).order_by('f_hdd_sizes__hdd_sizes_name', 'f_form_factor__form_factor_name')
 
     def createCsvFile(self):
         '''

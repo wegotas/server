@@ -127,6 +127,25 @@ class CompOrd(models.Model):
         db_table = 'Comp/Ord'
 
 
+class Resolutioncategories(models.Model):
+    id_resolution_category = models.AutoField(primary_key=True)
+    resolution_category_name = models.CharField(max_length=20)
+
+    class Meta:
+        managed = False
+        db_table = 'ResolutionCategories'
+
+
+class Computerresolutions(models.Model):
+    id_computer_resolutions = models.AutoField(primary_key=True)
+    f_id_resolution = models.ForeignKey('Resolutions', models.DO_NOTHING, db_column='f_id_resolution')
+    f_id_resolution_category = models.ForeignKey('Resolutioncategories', models.DO_NOTHING, db_column='f_id_resolution_category')
+
+    class Meta:
+        managed = False
+        db_table = 'ComputerResolutions'
+
+
 class Computers(models.Model):
     id_computer = models.AutoField(primary_key=True)
     computer_serial = models.CharField(max_length=45)
@@ -159,6 +178,10 @@ class Computers(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     f_id_comp_ord = models.ForeignKey(CompOrd, models.DO_NOTHING, db_column='f_id_comp/ord', blank=True, null=True)  # Field renamed to remove unsuitable characters.
     f_id_resolution = models.ForeignKey('Resolutions', models.DO_NOTHING, db_column='f_id_resolution', blank=True, null=True)
+    f_id_matrix = models.ForeignKey('Matrixes', models.DO_NOTHING, db_column='f_id_matrix', blank=True, null=True)
+    f_id_computer_resolutions = models.ForeignKey(Computerresolutions, models.DO_NOTHING,
+                                                  db_column='f_id_computer_resolutions', blank=True, null=True)
+
 
     class Meta:
         managed = True
@@ -208,6 +231,8 @@ class FormFactor(models.Model):
 class Gpus(models.Model):
     id_gpu = models.AutoField(primary_key=True)
     gpu_name = models.CharField(max_length=45)
+    f_id_manufacturer = models.ForeignKey('Manufacturers', models.DO_NOTHING, db_column='f_id_manufacturer', blank=True,
+                                          null=True)
 
     class Meta:
         managed = True
@@ -252,7 +277,7 @@ class HddSizes(models.Model):
         db_table = 'Hdd_sizes'
 
 
-class Hdds(models.Model):
+class Drives(models.Model):
     hdd_id = models.AutoField(primary_key=True)
     hdd_serial = models.CharField(max_length=45, blank=True, null=True)
     health = models.IntegerField(blank=True, null=True)
@@ -268,7 +293,7 @@ class Hdds(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'Hdds'
+        db_table = 'Drives'
 
 
 class Licenses(models.Model):
@@ -576,26 +601,6 @@ class RamToComp(models.Model):
         db_table = 'ram_to_comp'
 
 
-class GpuTypes(models.Model):
-    id_gpu_type = models.AutoField(primary_key=True)
-    gpu_type_name = models.CharField(max_length=45, blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'GPU_types'
-
-
-class Computergpus(models.Model):
-    id_computergpu = models.AutoField(primary_key=True)
-    f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer', blank=True, null=True)
-    f_id_gpu = models.ForeignKey('Gpus', models.DO_NOTHING, db_column='f_id_gpu', blank=True, null=True)
-    f_id_gpu_type = models.ForeignKey('GpuTypes', models.DO_NOTHING, db_column='f_id_gpu_type', blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'ComputerGPUS'
-
-
 class Processors(models.Model):
     id_processor = models.AutoField(primary_key=True)
     f_manufacturer = models.ForeignKey(Manufacturers, models.DO_NOTHING, db_column='f_manufacturer')
@@ -620,26 +625,6 @@ class Computerprocessors(models.Model):
         db_table = 'ComputerProcessors'
 
 
-class Resolutioncategories(models.Model):
-    id_resolution_category = models.AutoField(primary_key=True)
-    resolution_category_name = models.CharField(max_length=20)
-
-    class Meta:
-        managed = False
-        db_table = 'ResolutionCategories'
-
-
-class Computerresolutions(models.Model):
-    id_computer_resolutions = models.AutoField(primary_key=True)
-    f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer')
-    f_id_resolution = models.ForeignKey('Resolutions', models.DO_NOTHING, db_column='f_id_resolution')
-    f_id_resolution_category = models.ForeignKey('Resoltioncategories', models.DO_NOTHING, db_column='f_id_resolution_category')
-
-    class Meta:
-        managed = False
-        db_table = 'ComputerResolutions'
-
-
 class Cabletypes(models.Model):
     id_cable_types = models.AutoField(primary_key=True)
     cable_type_name = models.CharField(max_length=20)
@@ -651,8 +636,28 @@ class Cabletypes(models.Model):
 
 class Matrixes(models.Model):
     id_matrix = models.AutoField(primary_key=True)
-    id_cable_types = models.ForeignKey(Cabletypes, models.DO_NOTHING, db_column='id_cable_types')
+    f_id_cable_type = models.ForeignKey(Cabletypes, models.DO_NOTHING, db_column='f_id_cable_type')
 
     class Meta:
         managed = False
         db_table = 'Matrixes'
+
+
+class Computerdrives(models.Model):
+    id_computer_drive = models.AutoField(primary_key=True)
+    f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer')
+    f_drive = models.ForeignKey('Drives', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'ComputerDrives'
+
+
+class Computergpus(models.Model):
+    id_computergpus = models.AutoField(primary_key=True)
+    f_id_gpu = models.ForeignKey('Gpus', models.DO_NOTHING, db_column='f_id_gpu')
+    f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer')
+
+    class Meta:
+        managed = False
+        db_table = 'Computergpus'
