@@ -102,39 +102,10 @@ def process_data2(request):
         query_string = request.META['QUERY_STRING']
         datastring = unquote(query_string)
         data = json.loads(datastring)
-        data["Serial"] = str(data["Serial"]).strip()
+        # Computer_record2ToReturn(str(data["Serial"]).strip())
         try:
-            print("trying to get record with the same serial")
-            existing_computer = Computers.objects.get(computer_serial=data["Serial"])
-            dict_to_send = {}
-            dict_to_send['License'] = existing_computer.f_license.license_name
-            dict_to_send['Camera'] = existing_computer.f_camera.option_name
-            dict_to_send['Cover'] = existing_computer.cover
-            dict_to_send['Display'] = existing_computer.display
-            dict_to_send['Bezel'] = existing_computer.bezel
-            dict_to_send['Keyboard'] = existing_computer.keyboard
-            dict_to_send['Mouse'] = existing_computer.mouse
-            dict_to_send['Sound'] = existing_computer.sound
-            dict_to_send['CD-ROM'] = existing_computer.cdrom
-            dict_to_send['HDD Cover'] = existing_computer.hdd_cover
-            dict_to_send['RAM Cover'] = existing_computer.ram_cover
-            dict_to_send['Other'] = existing_computer.other
-            dict_to_send['Category'] = existing_computer.f_category.category_name
-            dict_to_send['Type'] = existing_computer.f_type.type_name
-            dict_to_send['Previuos tester'] = existing_computer.f_tester.tester_name
-            if existing_computer.f_id_comp_ord:
-                order_id = existing_computer.f_id_comp_ord.f_order_id_to_order.id_order
-                ordtesses = OrdTes.objects.filter(f_order=order_id)
-                testers = []
-                for ordtes in ordtesses:
-                    testers.append(ordtes.f_id_tester.tester_name)
-                dict_to_send['Testers'] = testers
-                dict_to_send['Order name'] = existing_computer.f_id_comp_ord.f_order_id_to_order.order_name
-                dict_to_send['Current status'] = "In-Preperation" if existing_computer.f_id_comp_ord.is_ready == 0 else "Ready"
-                dict_to_send['Statusses'] = ["In-Preperation", "Ready"]
-                dict_to_send['Client'] = existing_computer.f_id_comp_ord.f_order_id_to_order.f_id_client.client_name
-                print(testers)
-            return JsonResponse(dict_to_send)
+            csb = Computer_data_dict_builder(str(data["Serial"]).strip())
+            return JsonResponse(csb.data_dict)
         except Exception as e:
             if str(e) == 'Computers matching query does not exist.':
                 print("No such computer")

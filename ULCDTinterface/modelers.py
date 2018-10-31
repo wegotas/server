@@ -611,7 +611,7 @@ class Processors(models.Model):
     threads = models.IntegerField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Processors'
 
 
@@ -621,7 +621,7 @@ class Computerprocessors(models.Model):
     f_id_processor = models.ForeignKey('Processors', models.DO_NOTHING, db_column='f_id_processor')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'ComputerProcessors'
 
 
@@ -630,7 +630,7 @@ class Cabletypes(models.Model):
     cable_type_name = models.CharField(max_length=20)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'CableTypes'
 
 
@@ -639,7 +639,7 @@ class Matrixes(models.Model):
     f_id_cable_type = models.ForeignKey(Cabletypes, models.DO_NOTHING, db_column='f_id_cable_type')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Matrixes'
 
 
@@ -649,7 +649,7 @@ class Computerdrives(models.Model):
     f_drive = models.ForeignKey('Drives', models.DO_NOTHING)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'ComputerDrives'
 
 
@@ -659,7 +659,7 @@ class Computergpus(models.Model):
     f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Computergpus'
 
 
@@ -668,7 +668,7 @@ class Observationcategory(models.Model):
     category_name = models.CharField(max_length=45, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'ObservationCategory'
 
 
@@ -677,16 +677,27 @@ class Observationsubcategory(models.Model):
     subcategory_name = models.CharField(max_length=45, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'ObservationSubCategory'
 
 
 class Observations(models.Model):
     id_observation = models.AutoField(primary_key=True)
     shortcode = models.CharField(unique=True, max_length=6, blank=True, null=True)
+    full_name = models.CharField(max_length=45, blank=True, null=True)
     f_id_observation_category = models.ForeignKey(Observationcategory, models.DO_NOTHING, db_column='f_id_observation_category', blank=True, null=True)
     f_id_observation_subcategory = models.ForeignKey(Observationsubcategory, models.DO_NOTHING, db_column='f_id_observation_subcategory', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Observations'
+
+
+class Computerobservations(models.Model):
+    id_computer_observations = models.AutoField(primary_key=True)
+    f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer', blank=True, null=True)
+    f_id_observation = models.ForeignKey('Observations', models.DO_NOTHING, db_column='f_id_observation', blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'ComputerObservations'

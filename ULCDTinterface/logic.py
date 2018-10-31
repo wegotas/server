@@ -479,7 +479,7 @@ class Computer_record2():
             for id in range(self._get_highest_first_number(gpu_dict)):
                 manufacturer = Manufacturers.objects.get_or_create(
                     manufacturer_name=gpu_dict[str(id + 1) + ' Manufacturer']
-                )
+                )[0]
                 gpu = Gpus.objects.get_or_create(
                     gpu_name=gpu_dict[str(id + 1) + ' Model'],
                     f_id_manufacturer=manufacturer
@@ -493,7 +493,8 @@ class Computer_record2():
             Computerprocessors.objects.filter(f_id_computer=self.computer).delete()
             for id in range(self._get_highest_first_number(processor_dict)):
                 manufacturer = Manufacturers.objects.get_or_create(
-                    manufacturer_name=processor_dict[str(id + 1) + ' Manufacturer'])[0]
+                    manufacturer_name=processor_dict[str(id + 1) + ' Manufacturer']
+                )[0]
                 processor = Processors.objects.get_or_create(
                     f_manufacturer=manufacturer,
                     model_name=processor_dict[str(id + 1) + ' Model'],
@@ -530,11 +531,23 @@ class Computer_record2():
                     f_drive=drive
                 )
 
+        def _save_observations(observation_dict):
+            Computerobservations.objects.filter(f_id_computer=self.computer).delete()
+            for key, lst in observation_dict.items():
+                for value in lst:
+                    observation = Observations.objects.get(shortcode=value)
+                    Computerobservations.objects.create(
+                        f_id_computer=self.computer,
+                        f_id_observation=observation
+                    )
+
+
         _save_batteries(data_dict["Batteries"])
         _save_rams(data_dict["RAM"])
         _save_gpus(data_dict["GPU"])
         _save_processors(data_dict["Processor"])
         _save_drives(data_dict["Drives"])
+        _save_observations(data_dict['Observations'])
 
     def _one_to_many_connection_save(self, data_dict):
         self.category = Categories.objects.get(category_name=data_dict['Others']["Category"])
@@ -566,3 +579,40 @@ class Computer_record2():
 
         cable_type = Cabletypes.objects.get_or_create(cable_type_name=data_dict["Display"]["Cable Type"])[0]
         self.matrix = Matrixes.objects.get_or_create(f_id_cable_type=cable_type)[0]
+
+
+class Computer_data_dict_builder:
+
+    def __init__(self, serial):
+        self.data_dict = {}
+        computer = Computers.objects.get(computer_serial=serial)
+        self._form_others_dict(computer)
+        self._form_observations_dict(computer)
+
+    def _form_observations_dict(self, computer):
+        observation_dict = {}
+        compobservs = Computerobservations.objects.filter(f_id_computer=computer)
+        print(compobservs)
+        for compobserv in compobservs:
+            print("Category: {0}, Subcategory: {1}, Key: {2}, Text: {3}".format(
+                compobserv.f_id_observation.f_id_observation_category.category_name,
+                compobserv.f_id_observation.f_id_observation_subcategory.subcategory_name,
+                compobserv.f_id_observation.shortcode,
+                compobserv.f_id_observation.full_name
+            ))
+
+
+    def _form_others_dict(self, computer):
+        def get_is_sold(computer):
+            if computer.f_sale is None:
+                return False
+            return True
+        others_dict={}
+        others_dict["Camera"] = computer.f_camera.option_name
+        others_dict["License"] = computer.f_license.license_name
+        others_dict["'Previuos tester'"] = computer.f_tester.tester_name
+        others_dict["Category"] = computer.f_category.category_name
+        others_dict["isSold"] = get_is_sold(computer)
+        others_dict["Other"] = computer.other
+        self.data_dict["Others"] = others_dict
+
