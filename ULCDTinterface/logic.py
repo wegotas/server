@@ -332,10 +332,12 @@ class Computer_record():
 
 
 class Computer_record2():
+    '''
+    Modified version of Computer_record to be compatible with 5th version of build.
+    '''
 
     def __init__(self, data_dict):
         print("in Computer_record2")
-        print(data_dict)
         self.message = ""
         self.success = None
         try:
@@ -582,32 +584,49 @@ class Computer_record2():
 
 
 class Computer_data_dict_builder:
+    '''
+    Moved logic out of view to the dedicated class.
+    This class represents data which is sent back to client program of an existing computer record in the database which are not generated.
+    '''
 
     def __init__(self, serial):
         self.data_dict = {}
         computer = Computers.objects.get(computer_serial=serial)
         self._form_others_dict(computer)
         self._form_observations_dict(computer)
+        self._form_order_dict(computer)
+
+    def _form_order_dict(self, computer):
+        order_dict = dict()
+        if computer.f_id_comp_ord:
+            order_id = computer.f_id_comp_ord.f_order_id_to_order.id_order
+            ordtesses = OrdTes.objects.filter(f_order=order_id)
+            testers = []
+            for ordtes in ordtesses:
+                testers.append(ordtes.f_id_tester.tester_name)
+            order_dict['Testers'] = testers
+            order_dict['Order name'] = computer.f_id_comp_ord.f_order_id_to_order.order_name
+            order_dict['Current status'] = "In-Preperation" if computer.f_id_comp_ord.is_ready == 0 else "Ready"
+            order_dict['Statusses'] = ["In-Preperation", "Ready"]
+            order_dict['Client'] = computer.f_id_comp_ord.f_order_id_to_order.f_id_client.client_name
+            self.data_dict["Order"] = order_dict
 
     def _form_observations_dict(self, computer):
-        observation_dict = {}
+        observation_dict = dict()
         compobservs = Computerobservations.objects.filter(f_id_computer=computer)
-        print(compobservs)
         for compobserv in compobservs:
-            print("Category: {0}, Subcategory: {1}, Key: {2}, Text: {3}".format(
-                compobserv.f_id_observation.f_id_observation_category.category_name,
-                compobserv.f_id_observation.f_id_observation_subcategory.subcategory_name,
-                compobserv.f_id_observation.shortcode,
-                compobserv.f_id_observation.full_name
-            ))
-
+            if not compobserv.f_id_observation.f_id_observation_category.category_name in observation_dict:
+                observation_dict[compobserv.f_id_observation.f_id_observation_category.category_name] = []
+            observation_dict[compobserv.f_id_observation.f_id_observation_category.category_name].\
+                append(compobserv.f_id_observation.shortcode)
+        self.data_dict['Observations']=observation_dict
 
     def _form_others_dict(self, computer):
         def get_is_sold(computer):
             if computer.f_sale is None:
                 return False
             return True
-        others_dict={}
+        others_dict=dict()
         others_dict["Camera"] = computer.f_camera.option_name
         others_dict["License"] = computer.f_license.license_name
         others_dict["'Previuos tester'"] = computer.f_tester.tester_name

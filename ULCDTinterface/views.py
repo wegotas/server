@@ -84,6 +84,19 @@ def process_data(request):
 
 
 @csrf_exempt
+def aux_data2(request):
+    print("aux_data called")
+    if request.method == "GET":
+        print("GET aux_data")
+        dict_dict = dict()
+        # dict_dict["Categories"] = Categories.get_values()
+        dict_dict["Categories"] = list(Categories.objects.all().values_list('category_name', flat=True))
+        dict_dict["Types"] = list(Types.objects.all().values_list('type_name', flat=True))
+        dict_dict["Testers"] = list(Testers.objects.all().values_list('tester_name', flat=True))
+        return JsonResponse(dict_dict)
+
+
+@csrf_exempt
 def process_data2(request):
     print("proccess_data called")
     if request.method == "POST":
@@ -102,7 +115,6 @@ def process_data2(request):
         query_string = request.META['QUERY_STRING']
         datastring = unquote(query_string)
         data = json.loads(datastring)
-        # Computer_record2ToReturn(str(data["Serial"]).strip())
         try:
             csb = Computer_data_dict_builder(str(data["Serial"]).strip())
             return JsonResponse(csb.data_dict)
