@@ -3794,3 +3794,22 @@ class SearchOptions:
 
         statusesSelection = OptionSelection('Status', 'stat', choices, search_method)
         self.options.append(statusesSelection)
+
+class ComputerToEdit:
+
+    def __init__(self):
+        print('ComputerToEdit constructor')
+
+    def process_post(self, data_dict):
+        print('Processing post request')
+        
+    def process_get(self, int_index):
+        print('Processing get request')
+        print(int_index)
+        computer = Computers.objects.get(id_computer=int_index)
+        if computer.f_id_computer_resolutions:
+            print('Contains computer resolutions')
+            print(computer.f_id_computer_resolutions)
+        if computer.f_id_matrix:
+            print('Contains matrix')
+            print(computer.f_id_matrix)

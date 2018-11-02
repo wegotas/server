@@ -262,6 +262,19 @@ def edit(request, int_index):
             )
         )
 
+
+@csrf_exempt
+def edit2(request, int_index):
+    print("EDIT ")
+    cte = ComputerToEdit()
+    if request.method == 'POST':
+        print("This was POST request")
+        cte.process_post()
+    if request.method == 'GET':
+        print("This was GET request")
+        cte.process_get(int_index)
+
+
 @csrf_exempt
 def edit_by_serial(request, serial):
     print("EDIT ")

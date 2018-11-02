@@ -89,7 +89,6 @@ def aux_data2(request):
     if request.method == "GET":
         print("GET aux_data")
         dict_dict = dict()
-        # dict_dict["Categories"] = Categories.get_values()
         dict_dict["Categories"] = list(Categories.objects.all().values_list('category_name', flat=True))
         dict_dict["Types"] = list(Types.objects.all().values_list('type_name', flat=True))
         dict_dict["Testers"] = list(Testers.objects.all().values_list('tester_name', flat=True))
@@ -125,6 +124,7 @@ def process_data2(request):
             else:
                 print("Something else")
                 return HttpResponse(str(e), status=404)
+
 
 def check_if_exists(request):
     if request.method == 'GET':

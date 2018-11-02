@@ -629,7 +629,7 @@ class Computer_data_dict_builder:
         others_dict=dict()
         others_dict["Camera"] = computer.f_camera.option_name
         others_dict["License"] = computer.f_license.license_name
-        others_dict["'Previuos tester'"] = computer.f_tester.tester_name
+        others_dict["Previuos tester"] = computer.f_tester.tester_name
         others_dict["Category"] = computer.f_category.category_name
         others_dict["isSold"] = get_is_sold(computer)
         others_dict["Other"] = computer.other
