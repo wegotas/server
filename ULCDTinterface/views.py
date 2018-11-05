@@ -92,12 +92,13 @@ def aux_data2(request):
         dict_dict["Categories"] = list(Categories.objects.all().values_list('category_name', flat=True))
         dict_dict["Types"] = list(Types.objects.all().values_list('type_name', flat=True))
         dict_dict["Testers"] = list(Testers.objects.all().values_list('tester_name', flat=True))
+        print(dict_dict)
         return JsonResponse(dict_dict)
 
 
 @csrf_exempt
 def process_data2(request):
-    print("proccess_data called")
+    print("proccess_data 2 called")
     if request.method == "POST":
         print("POST proccess_data2")
         data = JSONParser().parse(request)

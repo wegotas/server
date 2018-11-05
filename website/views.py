@@ -266,13 +266,17 @@ def edit(request, int_index):
 @csrf_exempt
 def edit2(request, int_index):
     print("EDIT ")
-    cte = ComputerToEdit()
+    cte = ComputerToEdit(int_index)
     if request.method == 'POST':
         print("This was POST request")
-        cte.process_post()
+        cte.process_post(request.POST.copy())
     if request.method == 'GET':
         print("This was GET request")
-        cte.process_get(int_index)
+        cte.process_get()
+        if cte.record.version == 4:
+            return render(request, 'computer_edit_v4.html', {'record': cte.record})
+        elif cte.record.version == 5:
+            print(5)
 
 
 @csrf_exempt

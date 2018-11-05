@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Overview of the computer</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <script type="text/javascript" src="{% static 'computer_edit.js' %}"></script>
+</head>
+<style>
+th, td {
+font-size: 13px;
+}
+th {
+text-align: right;
+padding-right: 10px;
+}
+
+input {
+  width: 260px;
+}
+
+.edit_width {
+  width: auto;
+}
+
+input:read-only {
+  background-color: darkgrey;
+}
+
+</style>
+<body>
+<table align="center">
+    <form action="" method="post">
+        <div style="width: 100%; height: 70px;">
+            <div align="center" style="padding-top: 34px">
+                <img class="pic-button" onclick="print_qr({{ record.computer.id_computer }})" src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE4IDE4IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxOCAxOCIgd2lkdGg9IjMycHgiIGhlaWdodD0iMzJweCI+CiAgPGc+CiAgICA8cGF0aCBkPSJNMCwwdjZoNlYwSDB6IE00LDRIMlYyaDJWNHoiIGZpbGw9IiMwMDAwMDAiLz4KICAgIDxwYXRoIGQ9Im0xMiwwdjZoNnYtNmgtNnptNCw0aC0ydi0yaDJ2MnoiIGZpbGw9IiMwMDAwMDAiLz4KICAgIDxwYXRoIGQ9Im0wLDEydjZoNnYtNmgtNnptNCw0aC0ydi0yaDJ2MnoiIGZpbGw9IiMwMDAwMDAiLz4KICAgIDxnPgogICAgICA8cmVjdCB3aWR0aD0iMyIgeD0iMTUiIHk9IjciIGhlaWdodD0iMiIgZmlsbD0iIzAwMDAwMCIvPgogICAgICA8cG9seWdvbiBwb2ludHM9IjEyLjk5OSwxMCAxMSwxMCAxMSwxMiAxMCwxMiAxMCwxMy45OTkgOCwxMy45OTkgOCwxNyA5LDE3IDksMTggMTEsMTggMTEsMTYgMTAsMTYgMTAsMTQgMTIsMTQgMTIsMTUuOTk5ICAgICAxNCwxNS45OTkgMTQsMTMuOTk5IDEyLDEzLjk5OSAxMiwxMiAxMywxMiAxMywxMCAxNC45OTksMTAgMTQuOTk5LDggMTIuOTk5LDggICAiIGZpbGw9IiMwMDAwMDAiLz4KICAgICAgPHBvbHlnb24gcG9pbnRzPSIxMCw4IDEwLDcuOTk5IDEwLDQgMTEsNCAxMSwyIDEwLDIgMTAsMSAxMSwxIDExLDAgMTAsMCA5LDAgOCwwIDgsMiA5LDIgOSw0IDgsNCA4LDcuOTk5IDYsNy45OTkgNiw2Ljk5OSAgICAgNCw2Ljk5OSA0LDggMiw4IDIsNyAwLDcgMCw5IDIsOSAyLDEwIDQsMTAgNCw4Ljk5OSA1LDguOTk5IDUsOS45OTkgOCw5Ljk5OSA4LDExLjk5OSAxMCwxMS45OTkgMTAsMTAgMTEsMTAgMTEsOCAgICIgZmlsbD0iIzAwMDAwMCIvPgogICAgICA8cmVjdCB3aWR0aD0iMiIgeD0iMTUiIHk9IjExIiBoZWlnaHQ9IjIiIGZpbGw9IiMwMDAwMDAiLz4KICAgICAgPHJlY3Qgd2lkdGg9IjIiIHg9IjE2IiB5PSIxNiIgaGVpZ2h0PSIyIiBmaWxsPSIjMDAwMDAwIi8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K">
+                <img class="pic-button" onclick="google_search('{{ record.computer.f_manufacturer.manufacturer_name }} {{ record.computer.f_model.model_name }}')" src="data:image/x-icon;base64,AAABAAEAICAAAAAAAACoEAAAFgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAIAAAACAAAAAgAAAAIAAAACAAAAAQAAAAIGBgYMAAAAIQAAADEAAAArAAAAEQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAYAAAAHAAAACAAAAAUAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAACEAAABpAAAAjgAAAGkAAAAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAGgAAADAAAABDAAAATgAAAFEAAABPAAAASAAAADkAAAAlAAAAEAAAAAIAAAAAAAAAAAAAAAgAAAAdAAChrwAA//8AAP//AAAAigAAACcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAAJAAAAE8JCQqUEkcGxR5uBOAZfgDqFngA6hxzAeYSUgbXBxkAuAAAAIgAAABgAAAAOQAAABQAAAAKAAAAIwAAAFUABv//AAD//wAA//8AAAB1AAAAGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAFQAAAE8jUhm7J7UB/gCnAP8AqwD/AK4A/wCuAP8ArgD/AK0A/wCrAP8AoQD/A6UA/xlsBuYAAACjAAAAZgAAAEkAAJiyACj//QAz//4AOf//AEj//wAAADwAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAABwYHBiMHrwA/wCrAP8ArQD/ALAA/wCuAP0ArgD+AK4A/QCuAP8AsAD/ALAA/QCzAP8AsAD/AKsA/wCcAP8EHgDeAAASwgBu//wAcf//AHT//wCV//8AAABIAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAEAAAAZQGo1swC6AP8ArQD+AK4A/QCuAP8ArQD/AK4A/QCuAP4ArQD9AKoA/wCkAP8AmwD9AJ0A/wChAP8AoQD/AGwA/QB3fv8Asv//AK3//wC1//8A1P//AAAASgAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD0VxPbAAtwD/AK0A/QCuAP4ArQD9ALAA/wCwAP8AqwD+AK4A/wGoAP8AggD/AF8A/gBKAP0ATQD/AGEA/wBIAP8AkYT9AOn//wDo//8A7f//AP///wAAAGAAAAAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMkLyF7AMIA/wCuAP8ArgD9AK4A/gCtAP0ArgD/ALcA/y/cAP9PqyjWGTAAugBfLucAe2H9AH5q/wBQIf8ACQD/AJF3/wD///8A////AP///wD///8cEQDUAAAAUgAAAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKiXXAP8AqwD+AK4A/wCuAP0ArQD+AK4A/hjWAP87fi6aAAAAIQAAAD0A1+bbAP///wD///8A////AP///wD///8A////AP///wD///8A////10wA//9YAP8AAACDAAAAIgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE9n42yAKsA/wCtAP0ArgD/AK4A/QCtAP4b1gD/BwAJUAAAAAAAAAAjAP//9gD///8A////AP///wD///8A////AP///wD///8A////AP///8FCAP//WgD//2QA/3EzBM8AAABAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFwD///8A2f/+AKsA/QCqAP8ArQD+B88A/wAAAF8AAAAAAAAAAQCqt6QA////AAAAZwD//98A////AP///wD///8A////AP///wD///9hFgD98TcA//9qAP//aQD+/38S/wAAAFwAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAYMjNrAOn//wDc//0A4v/9ALcZ/wGwAP8heQ28AAAADgAAAAAAAAADAP///wB7pMIAAAA5AAAAJQDw/+MA////APf//wD3//8A/P//APP//z4sA/3lOwD//2kA//9tAP3/ZAD/AAAAhAAAABcAAAAAAAAAAAAAAAAAAAAAAAAAAC6oz7MA5v//ANr//wDc//8A4v//ANqZ/wAAAFIAAAAFAAAAAAAHKhMA6f//AAownwAAAEOHLwCpZQQAxQvN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">
+                <input class="edit_width" type="image" name="edit" value="Edit" src="data:image/png;base64,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">
+            </div>
+        </div>
+        <tr>
+            <th>Computer ID:</th>
+            <td>
+                <input type="text" name="id_computer" value="{{ record.computer.id_computer }}" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th>Serial:</th>
+            <td>
+                <input type="text" name="serial" value="{{ record.computer.computer_serial }}" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th>Type:</th>
+            <td>
+                <select name="type_name">
+                    {% for type in record.rc.types %}
+                    <option
+                            value="{{ type }}"
+                            {% if type == record.computer.f_type.type_name %} selected="selected"{% endif %}
+                    >
+                        {{ type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Category:</th>
+            <td>
+                <select name="category_name">
+                    {% for category in record.rc.categories %}
+                    <option
+                            value="{{ category }}"
+                            {% if category == record.computer.f_category.category_name %} selected="selected"{% endif %}
+                    >
+                        {{ category }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Manufacturer:</th>
+            <td>
+                <input list="manufacturers" name="manufacturer_name" value="{{ record.computer.f_manufacturer.manufacturer_name }}">
+                <datalist id="manufacturers">
+                    {% for manufacturer in record.rc.manufacturers %}
+                    <option
+                            value="{{ manufacturer }}"
+                            {% if manufacturer == record.computer.f_manufacturer.manufacturer_name %} selected="selected"{% endif %}
+                    >{{ manufacturer }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <th>Model:</th>
+            <td>
+                <input list="models" name="model_name" value="{{ record.computer.f_model.model_name }}">
+                <datalist id="models">
+                    {% for model in record.rc.models %}
+                    <option
+                            value="{{ model }}"
+                            {% if model == record.computer.f_model.model_name %} selected="selected"{% endif %}
+                    >{{ model }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <th>CPU:</th>
+            <td>
+                <input list="cpus" name="cpu_name" value="{{ record.computer.f_cpu.cpu_name }}">
+                <datalist id="cpus">
+                    {% for cpu in record.rc.cpus %}
+                    <option
+                            value="{{ cpu }}"
+                            {% if cpu == record.computer.f_cpu.cpu_name %} selected="selected"{% endif %}
+                    >{{ cpu }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <th>GPU:</th>
+            <td>
+                <input list="gpus" name="gpu_name" value="{{ record.computer.f_gpu.gpu_name }}">
+                <datalist id="gpus">
+                    {% for gpu in record.rc.gpus %}
+                    <option
+                            value="{{ gpu }}"
+                            {% if gpu == record.computer.f_gpu.gpu_name %} selected="selected"{% endif %}
+                    >{{ gpu }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <th>RAM:</th>
+            <td>
+                <input list="ram_sizes" name="ram_size_text" value="{{ record.computer.f_ram_size.ram_size_text }}">
+                <datalist id="ram_sizes">
+                    {% for ram in record.rc.rams %}
+                    <option
+                            value="{{ ram }}"
+                            {% if ram == record.computer.f_ram_size.ram_size_text %} selected="selected"{% endif %}
+                    >{{ ram }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <th>HDD:</th>
+            <td>
+                <input list="hdd_sizes" name="hdd_sizes_name" value="{{ record.computer.f_hdd_size.hdd_sizes_name }}">
+                <datalist id="hdd_sizes">
+                    {% for hdd in record.rc.hdds %}
+                    <option
+                            value="{{ hdd }}"
+                            {% if hdd == record.computer.f_hdd_size.hdd_sizes_name %} selected="selected"{% endif %}
+                    >{{ hdd }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <th>Diagonal:</th>
+            <td>
+                <input list="diagonals" name="diagonal_text" value="{{ record.computer.f_diagonal.diagonal_text }}">
+                <datalist id="diagonals">
+                    {% for diagonal in record.rc.diagonals %}
+                    <option
+                            value="{{ diagonal }}"
+                            {% if diagonal == record.computer.f_diagonal.diagonal_text %} selected="selected"{% endif %}
+                    >{{ diagonal }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <th>License:</th>
+            <td>
+                <select name="license_name">
+                    {% for license in record.rc.licenses %}
+                    <option
+                            {% if license == record.computer.f_license.license_name %} selected="selected"{% endif %}
+                    >
+                        {{ license }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Camera:</th>
+            <td>
+                <select name="option_name">
+                    <option value="" selected="selected" disabled hidden>Choose camera option</option>
+                    {% for camera in record.rc.cameras %}
+                    <option
+                            {% if camera == record.computer.f_camera.option_name %} selected="selected"{% endif %}
+                    >
+                        {{ camera }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Cover:</th>
+            <td>
+                <input type="text" name="cover" value="{{ record.computer.cover }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Display:</th>
+            <td>
+                <input type="text" name="display" value="{{ record.computer.display }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Bezel:</th>
+            <td>
+                <input type="text" name="bezel" value="{{ record.computer.bezel }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Keyboard:</th>
+            <td>
+                <input type="text" name="keyboard" value="{{ record.computer.keyboard }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Mouse:</th>
+            <td>
+                <input type="text" name="mouse" value="{{ record.computer.mouse }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Sound:</th>
+            <td>
+                <input type="text" name="sound" value="{{ record.computer.sound }}">
+            </td>
+        </tr>
+        <tr>
+            <th>CD-ROM:</th>
+            <td>
+                <input type="text" name="cdrom" value="{{ record.computer.cdrom }}">
+            </td>
+        </tr>
+        <tr>
+            <th>HDD cover:</th>
+            <td>
+                <input type="text" name="hdd_cover" value="{{ record.computer.hdd_cover }}">
+            </td>
+        </tr>
+        <tr>
+            <th>RAM cover</th>
+            <td>
+                <input type="text" name="ram_cover" value="{{ record.computer.ram_cover }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Other</th>
+            <td>
+                <textarea rows="4" cols="37" type="text" name="other" style="resize: none;">{{ record.computer.other }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <th>Tester:</th>
+            <td>
+                <select name="tester_name">
+                    {% for tester in record.rc.testers %}
+                    <option
+                            {% if tester == record.computer.f_tester.tester_name %} selected="selected"{% endif %}
+                    >
+                        {{ tester }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Date:</th>
+            <td>
+                <input type="text" name="date" value="{{ record.computer.getDate }}">
+            </td>
+        </tr>
+        <tr>
+            <th>BIOS:</th>
+            <td>
+                <input type="text" name="bios_text" value="{{ record.computer.f_bios.bios_text }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Motherboard serial:</th>
+            <td>
+                <input type="text" name="motherboard_serial" value="{{ record.computer.motherboard_serial }}" readonly>
+            </td>
+        </tr>
+        {% if record.computer.f_sale != None %}
+        <tr>
+            <th>Price:</th>
+            <td>
+                <input type="text" name="price" value="{{ record.computer.price }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Date of sale:</th>
+            <td>
+                <input type="text" name="date_of_sale" value="{{ record.computer.f_sale.getDate }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Client:</th>
+            <td>
+                <input type="text" name="client_name" value="{{ record.computer.f_sale.f_id_client.client_name }}">
+            </td>
+        </tr>
+        {% endif %}
+        {% for bat_unit in record.batts %}
+        <tr>
+            <th>Battery{{ bat_unit.index }} serial</th>
+            <td>
+                <input type="text" name="bat_serial_{{ bat_unit.id }}" value="{{ bat_unit.serial }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Battery{{ bat_unit.index }} wear</th>
+            <td>
+                <input type="text" name="bat_wear_{{ bat_unit.id }}" value="{{ bat_unit.wear }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Battery{{ bat_unit.index }} time</th>
+            <td>
+                <input type="text" name="bat_time_{{ bat_unit.id }}" value="{{ bat_unit.time }}">
+            </td>
+        </tr>
+        {% endfor %}
+        {% for ram_unit in record.rams %}
+        <tr>
+            <th>RAM{{ ram_unit.index }} serial</th>
+            <td>
+                <input type="text" name="ram_serial_{{ ram_unit.id }}" value="{{ ram_unit.serial }}">
+            </td>
+        </tr>
+        {% endfor %}
+        {% for hdd_unit in record.hdds %}
+        <tr>
+            <th>HDD{{ hdd_unit.index }} serial</th>
+            <td>
+                <input type="text" name="hdd_serial_{{ hdd_unit.id }}" value="{{ hdd_unit.serial }}">
+            </td>
+        </tr>
+        {% endfor %}
+    </form>
+</table>
+</body>
+</html>

@@ -3795,21 +3795,201 @@ class SearchOptions:
         statusesSelection = OptionSelection('Status', 'stat', choices, search_method)
         self.options.append(statusesSelection)
 
+
+class Computer4th:
+
+    def __init__(self, computer):
+        print('this is Computer4th')
+        self.version = 4
+        self.computer = computer
+
+    def collect_info(self):
+        self.rc = RecordChoices()
+        self.rams = get_rams(self.computer.id_computer)
+        self.hdds = get_hdds(self.computer.id_computer)
+        self.batts = get_batteries(self.computer.id_computer)
+
+    def save_info(self, data_dict):
+        print('Saving info')
+        print(data_dict)
+
+        type_name = data_dict.pop('type_name')[0]
+        print('type_name')
+        print(type_name)
+        type = Types.objects.get_or_create(type_name=type_name)[0]
+        print(type)
+
+        category_name = data_dict.pop('category_name')[0]
+        print('category_name')
+        print(category_name)
+        category = Categories.objects.get_or_create(category_name=category_name)[0]
+        print(category)
+
+        manufacturer_name = data_dict.pop('manufacturer_name')[0]
+        print('manufacturer_name')
+        print(manufacturer_name)
+        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=manufacturer_name)[0]
+        print(manufacturer)
+
+        model_name = data_dict.pop('model_name')[0]
+        print('model_name')
+        print(model_name)
+        model = Models.objects.get_or_create(model_name=model_name)
+        print(model)
+
+        cpu_name = data_dict.pop('cpu_name')[0]
+        print('cpu_name')
+        print(cpu_name)
+        cpu = Cpus.objects.get_or_create(cpu_name=cpu_name)
+        print(cpu)
+
+        gpu_name = data_dict.pop('gpu_name')[0]
+        print('gpu_name')
+        print(gpu_name)
+        gpu = Gpus.objects.get_or_create(gpu_name=gpu_name)
+        print(gpu)
+
+        ram_size_text = data_dict.pop('ram_size_text')[0]
+        print('ram_size_text')
+        print(ram_size_text)
+        ram_size = RamSizes.objects.get_or_create(ram_size_text=ram_size_text)
+        print(ram_size)
+
+        hdd_sizes_name = data_dict.pop('hdd_sizes_name')[0]
+        print('hdd_sizes_name')
+        print(hdd_sizes_name)
+        hdd_size = HddSizes.objects.get_or_create(hdd_sizes_name=hdd_sizes_name)
+        print(hdd_size)
+
+        diagonal_text = data_dict.pop('diagonal_text')[0]
+        print('diagonal_text')
+        print(diagonal_text)
+        diagonal = Diagonals.objects.get_or_create(diagonal_text=diagonal_text)
+        print(diagonal)
+
+        license_name = data_dict.pop('license_name')[0]
+        print('license_name')
+        print(license_name)
+        license = Licenses.objects.get_or_create(license_name=license_name)
+        print(license)
+
+        option_name = data_dict.pop('option_name')[0]
+        print('option_name')
+        print(option_name)
+        option = CameraOptions.objects.get_or_create(option_name=option_name)
+        print(option)
+
+        cover = data_dict.pop('cover')[0]
+        print('cover')
+        print(cover)
+
+        display = data_dict.pop('display')[0]
+        print('display')
+        print(display)
+
+        bezel = data_dict.pop('bezel')[0]
+        print('bezel')
+        print(bezel)
+
+        keyboard = data_dict.pop('keyboard')[0]
+        print('keyboard')
+        print(keyboard)
+
+        mouse = data_dict.pop('mouse')[0]
+        print('mouse')
+        print(mouse)
+
+        sound = data_dict.pop('sound')[0]
+        print('sound')
+        print(sound)
+
+        cdrom = data_dict.pop('cdrom')[0]
+        print('cdrom')
+        print(cdrom)
+
+        hdd_cover = data_dict.pop('hdd_cover')[0]
+        print('hdd_cover')
+        print(hdd_cover)
+
+        ram_cover = data_dict.pop('ram_cover')[0]
+        print('ram_cover')
+        print(ram_cover)
+
+        other = data_dict.pop('other')[0]
+        print('other')
+        print(other)
+
+        tester_name = data_dict.pop('tester_name')[0]
+        print('tester_name')
+        print(tester_name)
+        tester = Testers.objects.get_or_create(tester_name=tester_name)
+        print(tester)
+
+        date = data_dict.pop('date')[0]
+        print('date')
+        print(date)
+
+        bios_text = data_dict.pop('bios_text')[0]
+        print('bios_text')
+        print(bios_text)
+        bios = Bioses.objects.get_or_create(bios_text=bios_text)
+
+        price = data_dict.pop('price')[0]
+        print('price')
+        print(price)
+
+        date_of_sale = data_dict.pop('date_of_sale')[0]
+        print('date_of_sale')
+        print(date_of_sale)
+
+        client_name = data_dict.pop('client_name')[0]
+        print('client_name')
+        print(client_name)
+
+
+class Computer5th:
+
+    def __init__(self, computer):
+        print('this is Computer5th')
+        self.version = 5
+
+
 class ComputerToEdit:
 
-    def __init__(self):
+    def __init__(self, int_index):
         print('ComputerToEdit constructor')
+        self.computer = Computers.objects.get(id_computer=int_index)
 
     def process_post(self, data_dict):
         print('Processing post request')
+        data_dict.pop('edit.x')
+        data_dict.pop('edit.y')
+        data_dict.pop('id_computer')
+        data_dict.pop('serial')
+        data_dict.pop('motherboard_serial')
+        if self._is5thVersion(self.computer):
+            print('Computer is of 5th version')
+            self.record = Computer5th(computer=self.computer)
+        else:
+            print('Computer is of 4th version')
+            self.record = Computer4th(computer=self.computer)
+            self.record.save_info(data_dict)
         
-    def process_get(self, int_index):
+    def process_get(self):
         print('Processing get request')
-        print(int_index)
-        computer = Computers.objects.get(id_computer=int_index)
-        if computer.f_id_computer_resolutions:
-            print('Contains computer resolutions')
-            print(computer.f_id_computer_resolutions)
-        if computer.f_id_matrix:
-            print('Contains matrix')
-            print(computer.f_id_matrix)
+        if self._is5thVersion(self.computer):
+            print('Computer is of 5th version')
+            self.record = Computer5th(computer=self.computer)
+        else:
+            print('Computer is of 4th version')
+            self.record = Computer4th(computer=self.computer)
+            self.record.collect_info()
+
+    def _is5thVersion(self, computer):
+        return computer.f_id_computer_resolutions \
+                and computer.f_id_matrix \
+                and Computerprocessors.objects.filter(f_id_computer=computer).count() > 0 \
+                and Computergpus.objects.filter(f_id_computer=computer).count() > 0 \
+                and Computerobservations.objects.filter(f_id_computer=computer).count() > 0 \
+                and Computerdrives.objects.filter(f_id_computer=computer).count() > 0
+
