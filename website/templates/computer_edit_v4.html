@@ -324,19 +324,19 @@ input:read-only {
         <tr>
             <th>Battery{{ bat_unit.index }} serial</th>
             <td>
-                <input type="text" name="bat_serial_{{ bat_unit.id }}" value="{{ bat_unit.serial }}">
+                <input type="text" name="bat_serial_{{ bat_unit.id }}" value="{{ bat_unit.serial }}" readonly>
             </td>
         </tr>
         <tr>
             <th>Battery{{ bat_unit.index }} wear</th>
             <td>
-                <input type="text" name="bat_wear_{{ bat_unit.id }}" value="{{ bat_unit.wear }}">
+                <input type="text" name="bat_wear_{{ bat_unit.id }}" value="{{ bat_unit.wear }}" readonly>
             </td>
         </tr>
         <tr>
             <th>Battery{{ bat_unit.index }} time</th>
             <td>
-                <input type="text" name="bat_time_{{ bat_unit.id }}" value="{{ bat_unit.time }}">
+                <input type="text" name="bat_time_{{ bat_unit.id }}" value="{{ bat_unit.time }}" readonly>
             </td>
         </tr>
         {% endfor %}
@@ -344,7 +344,7 @@ input:read-only {
         <tr>
             <th>RAM{{ ram_unit.index }} serial</th>
             <td>
-                <input type="text" name="ram_serial_{{ ram_unit.id }}" value="{{ ram_unit.serial }}">
+                <input type="text" name="ram_serial_{{ ram_unit.id }}" value="{{ ram_unit.serial }}" readonly>
             </td>
         </tr>
         {% endfor %}
@@ -352,7 +352,7 @@ input:read-only {
         <tr>
             <th>HDD{{ hdd_unit.index }} serial</th>
             <td>
-                <input type="text" name="hdd_serial_{{ hdd_unit.id }}" value="{{ hdd_unit.serial }}">
+                <input type="text" name="hdd_serial_{{ hdd_unit.id }}" value="{{ hdd_unit.serial }}" readonly>
             </td>
         </tr>
         {% endfor %}

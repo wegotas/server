@@ -172,7 +172,7 @@ class Computers(models.Model):
     ram_cover = models.CharField(max_length=125, blank=True, null=True)
     other = models.CharField(max_length=300, blank=True, null=True)
     f_tester = models.ForeignKey('Testers', models.DO_NOTHING, blank=True, null=True)
-    date = models.DateField() # models.DateTimeField(blank=True, null=True)
+    date = models.DateField()  # models.DateTimeField(blank=True, null=True)
     f_bios = models.ForeignKey(Bioses, models.DO_NOTHING, blank=True, null=True)
     f_sale = models.ForeignKey('Sales', models.DO_NOTHING, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)

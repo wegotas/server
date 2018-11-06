@@ -358,41 +358,37 @@ class Computer_record2():
     def _computer_save_and_get(self, data):
         try:
             existing_computer = Computers.objects.get(computer_serial=data['SystemInfo']['Serial Number'])
-            computer = Computers(
-                id_computer=existing_computer.id_computer,
-                computer_serial=data['SystemInfo']['Serial Number'],
-                f_type=self.type,
-                f_category=self.category,
-                f_manufacturer=self.manufacturer,
-                f_model=self.model,
-                f_cpu=self.cpu,
-                f_gpu=self.gpu,
-                f_ram_size=self.ramsize,
-                # f_hdd_size=self.hddsize,
-                f_diagonal=self.diagonal,
-                f_license=self.license,
-                f_camera=self.camera_option,
-                cover='N/A',
-                display='N/A',
-                bezel='N/A',
-                keyboard='N/A',
-                mouse='N/A',
-                sound='N/A',
-                cdrom='N/A',
-                hdd_cover='N/A',
-                ram_cover='N/A',
-                other=data["Others"]["Other"],
-                f_tester=self.tester,
-                date=self.timenow,
-                f_bios=self.bios,
-                motherboard_serial=self.motherboard,
-                f_id_matrix=self.matrix,
-                f_id_computer_resolutions=self.computer_resolution,
-                # price=self.price
-            )
-            computer.save()
+            existing_computer.id_computer = existing_computer.id_computer
+            existing_computer.computer_serial = data['SystemInfo']['Serial Number']
+            existing_computer.f_type = self.type
+            existing_computer.f_category = self.category
+            existing_computer.f_manufacturer = self.manufacturer
+            existing_computer.f_model = self.model
+            existing_computer.f_cpu = self.cpu
+            existing_computer.f_gpu = self.gpu
+            existing_computer.f_ram_size = self.ramsize
+            existing_computer.f_diagonal = self.diagonal
+            existing_computer.f_license = self.license
+            existing_computer.f_camera = self.camera_option
+            existing_computer.cover = 'N/A'
+            existing_computer.display = 'N/A'
+            existing_computer.bezel = 'N/A'
+            existing_computer.keyboard = 'N/A'
+            existing_computer.mouse = 'N/A'
+            existing_computer.sound = 'N/A'
+            existing_computer.cdrom = 'N/A'
+            existing_computer.hdd_cover = 'N/A'
+            existing_computer.ram_cover = 'N/A'
+            existing_computer.other = data["Others"]["Other"]
+            existing_computer.f_tester = self.tester
+            existing_computer.date = self.timenow
+            existing_computer.f_bios = self.bios
+            existing_computer.motherboard_serial = self.motherboard
+            existing_computer.f_id_matrix = self.matrix
+            existing_computer.f_id_computer_resolutions = self.computer_resolution
+            existing_computer.save()
             self.message += "Existing record has been updated\n"
-            return computer
+            return existing_computer
         except Computers.DoesNotExist:
             print("No computer with such serial, inserting a new record")
             computer = Computers(
@@ -626,8 +622,15 @@ class Computer_data_dict_builder:
             if computer.f_sale is None:
                 return False
             return True
+
+        def get_camera(computer):
+            if computer.f_camera.option_name:
+                return computer.f_camera.option_name
+            else:
+                return ''
+
         others_dict=dict()
-        others_dict["Camera"] = computer.f_camera.option_name
+        # others_dict["Camera"] = get_camera(computer)
         others_dict["License"] = computer.f_license.license_name
         others_dict["Previuos tester"] = computer.f_tester.tester_name
         others_dict["Category"] = computer.f_category.category_name

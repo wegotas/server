@@ -1552,11 +1552,14 @@ class Order:
 
 
     def get_isReady(self):
-        count = CompOrd.objects.filter(f_order_id_to_order=self.id, is_ready=0).count()
-        return not count >= 1
+        compords = CompOrd.objects.filter(f_order_id_to_order=self.id, is_ready=0)
+        computers = Computers.objects.filter(f_id_comp_ord__in=compords)
+        return not computers.count() >=1
 
     def _set_computer_count(self):
-        self.count = CompOrd.objects.filter(f_order_id_to_order=self.id).count()
+        compords = CompOrd.objects.filter(f_order_id_to_order=self.id)
+        computers = Computers.objects.filter(f_id_comp_ord__in=compords)
+        self.count = computers.count()
 
     def _set_testers(self):
         self.testers = []
@@ -3810,141 +3813,118 @@ class Computer4th:
         self.batts = get_batteries(self.computer.id_computer)
 
     def save_info(self, data_dict):
-        print('Saving info')
-        print(data_dict)
 
-        type_name = data_dict.pop('type_name')[0]
-        print('type_name')
-        print(type_name)
-        type = Types.objects.get_or_create(type_name=type_name)[0]
-        print(type)
+        def _save_sold_computer():
+            print('saving sold computer')
+            client = Clients.objects.get_or_create(client_name=data_dict.pop('client_name')[0])[0]
+            sale = self.computer.f_sale
+            sale.f_id_client = client
+            sale.date_of_sale = data_dict.pop('date_of_sale')[0]
+            sale.save()
+            self.computer.f_type = type
+            self.computer.f_category = category
+            self.computer.f_manufacturer = manufacturer
+            self.computer.f_model = model
+            self.computer.f_cpu = cpu
+            self.computer.f_gpu = gpu
+            self.computer.f_ram_size = ram_size
+            self.computer.f_hdd_size = hdd_size
+            self.computer.f_diagonal = diagonal
+            self.computer.f_license = license
+            self.computer.f_camera = option
+            self.computer.cover = data_dict.pop('cover')[0]
+            self.computer.display = data_dict.pop('display')[0]
+            self.computer.bezel = data_dict.pop('bezel')[0]
+            self.computer.keyboard = data_dict.pop('keyboard')[0]
+            self.computer.mouse = data_dict.pop('mouse')[0]
+            self.computer.sound = data_dict.pop('sound')[0]
+            self.computer.cdrom = data_dict.pop('cdrom')[0]
+            self.computer.hdd_cover = data_dict.pop('hdd_cover')[0]
+            self.computer.ram_cover = data_dict.pop('ram_cover')[0]
+            self.computer.other = data_dict.pop('other')[0]
+            self.computer.f_tester = tester
+            self.computer.date = data_dict.pop('date')[0]
+            self.computer.f_bios = bios
+            self.computer.price = data_dict.pop('price')[0]
+            self.computer.save()
 
-        category_name = data_dict.pop('category_name')[0]
-        print('category_name')
-        print(category_name)
-        category = Categories.objects.get_or_create(category_name=category_name)[0]
-        print(category)
 
-        manufacturer_name = data_dict.pop('manufacturer_name')[0]
-        print('manufacturer_name')
-        print(manufacturer_name)
-        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=manufacturer_name)[0]
-        print(manufacturer)
+        def _save_ordered_computer():
+            print('saving ordered computer')
+            self.computer.f_type = type
+            self.computer.f_category = category
+            self.computer.f_manufacturer = manufacturer
+            self.computer.f_model = model
+            self.computer.f_cpu = cpu
+            self.computer.f_gpu = gpu
+            self.computer.f_ram_size = ram_size
+            self.computer.f_hdd_size = hdd_size
+            self.computer.f_diagonal = diagonal
+            self.computer.f_license = license
+            self.computer.f_camera = option
+            self.computer.cover = data_dict.pop('cover')[0]
+            self.computer.display = data_dict.pop('display')[0]
+            self.computer.bezel = data_dict.pop('bezel')[0]
+            self.computer.keyboard = data_dict.pop('keyboard')[0]
+            self.computer.mouse = data_dict.pop('mouse')[0]
+            self.computer.sound = data_dict.pop('sound')[0]
+            self.computer.cdrom = data_dict.pop('cdrom')[0]
+            self.computer.hdd_cover = data_dict.pop('hdd_cover')[0]
+            self.computer.ram_cover = data_dict.pop('ram_cover')[0]
+            self.computer.other = data_dict.pop('other')[0]
+            self.computer.f_tester = tester
+            self.computer.date = data_dict.pop('date')[0]
+            self.computer.f_bios = bios
+            self.computer.save()
 
-        model_name = data_dict.pop('model_name')[0]
-        print('model_name')
-        print(model_name)
-        model = Models.objects.get_or_create(model_name=model_name)
-        print(model)
+        def _save_stored_computer():
+            self.computer.f_type = type
+            self.computer.f_category = category
+            self.computer.f_manufacturer = manufacturer
+            self.computer.f_model = model
+            self.computer.f_cpu = cpu
+            self.computer.f_gpu = gpu
+            self.computer.f_ram_size = ram_size
+            self.computer.f_hdd_size = hdd_size
+            self.computer.f_diagonal = diagonal
+            self.computer.f_license = license
+            self.computer.f_camera = option
+            self.computer.cover = data_dict.pop('cover')[0]
+            self.computer.display = data_dict.pop('display')[0]
+            self.computer.bezel = data_dict.pop('bezel')[0]
+            self.computer.keyboard = data_dict.pop('keyboard')[0]
+            self.computer.mouse = data_dict.pop('mouse')[0]
+            self.computer.sound = data_dict.pop('sound')[0]
+            self.computer.cdrom = data_dict.pop('cdrom')[0]
+            self.computer.hdd_cover = data_dict.pop('hdd_cover')[0]
+            self.computer.ram_cover = data_dict.pop('ram_cover')[0]
+            self.computer.other = data_dict.pop('other')[0]
+            self.computer.f_tester = tester
+            self.computer.date = data_dict.pop('date')[0]
+            self.computer.f_bios = bios
+            self.computer.save()
 
-        cpu_name = data_dict.pop('cpu_name')[0]
-        print('cpu_name')
-        print(cpu_name)
-        cpu = Cpus.objects.get_or_create(cpu_name=cpu_name)
-        print(cpu)
+        type = Types.objects.get_or_create(type_name=data_dict.pop('type_name')[0])[0]
+        category = Categories.objects.get_or_create(category_name=data_dict.pop('category_name')[0])[0]
+        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=data_dict.pop('manufacturer_name')[0])[0]
+        model = Models.objects.get_or_create(model_name=data_dict.pop('model_name')[0])[0]
+        cpu = Cpus.objects.get_or_create(cpu_name=data_dict.pop('cpu_name')[0])[0]
+        gpu = Gpus.objects.get_or_create(gpu_name=data_dict.pop('gpu_name')[0])[0]
+        ram_size = RamSizes.objects.get_or_create(ram_size_text=data_dict.pop('ram_size_text')[0])[0]
+        hdd_size = HddSizes.objects.get_or_create(hdd_sizes_name=data_dict.pop('hdd_sizes_name')[0])[0]
+        diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict.pop('diagonal_text')[0])[0]
+        license = Licenses.objects.get_or_create(license_name=data_dict.pop('license_name')[0])[0]
+        option = CameraOptions.objects.get_or_create(option_name=data_dict.pop('option_name')[0])[0]
+        tester = Testers.objects.get_or_create(tester_name=data_dict.pop('tester_name')[0])[0]
+        bios = Bioses.objects.get_or_create(bios_text=data_dict.pop('bios_text')[0])[0]
 
-        gpu_name = data_dict.pop('gpu_name')[0]
-        print('gpu_name')
-        print(gpu_name)
-        gpu = Gpus.objects.get_or_create(gpu_name=gpu_name)
-        print(gpu)
 
-        ram_size_text = data_dict.pop('ram_size_text')[0]
-        print('ram_size_text')
-        print(ram_size_text)
-        ram_size = RamSizes.objects.get_or_create(ram_size_text=ram_size_text)
-        print(ram_size)
-
-        hdd_sizes_name = data_dict.pop('hdd_sizes_name')[0]
-        print('hdd_sizes_name')
-        print(hdd_sizes_name)
-        hdd_size = HddSizes.objects.get_or_create(hdd_sizes_name=hdd_sizes_name)
-        print(hdd_size)
-
-        diagonal_text = data_dict.pop('diagonal_text')[0]
-        print('diagonal_text')
-        print(diagonal_text)
-        diagonal = Diagonals.objects.get_or_create(diagonal_text=diagonal_text)
-        print(diagonal)
-
-        license_name = data_dict.pop('license_name')[0]
-        print('license_name')
-        print(license_name)
-        license = Licenses.objects.get_or_create(license_name=license_name)
-        print(license)
-
-        option_name = data_dict.pop('option_name')[0]
-        print('option_name')
-        print(option_name)
-        option = CameraOptions.objects.get_or_create(option_name=option_name)
-        print(option)
-
-        cover = data_dict.pop('cover')[0]
-        print('cover')
-        print(cover)
-
-        display = data_dict.pop('display')[0]
-        print('display')
-        print(display)
-
-        bezel = data_dict.pop('bezel')[0]
-        print('bezel')
-        print(bezel)
-
-        keyboard = data_dict.pop('keyboard')[0]
-        print('keyboard')
-        print(keyboard)
-
-        mouse = data_dict.pop('mouse')[0]
-        print('mouse')
-        print(mouse)
-
-        sound = data_dict.pop('sound')[0]
-        print('sound')
-        print(sound)
-
-        cdrom = data_dict.pop('cdrom')[0]
-        print('cdrom')
-        print(cdrom)
-
-        hdd_cover = data_dict.pop('hdd_cover')[0]
-        print('hdd_cover')
-        print(hdd_cover)
-
-        ram_cover = data_dict.pop('ram_cover')[0]
-        print('ram_cover')
-        print(ram_cover)
-
-        other = data_dict.pop('other')[0]
-        print('other')
-        print(other)
-
-        tester_name = data_dict.pop('tester_name')[0]
-        print('tester_name')
-        print(tester_name)
-        tester = Testers.objects.get_or_create(tester_name=tester_name)
-        print(tester)
-
-        date = data_dict.pop('date')[0]
-        print('date')
-        print(date)
-
-        bios_text = data_dict.pop('bios_text')[0]
-        print('bios_text')
-        print(bios_text)
-        bios = Bioses.objects.get_or_create(bios_text=bios_text)
-
-        price = data_dict.pop('price')[0]
-        print('price')
-        print(price)
-
-        date_of_sale = data_dict.pop('date_of_sale')[0]
-        print('date_of_sale')
-        print(date_of_sale)
-
-        client_name = data_dict.pop('client_name')[0]
-        print('client_name')
-        print(client_name)
+        if self.computer.f_sale:
+            _save_sold_computer()
+        elif self.computer.f_id_comp_ord:
+            _save_ordered_computer()
+        else:
+            _save_stored_computer()
 
 
 class Computer5th:
@@ -3967,6 +3947,7 @@ class ComputerToEdit:
         data_dict.pop('id_computer')
         data_dict.pop('serial')
         data_dict.pop('motherboard_serial')
+        # data_dict.pop('bios_text')
         if self._is5thVersion(self.computer):
             print('Computer is of 5th version')
             self.record = Computer5th(computer=self.computer)
