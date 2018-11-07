@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Overview of the 5th version's computer</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <script type="text/javascript" src="{% static 'computer_edit.js' %}"></script>
+</head>
+<style>
+th, td {
+font-size: 13px;
+}
+th {
+text-align: right;
+padding-right: 10px;
+}
+
+input {
+  width: 260px;
+}
+
+.edit_width {
+  width: auto;
+}
+
+input:read-only {
+  background-color: darkgrey;
+}
+
+</style>
+<body>
+    <table align="center">
+         <tr>
+            <th>Computer ID:</th>
+            <td>
+                <input type="text" name="id_computer" value="{{ record.computer.id_computer }}" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th>Serial:</th>
+            <td>
+                <input type="text" name="serial" value="{{ record.computer.computer_serial }}" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th>Type:</th>
+            <td>
+                <select name="type_name">
+                    {% for type in record.rc.types %}
+                    <option
+                            value="{{ type }}"
+                            {% if type == record.computer.f_type.type_name %} selected="selected"{% endif %}
+                    >
+                        {{ type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Category:</th>
+            <td>
+                <select name="category_name">
+                    {% for category in record.rc.categories %}
+                    <option
+                            value="{{ category }}"
+                            {% if category == record.computer.f_category.category_name %} selected="selected"{% endif %}
+                    >
+                        {{ category }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Manufacturer:</th>
+            <td>
+                <input list="manufacturers" name="manufacturer_name" value="{{ record.computer.f_manufacturer.manufacturer_name }}">
+                <datalist id="manufacturers">
+                    {% for manufacturer in record.rc.manufacturers %}
+                    <option
+                            value="{{ manufacturer }}"
+                            {% if manufacturer == record.computer.f_manufacturer.manufacturer_name %} selected="selected"{% endif %}
+                    >{{ manufacturer }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <th>Model:</th>
+            <td>
+                <input list="models" name="model_name" value="{{ record.computer.f_model.model_name }}">
+                <datalist id="models">
+                    {% for model in record.rc.models %}
+                    <option
+                            value="{{ model }}"
+                            {% if model == record.computer.f_model.model_name %} selected="selected"{% endif %}
+                    >{{ model }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+         <tr>
+            <th>RAM:</th>
+            <td>
+                <input list="ram_sizes" name="ram_size_text" value="{{ record.computer.f_ram_size.ram_size_text }}">
+                <datalist id="ram_sizes">
+                    {% for ram in record.rc.rams %}
+                    <option
+                            value="{{ ram }}"
+                            {% if ram == record.computer.f_ram_size.ram_size_text %} selected="selected"{% endif %}
+                    >{{ ram }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <th>Diagonal:</th>
+            <td>
+                <input list="diagonals" name="diagonal_text" value="{{ record.computer.f_diagonal.diagonal_text }}">
+                <datalist id="diagonals">
+                    {% for diagonal in record.rc.diagonals %}
+                    <option
+                            value="{{ diagonal }}"
+                            {% if diagonal == record.computer.f_diagonal.diagonal_text %} selected="selected"{% endif %}
+                    >{{ diagonal }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <th>Resolution:</th>
+            <td>
+                <input list="resolutions" name="resolution_text" value="{{ record.computer.f_id_computer_resolutions.f_id_resolution.resolution_text }}">
+                <datalist id="resolutions">
+                    {{ record.rc.print }}
+                    {% for resolution in record.rc.resolutions %}
+                    <option
+                            value="{{ resolution }}"
+                            {% if resolution == record.computer.f_id_computer_resolutions.f_id_resolution.resolution_text %} selected="selected"{% endif %}
+                    >{{ resolution }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        <!--
+        <tr>
+            <th>Resolution category:</th>
+            <td>
+                <input list="resolution_categories" name="resolution_text" value="{{ record.computer.f_id_computer_resolutions.f_id_resolution.resolution_text }}">
+                <datalist id="resolution_categories">
+                    {{ record.rc.print }}
+                    {% for resolution in record.rc.resolutions %}
+                    <option
+                            value="{{ resolution }}"
+                            {% if resolution == record.computer.f_id_computer_resolutions.f_id_resolution.resolution_text %} selected="selected"{% endif %}
+                    >{{ resolution }}</option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr>
+        -->
+        <tr>
+            <th>License:</th>
+            <td>
+                <select name="license_name">
+                    {% for license in record.rc.licenses %}
+                    <option
+                            {% if license == record.computer.f_license.license_name %} selected="selected"{% endif %}
+                    >
+                        {{ license }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Camera:</th>
+            <td>
+                <select name="option_name">
+                    <option value="" selected="selected" disabled hidden>Choose camera option</option>
+                    {% for camera in record.rc.cameras %}
+                    <option
+                            {% if camera == record.computer.f_camera.option_name %} selected="selected"{% endif %}
+                    >
+                        {{ camera }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Other</th>
+            <td>
+                <textarea rows="4" cols="37" type="text" name="other" style="resize: none;">{{ record.computer.other }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <th>Tester:</th>
+            <td>
+                <select name="tester_name">
+                    {% for tester in record.rc.testers %}
+                    <option
+                            {% if tester == record.computer.f_tester.tester_name %} selected="selected"{% endif %}
+                    >
+                        {{ tester }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Date:</th>
+            <td>
+                <input type="text" name="date" value="{{ record.computer.getDate }}" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th>BIOS:</th>
+            <td>
+                <input type="text" name="bios_text" value="{{ record.computer.f_bios.bios_text }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Motherboard serial:</th>
+            <td>
+                <input type="text" name="motherboard_serial" value="{{ record.computer.motherboard_serial }}" readonly>
+            </td>
+        </tr>
+        {% if record.computer.f_sale != None %}
+        <tr>
+            <th>Price:</th>
+            <td>
+                <input type="text" name="price" value="{{ record.computer.price }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Date of sale:</th>
+            <td>
+                <input type="text" name="date_of_sale" value="{{ record.computer.f_sale.getDate }}">
+            </td>
+        </tr>
+        <tr>
+            <th>Client:</th>
+            <td>
+                <input type="text" name="client_name" value="{{ record.computer.f_sale.f_id_client.client_name }}">
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+</body>
+</html>

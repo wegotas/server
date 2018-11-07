@@ -1,6 +1,5 @@
 from ULCDTinterface.modelers import * # Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp, CompOrd, OrdTes, Orders, Document, FormFactor, HddModels, HddOrder, HddSerials, LockState, Lots, OrderStatus, Speed
 import xlsxwriter
-import io
 from django.utils import timezone
 import re
 from django.db.models import Q
@@ -13,19 +12,16 @@ import os
 from threading import Thread
 import tarfile
 import datetime
-from subprocess import call
 import csv
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 import subprocess
 import io
-import signal
 from django.db.models import ProtectedError
 from django.db.utils import IntegrityError
-import socket
 import tempfile
-import pathlib
 import math
+import sys, traceback
 
 
 class Bat_holder():
@@ -139,7 +135,7 @@ class Edit_computer_record():
         self._license_save(self.data_dict.pop("license_name", "")[0])
         self._manufacturer_save(self.data_dict.pop("manufacturer_name", "")[0])
         self._model_save(self.data_dict.pop("model_name", "")[0])
-        self.motherboard = self.data_dict.pop("motherboard_serial", "")[0]
+        self.motherboard_serial = self.data_dict.pop("motherboard_serial", "")[0]
         self._ramsize_save(self.data_dict.pop("ram_size_text", "")[0])
         self.computer = Computers.objects.get(id_computer=self.data_dict.pop("id_computer", "")[0])
         if "client_name" in data_dict:
@@ -234,7 +230,7 @@ class Edit_computer_record():
         self.computer.f_tester = self.tester
         self.computer.date = self.data_dict.pop("date", "")[0]
         self.computer.f_bios = self.bios
-        self.computer.motherboard_serial = self.motherboard
+        self.computer.motherboard_serial = self.motherboard_serial
         self.computer.save()
         print('_computer_save')
 
@@ -269,7 +265,7 @@ class Edit_computer_record():
             f_bios=self.bios,
             f_sale=self.sale,
             price=self.data_dict.pop("price", "")[0],
-            motherboard_serial=self.motherboard
+            motherboard_serial=self.motherboard_serial
         )
         self.computer.save()
 
@@ -1270,6 +1266,7 @@ class RecordChoices:
         self._set_licenses()
         self._set_cameras()
         self._set_tester()
+        self._set_resolutions()
 
     def _set_types(self):
         self.types = [record[0] for record in Types.objects.values_list("type_name")]
@@ -1283,15 +1280,18 @@ class RecordChoices:
     def _set_models(self):
         self.models = [record[0] for record in Models.objects.values_list("model_name")]
 
+    # 4th version computers only
     def _set_cpu(self):
         self.cpus = [record[0] for record in Cpus.objects.values_list("cpu_name")]
 
+    # 4th version computers only
     def _set_gpu(self):
         self.gpus = [record[0] for record in Gpus.objects.values_list("gpu_name")]
 
     def _set_rams(self):
         self.rams = [record[0] for record in RamSizes.objects.values_list("ram_size_text")]
 
+    # 4th version computers only
     def _set_hdds(self):
         self.hdds = [record[0] for record in HddSizes.objects.values_list("hdd_sizes_name")]
 
@@ -1307,8 +1307,12 @@ class RecordChoices:
     def _set_tester(self):
         self.testers = [record[0] for record in Testers.objects.values_list("tester_name")]
 
+   # 5th version computers only
+    def _set_resolutions(self):
+        self.resolutions = Resolutions.objects.values_list('resolution_text', flat=True)
 
-class AutoFilter():
+
+class AutoFilter:
 
     keys = ('man-af', 'sr-af', 'scr-af', 'ram-af', 'gpu-af', 'mod-af', 'cpu-af', 'oth-af', 'cli-af', 'dos-af', 'pri-af')
 
@@ -3806,6 +3810,7 @@ class Computer4th:
         self.version = 4
         self.computer = computer
 
+
     def collect_info(self):
         self.rc = RecordChoices()
         self.rams = get_rams(self.computer.id_computer)
@@ -3843,11 +3848,9 @@ class Computer4th:
             self.computer.ram_cover = data_dict.pop('ram_cover')[0]
             self.computer.other = data_dict.pop('other')[0]
             self.computer.f_tester = tester
-            self.computer.date = data_dict.pop('date')[0]
             self.computer.f_bios = bios
             self.computer.price = data_dict.pop('price')[0]
             self.computer.save()
-
 
         def _save_ordered_computer():
             print('saving ordered computer')
@@ -3873,7 +3876,6 @@ class Computer4th:
             self.computer.ram_cover = data_dict.pop('ram_cover')[0]
             self.computer.other = data_dict.pop('other')[0]
             self.computer.f_tester = tester
-            self.computer.date = data_dict.pop('date')[0]
             self.computer.f_bios = bios
             self.computer.save()
 
@@ -3900,7 +3902,6 @@ class Computer4th:
             self.computer.ram_cover = data_dict.pop('ram_cover')[0]
             self.computer.other = data_dict.pop('other')[0]
             self.computer.f_tester = tester
-            self.computer.date = data_dict.pop('date')[0]
             self.computer.f_bios = bios
             self.computer.save()
 
@@ -3918,7 +3919,6 @@ class Computer4th:
         tester = Testers.objects.get_or_create(tester_name=data_dict.pop('tester_name')[0])[0]
         bios = Bioses.objects.get_or_create(bios_text=data_dict.pop('bios_text')[0])[0]
 
-
         if self.computer.f_sale:
             _save_sold_computer()
         elif self.computer.f_id_comp_ord:
@@ -3932,6 +3932,11 @@ class Computer5th:
     def __init__(self, computer):
         print('this is Computer5th')
         self.version = 5
+        self.computer = computer
+
+    def collect_info(self):
+        self.rc = RecordChoices()
+        self.rams = get_rams(self.computer.id_computer)
 
 
 class ComputerToEdit:
@@ -3939,6 +3944,10 @@ class ComputerToEdit:
     def __init__(self, int_index):
         print('ComputerToEdit constructor')
         self.computer = Computers.objects.get(id_computer=int_index)
+        self.message = ''
+
+    def success(self):
+        return self.message == ''
 
     def process_post(self, data_dict):
         print('Processing post request')
@@ -3947,20 +3956,25 @@ class ComputerToEdit:
         data_dict.pop('id_computer')
         data_dict.pop('serial')
         data_dict.pop('motherboard_serial')
-        # data_dict.pop('bios_text')
+        data_dict.pop('date')
         if self._is5thVersion(self.computer):
             print('Computer is of 5th version')
             self.record = Computer5th(computer=self.computer)
         else:
             print('Computer is of 4th version')
-            self.record = Computer4th(computer=self.computer)
-            self.record.save_info(data_dict)
+            try:
+                self.record = Computer4th(computer=self.computer)
+                self.record.save_info(data_dict)
+            except Exception as e:
+                ex_type, ex, tb = sys.exc_info()
+                self.message = str(e.with_traceback(tb))
         
     def process_get(self):
         print('Processing get request')
         if self._is5thVersion(self.computer):
             print('Computer is of 5th version')
             self.record = Computer5th(computer=self.computer)
+            self.record.collect_info()
         else:
             print('Computer is of 4th version')
             self.record = Computer4th(computer=self.computer)

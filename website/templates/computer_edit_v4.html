@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Overview of the computer</title>
+    <title>Overview of the 4th version's computer</title>
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
     <script type="text/javascript" src="{% static 'computer_edit.js' %}"></script>
 </head>
@@ -285,7 +285,7 @@ input:read-only {
         <tr>
             <th>Date:</th>
             <td>
-                <input type="text" name="date" value="{{ record.computer.getDate }}">
+                <input type="text" name="date" value="{{ record.computer.getDate }}" readonly>
             </td>
         </tr>
         <tr>

@@ -270,13 +270,25 @@ def edit2(request, int_index):
     if request.method == 'POST':
         print("This was POST request")
         cte.process_post(request.POST.copy())
+        if cte.record.version == 4:
+            if cte.success():
+                return render(request, 'success.html')
+            else:
+                return render(
+                    request,
+                    'failure.html',
+                    {'message': cte.message},
+                    status=404
+                )
+        elif cte.record.version == 5:
+            print(5)
     if request.method == 'GET':
         print("This was GET request")
         cte.process_get()
         if cte.record.version == 4:
             return render(request, 'computer_edit_v4.html', {'record': cte.record})
         elif cte.record.version == 5:
-            print(5)
+            return render(request, 'computer_edit_v5.html', {'record': cte.record})
 
 
 @csrf_exempt
@@ -287,7 +299,6 @@ def edit_by_serial(request, serial):
     if request.method == 'POST':
         print("This was POST request")
         ecr = Edit_computer_record(request.POST.copy())
-        # return HttpResponse("Success", request)
         return render(request, 'success.html')
 
     if request.method == 'GET':

@@ -21,7 +21,7 @@ class Computer_record():
             self.license = self._licenses_save_and_get(data_dict["License"])
             self.manufacturer = self._manufacturers_save_and_get(data_dict["Manufacturer"])
             self.model = self._models_save_and_get(data_dict["Model"])
-            # self.motherboard = data_dict["motherboard_serial"]
+            # self.motherboard_serial = data_dict["motherboard_serial"]
             self.ramsize = self._ramSizes_save_and_get(data_dict["RAM"])
             self.is_sold = data_dict["IsSold"]
             print("IsSold: " + str(self.is_sold))
@@ -157,8 +157,7 @@ class Computer_record():
                 f_tester=self.tester,
                 date=self.timenow,
                 f_bios=self.bios,
-                motherboard_serial=data["motherboard_serial"],
-                # price=self.price
+                motherboard_serial=data["motherboard_serial"]
             )
             computer.save()
             self.message += "Existing record has been updated\n"
@@ -191,8 +190,7 @@ class Computer_record():
                 f_tester=self.tester,
                 date=self.timenow,
                 f_bios=self.bios,
-                motherboard_serial=data["motherboard_serial"],
-                # price=self.price
+                motherboard_serial=data["motherboard_serial"]
             )
             computer.save()
             self.message += "New record has been added\n"
@@ -338,6 +336,7 @@ class Computer_record2():
 
     def __init__(self, data_dict):
         print("in Computer_record2")
+        print(data_dict)
         self.message = ""
         self.success = None
         try:
@@ -383,7 +382,7 @@ class Computer_record2():
             existing_computer.f_tester = self.tester
             existing_computer.date = self.timenow
             existing_computer.f_bios = self.bios
-            existing_computer.motherboard_serial = self.motherboard
+            existing_computer.motherboard_serial = self.motherboard_serial
             existing_computer.f_id_matrix = self.matrix
             existing_computer.f_id_computer_resolutions = self.computer_resolution
             existing_computer.save()
@@ -400,7 +399,6 @@ class Computer_record2():
                 f_cpu=self.cpu,
                 f_gpu=self.gpu,
                 f_ram_size=self.ramsize,
-                # f_hdd_size=self.hddsize,
                 f_diagonal=self.diagonal,
                 f_license=self.license,
                 f_camera=self.camera_option,
@@ -417,10 +415,9 @@ class Computer_record2():
                 f_tester=self.tester,
                 date=self.timenow,
                 f_bios=self.bios,
-                motherboard_serial=self.motherboard,
+                motherboard_serial=self.motherboard_serial,
                 f_id_matrix=self.matrix,
                 f_id_computer_resolutions=self.computer_resolution,
-                # price=self.price
             )
             computer.save()
             self.message += "New record has been added\n"
@@ -555,7 +552,6 @@ class Computer_record2():
         self.cpu = Cpus.objects.get_or_create(cpu_name=data_dict['Processor']['1 Model'])[0]
         self.camera_option = CameraOptions.objects.get_or_create(option_name=data_dict['Others']["Camera"])[0]
         self.diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict['Display']['Diagonal'])[0]
-        # self.gpu = Gpus.objects.get_or_create(gpu_name=data_dict["GPU"]['Integrated'])[0]
         self.gpu = Gpus.objects.get_or_create(gpu_name='N/A')[0]
         self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name='N/A')
         self.license = Licenses.objects.get_or_create(license_name=data_dict['Others']["License"])[0]
@@ -563,9 +559,8 @@ class Computer_record2():
             manufacturer_name=data_dict['SystemInfo']["Manufacturer"]
         )[0]
         self.model = Models.objects.get_or_create(model_name=data_dict['SystemInfo']['Model'])[0]
-        self.motherboard = data_dict['SystemInfo']["MB Serial"]
+        self.motherboard_serial = data_dict['SystemInfo']["MB Serial"]
         self.ramsize = RamSizes.objects.get_or_create(ram_size_text=data_dict['RAM']['RAM Capacity'])[0]
-        self.is_sold = False
         self.timenow = timezone.now()
 
         resolution = Resolutions.objects.get_or_create(resolution_text=data_dict["Display"]["Resolution"])[0]
