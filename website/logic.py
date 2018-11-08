@@ -1267,6 +1267,7 @@ class RecordChoices:
         self._set_cameras()
         self._set_tester()
         self._set_resolutions()
+        self._set_resolution_categoriess()
 
     def _set_types(self):
         self.types = [record[0] for record in Types.objects.values_list("type_name")]
@@ -1307,9 +1308,13 @@ class RecordChoices:
     def _set_tester(self):
         self.testers = [record[0] for record in Testers.objects.values_list("tester_name")]
 
-   # 5th version computers only
+    # 5th version computers only
     def _set_resolutions(self):
         self.resolutions = Resolutions.objects.values_list('resolution_text', flat=True)
+
+    # 5th version computers only
+    def _set_resolution_categoriess(self):
+        self.resolution_categories = Resolutioncategories.objects.values_list('resolution_category_name', flat=True)
 
 
 class AutoFilter:
