@@ -154,3 +154,32 @@ header {
 .pic-button:hover{
     cursor: pointer;
 }
+
+.visible-section {
+    margin: 5px;
+}
+
+.show-hide-section {
+    text-align:center;
+    margin: 5px;
+}
+
+.show-hide-button {
+    margin-top: 10px;
+    border-radius: 9px 9px 4px 4px;
+}
+
+.table {
+    border-style: outset;
+    border-radius: 6px;
+}
+
+.section-member {
+    text-align:center;
+    display: inline-block; border-style: solid; border-width: 1px; border-radius: 6px;
+}
+
+.table-holder {
+    padding: 5px;
+    display: inline-block;
+}
