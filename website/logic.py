@@ -3940,8 +3940,56 @@ class Computer5th:
         self.computer = computer
 
     def collect_info(self):
+        def _get_rams():
+            ram_to_comp = RamToComp.objects.filter(f_id_computer_ram_to_com=self.computer)
+            rams = []
+            for member in ram_to_comp:
+                rams.append(member.f_id_ram_ram_to_com)
+            return rams
+
+        def _get_drives():
+            computer_drives = Computerdrives.objects.filter(f_id_computer=self.computer)
+            drives = []
+            for member in computer_drives:
+                drives.append(member.f_drive)
+            return drives
+
+        def _get_batteries():
+            bat_to_comp = BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer)
+            batteries = []
+            for member in bat_to_comp:
+                batteries.append(member.f_bat_bat_to_com)
+            return batteries
+
+        def _get_processors():
+            computer_processors = Computerprocessors.objects.filter(f_id_computer=self.computer)
+            processors = []
+            for member in computer_processors:
+                processors.append(member.f_id_processor)
+            return processors
+
+        def _get_gpus():
+            computer_gpus = Computergpus.objects.filter(f_id_computer=self.computer)
+            gpus = []
+            for member in computer_gpus:
+                gpus.append(member.f_id_gpu)
+            return gpus
+
+        def _get_observations():
+            computer_observations = Computerobservations.objects.filter(f_id_computer=self.computer)
+            observations = []
+            for member in computer_observations:
+                observations.append(member.f_id_observation)
+            return observations
+
         self.rc = RecordChoices()
-        self.rams = get_rams(self.computer.id_computer)
+        self.rams = _get_rams()
+        self.drives = _get_drives()
+        self.batteries = _get_batteries()
+        self.processors = _get_processors()
+        self.gpus = _get_gpus()
+        self.observations = _get_observations()
+        print(self.observations)
 
 
 class ComputerToEdit:

@@ -28,6 +28,9 @@ class Batteries(models.Model):
     maximum_wh = models.CharField(max_length=45, blank=True, null=True)
     factory_wh = models.CharField(max_length=45, blank=True, null=True)
 
+    def __str__(self):
+        return "serial: {0}, wear_out: {1}, expected_time: {2}, model: {3}, current_wh: {4}, maximum_wh: {5}, factory_wh: {6}".format(self.serial, self.wear_out, self.expected_time, self.model, self.current_wh, self.maximum_wh, self.factory_wh)
+
     class Meta:
         managed = True
         db_table = 'Batteries'
@@ -234,6 +237,9 @@ class Gpus(models.Model):
     f_id_manufacturer = models.ForeignKey('Manufacturers', models.DO_NOTHING, db_column='f_id_manufacturer', blank=True,
                                           null=True)
 
+    def __str__(self):
+        return "gpu_name: {0}, f_id_manufacturer: {1}".format(self.gpu_name, self.f_id_manufacturer)
+
     class Meta:
         managed = True
         db_table = 'GPUs'
@@ -291,6 +297,9 @@ class Drives(models.Model):
     f_form_factor = models.ForeignKey(FormFactor, models.DO_NOTHING, blank=True, null=True)
     f_hdd_order = models.ForeignKey(HddOrder, models.DO_NOTHING, blank=True, null=True)
 
+    def __str__(self):
+        return "hdd_serial:{0}, health:{1}, days_on:{2}, tar_member_name:{3}, f_lot:{4}, f_hdd_models:{5}, f_hdd_sizes:{6}, f_lock_state:{7}, f_speed:{8}, f_form_factor:{9}, f_hdd_order:{10}".format(self.hdd_serial, self.health, self.days_on, self.tar_member_name, self.f_lot, self.f_hdd_models, self.f_hdd_sizes, self.f_lock_state, self.f_speed, self.f_form_factor, self.f_hdd_order)
+
     class Meta:
         managed = True
         db_table = 'Drives'
@@ -327,6 +336,9 @@ class Lots(models.Model):
 class Manufacturers(models.Model):
     id_manufacturer = models.AutoField(primary_key=True)
     manufacturer_name = models.CharField(max_length=45)
+
+    def __str__(self):
+        return "manufacturer_name: {0}".format(self.manufacturer_name)
 
     class Meta:
         managed = True
@@ -389,6 +401,9 @@ class Rams(models.Model):
     capacity = models.CharField(max_length=10, blank=True, null=True)
     clock = models.CharField(max_length=10, blank=True, null=True)
     type = models.CharField(max_length=10, blank=True, null=True)
+
+    def __str__(self):
+        return "ramserial: {0}, capacity {1}, clock {2}, type {3}".format(self.ram_serial, self.capacity, self.clock, self.type)
 
     class Meta:
         managed = True
@@ -610,6 +625,9 @@ class Processors(models.Model):
     cores = models.IntegerField()
     threads = models.IntegerField()
 
+    def __str__(self):
+        return "f_manufacturer: {0}, model_name: {1}, stock_clock: {2}, max_clock: {3}, cores: {4}, threads: {5}".format(self.f_manufacturer, self.model_name, self.stock_clock, self.max_clock, self.cores, self.threads)
+
     class Meta:
         managed = True
         db_table = 'Processors'
@@ -667,6 +685,9 @@ class Observationcategory(models.Model):
     id_observation_category = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=45, blank=True, null=True)
 
+    def __str__(self):
+        return "category_name: {0}".format(self.category_name)
+
     class Meta:
         managed = True
         db_table = 'ObservationCategory'
@@ -675,6 +696,9 @@ class Observationcategory(models.Model):
 class Observationsubcategory(models.Model):
     id_observation_subcategory = models.AutoField(primary_key=True)
     subcategory_name = models.CharField(max_length=45, blank=True, null=True)
+
+    def __str__(self):
+        return "subcategory_name: {0}".format(self.subcategory_name)
 
     class Meta:
         managed = True
@@ -687,6 +711,9 @@ class Observations(models.Model):
     full_name = models.CharField(max_length=45, blank=True, null=True)
     f_id_observation_category = models.ForeignKey(Observationcategory, models.DO_NOTHING, db_column='f_id_observation_category', blank=True, null=True)
     f_id_observation_subcategory = models.ForeignKey(Observationsubcategory, models.DO_NOTHING, db_column='f_id_observation_subcategory', blank=True, null=True)
+
+    def __str__(self):
+        return "shortcode: {0}, full_name: {1}, f_id_observation_category: {2}, f_id_observation_subcategory: {3}".format(self.shortcode, self.full_name, self.f_id_observation_category, self.f_id_observation_subcategory)
 
     class Meta:
         managed = True

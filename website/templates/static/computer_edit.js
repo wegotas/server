@@ -15,3 +15,8 @@ function print_qr(index) {
         }
     }
 }
+
+function toggle_visibility(button) {
+    section = button.parentElement.parentElement.getElementsByClassName('section-member')[0];
+    section.classList.toggle('hidden');
+}

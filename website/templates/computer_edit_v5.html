@@ -7,28 +7,6 @@
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
     <script type="text/javascript" src="{% static 'computer_edit.js' %}"></script>
 </head>
-<style>
-th, td {
-font-size: 13px;
-}
-th {
-text-align: right;
-padding-right: 10px;
-}
-
-input {
-  width: 160px;
-}
-
-.edit_width {
-  width: auto;
-}
-
-input:read-only {
-  background-color: darkgrey;
-}
-
-</style>
 <body>
     <form action="" method="post">
         <div style="width: 100%; height: 70px;">
@@ -56,7 +34,7 @@ input:read-only {
                             </td>
                         </tr>
                         <tr>
-                            <th>MBserial:</th>
+                            <th>MB serial:</th>
                             <td>
                                 <input type="text" name="motherboard_serial" value="{{ record.computer.motherboard_serial }}" readonly>
                             </td>
@@ -205,9 +183,9 @@ input:read-only {
         </div>
         <div align="center" class="show-hide-section">
             <div>
-                <button type="button" class="show-hide-button">Display show/hide</button>
+                <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">Display show/hide</button>
             </div>
-            <div class="section-member">
+            <div class="section-member hidden">
                 <div class="table-holder">
                     <table class="table">
                         <tr>
@@ -262,216 +240,253 @@ input:read-only {
                 </div>
             </div>
         </div>
+        {% if record.computer.f_sale != None %}
         <div align="center" class="show-hide-section">
             <div>
-                <button type="button" class="show-hide-button">Section name</button>
+                <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">Sold info show/hide</button>
             </div>
-            <div class="section-member">
+            <div class="section-member hidden">
                 <div class="table-holder">
                     <table class="table">
                         <tr>
-                            <th colspan="2">
-                                <div align="center">Title:</div>
-                            </th>
+                            <th>Price:</th>
+                            <td>
+                                <input type="text" name="price" value="{{ record.computer.price }}">
+                            </td>
                         </tr>
                         <tr>
-                            <th>Attribute_name1:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value1"></td>
+                            <th>Date of sale:</th>
+                            <td>
+                                <input type="text" name="date_of_sale" value="{{ record.computer.f_sale.getDate }}">
+                            </td>
                         </tr>
                         <tr>
-                            <th>Attribute_name2:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value2"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name3:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value3"></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="table-holder">
-                    <table class="table">
-                        <tr>
-                            <th colspan="2">
-                                <div align="center">Title:</div>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name1:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value1"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name2:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value2"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name3:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value3"></td>
+                            <th>Client:</th>
+                            <td>
+                                <input type="text" name="client_name" value="{{ record.computer.f_sale.f_id_client.client_name }}">
+                            </td>
                         </tr>
                     </table>
                 </div>
             </div>
         </div>
+        {% endif %}
+        {% if record.rams %}
         <div align="center" class="show-hide-section">
             <div>
-                <button type="button" class="show-hide-button">Section name</button>
+                <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">RAMs show/hide</button>
             </div>
-            <div class="section-member">
+            <div class="section-member hidden">
+                {% for member in record.rams %}
                 <div class="table-holder">
                     <table class="table">
                         <tr>
-                            <th colspan="2">
-                                <div align="center">Title:</div>
-                            </th>
+                            <th>Serial:</th>
+                            <td><input type="text" value="{{ member.ram_serial }}" readonly></td>
                         </tr>
                         <tr>
-                            <th>Attribute_name1:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value1"></td>
+                            <th>Capacity:</th>
+                            <td><input type="text" value="{{ member.capacity }}" readonly></td>
                         </tr>
                         <tr>
-                            <th>Attribute_name2:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value2"></td>
+                            <th>Clock:</th>
+                            <td><input type="text" value="{{ member.clock }}" readonly></td>
                         </tr>
                         <tr>
-                            <th>Attribute_name3:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value3"></td>
+                            <th>Type:</th>
+                            <td><input type="text" value="{{ member.type }}" readonly></td>
                         </tr>
                     </table>
                 </div>
-                <div class="table-holder">
-                    <table class="table">
-                        <tr>
-                            <th colspan="2">
-                                <div align="center">Title:</div>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name1:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value1"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name2:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value2"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name3:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value3"></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="table-holder">
-                    <table class="table">
-                        <tr>
-                            <th colspan="2">
-                                <div align="center">Title:</div>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name1:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value1"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name2:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value2"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name3:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value3"></td>
-                        </tr>
-                    </table>
-                </div>
+                {% endfor%}
             </div>
         </div>
+        {% endif %}
+        {% if record.drives %}
         <div align="center" class="show-hide-section">
             <div>
-                <button type="button" class="show-hide-button">Section name</button>
+                <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">Drives show/hide</button>
             </div>
-            <div class="section-member">
+            <div class="section-member hidden">
+                {% for member in record.drives %}
                 <div class="table-holder">
                     <table class="table">
                         <tr>
-                            <th colspan="2">
-                                <div align="center">Title:</div>
-                            </th>
+                            <th>Serial:</th>
+                            <td><input type="text" value="{{ member.hdd_serial }}" readonly></td>
                         </tr>
                         <tr>
-                            <th>Attribute_name1:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value1"></td>
+                            <th>Health:</th>
+                            <td><input type="text" value="{{ member.health }}" readonly></td>
                         </tr>
                         <tr>
-                            <th>Attribute_name2:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value2"></td>
+                            <th>Days on:</th>
+                            <td><input type="text" value="{{ member.days_on }}" readonly></td>
                         </tr>
                         <tr>
-                            <th>Attribute_name3:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value3"></td>
+                            <th>Model:</th>
+                            <td><input type="text" value="{{ member.f_hdd_models.hdd_models_name }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Capacity:</th>
+                            <td><input type="text" value="{{ member.f_hdd_sizes.hdd_sizes_name }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Lock state:</th>
+                            <td><input type="text" value="{{ member.f_lock_state.lock_state_name }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Speed:</th>
+                            <td><input type="text" value="{{ member.f_speed.speed_name }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Form factor:</th>
+                            <td><input type="text" value="{{ member.f_form_factor.form_factor_name }}" readonly></td>
                         </tr>
                     </table>
                 </div>
-                <div class="table-holder">
-                    <table class="table">
-                        <tr>
-                            <th colspan="2">
-                                <div align="center">Title:</div>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name1:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value1"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name2:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value2"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name3:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value3"></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="table-holder">
-                    <table class="table">
-                        <tr>
-                            <th colspan="2">
-                                <div align="center">Title:</div>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name1:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value1"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name2:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value2"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name3:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value3"></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="table-holder">
-                    <table class="table">
-                        <tr>
-                            <th colspan="2">
-                                <div align="center">Title:</div>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name1:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value1"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name2:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value2"></td>
-                        </tr>
-                        <tr>
-                            <th>Attribute_name3:</th>
-                            <td><input style="width: 150px;" type="text" value="Attribute value3"></td>
-                        </tr>
-                    </table>
-                </div>
+                {% endfor%}
             </div>
         </div>
+        {% endif %}
+        {% if record.batteries %}
+        <div align="center" class="show-hide-section">
+            <div>
+                <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">Batteries show/hide</button>
+            </div>
+            <div class="section-member hidden">
+                {% for member in record.batteries %}
+                <div class="table-holder">
+                    <table class="table">
+                        <tr>
+                            <th>Serial:</th>
+                            <td><input type="text" value="{{ member.serial }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Wear out:</th>
+                            <td><input type="text" value="{{ member.wear_out }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Expected time:</th>
+                            <td><input type="text" value="{{ member.expected_time }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Model:</th>
+                            <td><input type="text" value="{{ member.model }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Current wh:</th>
+                            <td><input type="text" value="{{ member.current_wh }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Maximum wh:</th>
+                            <td><input type="text" value="{{ member.maximum_wh }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Factory wh:</th>
+                            <td><input type="text" value="{{ member.factory_wh }}" readonly></td>
+                        </tr>
+                    </table>
+                </div>
+                {% endfor%}
+            </div>
+        </div>
+        {% endif %}
+        {% if record.processors %}
+        <div align="center" class="show-hide-section">
+            <div>
+                <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">Processors show/hide</button>
+            </div>
+            <div class="section-member hidden">
+                {% for member in record.processors %}
+                <div class="table-holder">
+                    <table class="table">
+                        <tr>
+                            <th>Manufacturer:</th>
+                            <td><input type="text" value="{{ member.f_manufacturer.manufacturer_name }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Model:</th>
+                            <td><input type="text" value="{{ member.model_name }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Stock clock:</th>
+                            <td><input type="text" value="{{ member.stock_clock }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Max clock:</th>
+                            <td><input type="text" value="{{ member.max_clock }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Core count:</th>
+                            <td><input type="text" value="{{ member.cores }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Thread count:</th>
+                            <td><input type="text" value="{{ member.threads }}" readonly></td>
+                        </tr>
+                    </table>
+                </div>
+                {% endfor%}
+            </div>
+        </div>
+        {% endif %}
+        {% if record.gpus %}
+        <div align="center" class="show-hide-section">
+            <div>
+                <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">GPUs show/hide</button>
+            </div>
+            <div class="section-member hidden">
+                {% for member in record.gpus %}
+                <div class="table-holder">
+                    <table class="table">
+                        <tr>
+                            <th>Manufacturer:</th>
+                            <td><input type="text" value="{{ member.f_id_manufacturer.manufacturer_name }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>GPU:</th>
+                            <td><input type="text" value="{{ member.gpu_name }}" readonly></td>
+                        </tr>
+                    </table>
+                </div>
+                {% endfor%}
+            </div>
+        </div>
+        {% endif %}
+        {% if record.observations %}
+        <div align="center" class="show-hide-section">
+            <div>
+                <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">Observations show/hide</button>
+            </div>
+            <div class="section-member hidden">
+                {% for member in record.observations %}
+                <div class="table-holder">
+                    <table class="table">
+                        <tr>
+                            <th>Shortcode:</th>
+                            <td><input type="text" value="{{ member.shortcode }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Category:</th>
+                            <td><input type="text" value="{{ member.f_id_observation_category.category_name }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Subcategory:</th>
+                            <td><input type="text" value="{{ member.f_id_observation_subcategory.subcategory_name }}" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Full description:</th>
+                            <td>
+                                <textarea rows="4" cols="23" type="text" style="resize: none;" readonly>{{ member.full_name }}</textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                {% endfor%}
+            </div>
+        </div>
+        {% endif %}
     </form>
 </body>
 </html>

@@ -176,10 +176,35 @@ header {
 
 .section-member {
     text-align:center;
-    display: inline-block; border-style: solid; border-width: 1px; border-radius: 6px;
+    display: inline-block;
 }
 
 .table-holder {
     padding: 5px;
     display: inline-block;
+}
+
+th, td {
+    font-size: 13px;
+}
+
+th {
+    text-align: right;
+    padding-right: 10px;
+}
+
+input {
+    width: 160px;
+}
+
+.edit_width {
+    width: auto;
+}
+
+input:read-only {
+    background-color: darkgrey;
+}
+
+.hidden {
+    display: none;
 }
