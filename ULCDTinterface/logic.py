@@ -329,7 +329,7 @@ class Computer_record():
         return ramSize
 
 
-class Computer_record2():
+class Computer_record2:
     '''
     Modified version of Computer_record to be compatible with 5th version of build.
     '''
@@ -355,8 +355,10 @@ class Computer_record2():
             self.success = False
 
     def _computer_save_and_get(self, data):
+        print('_computer_save_and_get')
         try:
             existing_computer = Computers.objects.get(computer_serial=data['SystemInfo']['Serial Number'])
+            print('after existing computer')
             existing_computer.id_computer = existing_computer.id_computer
             existing_computer.computer_serial = data['SystemInfo']['Serial Number']
             existing_computer.f_type = self.type
@@ -385,6 +387,14 @@ class Computer_record2():
             existing_computer.motherboard_serial = self.motherboard_serial
             existing_computer.f_id_matrix = self.matrix
             existing_computer.f_id_computer_resolutions = self.computer_resolution
+            if existing_computer.f_id_comp_ord:
+                if "Order" in data and "Status" in data["Order"]:
+                    comp_ord = existing_computer.f_id_comp_ord
+                    if data["Order"]["Status"] == "In-Preperation":
+                        comp_ord.is_ready = 0
+                    elif data["Order"]["Status"] == "Ready":
+                        comp_ord.is_ready = 1
+                    comp_ord.save()
             existing_computer.save()
             self.message += "Existing record has been updated\n"
             return existing_computer

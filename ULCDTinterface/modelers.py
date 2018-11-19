@@ -180,7 +180,6 @@ class Computers(models.Model):
     f_sale = models.ForeignKey('Sales', models.DO_NOTHING, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     f_id_comp_ord = models.ForeignKey(CompOrd, models.DO_NOTHING, db_column='f_id_comp/ord', blank=True, null=True)  # Field renamed to remove unsuitable characters.
-    f_id_resolution = models.ForeignKey('Resolutions', models.DO_NOTHING, db_column='f_id_resolution', blank=True, null=True)
     f_id_matrix = models.ForeignKey('Matrixes', models.DO_NOTHING, db_column='f_id_matrix', blank=True, null=True)
     f_id_computer_resolutions = models.ForeignKey(Computerresolutions, models.DO_NOTHING,
                                                   db_column='f_id_computer_resolutions', blank=True, null=True)

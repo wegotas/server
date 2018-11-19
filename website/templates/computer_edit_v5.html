@@ -219,7 +219,7 @@
                         <tr>
                             <th>Resolution category:</th>
                             <td>
-                                <input list="resolution_categories" name="resolution_text" value="{{ record.computer.f_id_computer_resolutions.f_id_resolution_category.resolution_category_name }}">
+                                <input list="resolution_categories" name="resolution_category_text" value="{{ record.computer.f_id_computer_resolutions.f_id_resolution_category.resolution_category_name }}">
                                 <datalist id="resolution_categories">
                                     {% for category in record.rc.resolution_categories %}
                                     <option

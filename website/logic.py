@@ -1496,7 +1496,7 @@ class NewOrder:
             for tester_name in tester_names:
                 tester = Testers.objects.get(tester_name=tester_name)
                 ord_tes = OrdTes(
-                    f_hdd_order=order,
+                    f_order=order,
                     f_id_tester=tester
                 )
                 ord_tes.save()
@@ -1525,7 +1525,7 @@ class NewOrder:
 
         if self.data.get('order_name') != "" and self.data.get('order_name') is not None:
             if Orders.objects.filter(order_name=self.data.get('order_name')).exists():
-                self.error_list.append("Order with such name allready exists")
+                self.error_list.append("Order with such name already exists")
 
         for i in range(len(fieldnames)):
             if self.data.get(fieldnames[i]) == "" or self.data.get(fieldnames[i]) is None:
@@ -3885,6 +3885,7 @@ class Computer4th:
             self.computer.save()
 
         def _save_stored_computer():
+            print('saving stored computer')
             self.computer.f_type = type
             self.computer.f_category = category
             self.computer.f_manufacturer = manufacturer
@@ -3989,7 +3990,85 @@ class Computer5th:
         self.processors = _get_processors()
         self.gpus = _get_gpus()
         self.observations = _get_observations()
-        print(self.observations)
+
+    def save_info(self, data_dict):
+        def _save_sold_computer():
+            print('saving sold computer')
+            client = Clients.objects.get_or_create(client_name=data_dict.pop('client_name')[0])[0]
+            sale = self.computer.f_sale
+            sale.f_id_client = client
+            sale.date_of_sale = data_dict.pop('date_of_sale')[0]
+            sale.save()
+            self.computer.price = data_dict.pop('price')[0]
+            self.computer.f_type = type
+            self.computer.f_category = category
+            self.computer.f_manufacturer = manufacturer
+            self.computer.f_model = model
+            self.computer.f_ram_size = ram_size
+            self.computer.f_diagonal = diagonal
+            self.computer.f_license = license
+            self.computer.f_camera = option
+            self.computer.f_tester = tester
+            self.computer.f_diagonal = diagonal
+            self.computer.f_id_computer_resolutions = computer_resolutions
+            self.computer.other = data_dict.pop('other')[0]
+            self.computer.save()
+
+        def _save_ordered_computer():
+            print('saving ordered computer')
+            self.computer.f_type = type
+            self.computer.f_category = category
+            self.computer.f_manufacturer = manufacturer
+            self.computer.f_model = model
+            self.computer.f_ram_size = ram_size
+            self.computer.f_diagonal = diagonal
+            self.computer.f_license = license
+            self.computer.f_camera = option
+            self.computer.f_tester = tester
+            self.computer.f_diagonal = diagonal
+            self.computer.f_id_computer_resolutions = computer_resolutions
+            self.computer.other = data_dict.pop('other')[0]
+            self.computer.save()
+
+        def _save_stored_computer():
+            print('saving stored computer')
+            self.computer.f_type = type
+            self.computer.f_category = category
+            self.computer.f_manufacturer = manufacturer
+            self.computer.f_model = model
+            self.computer.f_ram_size = ram_size
+            self.computer.f_diagonal = diagonal
+            self.computer.f_license = license
+            self.computer.f_camera = option
+            self.computer.f_tester = tester
+            self.computer.f_diagonal = diagonal
+            self.computer.f_id_computer_resolutions = computer_resolutions
+            self.computer.other = data_dict.pop('other')[0]
+            self.computer.save()
+
+        print(data_dict)
+        type = Types.objects.get_or_create(type_name=data_dict.pop('type_name')[0])[0]
+        category = Categories.objects.get_or_create(category_name=data_dict.pop('category_name')[0])[0]
+        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=data_dict.pop('manufacturer_name')[0])[0]
+        model = Models.objects.get_or_create(model_name=data_dict.pop('model_name')[0])[0]
+        ram_size = RamSizes.objects.get_or_create(ram_size_text=data_dict.pop('ram_size_text')[0])[0]
+        tester = Testers.objects.get_or_create(tester_name=data_dict.pop('tester_name')[0])[0]
+        license = Licenses.objects.get_or_create(license_name=data_dict.pop('license_name')[0])[0]
+        option = CameraOptions.objects.get_or_create(option_name=data_dict.pop('option_name')[0])[0]
+        diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict.pop('diagonal_text')[0])[0]
+        resolution = Resolutions.objects.get_or_create(resolution_text=data_dict.pop('resolution_text')[0])[0]
+        resolution_category = Resolutioncategories.objects.get_or_create(resolution_category_name=data_dict.pop('resolution_category_text')[0])[0]
+        computer_resolutions = Computerresolutions.objects.get_or_create(
+            f_id_resolution=resolution,
+            f_id_resolution_category=resolution_category
+        )[0]
+
+        if self.computer.f_sale:
+            _save_sold_computer()
+        elif self.computer.f_id_comp_ord:
+            _save_ordered_computer()
+        else:
+            _save_stored_computer()
 
 
 class ComputerToEdit:
@@ -4012,7 +4091,12 @@ class ComputerToEdit:
         data_dict.pop('date')
         if self._is5thVersion(self.computer):
             print('Computer is of 5th version')
-            self.record = Computer5th(computer=self.computer)
+            try:
+                self.record = Computer5th(computer=self.computer)
+                self.record.save_info(data_dict)
+            except Exception as e:
+                ex_type, ex, tb = sys.exc_info()
+                self.message = str(e.with_traceback(tb))
         else:
             print('Computer is of 4th version')
             try:

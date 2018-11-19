@@ -87,11 +87,28 @@ def process_data(request):
 def aux_data2(request):
     print("aux_data called")
     if request.method == "GET":
+        def _get_formed_observations_dict():
+            variables = Observations.objects.all()
+            observation_dict = dict()
+            for variable in variables:
+                cat_name = variable.f_id_observation_category.category_name
+                sub_cat_name = variable.f_id_observation_subcategory.subcategory_name
+                full_name = variable.full_name
+                shortcode = variable.shortcode
+
+                if not cat_name in observation_dict:
+                    observation_dict[cat_name] = {}
+                if not sub_cat_name in observation_dict[cat_name]:
+                    observation_dict[cat_name][sub_cat_name] = {}
+                observation_dict[cat_name][sub_cat_name][full_name] = shortcode
+            return observation_dict
+
         print("GET aux_data")
         dict_dict = dict()
         dict_dict["Categories"] = list(Categories.objects.all().values_list('category_name', flat=True))
         dict_dict["Types"] = list(Types.objects.all().values_list('type_name', flat=True))
         dict_dict["Testers"] = list(Testers.objects.all().values_list('tester_name', flat=True))
+        dict_dict['Observations'] = _get_formed_observations_dict()
         print(dict_dict)
         return JsonResponse(dict_dict)
 
