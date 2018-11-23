@@ -1,5 +1,7 @@
 {% block 'table' %}
-{% if po and computers  %}
+{% if po and computers and global  %}
+{% include 'computersSearchedSubTemplate.html' %}
+{% elif po and computers  %}
 {% include 'computersSubTemplate.html' %}
 {% elif orders %}
 {% include 'computerOrdersSubTemplate.html' %}

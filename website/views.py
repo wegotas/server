@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render
 from rest_framework.parsers import JSONParser
 from website.forms import *
+import json
 
 
 def index(request):
@@ -103,7 +104,8 @@ def index(request):
                 "cattyp": cattyp,
                 "poscat": possible_categories,
                 "po": po,
-                'so': so
+                'so': so,
+                "global": True
             }
         )
 
@@ -281,7 +283,15 @@ def edit2(request, int_index):
                     status=404
                 )
         elif cte.record.version == 5:
-            print(5)
+            if cte.success():
+                return render(request, 'success.html')
+            else:
+                return render(
+                    request,
+                    'failure.html',
+                    {'message': cte.message},
+                    status=404
+                )
     if request.method == 'GET':
         print("This was GET request")
         cte.process_get()
@@ -418,7 +428,8 @@ def mass_delete(request):
         print("This was GET request")
     data = JSONParser().parse(request)
     for record_index in data:
-        recordDeleteByIndex(record_index)
+        cte = ComputerToEdit(int_index=record_index)
+        cte.delete_record()
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
@@ -1153,7 +1164,9 @@ def print_computer_qr(request, int_index):
     print('print_computer_qr')
     if request.method == 'POST':
         print('POST method')
-        cssp = ComputerSingleSerialPrinter(JSONParser().parse(request))
+        variable = JSONParser().parse(request)
+        # variable = json.loads(request.body)
+        cssp = ComputerSingleSerialPrinter(variable)
         cssp.print()
     if request.method == 'GET':
         print('GET method')

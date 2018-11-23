@@ -248,6 +248,7 @@
                         </div>
                     </div>
                 </th>
+                <th>Status</th>
                 <th>Other <button type="button" class="filter-button" onclick="autoFilterMenu('af-Other')">&#8642;</button>
                     <div id="af-Other" class="autofilter">
                         <div class="af-top">
@@ -288,11 +289,9 @@
                 <td>{{ computer.f_model.model_name }}</td>
                 <td>{{ computer.f_cpu.cpu_name }}</td>
                 <td>{{ computer.f_ram_size.ram_size_text }}</td>
-                <!--
-                <td>{{ computer.f_gpu.gpu_name }}</td>
-                -->
                 <td>{{ computer.get_gpu }}</td>
                 <td>{{ computer.f_diagonal.diagonal_text }}</td>
+                <td><font color="{{ computer.get_status_color }}">{{ computer.get_status }}</font></td>
                 <td>{{ computer.getOther2lines|linebreaksbr }}</td>
                 <td>
                     <button class="img-button" onclick="edit({{ computer.id_computer }})">

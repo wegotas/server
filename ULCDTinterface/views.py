@@ -127,12 +127,23 @@ def process_data2(request):
         else:
             status_code = 202
             record.message += "Something gone wrong. Notify administrator of this problem."
-        return HttpResponse(record.message, status=status_code)
+
+        if status_code == 200:
+            data = {}
+            data["Index"] = record.computer.id_computer
+            json_data = json.dumps(data)
+            return HttpResponse(json_data, status=status_code)
+        else:
+            return HttpResponse(record.message, status=status_code)
     if request.method == 'GET':
+        print("GET proccess_data2")
         query_string = request.META['QUERY_STRING']
+        print("after query_string")
         datastring = unquote(query_string)
+        print("after datastring")
         data = json.loads(datastring)
         try:
+            print("try block")
             csb = Computer_data_dict_builder(str(data["Serial"]).strip())
             return JsonResponse(csb.data_dict)
         except Exception as e:

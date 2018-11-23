@@ -105,6 +105,13 @@ class SearchOptions {
             this.removeOption(tagname, text);
         }
     }
+
+    callect_initial_options() {
+        var checkboxes = document.getElementsByClassName("option-checkbox");
+        for (checkbox of checkboxes) {
+            this.process_option(checkbox);
+        }
+    }
 }
 
 class AFManager {
@@ -240,6 +247,7 @@ function load() {
     }
   })
   searchoptions.set_option_row_count();
+  searchoptions.callect_initial_options();
 }
 
 function remove_keyword() {

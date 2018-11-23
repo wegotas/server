@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse, QueryDict
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from server.modelers import Computers, Types, Categories, Testers
+from ULCDTinterface.modelers import Computers, Types, Categories, Testers
 import datetime
 import json
 from urllib.parse import parse_qs, unquote

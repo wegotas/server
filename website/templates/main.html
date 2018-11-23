@@ -18,5 +18,13 @@
             {% include 'tableSubTemplate.html' %}
         </div>
     </div>
+<script type="text/javascript">
+(function(w, d, s, u) {
+	w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
+	var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
+	j.async = true; j.src = 'http://192.168.8.254:3000/packages/rocketchat_livechat/assets/rocketchat-livechat.min.js?_=201702160944';
+	h.parentNode.insertBefore(j, h);
+})(window, document, 'script', 'http://192.168.8.254:3000/livechat');
+</script>
 </body>
 </html>

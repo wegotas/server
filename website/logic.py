@@ -3496,13 +3496,6 @@ class ChargerSerialEditor:
 class ChargerSingleSerialPrinter:
 
     def __init__(self, data):
-        # int_index = data['Index']
-        # charger = Chargers.objects.get(charger_id=int_index)
-        # manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
-        # power = charger.f_charger_category.watts
-        # connector_type = charger.f_charger_category.connector_type
-        # serial = charger.charger_serial
-        # self.full_serial = manufacturer + '_' + str(power) + 'W' + connector_type + '_' + serial
         self.full_serial = self._form_serial(data['Index'])
         self.base_url = 'http://192.168.8.254:8000/website/serial/'
 
@@ -3525,11 +3518,6 @@ class ChargerDualSerialPrinter:
     def __init__(self, data):
         self.final_serials = []
         for member in data:
-            # charger = Chargers.objects.get(charger_id=member)
-            # manufacturer = charger.f_charger_category.f_manufacturer.manufacturer_name
-            # power = charger.f_charger_category.watts
-            # connector_type = charger.f_charger_category.connector_type
-            # serial = charger.charger_serial
             full_serial = self._form_serial(data['Index'])
             self.final_serials.append(full_serial)
         self.base_url = 'http://192.168.8.254:8000/website/serial/'
@@ -3551,6 +3539,11 @@ class ChargerDualSerialPrinter:
 class ComputerSingleSerialPrinter:
 
     def __init__(self, data):
+        print(type(data))
+        print(data)
+        print(data['Index'])
+        # print(type(data['Index']))
+        # print(data['Index'])
         self.full_serial = self._form_serial(data['Index'])
         self.base_url = 'http://192.168.8.254:8000/website/by_serial/'
 
@@ -3613,8 +3606,8 @@ class Qrgenerator:
         print('print_as_singular')
         print(self.serials)
         for serial in self.serials:
-            
-            image = self._formImagePair(serial, None)
+            # image = self._formImagePair(serial, None)
+            image = self._fromSerialToImage(serial)
             with tempfile.NamedTemporaryFile() as temp:
                 imgByteArr = io.BytesIO()
                 image.save(imgByteArr, format='PNG')
@@ -3932,6 +3925,48 @@ class Computer4th:
         else:
             _save_stored_computer()
 
+    def delete(self):
+        def try_to_delete(object):
+            try:
+                object.delete()
+            except:
+                pass
+            
+        print("This is 4th version's delete")
+        for bat_to_comp in BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer):
+            bat = bat_to_comp.f_bat_bat_to_com
+            try_to_delete(bat_to_comp)
+            try_to_delete(bat)
+
+        for hdd_to_comp in HddToComp.objects.filter(f_id_computer_hdd_to_com=self.computer):
+            hdd = hdd_to_comp.f_id_hdd_hdd_to_com
+            try_to_delete(hdd_to_comp)
+            try_to_delete(hdd)
+
+        for ram_to_comp in RamToComp.objects.filter(f_id_computer_ram_to_com=self.computer):
+            ram = ram_to_comp.f_id_ram_ram_to_com
+            try_to_delete(ram_to_comp)
+            try_to_delete(ram)
+
+        # gathering objects
+        comp_ord = self.computer.f_id_comp_ord
+        sale = self.computer.f_sale
+        diagonal = self.computer.f_diagonal
+        ramsize = self.computer.f_ram_size
+        hddsize = self.computer.f_hdd_size
+        cpu = self.computer.f_cpu
+        model = self.computer.f_model
+
+        # objects deletion
+        try_to_delete(self.computer)
+        try_to_delete(comp_ord)
+        try_to_delete(sale)
+        try_to_delete(diagonal)
+        try_to_delete(ramsize)
+        try_to_delete(hddsize)
+        try_to_delete(cpu)
+        try_to_delete(model)
+
 
 class Computer5th:
 
@@ -4070,6 +4105,62 @@ class Computer5th:
         else:
             _save_stored_computer()
 
+    def delete(self):
+
+        def try_to_delete(object):
+            try:
+                object.delete()
+            except:
+                pass
+
+        print("This is 5th version's delete")
+        for bat_to_comp in BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer):
+            bat = bat_to_comp.f_bat_bat_to_com
+            try_to_delete(bat_to_comp)
+            try_to_delete(bat)
+
+        for ram_to_comp in RamToComp.objects.filter(f_id_computer_ram_to_com=self.computer):
+            ram = ram_to_comp.f_id_ram_ram_to_com
+            try_to_delete(ram_to_comp)
+            try_to_delete(ram)
+
+        for computer_drive in Computerdrives.objects.filter(f_id_computer=self.computer):
+            drive = computer_drive.f_drive
+            try_to_delete(computer_drive)
+            try_to_delete(drive)
+
+        for computer_processor in Computerprocessors.objects.filter(f_id_computer=self.computer):
+            processor = computer_processor.f_id_processor
+            try_to_delete(computer_processor)
+            try_to_delete(processor)
+
+        for computer_gpu in Computergpus.objects.filter(f_id_computer=self.computer):
+            gpu = computer_gpu.f_id_gpu
+            try_to_delete(computer_gpu)
+            try_to_delete(gpu)
+
+        for computer_observation in Computerobservations.objects.filter(f_id_computer=self.computer):
+            try_to_delete(computer_observation)
+
+        # gathering objects
+        computer_resolution = self.computer.f_id_computer_resolutions
+        resolution = computer_resolution.f_id_resolution
+        resolution_category = computer_resolution.f_id_resolution_category
+        sale = self.computer.f_sale
+        comp_ord = self.computer.f_id_comp_ord
+        matrix = self.computer.f_id_matrix
+        cable_type = matrix.f_id_cable_type
+
+        # objects deletion
+        try_to_delete(self.computer)
+        try_to_delete(computer_resolution)
+        try_to_delete(resolution)
+        try_to_delete(resolution_category)
+        try_to_delete(sale)
+        try_to_delete(comp_ord)
+        try_to_delete(matrix)
+        try_to_delete(cable_type)
+
 
 class ComputerToEdit:
 
@@ -4117,11 +4208,22 @@ class ComputerToEdit:
             self.record = Computer4th(computer=self.computer)
             self.record.collect_info()
 
+    def delete_record(self):
+        print('Processing delete request')
+        if self._is5thVersion(self.computer):
+            print('Computer is of 5th version')
+            self.record = Computer5th(computer=self.computer)
+            self.record.delete()
+        else:
+            print('Computer is of 4th version')
+            self.record = Computer4th(computer=self.computer)
+            self.record.delete()
+
     def _is5thVersion(self, computer):
         return computer.f_id_computer_resolutions \
-                and computer.f_id_matrix \
-                and Computerprocessors.objects.filter(f_id_computer=computer).count() > 0 \
-                and Computergpus.objects.filter(f_id_computer=computer).count() > 0 \
-                and Computerobservations.objects.filter(f_id_computer=computer).count() > 0 \
-                and Computerdrives.objects.filter(f_id_computer=computer).count() > 0
+                or computer.f_id_matrix \
+                or Computerprocessors.objects.filter(f_id_computer=computer).count() > 0 \
+                or Computergpus.objects.filter(f_id_computer=computer).count() > 0 \
+                or Computerobservations.objects.filter(f_id_computer=computer).count() > 0 \
+                or Computerdrives.objects.filter(f_id_computer=computer).count() > 0
 

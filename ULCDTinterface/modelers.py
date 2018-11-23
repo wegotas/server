@@ -5,8 +5,8 @@
 #   * Make sure each ForeignKey has `on_delete` set to the desired behavior.
 #   * Remove `managed = True` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
-from django.db import models
 from django.core.validators import FileExtensionValidator
+from django.db import models
 
 
 class Bioses(models.Model):
@@ -135,7 +135,7 @@ class Resolutioncategories(models.Model):
     resolution_category_name = models.CharField(max_length=20)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'ResolutionCategories'
 
 
@@ -145,7 +145,7 @@ class Computerresolutions(models.Model):
     f_id_resolution_category = models.ForeignKey('Resolutioncategories', models.DO_NOTHING, db_column='f_id_resolution_category')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'ComputerResolutions'
 
 
@@ -184,7 +184,6 @@ class Computers(models.Model):
     f_id_computer_resolutions = models.ForeignKey(Computerresolutions, models.DO_NOTHING,
                                                   db_column='f_id_computer_resolutions', blank=True, null=True)
 
-
     class Meta:
         managed = True
         db_table = 'Computers'
@@ -196,10 +195,46 @@ class Computers(models.Model):
             return self.date.strftime('%Y-%m-%d')
 
     def getOther2lines(self):
-        if '\n' in self.other:
-            otherList = self.other.split('\n')
+        if '\n' in self.get_other():
+            otherList = self.get_other().split('\n')
             return otherList[0]+'\n' + otherList[1]
+        return self.get_other()
+
+    def _is5thVersion(self):
+        return self.f_id_computer_resolutions \
+               or self.f_id_matrix \
+               or Computerprocessors.objects.filter(f_id_computer=self).count() > 0 \
+               or Computergpus.objects.filter(f_id_computer=self).count() > 0 \
+               or Computerobservations.objects.filter(f_id_computer=self).count() > 0 \
+               or Computerdrives.objects.filter(f_id_computer=self).count() > 0
+
+    def get_gpu(self):
+        if self._is5thVersion():
+            comp_gpus = Computergpus.objects.filter(f_id_computer=self)
+            return ", ".join(comp_gpus.values_list("f_id_gpu__gpu_name", flat=True))
+        return self.f_gpu.gpu_name
+
+    def get_other(self):
+        if self._is5thVersion():
+            comp_observ = Computerobservations.objects.filter(f_id_computer=self)
+            return "\n".join(comp_observ.values_list("f_id_observation__full_name", flat=True)) + '\r\n' + self.other
         return self.other
+
+    def get_status_color(self):
+        if self.f_sale:
+            return "red"
+        elif self.f_id_comp_ord:
+            return 'orange'
+        else:
+            return "green"
+
+    def get_status(self):
+        if self.f_sale:
+            return "Sold"
+        elif self.f_id_comp_ord:
+            return 'Ordered'
+        else:
+            return "No status"
 
 
 class Diagonals(models.Model):
@@ -474,7 +509,7 @@ class Types(models.Model):
             typ_dict[type.id_type] = type.type_name
         return typ_dict
 
-
+'''
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=80)
 
@@ -539,7 +574,7 @@ class AuthUserUserPermissions(models.Model):
         managed = True
         db_table = 'auth_user_user_permissions'
         unique_together = (('user', 'permission'),)
-
+'''
 
 class BatToComp(models.Model):
     id_bat_to_comp = models.AutoField(primary_key=True)
@@ -550,7 +585,7 @@ class BatToComp(models.Model):
         managed = True
         db_table = 'bat_to_comp'
 
-
+'''
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
     object_id = models.TextField(blank=True, null=True)
@@ -593,7 +628,7 @@ class DjangoSession(models.Model):
     class Meta:
         managed = True
         db_table = 'django_session'
-
+'''
 
 class HddToComp(models.Model):
     id_hdd_to_comp = models.AutoField(primary_key=True)
