@@ -88,9 +88,9 @@ def index(request):
         counter = Counter()
         qtySelect = QtySelect()
         af = AutoFiltersFromComputers(computers)
-        category_querySet = Categories.objects.values_list('category_name')
+        category_queryset = Categories.objects.values_list('category_name')
         possible_categories = []
-        for query_member in category_querySet:
+        for query_member in category_queryset:
             possible_categories.append(query_member[0])
         po = PossibleOrders()
         return render(
