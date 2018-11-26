@@ -300,6 +300,40 @@ input:read-only {
                 <input type="text" name="motherboard_serial" value="{{ record.computer.motherboard_serial }}" readonly>
             </td>
         </tr>
+        <!--
+        Needs to be filled in to portray a basic info of an order
+        -->
+        {% if record.computer.f_id_comp_ord %}
+        <tr>
+            <td align="center" colspan="2">
+                <button type="button" onclick="open_order({{ record.computer.f_id_comp_ord.f_order_id_to_order.id_order }})">Look at order</button>
+            </td>
+        </tr>
+        <tr>
+            <th>Computer's status in order:</th>
+            <td>
+                <input type="text" value="{{ record.computer.f_id_comp_ord.get_status }}" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th>Order name:</th>
+            <td>
+                <input type="text" value="{{ record.computer.f_id_comp_ord.f_order_id_to_order.order_name }}" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th>Client name:</th>
+            <td>
+                <input type="text" value="{{ record.computer.f_id_comp_ord.f_order_id_to_order.f_id_client.client_name }}" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th>Computer's status in order:</th>
+            <td>
+                <input type="text" value="{{ record.computer.f_id_comp_ord.get_status }}" readonly>
+            </td>
+        </tr>
+        {% endif %}
         {% if record.computer.f_sale != None %}
         <tr>
             <th>Price:</th>

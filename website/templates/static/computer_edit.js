@@ -20,3 +20,14 @@ function toggle_visibility(button) {
     section = button.parentElement.parentElement.getElementsByClassName('section-member')[0];
     section.classList.toggle('hidden');
 }
+
+function open_order(index) {
+    console.log(index);
+    URLtoWorkWith = location.href;
+    console.log(URLtoWorkWith);
+    parts = URLtoWorkWith.split('/')
+    for (var i =0; i<3; i++) {
+		parts.pop();
+	}
+    var editWindow = window.open(parts.join('/')+'/edit_order/'+index+'/', "", "width=1000,height=650");
+}

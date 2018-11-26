@@ -129,6 +129,11 @@ class CompOrd(models.Model):
         managed = True
         db_table = 'Comp/Ord'
 
+    def get_status(self):
+        if self.is_ready:
+            return "Ready"
+        return "In-Preperation"
+
 
 class Resolutioncategories(models.Model):
     id_resolution_category = models.AutoField(primary_key=True)

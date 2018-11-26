@@ -291,7 +291,7 @@
                 <td>{{ computer.f_ram_size.ram_size_text }}</td>
                 <td>{{ computer.get_gpu }}</td>
                 <td>{{ computer.f_diagonal.diagonal_text }}</td>
-                <td><font color="{{ computer.get_status_color }}">{{ computer.get_status }}</font></td>
+                <td><font color="{{ computer.get_status_color }}"><b>{{ computer.get_status }}</b></font></td>
                 <td>{{ computer.getOther2lines|linebreaksbr }}</td>
                 <td>
                     <button class="img-button" onclick="edit({{ computer.id_computer }})">

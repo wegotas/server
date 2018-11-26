@@ -85,6 +85,7 @@ def index(request):
         computers = search(keyword, computers)
         for option in so.options:
             computers = option.search(computers, data_dict.pop(option.tagname, ""))
+        computers = autoFilters.filter(computers)
         counter = Counter()
         qtySelect = QtySelect()
         af = AutoFiltersFromComputers(computers)
@@ -605,6 +606,17 @@ def testers(request):
 
 
 @csrf_exempt
+def observations(request):
+    print("observations")
+    if request.method == 'POST':
+        print("This was POST request")
+        # save_tester(request.POST.get("item_name"))
+    if request.method == 'GET':
+        print("This was GET request")
+        return render(request, "observations.html")
+
+
+@csrf_exempt
 def delTes(request, int_index):
     print("Delete tester")
     message = ""
@@ -737,6 +749,7 @@ def new_order(request):
 def edit_order(request, int_index):
     print("EDIT order")
     ote = OrderToEdit(int_index)
+    print(int_index)
     if request.method == 'POST':
         print("This was POST request")
         ote.set_new_data(request.POST.copy())

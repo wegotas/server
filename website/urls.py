@@ -35,6 +35,7 @@ urlpatterns = [
     path('test/del/<int:int_index>/', views.delTes, name='testerDeletion'),
     path('test/edit/', views.tes_edit, name='testEdit'),
     path('test/', views.testers, name='testers'),
+    path('observ/', views.observations, name='observations'),
     path('cat_to_sold/', views.cat_to_sold, name='cat_to_sold'),
     path('hdd_edit/<int:int_index>/', views.hdd_edit, name='hdd_edit'),
     path('hdd_delete/<int:int_index>/', views.hdd_delete, name='hdd_delete'),

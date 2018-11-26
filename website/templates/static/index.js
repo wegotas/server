@@ -557,6 +557,11 @@ function launchOrderWindow() {
     var orderWindow = window.open('new_order/', "", "width=400,height=600");
 }
 
+function launchObserWindow() {
+    var observWindow = window.open('observ/', "", "width=600,height=600");
+}
+
+
 function getCatSoldParams() {
   stringArray = [];
   for (var i = 0; i<selected_records.length; i++) {

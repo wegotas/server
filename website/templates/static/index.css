@@ -341,7 +341,6 @@ background: transparent;
 .pageLeftTop {
   float: left;
   clear: both;
-  width: 105px;
   background-color: #f9f9f9;
   border-color: gainsboro;
   border-style: solid;
