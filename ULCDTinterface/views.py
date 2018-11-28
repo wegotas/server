@@ -145,6 +145,7 @@ def process_data2(request):
         try:
             print("try block")
             csb = Computer_data_dict_builder(str(data["Serial"]).strip())
+            print(csb.data_dict)
             return JsonResponse(csb.data_dict)
         except Exception as e:
             if str(e) == 'Computers matching query does not exist.':

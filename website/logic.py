@@ -1119,6 +1119,72 @@ def deleteTester(index):
     tes.delete()
 
 
+def get_observation_category_list():
+    query_set = Observationcategory.objects.all()
+    lst = []
+    for member in query_set:
+        newItem = item(member.id_observation_category, member.category_name)
+        lst.append(newItem)
+    return lst
+
+
+def save_observation_category(name):
+    if name != "":
+        Observationcategory.objects.get_or_create(category_name=name)
+
+
+def delete_observation_category(index):
+    item = Observationcategory.objects.get(id_observation_category=index)
+    item.delete()
+
+
+def edit_observation_category(data):
+    item = Observationcategory.objects.get(id_observation_category=data["ItemId"])
+    item.category_name = data["ItemName"]
+    item.save()
+
+
+def get_observation_subcategory_list():
+    query_set = Observationsubcategory.objects.all()
+    lst = []
+    for member in query_set:
+        newItem = item(member.id_observation_subcategory, member.subcategory_name)
+        lst.append(newItem)
+    return lst
+
+
+def save_observation_subcategory(name):
+    if name != "":
+        Observationsubcategory.objects.get_or_create(subcategory_name=name)
+
+
+def delete_observation_subcategory(index):
+    item = Observationsubcategory.objects.get(id_observation_subcategory=index)
+    item.delete()
+
+
+def edit_observation_subcategory(data):
+    item = Observationsubcategory.objects.get(id_observation_subcategory=data["ItemId"])
+    item.subcategory_name = data["ItemName"]
+    item.save()
+
+def get_all_observations_dict():
+    variables = Observations.objects.all()
+    observation_dict = dict()
+    for variable in variables:
+        cat_name = variable.f_id_observation_category.category_name
+        sub_cat_name = variable.f_id_observation_subcategory.subcategory_name
+        full_name = variable.full_name
+        shortcode = variable.shortcode
+
+        if not cat_name in observation_dict:
+            observation_dict[cat_name] = {}
+        if not sub_cat_name in observation_dict[cat_name]:
+            observation_dict[cat_name][sub_cat_name] = {}
+        observation_dict[cat_name][sub_cat_name][full_name] = shortcode
+    return observation_dict
+
+
 class record_to_add():
 
     def __init__(self, data_dict):

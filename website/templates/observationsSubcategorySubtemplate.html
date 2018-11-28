@@ -1,0 +1,35 @@
+{% extends 'observations.html' %}
+
+{% block content %}
+<!--
+<p>Subcategory</p>
+-->
+<table>
+    <tr>
+        <th colspan="3">Subcategories:</th>
+    </tr>
+    <tr>
+        <form method="post">
+            <td colspan="3">
+                    <div class="lefter">
+                        <input name="item_name" type="text" class="newNameField" placeholder="Name of an object"/>
+                    </div>
+                    <div class="lefter">
+                    <input type="submit" class="newNameAdder" value="+" />
+                </div>
+            </td>
+        </form>
+    <tr>
+        <div class="error">{{ message }}</div>
+    </tr>
+    {% for item in items %}
+    <tr class="row">
+        <td class="field"><input class="inputField greyed" type="text" value="{{ item.name }}" id="field{{ item.id }}" readonly/></td>
+        {% if not item.permanence %}
+        <td><button class="editor button" onclick="edit(this ,field{{ item.id }})">Edit</button></td>
+        <td><button class="deleter button" onclick="deleteItem({{ item.id }})">X</button></td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

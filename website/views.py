@@ -610,10 +610,109 @@ def observations(request):
     print("observations")
     if request.method == 'POST':
         print("This was POST request")
-        # save_tester(request.POST.get("item_name"))
     if request.method == 'GET':
         print("This was GET request")
         return render(request, "observations.html")
+
+
+@csrf_exempt
+def observation_category(request):
+    print("observation_category")
+    if request.method == 'POST':
+        print("This was POST request")
+        save_observation_category(request.POST.get("item_name"))
+    if request.method == 'GET':
+        print("This was GET request")
+    return render(request, "observationsCategorySubtemplate.html", {'items': get_observation_category_list()})
+
+
+@csrf_exempt
+def del_observation_category(request, int_index):
+    print("Delete observation_category")
+    if request.method == 'POST':
+        print("This was POST request")
+        delete_observation_category(int_index)
+    if request.method == 'GET':
+        print("This was GET request")
+
+
+@csrf_exempt
+def observation_subcategory_edit(request):
+    print("observation_category edit")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    edit_observation_category(data)
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
+
+
+
+@csrf_exempt
+def observation_category_edit(request):
+    print("observation_category edit")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    edit_observation_category(data)
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
+
+
+@csrf_exempt
+def observation_subcategory(request):
+    print("observation_subcategory")
+    if request.method == 'POST':
+        print("This was POST request")
+        save_observation_subcategory(request.POST.get("item_name"))
+    if request.method == 'GET':
+        print("This was GET request")
+    return render(request, "observationsSubcategorySubtemplate.html", {'items': get_observation_subcategory_list()})
+
+
+@csrf_exempt
+def del_observation_subcategory(request, int_index):
+    print("Delete observation_subcategory")
+    if request.method == 'POST':
+        print("This was POST request")
+        delete_observation_subcategory(int_index)
+    if request.method == 'GET':
+        print("This was GET request")
+
+
+@csrf_exempt
+def observation_subcategory_edit(request):
+    print("observation_subcategory edit")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    edit_observation_subcategory(data)
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
+
+@csrf_exempt
+def observations_details(request):
+    print("observations_details")
+    if request.method == 'POST':
+        print("This was POST request")
+        print(request.POST)
+    if request.method == 'GET':
+        print("This was GET request")
+    return render(
+        request,
+        "observationsDetailsSubtemplate.html",
+        {
+            "categories": Observationcategory.objects.all().values_list('category_name', flat=True),
+            "subcategories": Observationsubcategory.objects.all().values_list('subcategory_name', flat=True),
+            'observations': get_all_observations_dict
+        }
+    )
 
 
 @csrf_exempt

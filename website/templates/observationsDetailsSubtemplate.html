@@ -1,0 +1,128 @@
+{% extends 'observations.html' %}
+
+{% block content %}
+
+<table>
+    <tr>
+        <th colspan="5">Details:</th>
+    </tr>
+    <tr>
+        <form method="post">
+            <!--
+            <td colspan="3">
+                    <div class="lefter">
+                        <input name="item_name" type="text" class="newNameField" placeholder="Name of an object"/>
+                    </div>
+                    <div class="lefter">
+                    <input type="submit" class="newNameAdder" value="+" />
+                </div>
+            </td>
+            -->
+            <tr>
+                <th>Catgories</th>
+                <th>Subcatgories</th>
+                <th>Shortcode</th>
+                <th>Full name</th>
+            </tr>
+            <tr>
+                <td>
+                    <select name="cat_name" value="">
+                        <option value="" selected disabled hidden>Choose category</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}">{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="sub_name" value="">
+                        <option value="" selected disabled hidden>Choose subcategory</option>
+                        {% for sub in subcategories %}
+                        <option value="{{ sub }}">{{ sub }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="shortcode">
+                </td>
+                <td>
+                    <input type="text" name="full_name">
+                </td>
+                <td>
+                    <input type="submit" class="newNameAdder" value="+" />
+                </td>
+            </tr>
+        </form>
+    <tr>
+        <div class="error">{{ message }}</div>
+    </tr>
+    <!--
+    {% for item in items %}
+    <tr class="row">
+        <td class="field"><input class="inputField greyed" type="text" value="{{ item.name }}" id="field{{ item.id }}" readonly/></td>
+        {% if not item.permanence %}
+        <td><button class="editor button" onclick="edit(this ,field{{ item.id }})">Edit</button></td>
+        <td><button class="deleter button" onclick="deleteItem({{ item.id }})">X</button></td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    -->
+    <tr>
+        <td valign="top">
+            {% for key, value in observations.items %}
+            <button type="button" class="choice">{{ key }}</button>
+            {% endfor %}
+        </td>
+        <td valign="top">
+            {% for key, value in observations.items %}
+            <div>
+                {% for key2, value2 in value.items %}
+                <button type="button" class="choice">{{ key2 }}</button>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </td>
+        <td valign="top">
+            {% for key, value in observations.items %}
+            <div>
+                {% for key2, value2 in value.items %}
+                <div>
+                    {% for key3, value3 in value2.items %}
+                    <input type="text" value="{{ value3 }}">
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </td>
+        <td valign="top">
+            {% for key, value in observations.items %}
+            <div>
+                {% for key2, value2 in value.items %}
+                <div>
+                    {% for key3, value3 in value2.items %}
+                    <input type="text" value="{{ key3 }}">
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </td>
+        <td>
+            {% for key, value in observations.items %}
+            <div>
+                {% for key2, value2 in value.items %}
+                <div>
+                    {% for key3, value3 in value2.items %}
+                    <div style="display: inline-block;">
+                        <button class="editor button">Edit</button>
+                        <button class="deleter button" style="display: inline-block;" onclick="deleteItem({{ item.id }})">X</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </td>
+    </tr>
+</table>
+{% endblock %}

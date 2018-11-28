@@ -36,6 +36,17 @@ urlpatterns = [
     path('test/edit/', views.tes_edit, name='testEdit'),
     path('test/', views.testers, name='testers'),
     path('observ/', views.observations, name='observations'),
+
+    path('observ/cat/del/<int:int_index>/', views.del_observation_category, name='observationCategoryDeletion'),
+    path('observ/cat/edit/', views.observation_category_edit, name='observationCategoryEdit'),
+    path('observ/cat/', views.observation_category, name='observationCategory'),
+
+    path('observ/sub/del/<int:int_index>/', views.del_observation_subcategory, name='observationCategoryDeletion'),
+    path('observ/sub/edit/', views.observation_subcategory_edit, name='observationCategoryEdit'),
+    path('observ/sub/', views.observation_subcategory, name='observationSubcategory'),
+
+    path('observ/details/', views.observations_details, name='observationsDetails'),
+
     path('cat_to_sold/', views.cat_to_sold, name='cat_to_sold'),
     path('hdd_edit/<int:int_index>/', views.hdd_edit, name='hdd_edit'),
     path('hdd_delete/<int:int_index>/', views.hdd_delete, name='hdd_delete'),
