@@ -78,5 +78,33 @@
 }
 
 .choice {
-    width: 100%;
+    background: none;
+    width: 200px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.hidden {
+    display: none;
+}
+
+.widther {
+    width: 200px;
+}
+
+.red{
+    background-color:red;
+}
+
+.shortcode-length {
+    width: 100px;
+}
+
+.full_name-length {
+    width: 300px;
+}
+
+.editable_field {
+    padding-top: 4px;
+    padding-bottom: 4px;
 }

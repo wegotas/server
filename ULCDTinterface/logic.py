@@ -547,10 +547,12 @@ class Computer_record2:
                             f_speed=speed,
                             f_form_factor=form_factor
                         )[0]
+                        print('drive saved')
                         Computerdrives.objects.get_or_create(
                             f_id_computer=self.computer,
                             f_drive=drive
                         )
+                        print('computerdrive saved')
 
         def _save_observations(observation_dict):
             print(observation_dict)

@@ -2,22 +2,12 @@
 
 {% block content %}
 
-<table>
+<table style="width: 800px;">
     <tr>
         <th colspan="5">Details:</th>
     </tr>
     <tr>
         <form method="post">
-            <!--
-            <td colspan="3">
-                    <div class="lefter">
-                        <input name="item_name" type="text" class="newNameField" placeholder="Name of an object"/>
-                    </div>
-                    <div class="lefter">
-                    <input type="submit" class="newNameAdder" value="+" />
-                </div>
-            </td>
-            -->
             <tr>
                 <th>Catgories</th>
                 <th>Subcatgories</th>
@@ -25,16 +15,16 @@
                 <th>Full name</th>
             </tr>
             <tr>
-                <td>
-                    <select name="cat_name" value="">
+                <td class="widther">
+                    <select name="cat_name" value="" class="widther">
                         <option value="" selected disabled hidden>Choose category</option>
                         {% for cat in categories %}
                         <option value="{{ cat }}">{{ cat }}</option>
                         {% endfor %}
                     </select>
                 </td>
-                <td>
-                    <select name="sub_name" value="">
+                <td class="widther">
+                    <select name="sub_name" value="" class="widther">
                         <option value="" selected disabled hidden>Choose subcategory</option>
                         {% for sub in subcategories %}
                         <option value="{{ sub }}">{{ sub }}</option>
@@ -42,10 +32,10 @@
                     </select>
                 </td>
                 <td>
-                    <input type="text" name="shortcode">
+                    <input type="text" name="shortcode" class="shortcode-length">
                 </td>
                 <td>
-                    <input type="text" name="full_name">
+                    <input type="text" class="full_name-length" name="full_name">
                 </td>
                 <td>
                     <input type="submit" class="newNameAdder" value="+" />
@@ -55,67 +45,58 @@
     <tr>
         <div class="error">{{ message }}</div>
     </tr>
-    <!--
-    {% for item in items %}
-    <tr class="row">
-        <td class="field"><input class="inputField greyed" type="text" value="{{ item.name }}" id="field{{ item.id }}" readonly/></td>
-        {% if not item.permanence %}
-        <td><button class="editor button" onclick="edit(this ,field{{ item.id }})">Edit</button></td>
-        <td><button class="deleter button" onclick="deleteItem({{ item.id }})">X</button></td>
-        {% endif %}
-    </tr>
-    {% endfor %}
-    -->
     <tr>
         <td valign="top">
-            {% for key, value in observations.items %}
-            <button type="button" class="choice">{{ key }}</button>
+            {% for category in observations %}
+            <button type="button" class="choice category" onclick="revealSubcategories(this, '{{ category.css_selector }}')">{{ category.collection_name }}</button>
             {% endfor %}
         </td>
-        <td valign="top">
-            {% for key, value in observations.items %}
-            <div>
-                {% for key2, value2 in value.items %}
-                <button type="button" class="choice">{{ key2 }}</button>
+        <td valign="top" class="subcategories">
+            {% for category in observations %}
+            <div class="{{ category.css_selector }} hidden hideable">
+                {% for subcategory in category %}
+                <button type="button" class="choice subcategory" onclick="revealShortcodes(this, '{{ category.css_selector }}', '{{ subcategory.css_selector }}')">{{ subcategory.collection_name }}</button>
                 {% endfor %}
             </div>
             {% endfor %}
         </td>
-        <td valign="top">
-            {% for key, value in observations.items %}
+        <td valign="top" class="details">
+            {% for category in observations %}
             <div>
-                {% for key2, value2 in value.items %}
-                <div>
-                    {% for key3, value3 in value2.items %}
-                    <input type="text" value="{{ value3 }}">
+                {% for subcategory in category %}
+                <div class="{{ category.css_selector }} {{ subcategory.css_selector }} hidden hideable">
+                    {% for member in subcategory %}
+                    <input type="text" class="editable_field greyed shortcode-length" value="{{ member.shortcode }}" id="shortcode{{ member.id }}" readonly=""/>
                     {% endfor %}
                 </div>
                 {% endfor %}
             </div>
             {% endfor %}
         </td>
-        <td valign="top">
-            {% for key, value in observations.items %}
+        <td valign="top" class="details">
+            {% for category in observations %}
             <div>
-                {% for key2, value2 in value.items %}
-                <div>
-                    {% for key3, value3 in value2.items %}
-                    <input type="text" value="{{ key3 }}">
+                {% for subcategory in category %}
+                <div class="{{ category.css_selector }} {{ subcategory.css_selector }} hidden hideable">
+                    {% for member in subcategory %}
+                    <input type="text" class="editable_field greyed full_name-length" value="{{ member.full_name }}" id="fullname{{ member.id }}"  readonly=""/>
                     {% endfor %}
                 </div>
                 {% endfor %}
             </div>
             {% endfor %}
         </td>
-        <td>
-            {% for key, value in observations.items %}
+        <td valign="top" class="actions">
+            {% for category in observations %}
             <div>
-                {% for key2, value2 in value.items %}
-                <div>
-                    {% for key3, value3 in value2.items %}
-                    <div style="display: inline-block;">
-                        <button class="editor button">Edit</button>
-                        <button class="deleter button" style="display: inline-block;" onclick="deleteItem({{ item.id }})">X</button>
+                {% for subcategory in category %}
+                <div class="{{ category.css_selector }} {{ subcategory.css_selector }} hidden hideable" style="width: 70px">
+                    {% for member in subcategory %}
+                    <div style="width:70%; float:left;">
+                        <button class="editor" onclick="edit_details(this, {{ member.id }}, shortcode{{ member.id }}, fullname{{ member.id }})">Edit</button>
+                    </div>
+                    <div style="width:30%; float:right;">
+                        <button class="deleter" onclick="deleteItem({{ member.id }})">X</button>
                     </div>
                     {% endfor %}
                 </div>

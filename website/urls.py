@@ -45,7 +45,10 @@ urlpatterns = [
     path('observ/sub/edit/', views.observation_subcategory_edit, name='observationCategoryEdit'),
     path('observ/sub/', views.observation_subcategory, name='observationSubcategory'),
 
+    path('observ/details/del/<int:int_index>/', views.delete_observations_details, name='delete_observations_details'),
+    path('observ/details/edit/', views.edit_observations_details, name='edit_observations_details'),
     path('observ/details/', views.observations_details, name='observationsDetails'),
+
 
     path('cat_to_sold/', views.cat_to_sold, name='cat_to_sold'),
     path('hdd_edit/<int:int_index>/', views.hdd_edit, name='hdd_edit'),

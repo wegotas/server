@@ -701,7 +701,28 @@ def observations_details(request):
     print("observations_details")
     if request.method == 'POST':
         print("This was POST request")
-        print(request.POST)
+        ota = ObservationToAdd(request.POST)
+        if ota.validated():
+            ota.process()
+            return render(
+                request,
+                "observationsDetailsSubtemplate.html",
+                {
+                    "categories": Observationcategory.objects.all().values_list('category_name', flat=True),
+                    "subcategories": Observationsubcategory.objects.all().values_list('subcategory_name', flat=True),
+                    'observations': ObservationsCollection()
+                }
+            )
+        return render(
+            request,
+            "observationsDetailsSubtemplate.html",
+            {
+                'message':ota.message,
+                "categories": Observationcategory.objects.all().values_list('category_name', flat=True),
+                "subcategories": Observationsubcategory.objects.all().values_list('subcategory_name', flat=True),
+                'observations': ObservationsCollection()
+            }
+        )
     if request.method == 'GET':
         print("This was GET request")
     return render(
@@ -710,10 +731,27 @@ def observations_details(request):
         {
             "categories": Observationcategory.objects.all().values_list('category_name', flat=True),
             "subcategories": Observationsubcategory.objects.all().values_list('subcategory_name', flat=True),
-            'observations': get_all_observations_dict
+            'observations': ObservationsCollection()
         }
     )
 
+
+@csrf_exempt
+def delete_observations_details(request, int_index):
+    print('delete_observations_details')
+    observation = Observations.objects.get(id_observation=int_index)
+    observation.delete()
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
+
+@csrf_exempt
+def edit_observations_details(request):
+    print('edit_observations_details')
+    print(request.POST)
+    data = JSONParser().parse(request)
+    ote = ObservationToEdit(data)
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
 
 @csrf_exempt
 def delTes(request, int_index):

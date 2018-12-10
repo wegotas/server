@@ -1185,7 +1185,175 @@ def get_all_observations_dict():
     return observation_dict
 
 
-class record_to_add():
+class ObservationMember:
+
+    def __init__(self, id, shortcode, full_name):
+        self.id = id
+        self.shortcode = shortcode
+        self.full_name = full_name
+
+    def __str__(self):
+       return "id: {0}, shortcode: {1}, full_name: {2}".format(self.id, self.shortcode, self.full_name)
+
+
+class CollectionSecond:
+
+    def __init__(self, category, subcategory):
+        self.current = 0
+        self.collection_name = subcategory
+        self.css_selector = self.form_css_selector()
+        self.collection = []
+        self.get_collection(category)
+
+    def form_css_selector(self):
+        return self.collection_name.replace(' ', '_')
+
+    def get_collection(self, category):
+        values = Observations.objects.filter(
+            f_id_observation_category__category_name=category,
+            f_id_observation_subcategory__subcategory_name=self.collection_name
+        )
+        for value in values:
+            observation_member = ObservationMember(
+                id=value.id_observation,
+                shortcode=value.shortcode,
+                full_name=value.full_name
+            )
+            self.collection.append(observation_member)
+
+    def __str__(self):
+        return "collection_name: {0}, css_selector: {1}".format(self.collection_name, self.css_selector)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current >= len(self.collection):
+            self.current = 0
+            raise StopIteration
+        else:
+            self.current += 1
+            return self.collection[self.current - 1]
+
+
+class CollectionFirst:
+
+    def __init__(self, collection_name):
+        self.current = 0
+        self.collection_name = collection_name
+        self.css_selector = self.form_css_selector()
+        self.collection = []
+        self.get_collection()
+
+    def form_css_selector(self):
+        return self.collection_name.replace(' ', '_')
+
+    def get_collection(self):
+        values = Observations.objects.filter(f_id_observation_category__category_name=self.collection_name)\
+            .values('f_id_observation_subcategory__subcategory_name').distinct()\
+            .values_list('f_id_observation_subcategory__subcategory_name', flat=True)
+        for value in values:
+            collection = CollectionSecond(category=self.collection_name, subcategory=value)
+            self.collection.append(collection)
+
+    def __str__(self):
+        return "collection_name: {0}, css_selector: {1}".format(self.collection_name, self.css_selector)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current >= len(self.collection):
+            self.current = 0
+            raise StopIteration
+        else:
+            self.current += 1
+            return self.collection[self.current - 1]
+
+
+class ObservationsCollection:
+
+    def __init__(self):
+        self.collection = self.processObservationsDict()
+        self.current = 0
+
+    def processObservationsDict(self):
+        values = Observations.objects.values('f_id_observation_category__category_name').distinct().values_list('f_id_observation_category__category_name', flat=True)
+        lst = []
+        for value in values:
+            collection = CollectionFirst(value)
+            lst.append(collection)
+        return lst
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current >= len(self.collection):
+            self.current = 0
+            raise StopIteration
+        else:
+            self.current += 1
+            return self.collection[self.current - 1]
+
+    def get_length(self):
+        return len(self.collection)
+
+
+class ObservationToAdd:
+
+    def __init__(self, data_dict):
+        print('in ObservationToAdd')
+        # print(data_dict)
+        self.message = ''
+        '''
+        cat_name = data_dict['cat_name']
+        sub_name = data_dict['sub_name']
+        shortcode = data_dict['shortcode']
+        full_name = data_dict['full_name']
+        '''
+        self.cat_name = self.try_extract(data_dict, 'cat_name')
+        self.sub_name = self.try_extract(data_dict, 'sub_name')
+        self.shortcode = self.try_extract(data_dict, 'shortcode')
+        self.full_name = self.try_extract(data_dict, 'full_name')
+        print("cat_name: {0}, sub_name: {1}, shortcode: {2}, full_name: {3}".format(self.cat_name, self.sub_name, self.shortcode, self.full_name))
+        print(self.message)
+        
+    def try_extract(self, data_dict, key):
+        try:
+            extracted = data_dict[key]
+            if extracted == '':
+                self.message += '\'{0}\' was not set\r\n'.format(key)
+            return extracted
+        except:
+            self.message += '\'{0}\' was not set\r\n'.format(key)
+
+    def validated(self):
+        return self.message == ''
+
+    def process(self):
+        category = Observationcategory.objects.get(category_name=self.cat_name)
+        subcategory = Observationsubcategory.objects.get(subcategory_name=self.sub_name)
+        observation = Observations.objects.get_or_create(
+            shortcode=self.shortcode,
+            full_name=self.full_name,
+            f_id_observation_category=category,
+            f_id_observation_subcategory=subcategory
+        )
+
+
+class ObservationToEdit:
+
+    def __init__(self, data_dict):
+        print("in ObservationToEdit")
+        # print(data_dict)
+        observation = Observations.objects.get(id_observation=data_dict['observation_id'])
+        observation.shortcode = data_dict['shortcode']
+        observation.full_name = data_dict['fullname']
+        observation.save()
+
+
+class record_to_add:
 
     def __init__(self, data_dict):
         self.data = data_dict
