@@ -154,6 +154,15 @@ class Computerresolutions(models.Model):
         db_table = 'ComputerResolutions'
 
 
+class Receivedbatches(models.Model):
+    id_received_batch = models.AutoField(primary_key=True)
+    received_batch_name = models.CharField(max_length=45, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'ReceivedBatches'
+
+
 class Computers(models.Model):
     id_computer = models.AutoField(primary_key=True)
     computer_serial = models.CharField(max_length=45)
@@ -188,6 +197,8 @@ class Computers(models.Model):
     f_id_matrix = models.ForeignKey('Matrixes', models.DO_NOTHING, db_column='f_id_matrix', blank=True, null=True)
     f_id_computer_resolutions = models.ForeignKey(Computerresolutions, models.DO_NOTHING,
                                                   db_column='f_id_computer_resolutions', blank=True, null=True)
+    f_id_received_batches = models.ForeignKey('Receivedbatches', models.DO_NOTHING, db_column='f_id_received_batches',
+                                              blank=True, null=True)
 
     class Meta:
         managed = True

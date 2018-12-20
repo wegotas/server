@@ -108,6 +108,8 @@ def aux_data2(request):
         dict_dict["Categories"] = list(Categories.objects.all().values_list('category_name', flat=True))
         dict_dict["Types"] = list(Types.objects.all().values_list('type_name', flat=True))
         dict_dict["Testers"] = list(Testers.objects.all().values_list('tester_name', flat=True))
+        # dict_dict['Batches'] = list(Batches.objects.all().values_list('batch_name', flat=True))
+        dict_dict['Received batches'] = list(Receivedbatches.objects.all().values_list('received_batch_name', flat=True))
         dict_dict['Observations'] = _get_formed_observations_dict()
         print(dict_dict)
         return JsonResponse(dict_dict)

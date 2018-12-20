@@ -215,6 +215,20 @@ input:read-only {
                     </select>
                 </td>
             </tr>
+            <tr>
+                <th>Received batch<font color="red">*</font>:</th>
+                <td>
+                    <select name="received_batch_name">
+                        <option value="" selected disabled hidden>Choose received batch</option>
+                        {% for batch in rc.received_batches %}
+                        <option value="{{ batch }}">{{ batch }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <!--
+            self.received_batches
+            -->
         </form>
     </table>
 </body>

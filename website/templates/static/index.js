@@ -545,6 +545,16 @@ function launchTesterWindow() {
     var testerWindow = window.open('test/', "", "width=400,height=650");
 }
 
+/*
+function launchBatchesWindow() {
+    var testerWindow = window.open('batches/' + getCatSoldParams(), "", "width=400,height=650");
+}
+*/
+
+function launchReceivedBatchesWindow() {
+    var receivedBatchesWindow = window.open('received_batches/', "", "width=400,height=650");
+}
+
 function launchNewRecordWindow() {
     var recordWindow = window.open('new_record/', "", "width=400,height=650");
 }
@@ -558,7 +568,7 @@ function launchOrderWindow() {
 }
 
 function launchObserWindow() {
-    var observWindow = window.open('observ/', "", "width=600,height=600");
+    var observWindow = window.open('observ/', "", "width=400,height=600");
 }
 
 

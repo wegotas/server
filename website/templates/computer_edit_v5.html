@@ -151,6 +151,21 @@
                             </td>
                         </tr>
                         <tr>
+                            <th>Received batch:</th>
+                            <td>
+                                {% if record.received_batch %}
+                                <input type="text" value="{{ record.received_batch }}" readonly>
+                                {% else %}
+                                <select name="received_batch_name">
+                                    <option value="" selected disabled hidden>Choose received batch</option>
+                                    {% for batch in record.received_batches %}
+                                    <option value="{{ batch }}">{{ batch }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
                             <th>Camera:</th>
                             <td>
                                 <select name="option_name">

@@ -505,6 +505,46 @@ def ord_assign(request):
 
 
 @csrf_exempt
+def receivedbatches(request):
+    print("Batches")
+    if request.method == 'POST':
+        print("This was POST request")
+        save_recieved_batch(request.POST.get("item_name"))
+    if request.method == 'GET':
+        print("This was GET request")
+    received_batches = get_received_batches_list()
+    template = loader.get_template('items.html')
+    return HttpResponse(
+        template.render(
+            {'items': received_batches},
+            request
+        )
+    )
+
+
+@csrf_exempt
+def delreceivedBatch(request, int_index):
+    print("Delete batch")
+    if request.method == 'POST':
+        print("This was POST request")
+        delete_batch(int_index)
+    if request.method == 'GET':
+        print("This was GET request")
+
+
+@csrf_exempt
+def recieved_batch_edit(request):
+    print("recieved batch_edit")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    edit_recieved_batch(data)
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
+
+@csrf_exempt
 def categories(request):
     print("Categories")
     if request.method == 'POST':

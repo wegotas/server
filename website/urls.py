@@ -37,6 +37,14 @@ urlpatterns = [
     path('test/', views.testers, name='testers'),
     path('observ/', views.observations, name='observations'),
 
+    # path('batches/del/<int:int_index>/', views.delBatch, name='delelete_batch'),
+    # path('batches/edit/', views.batch_edit, name='batch_edit'),
+    # path('batches/', views.batches, name='batches'),
+
+    path('received_batches/del/<int:int_index>/', views.delreceivedBatch, name='delelete_batch'),
+    path('received_batches/edit/', views.recieved_batch_edit, name='batch_edit'),
+    path('received_batches/', views.receivedbatches, name='batches'),
+
     path('observ/cat/del/<int:int_index>/', views.del_observation_category, name='observationCategoryDeletion'),
     path('observ/cat/edit/', views.observation_category_edit, name='observationCategoryEdit'),
     path('observ/cat/', views.observation_category, name='observationCategory'),

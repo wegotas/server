@@ -794,7 +794,7 @@ def changeCategoriesUsingDict(dict):
 
 
 def createExcelFile(indexes):
-    unwantedCommentParts = ('\t', '\n', 'oko', 'ook', 'oik', 'ok', '-', 'Ok,', 'ok,', '+', '0k', 'n,', 'other')
+    unwantedCommentParts = ('\t', '\n', 'oko', 'ook', 'oik', 'ok', '-', 'Ok,', 'Ok', 'ok,', '+', '0k', 'n,', 'other', 'N/A')
     unwantedComments = (None, 'o', 'n', 'k', 'NULL', 'None', 'ko')
 
     def getProccessedString(string):
@@ -813,7 +813,8 @@ def createExcelFile(indexes):
             return ', '+title+': '+value
         return ''
 
-    def formComment(computer):
+    '''
+    def form_4th_comment(computer):
         commentToReturn = getProccessedString(computer.other)
         commentToReturn += formCommentPart(computer.cover, 'cover')
         commentToReturn += formCommentPart(computer.display, 'display')
@@ -824,6 +825,39 @@ def createExcelFile(indexes):
         commentToReturn += formCommentPart(computer.cdrom, 'cdrom')
         commentToReturn += formCommentPart(computer.hdd_cover, 'hdd_cover')
         commentToReturn += formCommentPart(computer.ram_cover, 'ram_cover')
+        return commentToReturn.strip(' ,;')
+    '''
+    def form_comment(computer):
+        if computer._is5thVersion():
+            return form_5th_comment(computer)
+        return form_4th_comment(computer)
+
+    def form_4th_comment(computer):
+        commentToReturn = getProccessedString(computer.other)
+        commentToReturn += formCommentPart(computer.cover, 'cover')
+        commentToReturn += formCommentPart(computer.display, 'display')
+        commentToReturn += formCommentPart(computer.bezel, 'bezel')
+        commentToReturn += formCommentPart(computer.keyboard, 'keyboard')
+        commentToReturn += formCommentPart(computer.mouse, 'mouse')
+        commentToReturn += formCommentPart(computer.sound, 'sound')
+        commentToReturn += formCommentPart(computer.cdrom, 'cdrom')
+        commentToReturn += formCommentPart(computer.hdd_cover, 'hdd_cover')
+        commentToReturn += formCommentPart(computer.ram_cover, 'ram_cover')
+        return commentToReturn.strip(' ,;')
+
+    def form_5th_comment(computer):
+        commentToReturn = ''
+        computer_observations = Computerobservations.objects.filter(f_id_computer=computer)
+        categories = computer_observations.values_list('f_id_observation__f_id_observation_category', flat=True)
+        categories = list(set(categories))
+        for category_id in categories:
+            observations_of_category = computer_observations.filter(f_id_observation__f_id_observation_category=category_id)
+            category_name = Observationcategory.objects.get(id_observation_category=category_id).category_name
+            string_to_add = category_name+": "
+            for computer_observation in observations_of_category:
+                string_to_add += computer_observation.f_id_observation.full_name + ', '
+            commentToReturn += string_to_add.strip(' ,;') + '; '
+        commentToReturn += getProccessedString(computer.other)
         return commentToReturn.strip(' ,;')
 
     memfile = io.BytesIO()
@@ -862,14 +896,14 @@ def createExcelFile(indexes):
         worksheet.write(row, col + 9, _get_cdrom(computer), bordered)
         worksheet.write(row, col + 10, _get_license(computer), bordered)
         worksheet.write(row, col + 11, _get_camera_option(computer), bordered)
-        worksheet.write(row, col + 12, formComment(computer), bordered)
+        worksheet.write(row, col + 12, form_comment(computer), bordered)
         row += 1
     workbook.close()
     return memfile
 
 
 def createCsvFile(indexes):
-    unwantedCommentParts = ('\t', '\n', 'oko', 'ook', 'oik', 'ok', '-', 'Ok,', 'ok,', '+', '0k', 'n,', 'other')
+    unwantedCommentParts = ('\t', '\n', 'oko', 'ook', 'oik', 'ok', '-', 'Ok', 'Ok,', 'ok,', '+', '0k', 'n,', 'other', 'N/A')
     unwantedComments = (None, 'o', 'n', 'k', 'NULL', 'None', 'ko')
 
     def getProccessedString(string):
@@ -888,7 +922,12 @@ def createCsvFile(indexes):
             return ', '+title+': '+value
         return ''
 
-    def formComment(computer):
+    def form_comment(computer):
+        if computer._is5thVersion():
+            return form_5th_comment(computer)
+        return form_4th_comment(computer)
+
+    def form_4th_comment(computer):
         commentToReturn = getProccessedString(computer.other)
         commentToReturn += formCommentPart(computer.cover, 'cover')
         commentToReturn += formCommentPart(computer.display, 'display')
@@ -899,6 +938,21 @@ def createCsvFile(indexes):
         commentToReturn += formCommentPart(computer.cdrom, 'cdrom')
         commentToReturn += formCommentPart(computer.hdd_cover, 'hdd_cover')
         commentToReturn += formCommentPart(computer.ram_cover, 'ram_cover')
+        return commentToReturn.strip(' ,;')
+
+    def form_5th_comment(computer):
+        commentToReturn = ''
+        computer_observations = Computerobservations.objects.filter(f_id_computer=computer)
+        categories = computer_observations.values_list('f_id_observation__f_id_observation_category', flat=True)
+        categories = list(set(categories))
+        for category_id in categories:
+            observations_of_category = computer_observations.filter(f_id_observation__f_id_observation_category=category_id)
+            category_name = Observationcategory.objects.get(id_observation_category=category_id).category_name
+            string_to_add = category_name+": "
+            for computer_observation in observations_of_category:
+                string_to_add += computer_observation.f_id_observation.full_name + ', '
+            commentToReturn += string_to_add.strip(' ,;') + '; '
+        commentToReturn += getProccessedString(computer.other)
         return commentToReturn.strip(' ,;')
 
     memfile = io.StringIO()
@@ -920,7 +974,7 @@ def createCsvFile(indexes):
             'Optical': _get_cdrom(computer),
             'COA': _get_license(computer),
             'Cam': _get_camera_option(computer),
-            'Comment': formComment(computer),
+            'Comment': form_comment(computer),
             'Price': ''
         })
     return memfile
@@ -953,6 +1007,13 @@ def _get_model(computer):
 
 
 def _get_cpu_name(computer):
+    if computer._is5thVersion():
+        computer_processors = Computerprocessors.objects.filter(f_id_computer=computer)
+        lst = []
+        for computer_processor in computer_processors:
+            string = computer_processor.f_id_processor.f_manufacturer.manufacturer_name + ' ' + computer_processor.f_id_processor.model_name + ' ' + computer_processor.f_id_processor.stock_clock
+            lst.append(string)
+        return ', '.join(lst).replace('Intel Intel', 'Intel').replace(' GHz', '')
     cpu_name = ""
     try:
         cpu_name = computer.f_cpu.cpu_name
@@ -962,6 +1023,9 @@ def _get_cpu_name(computer):
 
 
 def _get_ram_size(computer):
+    if computer._is5thVersion():
+        ram_to_comp = RamToComp.objects.filter(f_id_computer_ram_to_com=computer)[0]
+        return computer.f_ram_size.ram_size_text + ' ' + ram_to_comp.f_id_ram_ram_to_com.type
     ram_size = ""
     try:
         ram_size = computer.f_ram_size.ram_size_text
@@ -971,6 +1035,15 @@ def _get_ram_size(computer):
 
 
 def _get_gpu_name(computer):
+    if computer._is5thVersion():
+        computer_gpus = Computergpus.objects.filter(f_id_computer=computer)
+        lst = []
+        for computer_gpu in computer_gpus:
+            string = computer_gpu.f_id_gpu.f_id_manufacturer.manufacturer_name + ' ' + computer_gpu.f_id_gpu.gpu_name
+            if 'Intel HD' in string:
+                string = 'Intel HD'
+            lst.append(string)
+        return ', '.join(lst)
     gpu_name = ""
     try:
         gpu_name = computer.f_gpu.gpu_name
@@ -980,6 +1053,20 @@ def _get_gpu_name(computer):
 
 
 def _get_hdd_size(computer):
+    if computer._is5thVersion():
+        computer_drives = Computerdrives.objects.filter(f_id_computer=computer)
+        lst = []
+        for computer_drive in computer_drives:
+            type = ''
+            if computer_drive.f_drive.f_speed.speed_name.isdigit():
+                type = 'HDD'
+            else:
+                type = computer_drive.f_drive.f_speed.speed_name
+            string = type + ': ' + computer_drive.f_drive.f_hdd_sizes.hdd_sizes_name
+            lst.append(string)
+        if len(lst) == 0:
+            return 'N/A'
+        return ', '.join(lst)
     hdd_size = ""
     try:
         hdd_size = computer.f_hdd_size.hdd_sizes_name
@@ -1022,7 +1109,7 @@ def _get_license(computer):
         license_name = computer.f_license.license_name
     except:
         license_name = "N/A"
-    return license_name
+    return license_name.replace('Windows ', 'Win')
 
 
 def _get_camera_option(computer):
@@ -1034,7 +1121,7 @@ def _get_camera_option(computer):
     return camera_option
 
 
-class item:
+class Item:
 
     def __init__(self, item_id, item_name, permanence=0):
         self.id = item_id
@@ -1042,11 +1129,36 @@ class item:
         self.permanence = bool(permanence)
 
 
+def get_received_batches_list():
+    recieved_batches = Receivedbatches.objects.all()
+    recieved_batchlist = []
+    for batch in recieved_batches:
+        newItem = Item(batch.id_received_batch, batch.received_batch_name)
+        recieved_batchlist.append(newItem)
+    return recieved_batchlist
+
+
+def save_recieved_batch(name):
+    if name != "":
+        Receivedbatches.objects.get_or_create(received_batch_name=name)
+
+
+def edit_recieved_batch(data):
+    recieved_batch = Receivedbatches.objects.get(id_received_batch=data["ItemId"])
+    recieved_batch.received_batch_name = data["ItemName"]
+    recieved_batch.save()
+
+
+def delete_batch(index):
+    recieved_batch = Receivedbatches.objects.get(id_received_batch=index)
+    recieved_batch.delete()
+
+
 def get_categories_list():
     cats = Categories.objects.all()
     catlist = []
     for cat in cats:
-        newItem = item(cat.id_category, cat.category_name, cat.permanent)
+        newItem = Item(cat.id_category, cat.category_name, cat.permanent)
         catlist.append(newItem)
     return catlist
 
@@ -1073,7 +1185,7 @@ def get_types_list():
     types = Types.objects.all()
     typeslist = []
     for typie in types:
-        newItem = item(typie.id_type, typie.type_name)
+        newItem = Item(typie.id_type, typie.type_name)
         typeslist.append(newItem)
     return typeslist
 
@@ -1098,7 +1210,7 @@ def get_testers_list():
     testers = Testers.objects.all()
     testerslist = []
     for tester in testers:
-        newItem = item(tester.id_tester, tester.tester_name)
+        newItem = Item(tester.id_tester, tester.tester_name)
         testerslist.append(newItem)
     return testerslist
 
@@ -1123,7 +1235,7 @@ def get_observation_category_list():
     query_set = Observationcategory.objects.all()
     lst = []
     for member in query_set:
-        newItem = item(member.id_observation_category, member.category_name)
+        newItem = Item(member.id_observation_category, member.category_name)
         lst.append(newItem)
     return lst
 
@@ -1148,7 +1260,7 @@ def get_observation_subcategory_list():
     query_set = Observationsubcategory.objects.all()
     lst = []
     for member in query_set:
-        newItem = item(member.id_observation_subcategory, member.subcategory_name)
+        newItem = Item(member.id_observation_subcategory, member.subcategory_name)
         lst.append(newItem)
     return lst
 
@@ -1346,7 +1458,6 @@ class ObservationToEdit:
 
     def __init__(self, data_dict):
         print("in ObservationToEdit")
-        # print(data_dict)
         observation = Observations.objects.get(id_observation=data_dict['observation_id'])
         observation.shortcode = data_dict['shortcode']
         observation.full_name = data_dict['fullname']
@@ -1366,22 +1477,22 @@ class record_to_add:
         print("rta save start")
         self._validate()
         if len(self.error_list) == 0:
-            self._save_and_get_type()
-            self._save_and_get_category()
-            self._save_and_get_manufacturer()
-            self._save_and_get_model()
-            self._save_and_get_cpu()
-            self._save_and_get_gpu()
-            self._save_and_get_ramsize()
-            self._save_and_get_hdd_size()
-            self._save_and_get_diagonal()
-            self._save_and_get_license()
-            self._save_and_get_tester()
+            self.typ = Types.objects.get_or_create(type_name=self.data.get("type_name"))[0]
+            self.cat = Categories.objects.get_or_create(category_name=self.data.get("category_name"))[0]
+            self.man = Manufacturers.objects.get_or_create(manufacturer_name=self.data.get("manufacturer_name"))[0]
+            self.model = Models.objects.get_or_create(model_name=self.data.get("model_name"))[0]
+            self.cpu = Cpus.objects.get_or_create(cpu_name=self.data.get("cpu_name"))[0]
+            self.gpu = Gpus.objects.get_or_create(gpu_name=self.data.get("gpu_name"))[0]
+            self.ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data.get("ram_size_text"))[0]
+            self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name=self.data.get("hdd_sizes_name"))[0]
+            self.diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data.get("diagonal_text"))[0]
+            self.lic = Licenses.objects.get_or_create(license_name=self.data.get("license_name"))[0]
+            self.tester = Testers.objects.get_or_create(tester_name=self.data.get("tester_name"))[0]
             self.timenow = timezone.now()
             self._save_computer()
-            print("rta save end")
+            print("record_to_add save end")
         else:
-            print("rta save FAILED")
+            print("record_to_add save FAILED")
 
     def isSaved(self):
         if len(self.error_list) == 0:
@@ -1403,7 +1514,8 @@ class record_to_add:
             "hdd_cover",
             "ram_cover",
             "other",
-            "tester_name"
+            "tester_name",
+            "received_batch_name"
         )
 
         error_messages = (
@@ -1419,49 +1531,16 @@ class record_to_add:
             "HDD cover was not set",
             "RAM cover was not set",
             "Other was not set",
-            "Tester was not set"
+            "Tester was not set",
+            "Received batch was not set"
         )
 
         for i in range(len(fieldnames)):
             if self.data.get(fieldnames[i]) == "" or self.data.get(fieldnames[i]) is None:
                 self.error_list.append(error_messages[i])
 
-
-    def _save_and_get_type(self):
-        self.typ = Types.objects.get_or_create(type_name=self.data.get("type_name"))[0]
-
-    def _save_and_get_category(self):
-        self.cat = Categories.objects.get_or_create(category_name=self.data.get("category_name"))[0]
-
-    def _save_and_get_manufacturer(self):
-        self.man = Manufacturers.objects.get_or_create(manufacturer_name=self.data.get("manufacturer_name"))[0]
-
-    def _save_and_get_model(self):
-        self.model = Models.objects.get_or_create(model_name=self.data.get("model_name"))[0]
-
-    def _save_and_get_cpu(self):
-        self.cpu = Cpus.objects.get_or_create(cpu_name=self.data.get("cpu_name"))[0]
-
-    def _save_and_get_gpu(self):
-        self.gpu = Gpus.objects.get_or_create(gpu_name=self.data.get("gpu_name"))[0]
-
-    def _save_and_get_ramsize(self):
-        self.ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data.get("ram_size_text"))[0]
-
-    def _save_and_get_hdd_size(self):
-        self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name=self.data.get("hdd_sizes_name"))[0]
-
-    def _save_and_get_diagonal(self):
-        self.diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data.get("diagonal_text"))[0]
-
-    def _save_and_get_license(self):
-        self.lic = Licenses.objects.get_or_create(license_name=self.data.get("license_name"))[0]
-
-    def _save_and_get_tester(self):
-        self.tester = Testers.objects.get_or_create(tester_name=self.data.get("tester_name"))[0]
-
     def _save_computer(self):
-        computer = Computers(
+        Computers.objects.create(
             computer_serial=self.data.get("serial"),
             f_type=self.typ,
             f_category=self.cat,
@@ -1480,74 +1559,32 @@ class record_to_add:
             ram_cover=self.data.get("ram_cover"),
             other=self.data.get("other"),
             f_tester=self.tester,
-            date=self.timenow
+            date=self.timenow,
+            f_id_received_batches=Receivedbatches.objects.get(received_batch_name=self.data.get("received_batch_name"))
         )
-        computer.save()
 
 
 class RecordChoices:
 
     def __init__(self):
-        self._set_types()
-        self._set_categories()
-        self._set_manufacturers()
-        self._set_models()
-        self._set_cpu()
-        self._set_gpu()
-        self._set_rams()
-        self._set_hdds()
-        self._set_diagonals()
-        self._set_licenses()
-        self._set_cameras()
-        self._set_tester()
-        self._set_resolutions()
-        self._set_resolution_categoriess()
+        self.types = Types.objects.values_list("type_name", flat=True)
+        self.categories = Categories.objects.values_list("category_name", flat=True)
+        self.manufacturers = Manufacturers.objects.values_list("manufacturer_name", flat=True)
+        self.models = Models.objects.values_list("model_name", flat=True)
+        self.rams = RamSizes.objects.values_list("ram_size_text", flat=True)
+        self.diagonals = Diagonals.objects.values_list("diagonal_text", flat=True)
+        self.licenses = Licenses.objects.values_list("license_name", flat=True)
+        self.cameras =CameraOptions.objects.values_list("option_name", flat=True)
+        self.testers =Testers.objects.values_list("tester_name", flat=True)
+        self.received_batches = Receivedbatches.objects.values_list("received_batch_name", flat=True)
 
-    def _set_types(self):
-        self.types = [record[0] for record in Types.objects.values_list("type_name")]
+        # 4th version computers only
+        self.cpus = Cpus.objects.values_list("cpu_name", flat=True)
+        self.gpus = Gpus.objects.values_list("gpu_name", flat=True)
+        self.hdds = HddSizes.objects.values_list("hdd_sizes_name", flat=True)
 
-    def _set_categories(self):
-        self.categories = [record[0] for record in Categories.objects.values_list("category_name")]
-
-    def _set_manufacturers(self):
-        self.manufacturers = [record[0] for record in Manufacturers.objects.values_list("manufacturer_name")]
-
-    def _set_models(self):
-        self.models = [record[0] for record in Models.objects.values_list("model_name")]
-
-    # 4th version computers only
-    def _set_cpu(self):
-        self.cpus = [record[0] for record in Cpus.objects.values_list("cpu_name")]
-
-    # 4th version computers only
-    def _set_gpu(self):
-        self.gpus = [record[0] for record in Gpus.objects.values_list("gpu_name")]
-
-    def _set_rams(self):
-        self.rams = [record[0] for record in RamSizes.objects.values_list("ram_size_text")]
-
-    # 4th version computers only
-    def _set_hdds(self):
-        self.hdds = [record[0] for record in HddSizes.objects.values_list("hdd_sizes_name")]
-
-    def _set_diagonals(self):
-        self.diagonals = [record[0] for record in Diagonals.objects.values_list("diagonal_text")]
-
-    def _set_licenses(self):
-        self.licenses = [record[0] for record in Licenses.objects.values_list("license_name")]
-
-    def _set_cameras(self):
-        self.cameras = [record[0] for record in CameraOptions.objects.values_list("option_name")]
-
-    def _set_tester(self):
-        self.testers = [record[0] for record in Testers.objects.values_list("tester_name")]
-
-    # 5th version computers only
-    def _set_resolutions(self):
+        # 5th version computers only
         self.resolutions = Resolutions.objects.values_list('resolution_text', flat=True)
-
-    # 5th version computers only
-    def _set_resolution_categoriess(self):
         self.resolution_categories = Resolutioncategories.objects.values_list('resolution_category_name', flat=True)
 
 
@@ -4048,6 +4085,10 @@ class Computer4th:
         self.rams = get_rams(self.computer.id_computer)
         self.hdds = get_hdds(self.computer.id_computer)
         self.batts = get_batteries(self.computer.id_computer)
+        self.received_batches = list(Receivedbatches.objects.all().values_list('received_batch_name', flat=True))
+        self.received_batch = None
+        if self.computer.f_id_received_batches != None:
+            self.received_batch = self.computer.f_id_received_batches.received_batch_name
 
     def save_info(self, data_dict):
 
@@ -4082,6 +4123,9 @@ class Computer4th:
             self.computer.f_tester = tester
             self.computer.f_bios = bios
             self.computer.price = data_dict.pop('price')[0]
+            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
+                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
+                self.computer.f_id_received_batches = received_batch
             self.computer.save()
 
         def _save_ordered_computer():
@@ -4109,6 +4153,9 @@ class Computer4th:
             self.computer.other = data_dict.pop('other')[0]
             self.computer.f_tester = tester
             self.computer.f_bios = bios
+            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
+                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
+                self.computer.f_id_received_batches = received_batch
             self.computer.save()
 
         def _save_stored_computer():
@@ -4136,6 +4183,9 @@ class Computer4th:
             self.computer.other = data_dict.pop('other')[0]
             self.computer.f_tester = tester
             self.computer.f_bios = bios
+            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
+                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
+                self.computer.f_id_received_batches = received_batch
             self.computer.save()
 
         type = Types.objects.get_or_create(type_name=data_dict.pop('type_name')[0])[0]
@@ -4259,6 +4309,11 @@ class Computer5th:
         self.processors = _get_processors()
         self.gpus = _get_gpus()
         self.observations = _get_observations()
+        self.received_batches = list(Receivedbatches.objects.all().values_list('received_batch_name', flat=True))
+        self.received_batch = None
+        if self.computer.f_id_received_batches != None:
+            self.received_batch = self.computer.f_id_received_batches.received_batch_name
+
 
     def save_info(self, data_dict):
         def _save_sold_computer():
@@ -4281,6 +4336,9 @@ class Computer5th:
             self.computer.f_diagonal = diagonal
             self.computer.f_id_computer_resolutions = computer_resolutions
             self.computer.other = data_dict.pop('other')[0]
+            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
+                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
+                self.computer.f_id_received_batches = received_batch
             self.computer.save()
 
         def _save_ordered_computer():
@@ -4297,6 +4355,9 @@ class Computer5th:
             self.computer.f_diagonal = diagonal
             self.computer.f_id_computer_resolutions = computer_resolutions
             self.computer.other = data_dict.pop('other')[0]
+            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
+                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
+                self.computer.f_id_received_batches = received_batch
             self.computer.save()
 
         def _save_stored_computer():
@@ -4313,6 +4374,9 @@ class Computer5th:
             self.computer.f_diagonal = diagonal
             self.computer.f_id_computer_resolutions = computer_resolutions
             self.computer.other = data_dict.pop('other')[0]
+            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
+                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
+                self.computer.f_id_received_batches = received_batch
             self.computer.save()
 
         print(data_dict)
@@ -4414,6 +4478,7 @@ class ComputerToEdit:
         data_dict.pop('serial')
         data_dict.pop('motherboard_serial')
         data_dict.pop('date')
+        print(data_dict)
         if self._is5thVersion(self.computer):
             print('Computer is of 5th version')
             try:

@@ -359,6 +359,7 @@ class Computer_record2:
 
     def _computer_save_and_get(self, data):
         print('_computer_save_and_get')
+        print(data)
         try:
             existing_computer = Computers.objects.get(computer_serial=data['SystemInfo']['Serial Number'])
             print('after existing computer')
@@ -390,6 +391,8 @@ class Computer_record2:
             existing_computer.motherboard_serial = self.motherboard_serial
             existing_computer.f_id_matrix = self.matrix
             existing_computer.f_id_computer_resolutions = self.computer_resolution
+            if "Received batch" in data["Others"] and existing_computer.f_id_received_batches is None:
+                existing_computer.f_id_received_batches = Receivedbatches.objects.get(received_batch_name=data["Others"]["Received batch"])
             if existing_computer.f_id_comp_ord:
                 if "Order" in data and "Status" in data["Order"]:
                     print('___start___')
@@ -405,6 +408,9 @@ class Computer_record2:
             return existing_computer
         except Computers.DoesNotExist:
             print("No computer with such serial, inserting a new record")
+            recieved_batch = None
+            if "Received batch" in data["Others"]:
+                received_batch = Receivedbatches.objects.get(received_batch_name=data["Others"]["Received batch"])
             computer = Computers(
                 computer_serial=data['SystemInfo']['Serial Number'],
                 f_type=self.type,
@@ -433,6 +439,7 @@ class Computer_record2:
                 motherboard_serial=self.motherboard_serial,
                 f_id_matrix=self.matrix,
                 f_id_computer_resolutions=self.computer_resolution,
+                f_id_received_batches=received_batch
             )
             computer.save()
             self.message += "New record has been added\n"
@@ -531,16 +538,16 @@ class Computer_record2:
             Computerdrives.objects.filter(f_id_computer=self.computer).delete()
             if drives_dict:
                 for id in range(self._get_highest_first_number(drives_dict)):
-                    if str(id + 1) + ' Drives SN' in drives_dict:
-                        model = HddModels.objects.get_or_create(hdd_models_name=drives_dict[str(id + 1) + ' Drives SN'])[0]
-                        size = HddSizes.objects.get_or_create(hdd_sizes_name=drives_dict[str(id + 1) + ' Drives Capacity'])[0]
-                        lock_state = LockState.objects.get_or_create(lock_state_name=drives_dict[str(id + 1) + ' Drives Locked'])[0]
-                        speed = Speed.objects.get_or_create(speed_name=drives_dict[str(id + 1) + ' Drives Speed'])[0]
-                        form_factor = FormFactor.objects.get_or_create(form_factor_name=drives_dict[str(id + 1) + ' Drives Size'])[0]
+                    if str(id + 1) + ' Drive SN' in drives_dict:
+                        model = HddModels.objects.get_or_create(hdd_models_name=drives_dict[str(id + 1) + ' Drive SN'])[0]
+                        size = HddSizes.objects.get_or_create(hdd_sizes_name=drives_dict[str(id + 1) + ' Drive Capacity'])[0]
+                        lock_state = LockState.objects.get_or_create(lock_state_name=drives_dict[str(id + 1) + ' Drive Locked'])[0]
+                        speed = Speed.objects.get_or_create(speed_name=drives_dict[str(id + 1) + ' Drive Speed'])[0]
+                        form_factor = FormFactor.objects.get_or_create(form_factor_name=drives_dict[str(id + 1) + ' Drive Size'])[0]
                         drive = Drives.objects.get_or_create(
-                            hdd_serial=drives_dict[str(id + 1) + ' Drives SN'],
-                            health=drives_dict[str(id + 1) + ' Drives Health'].replace("%", ""),
-                            days_on=drives_dict[str(id + 1) + ' Drives PowerOn'],
+                            hdd_serial=drives_dict[str(id + 1) + ' Drive SN'],
+                            health=drives_dict[str(id + 1) + ' Drive Health'].replace("%", ""),
+                            days_on=drives_dict[str(id + 1) + ' Drive PowerOn'],
                             f_hdd_models=model,
                             f_hdd_sizes=size,
                             f_lock_state=lock_state,
@@ -668,5 +675,7 @@ class Computer_data_dict_builder:
         others_dict["Category"] = computer.f_category.category_name
         others_dict["isSold"] = get_is_sold(computer)
         others_dict["Other"] = computer.other
+        if computer.f_id_received_batches:
+            others_dict["Received batch"] = computer.f_id_received_batches.received_batch_name
         self.data_dict["Others"] = others_dict
 
