@@ -113,34 +113,35 @@ def get_hdds(computer_id):
         print("Hdds asociated with this computer do not exist")
     return hdd_list
 
-class Edit_computer_record():
+class Edit_computer_record:
 
     def __init__(self, data_dict):
         self.data_dict = data_dict
         self.data_dict.pop("edit", "")
         self.data_dict.pop("edit.x", "")
         self.data_dict.pop("edit.y", "")
-        # self.data_dict.pop("motherboard_serial", "")
 
-
-        self._type_save(self.data_dict.pop("type_name", "")[0])
-        self._category_save(self.data_dict.pop("category_name", "")[0])
-        self._tester_save(self.data_dict.pop("tester_name", "")[0])
-        self._bios_save(self.data_dict.pop("bios_text", "")[0])
-        self._cpu_save(self.data_dict.pop("cpu_name", "")[0])
-        self._camera_option_save(self.data_dict.pop("option_name", "")[0])
-        self._diagonal_save(self.data_dict.pop("diagonal_text", "")[0])
-        self._gpu_save(self.data_dict.pop("gpu_name", "")[0])
-        self._hddsize_save(self.data_dict.pop("hdd_sizes_name", "")[0])
-        self._license_save(self.data_dict.pop("license_name", "")[0])
-        self._manufacturer_save(self.data_dict.pop("manufacturer_name", "")[0])
-        self._model_save(self.data_dict.pop("model_name", "")[0])
+        self.type = Types.objects.get_or_create(type_name=self.data_dict.pop("type_name", "")[0])[0]
+        self.category = Categories.objects.get_or_create(category_name=self.data_dict.pop("category_name", "")[0])[0]
+        self.tester = Testers.objects.get_or_create(tester_name=self.data_dict.pop("tester_name", "")[0])[0]
+        self.bios = Bioses.objects.get_or_create(bios_text=self.data_dict.pop("bios_text", "")[0])[0]
+        self.cpu = Cpus.objects.get_or_create(cpu_name=self.data_dict.pop("cpu_name", "")[0])[0]
+        self.camera_option = CameraOptions.objects.get_or_create(option_name=self.data_dict.pop("option_name", "")[0])[0]
+        self.diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data_dict.pop("diagonal_text", "")[0])[0]
+        self.gpu = Gpus.objects.get_or_create(gpu_name=self.data_dict.pop("gpu_name", "")[0])[0]
+        self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name=self.data_dict.pop("hdd_sizes_name", "")[0])[0]
+        self.license = Licenses.objects.get_or_create(license_name=self.data_dict.pop("license_name", "")[0])[0]
+        self.manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=self.data_dict.pop("manufacturer_name", "")[0])[0]
+        self.model = Models.objects.get_or_create(model_name=self.data_dict.pop("model_name", "")[0])[0]
         self.motherboard_serial = self.data_dict.pop("motherboard_serial", "")[0]
-        self._ramsize_save(self.data_dict.pop("ram_size_text", "")[0])
+        self.ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data_dict.pop("ram_size_text", "")[0])[0]
         self.computer = Computers.objects.get(id_computer=self.data_dict.pop("id_computer", "")[0])
         if "client_name" in data_dict:
-            self._client_save(self.data_dict.pop("client_name", "")[0])
-            self._sale_save(self.data_dict.pop("date_of_sale", "")[0])
+            self.client = Clients.objects.get_or_create(client_name=self.data_dict.pop("client_name", "")[0])[0]
+            self.sale = Sales.objects.get_or_create(
+                date_of_sale=self.data_dict.pop("date_of_sale", "")[0],
+                f_id_client=self.client
+            )[0]
             self._computer_sold_save()
             self._process_ram_and_hdd_serials()
             self._process_batteries()
@@ -149,8 +150,6 @@ class Edit_computer_record():
 
     def _process_batteries(self):
         bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer.id_computer)
-        print(self.computer.id_computer)
-        print(bat_to_comps)
         bat_to_comps.delete()
         while len(self.data_dict) > 2:
             key = next(iter(self.data_dict))
@@ -269,56 +268,7 @@ class Edit_computer_record():
         )
         self.computer.save()
 
-    def _client_save(self, client_name):
-        self.client = Clients.objects.get_or_create(client_name=client_name)[0]
-        # self.client.save()
-
-    def _sale_save(self, date_of_sale):
-        self.sale = Sales.objects.get_or_create(
-            date_of_sale=date_of_sale,
-            f_id_client=self.client
-        )[0]
-
-    def _type_save(self, value):
-        self.type = Types.objects.get_or_create(type_name=value)[0]
-
-    def _tester_save(self, value):
-        self.tester = Testers.objects.get_or_create(tester_name=value)[0]
-
-    def _category_save(self, value):
-        self.category = Categories.objects.get_or_create(category_name=value)[0]
-
-    def _bios_save(self, value):
-        self.bios = Bioses.objects.get_or_create(bios_text=value)[0]
-
-    def _cpu_save(self, value):
-        self.cpu = Cpus.objects.get_or_create(cpu_name=value)[0]
-
-    def _camera_option_save(self, value):
-        self.camera_option = CameraOptions.objects.get_or_create(option_name=value)[0]
-
-    def _diagonal_save(self, value):
-        self.diagonal = Diagonals.objects.get_or_create(diagonal_text=value)[0]
-
-    def _gpu_save(self, value):
-        self.gpu = Gpus.objects.get_or_create(gpu_name=value)[0]
-
-    def _hddsize_save(self, value):
-        self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name=value)[0]
-
-    def _license_save(self, value):
-        self.license = Licenses.objects.get_or_create(license_name=value)[0]
-
-    def _manufacturer_save(self, value):
-        self.manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=value)[0]
-
-    def _model_save(self, value):
-        self.model = Models.objects.get_or_create(model_name=value)[0]
-
-    def _ramsize_save(self, value):
-        self.ramsize = RamSizes.objects.get_or_create(ram_size_text=value)[0]
-
-
+'''
 def edit_post(data_dict):
     data_dict.pop("edit", "")
     id_computer = data_dict.pop("id_computer", "")[0]
@@ -385,6 +335,7 @@ def edit_post(data_dict):
             time=time
         )
         bat_list.append(battery)
+'''
 
 def get_key_tupple(key):
     return tuple(key.split("_"))
@@ -419,10 +370,11 @@ class QtySelect:
         elif qty==1000:
             self.state1000 = "selected"
 
-
+'''
 class AutoFilters:
 
     def __init__(self):
+        print("Modified Autofilters")
         self.getSerials()
         self.getManufacturers()
         self.getModels()
@@ -434,7 +386,8 @@ class AutoFilters:
 
     def getSerials(self):
         serials = Computers.objects.values('computer_serial').distinct()
-        self.serials = [a['computer_serial'] for a in serials]
+        # self.serials = [a['computer_serial'] for a in serials]
+        self.serials =serials.values_list('computer_serial', flat=True)
 
     def getManufacturers(self):
         manufacturers = Manufacturers.objects.values('manufacturer_name').distinct()
@@ -463,96 +416,23 @@ class AutoFilters:
     def getOther(self):
         others = Computers.objects.values('other').distinct()
         self.others = [a['other'] for a in others]
-
+'''
 
 class AutoFiltersFromComputers:
 
     def __init__(self, computers):
-        self.computers = computers
-        self._get_serials()
-        self._get_manufacturers()
-        self._getModels()
-        self._getCpus()
-        self._getRams()
-        self._getGpus()
-        self._getScreens()
-        self._getOther()
-
-    def _get_serials(self):
-        serials = self.computers.values('computer_serial').distinct()
-        self.serials = [a['computer_serial'] for a in serials]
-        self.serials.sort()
-
-    def _get_manufacturers(self):
-        manufacturers = self.computers.values('f_manufacturer').distinct()
-        manufacturers_id = [a['f_manufacturer'] for a in manufacturers]
-        self.manufacturers = []
-        for id in manufacturers_id:
-            man = Manufacturers.objects.get(id_manufacturer=id)
-            self.manufacturers.append(man.manufacturer_name)
-        self.manufacturers.sort()
-
-    def _getModels(self):
-        models = self.computers.values('f_model').distinct()
-        models_id = [a['f_model'] for a in models]
-        self.models = []
-        for id in models_id:
-            mod = Models.objects.get(id_model=id)
-            self.models.append(mod.model_name)
-        self.models.sort()
-
-    def _getCpus(self):
-        cpus = self.computers.values('f_cpu').distinct()
-        cpus_id = [a['f_cpu'] for a in cpus]
-        self.cpus = []
-        for id in cpus_id:
-            if id is None:
-                self.cpus.append("")
-            else:
-                cpu = Cpus.objects.get(id_cpu=id)
-                self.cpus.append(cpu.cpu_name)
-        self.cpus.sort()
-
-    def _getRams(self):
-        rams = self.computers.values('f_ram_size').distinct()
-        rams_id = [a['f_ram_size'] for a in rams]
-        self.rams = []
-        for id in rams_id:
-            if id is None:
-                self.rams.append("")
-            else:
-                ram = RamSizes.objects.get(id_ram_size=id)
-                self.rams.append(ram.ram_size_text)
-        self.rams.sort()
-
-    def _getGpus(self):
-        gpus = self.computers.values('f_gpu').distinct()
-        gpus_id = [a['f_gpu'] for a in gpus]
-        self.gpus = []
-        for id in gpus_id:
-            if id is None:
-                self.gpus.append("")
-            else:
-                gpu = Gpus.objects.get(id_gpu=id)
-                self.gpus.append(gpu.gpu_name)
-        self.gpus.sort()
-
-    def _getScreens(self):
-        screens = self.computers.values("f_diagonal").distinct()
-        screens_id = [a['f_diagonal'] for a in screens]
-        self.screens = []
-        for id in screens_id:
-            if id is None:
-                self.screens.append("")
-            else:
-                screen = Diagonals.objects.get(id_diagonal=id)
-                self.screens.append(screen.diagonal_text)
-        self.screens.sort()
-
-    def _getOther(self):
-        others = self.computers.values("other").distinct()
-        self.others = [a['other'] for a in others]
-        self.others.sort()
+        self.serials = computers.values_list('computer_serial', flat=True).distinct().order_by('computer_serial')
+        self.manufacturers = computers.values_list('f_manufacturer__manufacturer_name', flat=True).distinct() \
+            .order_by('f_manufacturer__manufacturer_name')
+        self.models = computers.values_list('f_model__model_name', flat=True).distinct() \
+            .order_by('f_model__model_name')
+        self.cpus = computers.values_list('f_cpu__cpu_name', flat=True).distinct().order_by('f_cpu__cpu_name')
+        self.rams = computers.values_list('f_ram_size__ram_size_text', flat=True).distinct() \
+            .order_by('f_ram_size__ram_size_text')
+        self.gpus = computers.values_list('f_gpu__gpu_name', flat=True).distinct().order_by('f_gpu__gpu_name')
+        self.screens = computers.values_list('f_diagonal__diagonal_text', flat=True).distinct() \
+            .order_by('f_diagonal__diagonal_text')
+        self.others = computers.values_list('other', flat=True).distinct().order_by('other')
 
 
 class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
