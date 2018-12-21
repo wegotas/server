@@ -438,52 +438,12 @@ class AutoFiltersFromComputers:
 class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
 
     def __init__(self, computers):
-        self.computers = computers
-        self._getPrice()
-        self._getDateOfSale()
-        self._getClients()
+        self.prices = computers.values_list("price", flat=True).distinct().order_by('price')
+        self.dates = computers.values_list("f_sale__date_of_sale", flat=True).distinct() \
+            .order_by('f_sale__date_of_sale')
+        self.clients = computers.values_list("f_sale__f_id_client__client_name", flat=True).distinct() \
+            .order_by('f_sale__f_id_client__client_name')
         super(AutoFiltersFromSoldComputers, self).__init__(computers)
-
-    def _getPrice(self):
-        """
-        def toStr(objct):
-            if objct is None:
-                return ''
-            else:
-                return str(objct)
-
-        prices = self.computers.values("price").distinct()
-        self.prices = [toStr(a['price']) for a in prices]
-        """
-        prices = self.computers.values("price").distinct()
-        self.prices = [str(a['price']) for a in prices]
-        self.prices.sort()
-
-    def _getDateOfSale(self):
-        sales = self.computers.values("f_sale").distinct()
-        sales_id = [a['f_sale'] for a in sales]
-        self.dates = []
-        for id in sales_id:
-            if id is None:
-                self.dates.append("")
-            else:
-                sale = Sales.objects.get(id_sale=id)
-                self.dates.append(sale.getDate())
-        self.dates = list(set(self.dates))
-        self.dates.sort()
-
-    def _getClients(self):
-        sales = self.computers.values("f_sale").distinct()
-        sales_id = [a['f_sale'] for a in sales]
-        self.clients = []
-        for id in sales_id:
-            if id is None:
-                self.dates.append("")
-            else:
-                sale = Sales.objects.get(id_sale=id)
-                self.clients.append(sale.f_id_client.client_name)
-        self.clients = list(set(self.clients))
-        self.clients.sort()
 
 
 class CatTyp:
