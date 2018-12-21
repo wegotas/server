@@ -1,11 +1,23 @@
 {% block 'navbar' %}
 <div class="navbar">
+    <!--
     {% for ct in cattyp.innerList %}
     <div class="dropdown">
         <button href="laptops/" class="dropbtn">{{ ct.type }}&#9660;</button>
         <div class="dropdown-content">
             {% for cat in ct.innerList %}
             <a href="?type={{ ct.type }}&cat={{ cat }}&sold=False">{{ cat }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    -->
+    {% for type in typcat %}
+    <div class="dropdown">
+        <button href="laptops/" class="dropbtn">{{ type.type_name }}&#9660;</button>
+        <div class="dropdown-content">
+            {% for cat in type %}
+            <a href="?type={{ type.type_name }}&cat={{ cat.category_name }}&sold=False">{{ cat.title }}</a>
             {% endfor %}
         </div>
     </div>

@@ -2,7 +2,7 @@ from ULCDTinterface.modelers import * # Computers, Bioses, Batteries, Cpus, Came
 import xlsxwriter
 from django.utils import timezone
 import re
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.conf import settings
 import time
 from watchdog.observers import Observer
@@ -418,7 +418,11 @@ class AutoFilters:
         self.others = [a['other'] for a in others]
 '''
 
+
 class AutoFiltersFromComputers:
+    """
+    This is a holder of unique values necessary for filtering operations website side.
+    """
 
     def __init__(self, computers):
         self.serials = computers.values_list('computer_serial', flat=True).distinct().order_by('computer_serial')
@@ -436,6 +440,9 @@ class AutoFiltersFromComputers:
 
 
 class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
+    """
+    This is a holder's extension of AutoFiltersFromComputers to accommodate for sold computers additional choices.
+    """
 
     def __init__(self, computers):
         self.prices = computers.values_list("price", flat=True).distinct().order_by('price')
@@ -446,34 +453,76 @@ class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
         super(AutoFiltersFromSoldComputers, self).__init__(computers)
 
 
-class CatTyp:
+class TypCat:
 
     def __init__(self):
-        self.innerList = []
-        query = """select distinct tp.id_type, tp.type_name, cat.category_name from sopena_computers.Types as tp
-join sopena_computers.Computers as comp on comp.f_type_id = tp.id_type
-join sopena_computers.Categories as cat on cat.id_category = comp.f_category_id
-where comp.f_sale_id is NULL and comp.`f_id_comp/ord` is Null"""
-        for output in Types.objects.raw(query):
+        self.current = 0
+        queryset = Computers.objects.filter(f_sale__isnull=True, f_id_comp_ord__isnull=True).values(
+            'f_type__type_name', 'f_category__category_name').annotate(qty=Count('id_computer'))
+        self.types = []
+        for record in queryset:
             inserted = False
-            for member in self.innerList:
-                if member.type == output.type_name:
-                    member.add_category(output.category_name)
+            for type in self.types:
+                if record['f_type__type_name'] == type.type_name:
+                    type.add(record['f_category__category_name'], record['qty'])
                     inserted = True
             if not inserted:
-                cattypholder = CatTypHolder(output.type_name, output.category_name)
-                self.innerList.append(cattypholder)
+                typholder = TypHolder(record['f_type__type_name'])
+                typholder.add(record['f_category__category_name'], record['qty'])
+                self.types.append(typholder)
+        self.types.sort(key=lambda x: x.type_name)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current >= len(self.types):
+            self.current = 0
+            raise StopIteration
+        else:
+            self.current += 1
+            return self.types[self.current - 1]
+
+    def debug(self):
+        for type in self.types:
+            print("Type: {0}".format(type.type_name))
+            for category in type:
+                print(category)
 
 
-class CatTypHolder:
+class TypHolder:
+    
+    def __init__(self, type_name):
+        self.current = 0
+        self.type_name = type_name
+        self.cat_list = []
 
-    def __init__(self, type_name, category_name):
-        self.innerList = []
-        self.type = type_name
-        self.innerList.append(category_name)
+    def add(self, category_name, qty):
+        self.cat_list.append(CatHolder(category_name, qty))
 
-    def add_category(self, category_name):
-        self.innerList.append(category_name)
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current >= len(self.cat_list):
+            self.current = 0
+            raise StopIteration
+        else:
+            self.current += 1
+            return self.cat_list[self.current - 1]
+        
+
+class CatHolder:
+
+    def __init__(self, category_name, qty):
+        self.category_name = category_name
+        self.qty = qty
+
+    def __str__(self):
+        return "category_name: {0}, qty: {1}".format(self.category_name, self.qty)
+
+    def title(self):
+        return "{0} ({1})".format(self.category_name, self.qty)
 
 
 def getIsSold(request):

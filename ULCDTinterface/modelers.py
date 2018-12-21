@@ -453,7 +453,7 @@ class Rams(models.Model):
     type = models.CharField(max_length=10, blank=True, null=True)
 
     def __str__(self):
-        return "ramserial: {0}, capacity {1}, clock {2}, type {3}".format(self.ram_serial, self.capacity, self.clock, self.type)
+        return "ramserial: {0}, capacity: {1}, clock: {2}, type: {3}".format(self.ram_serial, self.capacity, self.clock, self.type)
 
     class Meta:
         managed = True

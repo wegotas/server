@@ -24,7 +24,7 @@ def index(request):
     page = getPage(data_dict)
     keyword = getKeyword(data_dict)
     autoFilters = AutoFilter(data_dict)
-    cattyp = CatTyp()
+    typcat = TypCat()
     so = SearchOptions()
 
     if 'lots' in request.GET:
@@ -34,7 +34,7 @@ def index(request):
             request,
             'main.html',
             {
-                "cattyp": cattyp,
+                "typcat": typcat,
                 'lh': lh,
                 'so': so
             }
@@ -47,7 +47,7 @@ def index(request):
             request,
             'main.html',
             {
-                "cattyp": cattyp,
+                "typcat": typcat,
                 'hh': hh,
                 'so': so
             }
@@ -60,7 +60,7 @@ def index(request):
             request,
             'main.html',
             {
-                "cattyp": cattyp,
+                "typcat": typcat,
                 'oh': oh,
                 'so': so
             }
@@ -75,7 +75,7 @@ def index(request):
             'main.html',
             {
                 'cch': cch,
-                "cattyp": cattyp,
+                "typcat": typcat,
                 'so': so
             }
         )
@@ -102,7 +102,7 @@ def index(request):
                 "counter": counter,
                 "qtySelect": qtySelect,
                 "autoFilters": af,
-                "cattyp": cattyp,
+                "typcat": typcat,
                 "poscat": possible_categories,
                 "po": po,
                 'so': so,
@@ -135,7 +135,7 @@ def index(request):
                 "counter": counter,
                 "qtySelect": qtySelect,
                 "autoFilters": af,
-                "cattyp": cattyp,
+                "typcat": typcat,
                 "poscat": possible_categories,
                 'so': so
             }
@@ -150,7 +150,7 @@ def index(request):
             'main.html',
             {
                 "counter": counter,
-                "cattyp": cattyp,
+                "typcat": typcat,
                 "orders": orders,
                 'so': so
             }
@@ -193,7 +193,6 @@ def index(request):
             autoFilters = None
             possible_types = None
             po = PossibleOrders()
-        # cattyp = CatTyp()
         # removeKeyword(request)
         return render(
             request,
@@ -203,7 +202,7 @@ def index(request):
                 "counter": counter,
                 "qtySelect": qtySelect,
                 "autoFilters": af,
-                "cattyp": cattyp,
+                "typcat": typcat,
                 "poscat": possible_categories,
                 "po": po,
                 'so': so
