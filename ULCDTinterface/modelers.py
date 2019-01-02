@@ -216,7 +216,7 @@ class Computers(models.Model):
             return otherList[0]+'\n' + otherList[1]
         return self.get_other()
 
-    def _is5thVersion(self):
+    def is5th_version(self):
         return self.f_id_computer_resolutions \
                or self.f_id_matrix \
                or Computerprocessors.objects.filter(f_id_computer=self).count() > 0 \
@@ -225,13 +225,13 @@ class Computers(models.Model):
                or Computerdrives.objects.filter(f_id_computer=self).count() > 0
 
     def get_gpu(self):
-        if self._is5thVersion():
+        if self.is5th_version():
             comp_gpus = Computergpus.objects.filter(f_id_computer=self)
             return ", ".join(comp_gpus.values_list("f_id_gpu__gpu_name", flat=True))
         return self.f_gpu.gpu_name
 
     def get_other(self):
-        if self._is5thVersion():
+        if self.is5th_version():
             comp_observ = Computerobservations.objects.filter(f_id_computer=self)
             return "\n".join(comp_observ.values_list("f_id_observation__full_name", flat=True)) + '\r\n' + self.other
         return self.other

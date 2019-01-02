@@ -22,6 +22,7 @@ from django.db.utils import IntegrityError
 import tempfile
 import math
 import sys, traceback
+from abc import ABC, abstractmethod
 
 
 class Bat_holder():
@@ -553,7 +554,7 @@ def getKeyword(data_dict):
         return data_dict.pop('keyword')[0]
 
 
-def changeCategoriesUsingDict(dict):
+def change_category_for_computers(dict):
     category_name = next(iter(dict))
     indexes = dict[category_name]
     category = Categories.objects.get(category_name=category_name)
@@ -563,60 +564,72 @@ def changeCategoriesUsingDict(dict):
         computer.save()
 
 
+class AbstractDataFileGenerator(ABC):
 
-def createExcelFile(indexes):
-    unwantedCommentParts = ('\t', '\n', 'oko', 'ook', 'oik', 'ok', '-', 'Ok,', 'Ok', 'ok,', '+', '0k', 'n,', 'other', 'N/A')
-    unwantedComments = (None, 'o', 'n', 'k', 'NULL', 'None', 'ko')
+    # Parts of comments which should be removed out of comment, preserving the rest of the comment.
+    unwantedCommentParts = (
+        '\t',
+        '\n',
+        'oko',
+        'ook',
+        'oik',
+        'ok',
+        '-',
+        'Ok,',
+        'Ok',
+        'ok,',
+        '+',
+        '0k',
+        'n,',
+        'other',
+        'N/A'
+    )
 
-    def getProccessedString(string):
-        for comment in unwantedComments:
-            if string == comment:
-                return ''
-        for commentPart in unwantedCommentParts:
+    # Comments consisting out only these strings should not be returned back at all.
+    unwantedComments = (
+        None,
+        'o',
+        'n',
+        'k',
+        'NULL',
+        'None',
+        'ko'
+    )
+
+    def _get_processed_string(self, string):
+        if string in self.unwantedComments:
+            return ''
+        for commentPart in self.unwantedCommentParts:
             string = string.replace(commentPart, '')
         return string.strip(' ,;')
 
-    def formCommentPart(field, title=None):
-        value = getProccessedString(field)
+    def _form_comment_part(self, field, title=None):
+        value = self._get_processed_string(field)
         if title is None:
             return value
         if value != '':
             return ', '+title+': '+value
         return ''
 
-    '''
-    def form_4th_comment(computer):
-        commentToReturn = getProccessedString(computer.other)
-        commentToReturn += formCommentPart(computer.cover, 'cover')
-        commentToReturn += formCommentPart(computer.display, 'display')
-        commentToReturn += formCommentPart(computer.bezel, 'bezel')
-        commentToReturn += formCommentPart(computer.keyboard, 'keyboard')
-        commentToReturn += formCommentPart(computer.mouse, 'mouse')
-        commentToReturn += formCommentPart(computer.sound, 'sound')
-        commentToReturn += formCommentPart(computer.cdrom, 'cdrom')
-        commentToReturn += formCommentPart(computer.hdd_cover, 'hdd_cover')
-        commentToReturn += formCommentPart(computer.ram_cover, 'ram_cover')
-        return commentToReturn.strip(' ,;')
-    '''
-    def form_comment(computer):
-        if computer._is5thVersion():
-            return form_5th_comment(computer)
-        return form_4th_comment(computer)
+    def _form_comment(self, computer):
+        if computer.is5th_version():
+            return self._form_5th_comment(computer)
+        return self._form_4th_comment(computer)
 
-    def form_4th_comment(computer):
-        commentToReturn = getProccessedString(computer.other)
-        commentToReturn += formCommentPart(computer.cover, 'cover')
-        commentToReturn += formCommentPart(computer.display, 'display')
-        commentToReturn += formCommentPart(computer.bezel, 'bezel')
-        commentToReturn += formCommentPart(computer.keyboard, 'keyboard')
-        commentToReturn += formCommentPart(computer.mouse, 'mouse')
-        commentToReturn += formCommentPart(computer.sound, 'sound')
-        commentToReturn += formCommentPart(computer.cdrom, 'cdrom')
-        commentToReturn += formCommentPart(computer.hdd_cover, 'hdd_cover')
-        commentToReturn += formCommentPart(computer.ram_cover, 'ram_cover')
-        return commentToReturn.strip(' ,;')
+    def _form_4th_comment(self, computer):
+        comment_to_return = self._get_processed_string(computer.other)
+        comment_to_return += self._form_comment_part(computer.cover, 'cover')
+        comment_to_return += self._form_comment_part(computer.display, 'display')
+        comment_to_return += self._form_comment_part(computer.bezel, 'bezel')
+        comment_to_return += self._form_comment_part(computer.keyboard, 'keyboard')
+        comment_to_return += self._form_comment_part(computer.mouse, 'mouse')
+        comment_to_return += self._form_comment_part(computer.sound, 'sound')
+        comment_to_return += self._form_comment_part(computer.cdrom, 'cdrom')
+        comment_to_return += self._form_comment_part(computer.hdd_cover, 'hdd_cover')
+        comment_to_return += self._form_comment_part(computer.ram_cover, 'ram_cover')
+        return comment_to_return.strip(' ,;')
 
-    def form_5th_comment(computer):
+    def _form_5th_comment(self, computer):
         commentToReturn = ''
         computer_observations = Computerobservations.objects.filter(f_id_computer=computer)
         categories = computer_observations.values_list('f_id_observation__f_id_observation_category', flat=True)
@@ -628,268 +641,230 @@ def createExcelFile(indexes):
             for computer_observation in observations_of_category:
                 string_to_add += computer_observation.f_id_observation.full_name + ', '
             commentToReturn += string_to_add.strip(' ,;') + '; '
-        commentToReturn += getProccessedString(computer.other)
+        commentToReturn += self._get_processed_string(computer.other)
         return commentToReturn.strip(' ,;')
 
-    memfile = io.BytesIO()
-    workbook = xlsxwriter.Workbook(memfile)
-    worksheet = workbook.add_worksheet()
-    bold_bordered = workbook.add_format({"bold": True, "border": 1})
-    bordered = workbook.add_format({"border": 1})
+    @staticmethod
+    def _get_serial(computer):
+        serial = ""
+        try:
+            serial = computer.computer_serial
+        except:
+            serial = "N/A"
+        return serial
 
-    worksheet.write("A1", "S/N", bold_bordered)
-    worksheet.write("B1", "Manufacturer", bold_bordered)
-    worksheet.write("C1", "Model", bold_bordered)
-    worksheet.write("D1", "CPU", bold_bordered)
-    worksheet.write("E1", "RAM", bold_bordered)
-    worksheet.write("F1", "GPU", bold_bordered)
-    worksheet.write("G1", "HDD", bold_bordered)
-    worksheet.write("H1", "Batteries", bold_bordered)
-    worksheet.write("I1", "LCD", bold_bordered)
-    worksheet.write("J1", "Optical", bold_bordered)
-    worksheet.write("K1", "COA", bold_bordered)
-    worksheet.write("L1", "Cam", bold_bordered)
-    worksheet.write("M1", "Comment", bold_bordered)
-    worksheet.write("N1", "Price", bold_bordered)
-    row = 1
-    col = 0
-    for int_index in indexes:
-        computer = Computers.objects.get(id_computer=int_index)
-        worksheet.write(row, col, _get_serial(computer), bordered)
-        worksheet.write(row, col + 1, _get_manufacturer(computer), bordered)
-        worksheet.write(row, col + 2, _get_model(computer), bordered)
-        worksheet.write(row, col + 3, _get_cpu_name(computer), bordered)
-        worksheet.write(row, col + 4, _get_ram_size(computer), bordered)
-        worksheet.write(row, col + 5, _get_gpu_name(computer), bordered)
-        worksheet.write(row, col + 6, _get_hdd_size(computer), bordered)
-        worksheet.write(row, col + 7, _get_battery_time(int_index), bordered)
-        worksheet.write(row, col + 8, _get_diagonal(computer), bordered)
-        worksheet.write(row, col + 9, _get_cdrom(computer), bordered)
-        worksheet.write(row, col + 10, _get_license(computer), bordered)
-        worksheet.write(row, col + 11, _get_camera_option(computer), bordered)
-        worksheet.write(row, col + 12, form_comment(computer), bordered)
-        row += 1
-    workbook.close()
-    return memfile
+    @staticmethod
+    def _get_manufacturer(computer):
+        manufacturer = ""
+        try:
+            manufacturer = computer.f_manufacturer.manufacturer_name
+        except:
+            manufacturer = "N/A"
+        return manufacturer
 
+    @staticmethod
+    def _get_model(computer):
+        model = ""
+        try:
+            model = computer.f_model.model_name
+        except:
+            model = "N/A"
+        return model
 
-def createCsvFile(indexes):
-    unwantedCommentParts = ('\t', '\n', 'oko', 'ook', 'oik', 'ok', '-', 'Ok', 'Ok,', 'ok,', '+', '0k', 'n,', 'other', 'N/A')
-    unwantedComments = (None, 'o', 'n', 'k', 'NULL', 'None', 'ko')
+    @staticmethod
+    def _get_cpu_name(computer):
+        if computer.is5th_version():
+            computer_processors = Computerprocessors.objects.filter(f_id_computer=computer)
+            lst = []
+            for computer_processor in computer_processors:
+                string = computer_processor.f_id_processor.f_manufacturer.manufacturer_name + ' ' + computer_processor.f_id_processor.model_name + ' ' + computer_processor.f_id_processor.stock_clock
+                lst.append(string)
+            return ', '.join(lst).replace('Intel Intel', 'Intel').replace(' GHz', '')
+        cpu_name = ""
+        try:
+            cpu_name = computer.f_cpu.cpu_name
+        except:
+            cpu_name = "N/A"
+        return cpu_name
 
-    def getProccessedString(string):
-        for comment in unwantedComments:
-            if string == comment:
-                return ''
-        for commentPart in unwantedCommentParts:
-            string = string.replace(commentPart, '')
-        return string.strip(' ,;')
+    @staticmethod
+    def _get_ram_size(computer):
+        if computer.is5th_version():
+            ram_to_comp = RamToComp.objects.filter(f_id_computer_ram_to_com=computer)[0]
+            return computer.f_ram_size.ram_size_text + ' ' + ram_to_comp.f_id_ram_ram_to_com.type
+        ram_size = ""
+        try:
+            ram_size = computer.f_ram_size.ram_size_text
+        except:
+            ram_size = "N/A"
+        return ram_size
 
-    def formCommentPart(field, title=None):
-        value = getProccessedString(field)
-        if title is None:
-            return value
-        if value != '':
-            return ', '+title+': '+value
-        return ''
+    @staticmethod
+    def _get_gpu_name(computer):
+        if computer.is5th_version():
+            computer_gpus = Computergpus.objects.filter(f_id_computer=computer)
+            lst = []
+            for computer_gpu in computer_gpus:
+                string = computer_gpu.f_id_gpu.f_id_manufacturer.manufacturer_name + ' ' + computer_gpu.f_id_gpu.gpu_name
+                if 'Intel HD' in string:
+                    string = 'Intel HD'
+                lst.append(string)
+            return ', '.join(lst)
+        gpu_name = ""
+        try:
+            gpu_name = computer.f_gpu.gpu_name
+        except:
+            gpu_name = "N/A"
+        return gpu_name
 
-    def form_comment(computer):
-        if computer._is5thVersion():
-            return form_5th_comment(computer)
-        return form_4th_comment(computer)
+    @staticmethod
+    def _get_hdd_size(computer):
+        if computer.is5th_version():
+            computer_drives = Computerdrives.objects.filter(f_id_computer=computer)
+            lst = []
+            for computer_drive in computer_drives:
+                type = ''
+                if computer_drive.f_drive.f_speed.speed_name.isdigit():
+                    type = 'HDD'
+                else:
+                    type = computer_drive.f_drive.f_speed.speed_name
+                string = type + ': ' + computer_drive.f_drive.f_hdd_sizes.hdd_sizes_name
+                lst.append(string)
+            if len(lst) == 0:
+                return 'N/A'
+            return ', '.join(lst)
+        hdd_size = ""
+        try:
+            hdd_size = computer.f_hdd_size.hdd_sizes_name
+        except:
+            hdd_size = "N/A"
+        return hdd_size
 
-    def form_4th_comment(computer):
-        commentToReturn = getProccessedString(computer.other)
-        commentToReturn += formCommentPart(computer.cover, 'cover')
-        commentToReturn += formCommentPart(computer.display, 'display')
-        commentToReturn += formCommentPart(computer.bezel, 'bezel')
-        commentToReturn += formCommentPart(computer.keyboard, 'keyboard')
-        commentToReturn += formCommentPart(computer.mouse, 'mouse')
-        commentToReturn += formCommentPart(computer.sound, 'sound')
-        commentToReturn += formCommentPart(computer.cdrom, 'cdrom')
-        commentToReturn += formCommentPart(computer.hdd_cover, 'hdd_cover')
-        commentToReturn += formCommentPart(computer.ram_cover, 'ram_cover')
-        return commentToReturn.strip(' ,;')
+    @staticmethod
+    def _get_battery_time(int_index):
+        bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=int_index)
+        if len(bat_to_comps) > 2:
+            return "~1h."
+        elif len(bat_to_comps) < 1:
+            return "No"
+        else:
+            return str(bat_to_comps[0].f_bat_bat_to_com.expected_time)
 
-    def form_5th_comment(computer):
-        commentToReturn = ''
-        computer_observations = Computerobservations.objects.filter(f_id_computer=computer)
-        categories = computer_observations.values_list('f_id_observation__f_id_observation_category', flat=True)
-        categories = list(set(categories))
-        for category_id in categories:
-            observations_of_category = computer_observations.filter(f_id_observation__f_id_observation_category=category_id)
-            category_name = Observationcategory.objects.get(id_observation_category=category_id).category_name
-            string_to_add = category_name+": "
-            for computer_observation in observations_of_category:
-                string_to_add += computer_observation.f_id_observation.full_name + ', '
-            commentToReturn += string_to_add.strip(' ,;') + '; '
-        commentToReturn += getProccessedString(computer.other)
-        return commentToReturn.strip(' ,;')
+    @staticmethod
+    def _get_diagonal(computer):
+        diagonal = ""
+        try:
+            diagonal = computer.f_diagonal.diagonal_text
+        except:
+            diagonal = "N/A"
+        return diagonal
 
-    memfile = io.StringIO()
-    fieldnames = ["S/N", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Batteries', 'LCD', 'Optical', 'COA', 'Cam', 'Comment', 'Price']
-    writer = csv.DictWriter(memfile, fieldnames=fieldnames)
-    writer.writeheader()
-    for int_index in indexes:
-        computer = Computers.objects.get(id_computer=int_index)
-        writer.writerow({
-            "S/N": _get_serial(computer),
-            'Manufacturer': _get_manufacturer(computer),
-            'Model': _get_model(computer),
-            'CPU': _get_cpu_name(computer),
-            'RAM': _get_ram_size(computer),
-            'GPU': _get_gpu_name(computer),
-            'HDD': _get_hdd_size(computer),
-            'Batteries': _get_battery_time(int_index),
-            'LCD': _get_diagonal(computer),
-            'Optical': _get_cdrom(computer),
-            'COA': _get_license(computer),
-            'Cam': _get_camera_option(computer),
-            'Comment': form_comment(computer),
-            'Price': ''
-        })
-    return memfile
+    @staticmethod
+    def _get_cdrom(computer):
+        cdrom = ""
+        try:
+            cdrom = computer.cdrom
+        except:
+            cdrom = "N/A"
+        return cdrom
 
-def _get_serial(computer):
-    serial = ""
-    try:
-        serial = computer.computer_serial
-    except:
-        serial = "N/A"
-    return serial
+    @staticmethod
+    def _get_license(computer):
+        license_name = ""
+        try:
+            license_name = computer.f_license.license_name
+        except:
+            license_name = "N/A"
+        return license_name.replace('Windows ', 'Win')
 
-
-def _get_manufacturer(computer):
-    manufacturer = ""
-    try:
-        manufacturer = computer.f_manufacturer.manufacturer_name
-    except:
-        manufacturer = "N/A"
-    return manufacturer
-
-
-def _get_model(computer):
-    model = ""
-    try:
-        model = computer.f_model.model_name
-    except:
-        model = "N/A"
-    return model
+    @staticmethod
+    def _get_camera_option(computer):
+        camera_option = ""
+        try:
+            camera_option = computer.f_camera.option_name
+        except:
+            camera_option = "N/A"
+        return camera_option
 
 
-def _get_cpu_name(computer):
-    if computer._is5thVersion():
-        computer_processors = Computerprocessors.objects.filter(f_id_computer=computer)
-        lst = []
-        for computer_processor in computer_processors:
-            string = computer_processor.f_id_processor.f_manufacturer.manufacturer_name + ' ' + computer_processor.f_id_processor.model_name + ' ' + computer_processor.f_id_processor.stock_clock
-            lst.append(string)
-        return ', '.join(lst).replace('Intel Intel', 'Intel').replace(' GHz', '')
-    cpu_name = ""
-    try:
-        cpu_name = computer.f_cpu.cpu_name
-    except:
-        cpu_name = "N/A"
-    return cpu_name
+class ExcelGenerator(AbstractDataFileGenerator):
+
+    def __init__(self):
+        self.memfile = io.BytesIO()
+        super().__init__()
+
+    def generate_file(self, indexes):
+        workbook = xlsxwriter.Workbook(self.memfile)
+        worksheet = workbook.add_worksheet()
+        bold_bordered = workbook.add_format({"bold": True, "border": 1})
+        bordered = workbook.add_format({"border": 1})
+
+        worksheet.write("A1", "S/N", bold_bordered)
+        worksheet.write("B1", "Manufacturer", bold_bordered)
+        worksheet.write("C1", "Model", bold_bordered)
+        worksheet.write("D1", "CPU", bold_bordered)
+        worksheet.write("E1", "RAM", bold_bordered)
+        worksheet.write("F1", "GPU", bold_bordered)
+        worksheet.write("G1", "HDD", bold_bordered)
+        worksheet.write("H1", "Batteries", bold_bordered)
+        worksheet.write("I1", "LCD", bold_bordered)
+        worksheet.write("J1", "Optical", bold_bordered)
+        worksheet.write("K1", "COA", bold_bordered)
+        worksheet.write("L1", "Cam", bold_bordered)
+        worksheet.write("M1", "Comment", bold_bordered)
+        worksheet.write("N1", "Price", bold_bordered)
+        row = 1
+        col = 0
+        for int_index in indexes:
+            computer = Computers.objects.get(id_computer=int_index)
+            worksheet.write(row, col, self._get_serial(computer), bordered)
+            worksheet.write(row, col + 1, self._get_manufacturer(computer), bordered)
+            worksheet.write(row, col + 2, self._get_model(computer), bordered)
+            worksheet.write(row, col + 3, self._get_cpu_name(computer), bordered)
+            worksheet.write(row, col + 4, self._get_ram_size(computer), bordered)
+            worksheet.write(row, col + 5, self._get_gpu_name(computer), bordered)
+            worksheet.write(row, col + 6, self._get_hdd_size(computer), bordered)
+            worksheet.write(row, col + 7, self._get_battery_time(int_index), bordered)
+            worksheet.write(row, col + 8, self._get_diagonal(computer), bordered)
+            worksheet.write(row, col + 9, self._get_cdrom(computer), bordered)
+            worksheet.write(row, col + 10, self._get_license(computer), bordered)
+            worksheet.write(row, col + 11, self._get_camera_option(computer), bordered)
+            worksheet.write(row, col + 12, self._form_comment(computer), bordered)
+            row += 1
+        workbook.close()
+        return self.memfile
 
 
-def _get_ram_size(computer):
-    if computer._is5thVersion():
-        ram_to_comp = RamToComp.objects.filter(f_id_computer_ram_to_com=computer)[0]
-        return computer.f_ram_size.ram_size_text + ' ' + ram_to_comp.f_id_ram_ram_to_com.type
-    ram_size = ""
-    try:
-        ram_size = computer.f_ram_size.ram_size_text
-    except:
-        ram_size = "N/A"
-    return ram_size
+class CsvGenerator(AbstractDataFileGenerator):
 
+    def __init__(self):
+        self.memfile = io.StringIO()
+        super().__init__()
+        self.fieldnames = ["S/N", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Batteries', 'LCD', 'Optical', 'COA',
+                      'Cam', 'Comment', 'Price']
 
-def _get_gpu_name(computer):
-    if computer._is5thVersion():
-        computer_gpus = Computergpus.objects.filter(f_id_computer=computer)
-        lst = []
-        for computer_gpu in computer_gpus:
-            string = computer_gpu.f_id_gpu.f_id_manufacturer.manufacturer_name + ' ' + computer_gpu.f_id_gpu.gpu_name
-            if 'Intel HD' in string:
-                string = 'Intel HD'
-            lst.append(string)
-        return ', '.join(lst)
-    gpu_name = ""
-    try:
-        gpu_name = computer.f_gpu.gpu_name
-    except:
-        gpu_name = "N/A"
-    return gpu_name
-
-
-def _get_hdd_size(computer):
-    if computer._is5thVersion():
-        computer_drives = Computerdrives.objects.filter(f_id_computer=computer)
-        lst = []
-        for computer_drive in computer_drives:
-            type = ''
-            if computer_drive.f_drive.f_speed.speed_name.isdigit():
-                type = 'HDD'
-            else:
-                type = computer_drive.f_drive.f_speed.speed_name
-            string = type + ': ' + computer_drive.f_drive.f_hdd_sizes.hdd_sizes_name
-            lst.append(string)
-        if len(lst) == 0:
-            return 'N/A'
-        return ', '.join(lst)
-    hdd_size = ""
-    try:
-        hdd_size = computer.f_hdd_size.hdd_sizes_name
-    except:
-        hdd_size = "N/A"
-    return hdd_size
-
-
-def _get_battery_time(int_index):
-    bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=int_index)
-    if len(bat_to_comps) > 2:
-        return "~1h."
-    elif len(bat_to_comps) < 1:
-        return "No"
-    else:
-        return str(bat_to_comps[0].f_bat_bat_to_com.expected_time)
-
-
-def _get_diagonal(computer):
-    diagonal = ""
-    try:
-        diagonal = computer.f_diagonal.diagonal_text
-    except:
-        diagonal = "N/A"
-    return diagonal
-
-
-def _get_cdrom(computer):
-    cdrom = ""
-    try:
-        cdrom = computer.cdrom
-    except:
-        cdrom = "N/A"
-    return cdrom
-
-
-def _get_license(computer):
-    license_name = ""
-    try:
-        license_name = computer.f_license.license_name
-    except:
-        license_name = "N/A"
-    return license_name.replace('Windows ', 'Win')
-
-
-def _get_camera_option(computer):
-    camera_option = ""
-    try:
-        camera_option = computer.f_camera.option_name
-    except:
-        camera_option = "N/A"
-    return camera_option
+    def generate_file(self, indexes):
+        writer = csv.DictWriter(self.memfile, fieldnames=self.fieldnames)
+        writer.writeheader()
+        for int_index in indexes:
+            computer = Computers.objects.get(id_computer=int_index)
+            writer.writerow({
+                "S/N": self._get_serial(computer),
+                'Manufacturer': self._get_manufacturer(computer),
+                'Model': self._get_model(computer),
+                'CPU': self._get_cpu_name(computer),
+                'RAM': self._get_ram_size(computer),
+                'GPU': self._get_gpu_name(computer),
+                'HDD': self._get_hdd_size(computer),
+                'Batteries': self._get_battery_time(int_index),
+                'LCD': self._get_diagonal(computer),
+                'Optical': self._get_cdrom(computer),
+                'COA': self._get_license(computer),
+                'Cam': self._get_camera_option(computer),
+                'Comment': self._form_comment(computer),
+                'Price': ''
+            })
+        return self.memfile
 
 
 class Item:

@@ -359,7 +359,9 @@ def mass_excel(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    excel_file = createExcelFile(data)
+    generator = ExcelGenerator()
+    # excel_file = createExcelFile(data)
+    excel_file = generator.generate_file(indexes=data)
     response = HttpResponse(content_type="application/ms-excel")
     response.write(excel_file.getvalue())
     response["Content-Disposition"] = "attachment; filename=computers.xlsx"
@@ -375,7 +377,9 @@ def mass_csv(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    csv_file = createCsvFile(data)
+    # csv_file = createCsvFile(data)
+    generator = CsvGenerator()
+    csv_file = generator.generate_file(indexes=data)
     response = HttpResponse(content_type="application/ms-excel")
     response.write(csv_file.getvalue())
     response["Content-Disposition"] = "attachment; filename=computers.csv"
@@ -402,7 +406,7 @@ def cat_change(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    changeCategoriesUsingDict(data)
+    change_category_for_computers(data)
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
@@ -459,6 +463,7 @@ def recieved_batch_edit(request):
     edit_recieved_batch(data)
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
+
 
 @csrf_exempt
 def categories(request):
@@ -605,7 +610,6 @@ def observation_subcategory_edit(request):
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
-
 @csrf_exempt
 def observation_category_edit(request):
     print("observation_category edit")
@@ -651,6 +655,7 @@ def observation_subcategory_edit(request):
     edit_observation_subcategory(data)
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
+
 
 @csrf_exempt
 def observations_details(request):
@@ -700,6 +705,7 @@ def delete_observations_details(request, int_index):
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
+
 @csrf_exempt
 def edit_observations_details(request):
     print('edit_observations_details')
@@ -708,6 +714,7 @@ def edit_observations_details(request):
     ote = ObservationToEdit(data)
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
+
 
 @csrf_exempt
 def delTes(request, int_index):
@@ -965,6 +972,7 @@ def hdd_order_content(request, int_index):
             {'hoch': hoch}
         )
 
+
 @csrf_exempt
 def hdd_order_content_csv(request, int_index):
     print('hdd_order_content_csv')
@@ -979,6 +987,7 @@ def hdd_order_content_csv(request, int_index):
         response["Content-Disposition"] = "attachment; filename=computers.csv"
         csv_file.close()
         return response
+
 
 @csrf_exempt
 def hdd_delete_order(request, int_index):
@@ -1212,6 +1221,7 @@ def edit_charger_serial(request, int_index):
         cse.proccess()
     if request.method == 'GET':
         print('GET method')
+
 
 @csrf_exempt
 def print_charger_serial(request, int_index):
