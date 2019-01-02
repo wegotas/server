@@ -546,20 +546,6 @@ def getPage(data_dict):
         return int(data_dict.pop('page')[0])
 
 
-def getType(data_dict):
-    if data_dict.get('type') is None:
-        return None
-    else:
-        return data_dict.pop('type')[0]
-
-
-def getCat(data_dict):
-    if data_dict.get('cat') is None:
-        return None
-    else:
-        return data_dict.pop('cat')[0]
-
-
 def getKeyword(data_dict):
     if data_dict.get('keyword') is None or data_dict.get('keyword') == "":
         return None

@@ -160,8 +160,10 @@ def index(request):
         )
 
     else:
-        typ = getType(data_dict)
-        cat = getCat(data_dict)
+        # typ = getType(data_dict)
+        typ = data_dict.get('type')
+        # cat = getCat(data_dict)
+        cat = data_dict.get('cat')
         removeSold(data_dict)
         possible_categories = None
         if cat or typ:
