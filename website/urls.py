@@ -17,7 +17,6 @@ urlpatterns = [
     path('edit_charger/<int:int_index>/', views.edit_charger, name='edit_charger'),
     path('edit_order/<int:int_index>/', views.edit_order, name='edit_order'),
     path('strip_order/<int:int_index>/', views.strip_order, name='strip_order'),
-    path('delete/<int:int_index>/', views.delete, name='delete'),
     path('mass_delete/', views.mass_delete, name='mass_delete'),
     path('mass_excel/', views.mass_excel, name='mass_excel'),
     path('mass_csv/', views.mass_csv, name='mass_csv'),
