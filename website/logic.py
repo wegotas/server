@@ -454,6 +454,9 @@ class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
 
 
 class TypCat:
+    """
+    Represents types with categories in sumbenu for website's navigational menu generation.
+    """
 
     def __init__(self):
         self.current = 0
@@ -482,12 +485,6 @@ class TypCat:
         else:
             self.current += 1
             return self.types[self.current - 1]
-
-    def debug(self):
-        for type in self.types:
-            print("Type: {0}".format(type.type_name))
-            for category in type:
-                print(category)
 
 
 class TypHolder:
@@ -525,30 +522,11 @@ class CatHolder:
         return "{0} ({1})".format(self.category_name, self.qty)
 
 
-def getIsSold(request):
-    if request.GET.get('sold') is None:
+def is_get_key_true(request, key):
+    if request.GET.get(key) is None:
         return False
     else:
-        if request.GET.get('sold') == "True":
-            return True
-        else:
-            return False
-
-
-def getIsOrder(request):
-    if request.GET.get('orders') is None:
-        return False
-    else:
-        if request.GET.get('orders') == "True":
-            return True
-        else:
-            return False
-
-def getIsChargers(request):
-    if request.GET.get('chargers') is None:
-        return False
-    else:
-        if request.GET.get('chargers') == "True":
+        if request.GET.get(key) == "True":
             return True
         else:
             return False
