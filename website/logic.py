@@ -586,17 +586,14 @@ class AbstractDataFileGenerator(ABC):
     )
 
     # Comments consisting out only these strings should not be returned back at all.
-    unwantedComments = (
-        None,
-        'o',
-        'n',
-        'k',
-        'NULL',
-        'None',
-        'ko'
-    )
+    unwantedComments = (None, 'o', 'n', 'k', 'NULL', 'None', 'ko')
 
     def _get_processed_string(self, string):
+        """
+        :param string: Comment or any remark in regards to a computer's quality.
+        :return: Returns empty strings if is member of unwantedComments,
+        else removes unwantedCommentParts from string for output.
+        """
         if string in self.unwantedComments:
             return ''
         for commentPart in self.unwantedCommentParts:
@@ -604,12 +601,19 @@ class AbstractDataFileGenerator(ABC):
         return string.strip(' ,;')
 
     def _form_comment_part(self, field, title=None):
+        """
+        :param field: Comment's or remark's string
+        :param title: Title of remark
+        :return: Returns only value if title is none,
+        returns empty string if _get_processed_string returns empty value,
+        any other way returns pair of title and value ex:("cover: patrintas")
+        """
         value = self._get_processed_string(field)
         if title is None:
             return value
-        if value != '':
-            return ', '+title+': '+value
-        return ''
+        if value == '':
+            return ''
+        return ', '+title+': '+value
 
     def _form_comment(self, computer):
         if computer.is5th_version():
@@ -617,6 +621,13 @@ class AbstractDataFileGenerator(ABC):
         return self._form_4th_comment(computer)
 
     def _form_4th_comment(self, computer):
+        """
+        This method is responsible of forming csv/excel file
+        computer's other column value of 4th version computer structure.
+
+        :param computer: computer model's object.
+        :return: fully formed comment string about a computer.
+        """
         comment_to_return = self._get_processed_string(computer.other)
         comment_to_return += self._form_comment_part(computer.cover, 'cover')
         comment_to_return += self._form_comment_part(computer.display, 'display')
@@ -630,6 +641,13 @@ class AbstractDataFileGenerator(ABC):
         return comment_to_return.strip(' ,;')
 
     def _form_5th_comment(self, computer):
+        """
+        This method is responsible of forming csv/excel file
+        computer's other column value of 5th version computer structure.
+
+        :param computer: computer model's object.
+        :return:  fully formed comment string about a computer.
+        """
         commentToReturn = ''
         computer_observations = Computerobservations.objects.filter(f_id_computer=computer)
         categories = computer_observations.values_list('f_id_observation__f_id_observation_category', flat=True)
@@ -646,30 +664,24 @@ class AbstractDataFileGenerator(ABC):
 
     @staticmethod
     def _get_serial(computer):
-        serial = ""
         try:
-            serial = computer.computer_serial
+            return computer.computer_serial
         except:
-            serial = "N/A"
-        return serial
+            return "N/A"
 
     @staticmethod
     def _get_manufacturer(computer):
-        manufacturer = ""
         try:
-            manufacturer = computer.f_manufacturer.manufacturer_name
+            return computer.f_manufacturer.manufacturer_name
         except:
-            manufacturer = "N/A"
-        return manufacturer
+            return "N/A"
 
     @staticmethod
     def _get_model(computer):
-        model = ""
         try:
-            model = computer.f_model.model_name
+            return computer.f_model.model_name
         except:
-            model = "N/A"
-        return model
+            return "N/A"
 
     @staticmethod
     def _get_cpu_name(computer):
@@ -680,24 +692,20 @@ class AbstractDataFileGenerator(ABC):
                 string = computer_processor.f_id_processor.f_manufacturer.manufacturer_name + ' ' + computer_processor.f_id_processor.model_name + ' ' + computer_processor.f_id_processor.stock_clock
                 lst.append(string)
             return ', '.join(lst).replace('Intel Intel', 'Intel').replace(' GHz', '')
-        cpu_name = ""
         try:
-            cpu_name = computer.f_cpu.cpu_name
+            return computer.f_cpu.cpu_name
         except:
-            cpu_name = "N/A"
-        return cpu_name
+            return "N/A"
 
     @staticmethod
     def _get_ram_size(computer):
         if computer.is5th_version():
             ram_to_comp = RamToComp.objects.filter(f_id_computer_ram_to_com=computer)[0]
             return computer.f_ram_size.ram_size_text + ' ' + ram_to_comp.f_id_ram_ram_to_com.type
-        ram_size = ""
         try:
-            ram_size = computer.f_ram_size.ram_size_text
+            return computer.f_ram_size.ram_size_text
         except:
-            ram_size = "N/A"
-        return ram_size
+            return "N/A"
 
     @staticmethod
     def _get_gpu_name(computer):
@@ -710,12 +718,10 @@ class AbstractDataFileGenerator(ABC):
                     string = 'Intel HD'
                 lst.append(string)
             return ', '.join(lst)
-        gpu_name = ""
         try:
-            gpu_name = computer.f_gpu.gpu_name
+            return computer.f_gpu.gpu_name
         except:
-            gpu_name = "N/A"
-        return gpu_name
+            return "N/A"
 
     @staticmethod
     def _get_hdd_size(computer):
@@ -733,15 +739,19 @@ class AbstractDataFileGenerator(ABC):
             if len(lst) == 0:
                 return 'N/A'
             return ', '.join(lst)
-        hdd_size = ""
         try:
-            hdd_size = computer.f_hdd_size.hdd_sizes_name
+            return computer.f_hdd_size.hdd_sizes_name
         except:
-            hdd_size = "N/A"
-        return hdd_size
+            return "N/A"
 
     @staticmethod
     def _get_battery_time(int_index):
+        """
+        Not fully implemented method, should somehow account for several batteries in a computer.
+        For now it's just hardcoded that it lasts about an hour.
+        :param int_index: computer's index in database.
+        :return: string of computer's supposed expected lasting time on battery.
+        """
         bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=int_index)
         if len(bat_to_comps) > 2:
             return "~1h."
@@ -752,39 +762,31 @@ class AbstractDataFileGenerator(ABC):
 
     @staticmethod
     def _get_diagonal(computer):
-        diagonal = ""
         try:
-            diagonal = computer.f_diagonal.diagonal_text
+            return computer.f_diagonal.diagonal_text
         except:
-            diagonal = "N/A"
-        return diagonal
+            return "N/A"
 
     @staticmethod
     def _get_cdrom(computer):
-        cdrom = ""
         try:
-            cdrom = computer.cdrom
+            return computer.cdrom
         except:
-            cdrom = "N/A"
-        return cdrom
+            return "N/A"
 
     @staticmethod
     def _get_license(computer):
-        license_name = ""
         try:
-            license_name = computer.f_license.license_name
+            return computer.f_license.license_name.replace('Windows ', 'Win')
         except:
-            license_name = "N/A"
-        return license_name.replace('Windows ', 'Win')
+            return "N/A"
 
     @staticmethod
     def _get_camera_option(computer):
-        camera_option = ""
         try:
-            camera_option = computer.f_camera.option_name
+            return computer.f_camera.option_name
         except:
-            camera_option = "N/A"
-        return camera_option
+            return "N/A"
 
 
 class ExcelGenerator(AbstractDataFileGenerator):
