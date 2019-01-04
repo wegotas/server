@@ -1524,14 +1524,8 @@ class ExecutorOfCatToSold:
 class NewOrderChoices:
 
     def __init__(self):
-        self._set_clients()
-        self._set_testers()
-
-    def _set_clients(self):
-        self.clients = [record[0] for record in Clients.objects.values_list("client_name")]
-
-    def _set_testers(self):
-        self.testers = [record[0] for record in Testers.objects.values_list("tester_name")]
+        self.clients = Clients.objects.values_list("client_name", flat=True)
+        self.testers = Testers.objects.values_list("tester_name", flat=True)
 
 
 class NewOrder:
