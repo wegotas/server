@@ -57,6 +57,7 @@ def get_batteries(computer_id):
         print("Batteries asociated with this computer do not exist")
     return bat_list
 
+
 class Ram_Hdd_holder():
     def __init__(self, index=1, id=0, serial="N/A"):
         self.index = index
@@ -89,6 +90,7 @@ def get_rams(computer_id):
         print("Rams asociated with this computer do not exist")
     return ram_list
 
+
 def get_hdds(computer_id):
     hdds = HddToComp.objects.filter(f_id_computer_hdd_to_com=computer_id)
     hdd_list = []
@@ -113,6 +115,7 @@ def get_hdds(computer_id):
     else:
         print("Hdds asociated with this computer do not exist")
     return hdd_list
+
 
 class Edit_computer_record:
 
@@ -269,6 +272,7 @@ class Edit_computer_record:
         )
         self.computer.save()
 
+
 '''
 def edit_post(data_dict):
     data_dict.pop("edit", "")
@@ -338,8 +342,10 @@ def edit_post(data_dict):
         bat_list.append(battery)
 '''
 
+
 def get_key_tupple(key):
     return tuple(key.split("_"))
+
 
 class Counter:
     count = 0
@@ -347,6 +353,7 @@ class Counter:
     def increment(self):
         self.count += 1
         return ''
+
 
 class QtySelect:
     qty = 0
@@ -370,6 +377,7 @@ class QtySelect:
             self.state200 = "selected"
         elif qty==1000:
             self.state1000 = "selected"
+
 
 '''
 class AutoFilters:
@@ -1028,6 +1036,7 @@ def edit_observation_subcategory(data):
     item.subcategory_name = data["ItemName"]
     item.save()
 
+
 def get_all_observations_dict():
     variables = Observations.objects.all()
     observation_dict = dict()
@@ -1164,22 +1173,21 @@ class ObservationToAdd:
 
     def __init__(self, data_dict):
         print('in ObservationToAdd')
-        # print(data_dict)
         self.message = ''
-        '''
-        cat_name = data_dict['cat_name']
-        sub_name = data_dict['sub_name']
-        shortcode = data_dict['shortcode']
-        full_name = data_dict['full_name']
-        '''
         self.cat_name = self.try_extract(data_dict, 'cat_name')
         self.sub_name = self.try_extract(data_dict, 'sub_name')
         self.shortcode = self.try_extract(data_dict, 'shortcode')
         self.full_name = self.try_extract(data_dict, 'full_name')
-        print("cat_name: {0}, sub_name: {1}, shortcode: {2}, full_name: {3}".format(self.cat_name, self.sub_name, self.shortcode, self.full_name))
-        print(self.message)
         
     def try_extract(self, data_dict, key):
+        """
+        Called by __init__ to help construct class attributes.
+        If some value can't be extracted message attribute is appended.
+
+        :param data_dict: querydict sent from client side website.
+        :param key: key expected to be used for value's extraction.
+        :return: None is returned if extraction failed, else extracted value.
+        """
         try:
             extracted = data_dict[key]
             if extracted == '':
@@ -1189,9 +1197,18 @@ class ObservationToAdd:
             self.message += '\'{0}\' was not set\r\n'.format(key)
 
     def validated(self):
+        """
+        :return: if message is empty, that means everything is ok, hence returns True,
+        else False and message attribute should be looked at.
+        """
         return self.message == ''
 
     def process(self):
+        """
+        Creates supposed observation.
+
+        :return: returns nothing and it's not expected to do so.
+        """
         category = Observationcategory.objects.get(category_name=self.cat_name)
         subcategory = Observationsubcategory.objects.get(subcategory_name=self.sub_name)
         observation = Observations.objects.get_or_create(
@@ -1202,53 +1219,69 @@ class ObservationToAdd:
         )
 
 
-class ObservationToEdit:
-
-    def __init__(self, data_dict):
-        print("in ObservationToEdit")
-        observation = Observations.objects.get(id_observation=data_dict['observation_id'])
-        observation.shortcode = data_dict['shortcode']
-        observation.full_name = data_dict['fullname']
-        observation.save()
-
-
-class record_to_add:
+class RecordToAdd:
 
     def __init__(self, data_dict):
         self.data = data_dict
         self.error_list = []
 
     def get_error_message(self):
+        """
+        :return: string of concatinated errors by a newline characters.
+        """
         return "\r\n".join(self.error_list)
 
     def save(self):
+        """
+        Saves computer record sent from website's querydict
+        :return: None is returned, allways
+        """
         print("rta save start")
         self._validate()
         if len(self.error_list) == 0:
-            self.typ = Types.objects.get_or_create(type_name=self.data.get("type_name"))[0]
-            self.cat = Categories.objects.get_or_create(category_name=self.data.get("category_name"))[0]
-            self.man = Manufacturers.objects.get_or_create(manufacturer_name=self.data.get("manufacturer_name"))[0]
-            self.model = Models.objects.get_or_create(model_name=self.data.get("model_name"))[0]
-            self.cpu = Cpus.objects.get_or_create(cpu_name=self.data.get("cpu_name"))[0]
-            self.gpu = Gpus.objects.get_or_create(gpu_name=self.data.get("gpu_name"))[0]
-            self.ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data.get("ram_size_text"))[0]
-            self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name=self.data.get("hdd_sizes_name"))[0]
-            self.diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data.get("diagonal_text"))[0]
-            self.lic = Licenses.objects.get_or_create(license_name=self.data.get("license_name"))[0]
-            self.tester = Testers.objects.get_or_create(tester_name=self.data.get("tester_name"))[0]
-            self.timenow = timezone.now()
-            self._save_computer()
+            Computers.objects.create(
+                computer_serial=self.data.get("serial"),
+                f_type=Types.objects.get_or_create(type_name=self.data.get("type_name"))[0],
+                f_category=Categories.objects.get_or_create(category_name=self.data.get("category_name"))[0],
+                f_manufacturer=Manufacturers.objects.get_or_create(
+                    manufacturer_name=self.data.get("manufacturer_name")
+                )[0],
+                f_model=Models.objects.get_or_create(model_name=self.data.get("model_name"))[0],
+                f_cpu=Cpus.objects.get_or_create(cpu_name=self.data.get("cpu_name"))[0],
+                f_gpu=Gpus.objects.get_or_create(gpu_name=self.data.get("gpu_name"))[0],
+                f_ram_size=RamSizes.objects.get_or_create(ram_size_text=self.data.get("ram_size_text"))[0],
+                f_hdd_size=HddSizes.objects.get_or_create(hdd_sizes_name=self.data.get("hdd_sizes_name"))[0],
+                f_diagonal=Diagonals.objects.get_or_create(diagonal_text=self.data.get("diagonal_text"))[0],
+                f_license=Licenses.objects.get_or_create(license_name=self.data.get("license_name"))[0],
+                cover=self.data.get("cover"),
+                display=self.data.get("display"),
+                bezel=self.data.get("bezel"),
+                hdd_cover=self.data.get("hdd_cover"),
+                ram_cover=self.data.get("ram_cover"),
+                other=self.data.get("other"),
+                f_tester=Testers.objects.get_or_create(tester_name=self.data.get("tester_name"))[0],
+                date=timezone.now(),
+                f_id_received_batches=Receivedbatches.objects.get(
+                    received_batch_name=self.data.get("received_batch_name")
+                )
+            )
             print("record_to_add save end")
         else:
             print("record_to_add save FAILED")
 
     def isSaved(self):
-        if len(self.error_list) == 0:
-            return True
-        else:
-            return False
+        """
+        Checks if there any errors in error_list.
+        if there are no errors, True returned,
+        else False is returned.
+        :return: True/False
+        """
+        return len(self.error_list) == 0
 
     def _validate(self):
+        """"
+        Validates if al required fieldnames are present within provided queryset.
+        """
         fieldnames = (
             "serial",
             "type_name",
@@ -1287,32 +1320,12 @@ class record_to_add:
             if self.data.get(fieldnames[i]) == "" or self.data.get(fieldnames[i]) is None:
                 self.error_list.append(error_messages[i])
 
-    def _save_computer(self):
-        Computers.objects.create(
-            computer_serial=self.data.get("serial"),
-            f_type=self.typ,
-            f_category=self.cat,
-            f_manufacturer=self.man,
-            f_model=self.model,
-            f_cpu=self.cpu,
-            f_gpu=self.gpu,
-            f_ram_size=self.ramsize,
-            f_hdd_size=self.hddsize,
-            f_diagonal=self.diagonal,
-            f_license=self.lic,
-            cover=self.data.get("cover"),
-            display=self.data.get("display"),
-            bezel=self.data.get("bezel"),
-            hdd_cover=self.data.get("hdd_cover"),
-            ram_cover=self.data.get("ram_cover"),
-            other=self.data.get("other"),
-            f_tester=self.tester,
-            date=self.timenow,
-            f_id_received_batches=Receivedbatches.objects.get(received_batch_name=self.data.get("received_batch_name"))
-        )
-
 
 class RecordChoices:
+    """
+    This class is representative of unique values available for manual data insertion in relation to computers.
+    All attributes are unique values of their respective fields.
+    """
 
     def __init__(self):
         self.types = Types.objects.values_list("type_name", flat=True)
@@ -1322,8 +1335,8 @@ class RecordChoices:
         self.rams = RamSizes.objects.values_list("ram_size_text", flat=True)
         self.diagonals = Diagonals.objects.values_list("diagonal_text", flat=True)
         self.licenses = Licenses.objects.values_list("license_name", flat=True)
-        self.cameras =CameraOptions.objects.values_list("option_name", flat=True)
-        self.testers =Testers.objects.values_list("tester_name", flat=True)
+        self.cameras = CameraOptions.objects.values_list("option_name", flat=True)
+        self.testers = Testers.objects.values_list("tester_name", flat=True)
         self.received_batches = Receivedbatches.objects.values_list("received_batch_name", flat=True)
 
         # 4th version computers only
@@ -1337,16 +1350,32 @@ class RecordChoices:
 
 
 class AutoFilter:
+    """
+    Class responsible for applying filters on a computers queryset.
+    Attributes:
+        keys(typple of strings) - hold on to keys which group what part of queryset should be filtered by. Logic is
+        implemented in filter() method.
+    """
 
     keys = ('man-af', 'sr-af', 'scr-af', 'ram-af', 'gpu-af', 'mod-af', 'cpu-af', 'oth-af', 'cli-af', 'dos-af', 'pri-af')
 
     def __init__(self, data_dict):
+        """
+        Builts internal collection by which filtering should take place.
+        :param data_dict: key and value collection
+        """
         self.filter_dict = {}
         for key in self.keys:
             if key in data_dict:
                 self.filter_dict[key] = data_dict.pop(key)
 
     def filter(self, computers):
+        """
+        Based on attribute of filter_dict keys and values(collection of strings) filters computers queryset.
+
+        :param computers: queryset of computers
+        :return: filtered queryset of computers
+        """
         for key, value in self.filter_dict.items():
             if key == 'man-af':
                 computers = computers.filter(f_manufacturer__manufacturer_name__in=value)
@@ -1386,6 +1415,11 @@ def normalize_query(query_string,
 
 
 def get_query(query_string):
+    """
+    Forms Q query to be used with filter() models method.
+    :param query_string: searchable string string collection in form of string
+    :return: Q object.
+    """
     searchfields = (
         'computer_serial',
         'other',
@@ -1422,11 +1456,6 @@ def search(keyword, computers):
     return computers
 
 
-def removeKeyword(request):
-    if request.GET.get('keyword') is not None:
-        request.GET.pop('keyword')
-
-
 def computersForCatToSold(data_dict):
     ids = data_dict.pop('id')
     computers = Computers.objects.filter(id_computer__in=ids)
@@ -1434,51 +1463,56 @@ def computersForCatToSold(data_dict):
 
 
 class ExecutorOfCatToSold:
+    """
+    Class dedicated for setting computers as sold.
+    Attributes:
+        error_list - list of errors which are apended to this attribute when something doesn't work as it should.
+        idPrices - dictionary of id and price pairs of computers.
+        client - string name of client to whom computers are sold to.
+        validated - True/False value showing whether any errors are present in error_list.
+    """
 
     def __init__(self, data_dict):
         self.error_list = []
         self.idPrices = {}
+        self.client = None
         for key, value in data_dict.items():
             if "client" in key:
                 self._validate_client(value)
+                self.client = value
             if "price" in key:
-                if self._validate_price(value):
-                    self.idPrices[self._getId(key)] = value
+                if self._is_price_valid(value):
+                    self.idPrices[self._getId(key)] = self._get_price(value)
         self.validated = len(self.error_list) == 0
 
     def write_to_database(self):
+        """
+        Writes to database attributes by distributing data through models.
+
+        :return: None is returned always
+        """
         dbClient = Clients.objects.get_or_create(client_name=self.client)[0]
-        dbClient.save()
-        sale = Sales(date_of_sale=timezone.now(), f_id_client=dbClient)
-        sale.save()
-        for key, value in self.idPrices.items():
-            computer = Computers.objects.get(id_computer=key)
-            # computer(price=value, f_sale=sale)
-            computer.price = value.replace(",", ".")
+        sale = Sales.objects.create(date_of_sale=timezone.now(), f_id_client=dbClient)
+        for comp_id, price in self.idPrices.items():
+            computer = Computers.objects.get(id_computer=comp_id)
+            computer.price = price
             computer.f_sale = sale
             computer.save()
 
     def _validate_client(self, client):
-        if client == "":
+        if client == "" or client == None:
             self.error_list.append("No client was specified")
-        else:
-            self.client = client
 
-    def _validate_price(self, price):
-        isValidated = True
-        empty_price_error = "Not all computers have prices set"
-        if price == "":
-            if empty_price_error in self.error_list:
-                pass
-            else:
-                self.error_list.append("Not all computers have prices set")
-                isValidated = False
-        else:
-            # min 0.01, max 10000 pagal mariu
-            if not re.match(r'^[0-9]+[\.\,]{0,1}[0-9]{0,2}$', price):
-                self.error_list.append('Price "'+price+'" is not a valid price')
-                isValidated = False
-        return isValidated
+    def _is_price_valid(self, price):
+        if re.match(r'^[0-9]+[\.\,]{0,1}[0-9]{0,2}$', price) or price == "" or price is None:
+            return True
+        self.error_list.append('Price "' + price + '" is not a valid price')
+        return False
+
+    def _get_price(self, price):
+        if price == "" or price is None:
+            return 0
+        return float(price.replace(",", "."))
 
     def _getId(self, key):
         return key.split("_")[1]

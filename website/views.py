@@ -711,7 +711,12 @@ def edit_observations_details(request):
     print('edit_observations_details')
     print(request.POST)
     data = JSONParser().parse(request)
-    ote = ObservationToEdit(data)
+    # ote = ObservationToEdit(data)
+    # edit_observation(data)
+    observation = Observations.objects.get(id_observation=data['observation_id'])
+    observation.shortcode = data['shortcode']
+    observation.full_name = data['fullname']
+    observation.save()
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
@@ -753,7 +758,7 @@ def new_record(request):
     rc = RecordChoices()
     if request.method == 'POST':
         print("This was POST request")
-        rta = record_to_add(request.POST.copy())
+        rta = RecordToAdd(request.POST.copy())
         rta.save()
         if rta.isSaved():
             return render(request, 'success.html')
