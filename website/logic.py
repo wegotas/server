@@ -1,4 +1,4 @@
-from ULCDTinterface.modelers import * # Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp, CompOrd, OrdTes, Orders, Document, FormFactor, HddModels, HddOrder, HddSerials, LockState, Lots, OrderStatus, Speed
+from ULCDTinterface.modelers import *
 import xlsxwriter
 from django.utils import timezone
 import re
@@ -21,8 +21,8 @@ from django.db.models import ProtectedError
 from django.db.utils import IntegrityError
 import tempfile
 import math
-import sys, traceback
-from abc import ABC, abstractmethod
+import sys
+from abc import ABC
 
 
 class Bat_holder():
@@ -894,12 +894,12 @@ def get_received_batches_list():
     return recieved_batchlist
 
 
-def save_recieved_batch(name):
+def save_received_batch(name):
     if name != "":
         Receivedbatches.objects.get_or_create(received_batch_name=name)
 
 
-def edit_recieved_batch(data):
+def edit_received_batch(data):
     recieved_batch = Receivedbatches.objects.get(id_received_batch=data["ItemId"])
     recieved_batch.received_batch_name = data["ItemName"]
     recieved_batch.save()
@@ -931,7 +931,7 @@ def edit_category(data):
         cat.save()
 
 
-def deleteCategory(index):
+def delete_category(index):
     cat = Categories.objects.get(id_category=index)
     if cat.permanent != 1:
         cat.delete()
@@ -957,7 +957,7 @@ def edit_type(data):
     typ.save()
 
 
-def deleteType(index):
+def delete_type(index):
     typ = Types.objects.get(id_type=index)
     typ.delete()
 
@@ -982,7 +982,7 @@ def edit_tester(data):
     tes.save()
 
 
-def deleteTester(index):
+def delete_tester(index):
     tes = Testers.objects.get(id_tester=index)
     tes.delete()
 
@@ -1456,7 +1456,7 @@ def search(keyword, computers):
     return computers
 
 
-def computersForCatToSold(data_dict):
+def computers_for_cat_to_sold(data_dict):
     ids = data_dict.pop('id')
     computers = Computers.objects.filter(id_computer__in=ids)
     return computers
@@ -1551,7 +1551,7 @@ class NewOrder:
         else:
             print("New order creation has FAILED")
 
-    def isSaved(self):
+    def is_saved(self):
         return len(self.error_list) == 0
 
     def get_error_message(self):
@@ -1579,19 +1579,14 @@ class NewOrder:
                 self.error_list.append(error_messages[i])
 
     def _save_and_get_order(self):
-        client = self._get_or_save_client()
-        order = Orders(
+        return Orders.objects.create(
             order_name=self.data.pop('order_name')[0],
             is_sent=0,
             creation_date=timezone.now(),
-            f_id_client=client
+            f_id_client=Clients.objects.get_or_create(
+                client_name=self.data.pop('client_name')[0]
+            )[0]
         )
-        order.save()
-        return order
-
-    def _get_or_save_client(self):
-        client = Clients.objects.get_or_create(client_name=self.data.pop('client_name')[0])[0]
-        return client
 
 
 class Order:
@@ -1599,51 +1594,55 @@ class Order:
     def __init__(self, order_object):
         self.id = order_object.id_order
         self.name = order_object.order_name
-        self.isReady = self.get_isReady()
-        self.isSent = bool(order_object.is_sent)
+        self.is_sent = bool(order_object.is_sent)
         self.date = order_object.creation_date
         self.client = order_object.f_id_client.client_name
-        self._set_computer_count()
-        self._set_testers()
-
-
-    def get_isReady(self):
-        compords = CompOrd.objects.filter(f_order_id_to_order=self.id, is_ready=0)
-        computers = Computers.objects.filter(f_id_comp_ord__in=compords)
-        return not computers.count() >=1
-
-    def _set_computer_count(self):
-        compords = CompOrd.objects.filter(f_order_id_to_order=self.id)
-        computers = Computers.objects.filter(f_id_comp_ord__in=compords)
-        self.count = computers.count()
-
-    def _set_testers(self):
-        self.testers = []
-        variables = OrdTes.objects.filter(f_order=self.id)
-        for variable in variables:
-            self.testers.append(variable.f_id_tester.tester_name)
+        self.testers = OrdTes.objects.filter(f_order=self.id).values_list("f_id_tester__tester_name", flat=True)
 
     def get_testers(self):
-        stringToReturn = ""
+        """
+        :return: string of concatinated tester list.
+        """
         try:
-            stringToReturn = ", ".join(self.testers)
+            return ", ".join(self.testers)
         except:
-            pass
-        return stringToReturn
+            return ""
+
+    def is_ready(self):
+        """
+        Returns True if computer has order and it has at least one is_ready as 0.
+        :return: True/False
+        """
+        return not Computers.objects.filter(
+            f_id_comp_ord__f_order_id_to_order=self.id,
+            f_id_comp_ord__is_ready=0
+        ).count() >= 1
+
+    def count(self):
+        """
+        :return: Integer count of computers in order.
+        """
+        return Computers.objects.filter(f_id_comp_ord__f_order_id_to_order=self.id).count()
 
     def get_status(self):
+        """
+        :return: String of order's status.
+        """
         statuses = ("In-Preperation", "Ready", "Sent", "Empty")
-        if self.count == 0:
+        if self.count() == 0:
             return statuses[3]
-        elif self.isSent:
+        elif self.is_sent:
             return statuses[2]
-        elif self.isReady:
+        elif self.is_ready():
             return statuses[1]
         else:
             return statuses[0]
 
 
 class OrdersClassAutoFilter:
+    """
+    Class responsible of holding unique values to filter by in website,
+    """
 
     def __init__(self, orders):
         self.names = []
@@ -1653,39 +1652,44 @@ class OrdersClassAutoFilter:
         self.testers = []
         self.statuses = []
         for order in orders:
-            self.names.append(order.name)
-            self.clients.append(order.client)
-            self.qtys.append(order.count)
-            self.dates.append(order.date)
+            self.append_unique_to_list(order.name, self.names)
+            self.append_unique_to_list(order.client, self.clients)
+            self.append_unique_to_list(order.count(), self.qtys)
+            self.append_unique_to_list(order.date, self.dates)
             self.testers.extend(order.testers)
-            self.statuses.append(order.get_status())
-        self.names = self.removeDuplicatesAndSort(self.names)
-        self.clients = self.removeDuplicatesAndSort(self.clients)
-        self.qtys = self.removeDuplicatesAndSort(self.qtys)
-        self.dates = self.removeDuplicatesAndSort(self.dates)
+            self.append_unique_to_list(order.get_status(), self.statuses)
+        self.names.sort()
+        self.clients.sort()
+        self.qtys.sort()
+        self.dates.sort()
         self.testers = self.removeDuplicatesAndSort(self.testers)
-        self.statuses = self.removeDuplicatesAndSort(self.statuses)
+        self.statuses.sort()
+
 
     def removeDuplicatesAndSort(self, lst):
         lst = list(set(lst))
         lst.sort()
         return lst
 
+    def append_unique_to_list(self, value, lst):
+        if value not in lst:
+            lst.append(value)
+
 
 class OrdersClass:
 
     def __init__(self):
         self.order_list = []
-        self._set_orders()
+        for ord in Orders.objects.all():
+            self.order_list.append(Order(ord))
         self.autoFilters = OrdersClassAutoFilter(self.order_list)
 
-    def _set_orders(self):
-        orders = Orders.objects.all()
-        for ord in orders:
-            order = Order(ord)
-            self.order_list.append(order)
-
     def filter(self, data_dict):
+        """
+        Filters Orders based on provided keys and values.
+        :param data_dict:
+        :return:
+        """
         keys = ('ord-af', 'clt-af', 'qty-af', 'dat-af', 'tes-af', 'sta-af')
         new_dict = {}
         if 'orders' in data_dict:
@@ -1724,18 +1728,18 @@ class OrdersClass:
 class PossibleOrders:
 
     def __init__(self):
-        self._set_orders()
-
-    def _set_orders(self):
-        # self.orders = [record[0] for record in Orders.objects.values_list("order_name")]
-        self.orders = []
-        orders = Orders.objects.all()
-        for order in orders:
-            if order.is_sent != 1:
-                self.orders.append(order.order_name)
+        """
+        Class holds orders which are not set_as_sent. Available as choices to be assigned to for computers.
+        """
+        self.orders = Orders.objects.exclude(is_sent=1).values_list("order_name", flat=True)
 
 
-def assignComputersToOrderUsingDict(dict):
+def assign_computers_to_order_using_dict(dict):
+    """
+    This method is responsible for assigning computer_ids to a certain order.
+    :param dict: key of order_name and values are computer ids
+    :return: None is returned always
+    """
     order_name = next(iter(dict))
     indexes = dict[order_name]
     order = Orders.objects.get(order_name=order_name)
@@ -1748,6 +1752,10 @@ def assignComputersToOrderUsingDict(dict):
 
 
 class TesterCustomClass:
+    """
+    Class responsible as holder for tester and whether this tester is assigned
+    to a order from which this class is created.
+    """
 
     def __init__(self, tester_name, assigned):
         self.tester_name = tester_name
@@ -1806,7 +1814,7 @@ class OrderToEdit:
             for i in range(len(fieldnames)):
                 if data_dict.get(fieldnames[i]) == "" or data_dict.get(fieldnames[i]) is None:
                     self.error_list.append(error_messages[i])
-            if self.order.isSent:
+            if self.order.is_sent:
                 self.error_list.append('Sent orders are not allowed for editing')
 
         def _save():
@@ -3819,8 +3827,8 @@ class SearchOptions:
             return computers.filter(f_category__category_name__in=lst)
 
         categories = Categories.objects.all().values_list('category_name', flat=True)
-        categorySelection = OptionSelection('Categories', 'cat', categories, search_method)
-        self.options.append(categorySelection)
+        category_selection = OptionSelection('Categories', 'cat', categories, search_method)
+        self.options.append(category_selection)
 
     def set_statuses(self):
         no_status = 'No status'
@@ -3844,8 +3852,8 @@ class SearchOptions:
                     query = query | Q(f_id_comp_ord__isnull=True, f_sale__isnull=True)
             return computers.filter(query)
 
-        statusesSelection = OptionSelection('Status', 'stat', choices, search_method)
-        self.options.append(statusesSelection)
+        statuses_selection = OptionSelection('Status', 'stat', choices, search_method)
+        self.options.append(statuses_selection)
 
 
 class Computer4th:

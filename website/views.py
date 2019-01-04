@@ -419,7 +419,7 @@ def ord_assign(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    assignComputersToOrderUsingDict(data)
+    assign_computers_to_order_using_dict(data)
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
@@ -429,7 +429,7 @@ def receivedbatches(request):
     print("Batches")
     if request.method == 'POST':
         print("This was POST request")
-        save_recieved_batch(request.POST.get("item_name"))
+        save_received_batch(request.POST.get("item_name"))
     if request.method == 'GET':
         print("This was GET request")
     received_batches = get_received_batches_list()
@@ -460,7 +460,7 @@ def recieved_batch_edit(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    edit_recieved_batch(data)
+    edit_received_batch(data)
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
@@ -489,7 +489,7 @@ def delCat(request, int_index):
     print("Delete category")
     if request.method == 'POST':
         print("This was POST request")
-        deleteCategory(int_index)
+        delete_category(int_index)
     if request.method == 'GET':
         print("This was GET request")
 
@@ -530,7 +530,7 @@ def delTyp(request, int_index):
     print("Delete type")
     if request.method == 'POST':
         print("This was POST request")
-        deleteType(int_index)
+        delete_type(int_index)
     if request.method == 'GET':
         print("This was GET request")
 
@@ -727,7 +727,7 @@ def delTes(request, int_index):
     message = ""
     if request.method == 'POST':
         print("This was POST request")
-        deleteTester(int_index)
+        delete_tester(int_index)
     if request.method == 'GET':
         print("This was GET request")
     template = loader.get_template('items.html')
@@ -794,7 +794,7 @@ def cat_to_sold(request):
             executor.write_to_database()
             return render(request, 'success.html')
         else:
-            computers = computersForCatToSold(request.GET.copy())
+            computers = computers_for_cat_to_sold(request.GET.copy())
             template = loader.get_template('catToSold.html')
             return HttpResponse(
                 template.render(
@@ -807,7 +807,7 @@ def cat_to_sold(request):
             )
     if request.method == 'GET':
         print("This was GET request")
-        computers = computersForCatToSold(request.GET.copy())
+        computers = computers_for_cat_to_sold(request.GET.copy())
         template = loader.get_template('catToSold.html')
         return HttpResponse(
             template.render(
@@ -825,7 +825,7 @@ def new_order(request):
         print("This was POST request")
         no = NewOrder(request.POST.copy())
         no.save()
-        if no.isSaved():
+        if no.is_saved():
             # return HttpResponse("Success", request)
             return render(request, 'success.html')
         else:
