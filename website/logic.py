@@ -1610,13 +1610,12 @@ class Order:
 
     def is_ready(self):
         """
-        Returns True if computer has order and it has at least one is_ready as 0.
-        :return: True/False
+        :return: True if all computers belonging to an order have is_ready as 1, else False
         """
-        return not Computers.objects.filter(
+        return Computers.objects.filter(
             f_id_comp_ord__f_order_id_to_order=self.id,
             f_id_comp_ord__is_ready=0
-        ).count() >= 1
+        ).count() == 0
 
     def count(self):
         """
@@ -1763,42 +1762,72 @@ class TesterCustomClass:
 
 
 class OrderToEdit:
+    """
+    This class is reperesentative of order of computers.
+    Showing order data and computers, testers belong to it.
+    """
 
     def __init__(self, index):
-        self._get_order(index)
-        self._get_computers_from_order()
-        self._get_testers()
+        # This Order object is from logic and not the same as from models Orders.
+        self.order = Order(Orders.objects.get(id_order=index))
+        self.computers = Computers.objects.filter(f_id_comp_ord__f_order_id_to_order=self.order.id)
+        self.testers = self._get_testers()
+        # Used only during verification(post method) to store what data is missing.
         self.error_list = []
+        # Used as index in website
         self.count = 0
 
     def increment(self):
+        """
+        Increments counter
+        :return: empty string
+        """
         self.count += 1
         return ''
 
-    def _get_order(self, index):
-        ord = Orders.objects.get(id_order=index)
-        self.order = Order(ord)
-
-    def _get_computers_from_order(self):
-        compords = CompOrd.objects.filter(f_order_id_to_order=self.order.id)
-        compordsIds = [record.id_comp_ord for record in compords]
-        self.computers = Computers.objects.filter(f_id_comp_ord__in=compordsIds)
-
     def _get_testers(self):
-        self.testers = []
-        testers = Testers.objects.all()
-        for tester in testers:
-            custom_tester = TesterCustomClass(tester.tester_name, tester.tester_name in self.order.testers)
-            self.testers.append(custom_tester)
+        """
+        Creates custom list of testers with their names and wether they are assigned to an order or not.
+        :return: list of TesterCustomClass objects
+        """
+        testers = []
+        for tester_name in Testers.objects.values_list("tester_name", flat=True):
+            testers.append(TesterCustomClass(
+                tester_name=tester_name,
+                assigned=self._is_assigned(tester_name))
+            )
+        return testers
 
-    def isSaved(self):
-        return len(self.error_list) == 0
+    def _is_assigned(self, tester_name):
+        """
+        :param tester_name: who is being checked whether he is assigned to an order or not.
+        :return: True/False
+        """
+        return tester_name in self.order.testers
+
+    def hasErrors(self):
+        """
+        :return: True if error_list contains members, False otherwise.
+        """
+        return not len(self.error_list)
 
     def get_error_message(self):
+        """
+        :return: Concated error_list as string.
+        """
         return "\r\n".join(self.error_list)
 
     def set_new_data(self, data_dict):
+        """
+        :param data_dict: Querydict provided by post update from website for processing.
+        :return: None is returned always.
+        """
+
         def _validate():
+            """
+            Validates if all required fields contain required values.
+            :return: True/False hasErrors() output.
+            """
             fieldnames = (
                 'order_id',
                 'order_name',
@@ -1811,55 +1840,109 @@ class OrderToEdit:
                 "Client name was not set",
                 "Testers were not set",
             )
-            for i in range(len(fieldnames)):
-                if data_dict.get(fieldnames[i]) == "" or data_dict.get(fieldnames[i]) is None:
-                    self.error_list.append(error_messages[i])
+
+            for fieldname, error_message in zip(fieldnames, error_messages):
+                if data_dict.get(fieldname) == "" or data_dict.get(fieldname) is None:
+                    self.error_list.append(error_message)
             if self.order.is_sent:
                 self.error_list.append('Sent orders are not allowed for editing')
+            return self.hasErrors()
 
-        def _save():
-            order = Orders.objects.get(id_order=order_id)
-            order.order_name = new_order_name
-            client = Clients.objects.get_or_create(client_name=new_client_name)[0]
-            order.f_id_client = client
+        def _save_sale(order):
+            """
+            :param order: of whom sale is being checked.
+            :return: Sales object if this order is set as being sold. Elsewise None
+            """
+            if new_is_sent_status == 1:
+                return Sales.objects.create(date_of_sale=timezone.now(), f_id_client=order.f_id_client)
+            return None
+        
+        def _get_order():
+            """
+            Sets orders sale, new client and whether order is set as sold.
+            :return: changed order.
+            """
+            order = Orders.objects.get(id_order=data_dict.pop('order_id')[0])
+            order.order_name = data_dict.pop('order_name')[0]
+            order.f_id_client = Clients.objects.get_or_create(
+                client_name=data_dict.pop('client_name')[0]
+            )[0]
             order.is_sent = new_is_sent_status
             order.save()
-            sale = None
-            if new_is_sent_status == 1:
-                sale = Sales(date_of_sale=timezone.now(), f_id_client=order.f_id_client)
-                sale.save()
-            OrdTes.objects.filter(f_order=order).delete()
-            for tester_name in testers:
-                tester = Testers.objects.get(tester_name=tester_name)
-                new_ordtes = OrdTes(f_order=order, f_id_tester=tester)
-                new_ordtes.save()
-            for status_holder in statuses:
-                computer = Computers.objects.get(id_computer=status_holder.computer_id)
-                compord = CompOrd.objects.get(id_comp_ord=computer.f_id_comp_ord.id_comp_ord)
-                compord.is_ready = status_holder.value
-                compord.save()
-                computer.f_sale = sale
-                computer.save()
+            return order
 
-        _validate()
-        if len(self.error_list) == 0:
-            order_id = data_dict.pop('order_id')[0]
-            new_order_name = data_dict.pop('order_name')[0]
-            new_client_name = data_dict.pop('client_name')[0]
-            testers = data_dict.pop('tes')
-            new_is_sent_status = 0
+        def _save_order_testers(order):
+            """
+            Removes previuos and sets new testers set for an order.
+            :param order: order to testers should be changed.
+            :return: None is returned always.
+            """
+            OrdTes.objects.filter(f_order=order).delete()
+            for tester_name in data_dict.pop('tes'):
+                OrdTes.objects.create(
+                    f_order=order,
+                    f_id_tester=Testers.objects.get(tester_name=tester_name)
+                )
+
+        def _save_computer_order_changes(computer, is_ready_value):
+            """
+            Saves compord, a connectional object between computer and an order.
+            :return: None is returned always.
+            """
+            compord = CompOrd.objects.get(id_comp_ord=computer.f_id_comp_ord.id_comp_ord)
+            compord.is_ready = is_ready_value
+            compord.save()
+
+        def _save_computer_changes(computer_id, is_ready_value, sale):
+            """
+            Calls to save computer order changes and saves sale.
+            :return: None is returned always.
+            """
+            computer = Computers.objects.get(id_computer=computer_id)
+            _save_computer_order_changes(computer, is_ready_value)
+            computer.f_sale = sale
+            computer.save()
+
+        def _get_new_is_sent_status():
+            """
+            :return: 1 if in website client specifies that order is set as sent, 0 otherwise.
+            """
             if 'set_as_sent' in data_dict:
-                received_is_sent_status = data_dict.pop('set_as_sent')[0]
-                if received_is_sent_status == 'on':
-                    new_is_sent_status = 1
-            statuses = []
+                if data_dict.pop('set_as_sent')[0] == 'on':
+                    return 1
+            return 0
+        
+        def _get_computer_id(key):
+            """
+            Splits received string by underscore sign and returns second part of the split.
+            ex: input "status_1937", output: "1937"
+            :param key: String of status_*id of computer*
+            :return: id of computer
+            """
+            return key.split('_')[1]
+
+        def _get_status_index(value):
+            """
+            Accepts status used in website for an order and
+            returns integer representing that status in database.
+            :param value: String "In-Preperation" or "Ready"
+            :return: Integer 1 or 0
+            """
+            statuses = ("In-Preperation", "Ready")
+            return statuses.index(value)
+
+        if _validate():
+            new_is_sent_status = _get_new_is_sent_status()
+            order = _get_order()
+            sale = _save_sale(order)
+            _save_order_testers(order)
             for key, value in data_dict.items():
                 if 'status' in key:
-                    sh = StatusHolder(key, value)
-                    statuses.append(sh)
-            for status in statuses:
-                data_dict.pop('status_'+status.computer_id)
-            _save()
+                    _save_computer_changes(
+                        computer_id=_get_computer_id(key),
+                        is_ready_value=_get_status_index(value),
+                        sale=sale
+                    )
 
 
 class ComputerToStripOfOrder:
@@ -1879,17 +1962,6 @@ class ComputerToStripOfOrder:
         except Exception as e:
             self.success = False
 
-
-class StatusHolder:
-    statuses = ("In-Preperation", "Ready")
-
-    def __init__(self, key, value):
-        self.computer_id = key.split('_')[1]
-        self.value = None
-        try:
-            self.value = self.statuses.index(value)
-        except ValueError:
-            pass
 
 def on_start():
     print("on start")

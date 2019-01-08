@@ -27,13 +27,7 @@ class Computer_record():
             print("IsSold: " + str(self.is_sold))
             self.price = self._price_get(data_dict["Price"])
             self.timenow = timezone.now()
-            if self.is_sold:
-                self.client = self._client_save_and_get(data_dict["Client"])
-                self.sale = self._sale_save_and_get(self.client)
-                self.computer = self._computer_sold_save_and_get(data_dict)
-                self.message += "Sold have been processed\n"
-            else:
-                self.computer = self._computer_save_and_get(data_dict)
+            self.computer = self._computer_save_and_get(data_dict)
             bat1 = self._battery_save_and_get(
                 data_dict["Bat1 serial"],
                 data_dict["Bat1 wear"],
@@ -191,79 +185,6 @@ class Computer_record():
                 date=self.timenow,
                 f_bios=self.bios,
                 motherboard_serial=data["motherboard_serial"]
-            )
-            computer.save()
-            self.message += "New record has been added\n"
-            return computer
-
-    def _computer_sold_save_and_get(self, data):
-        try:
-            existing_computer = Computers.objects.get(computer_serial=data['Serial'])
-            computer = Computers(
-                id_computer=existing_computer.id_computer,
-                computer_serial=data['Serial'],
-                f_type=self.type,
-                f_category=self.category,
-                f_manufacturer=self.manufacturer,
-                f_model=self.model,
-                f_cpu=self.cpu,
-                f_gpu=self.gpu,
-                f_ram_size=self.ramsize,
-                f_hdd_size=self.hddsize,
-                f_diagonal=self.diagonal,
-                f_license=self.license,
-                f_camera=self.camera_option,
-                cover=data["Cover"],
-                display=data["Display"],
-                bezel=data["Bezel"],
-                keyboard=data["Keyboard"],
-                mouse=data["Mouse"],
-                sound=data["Sound"],
-                cdrom=data["CD-ROM"],
-                hdd_cover=data["HDD Cover"],
-                ram_cover=data["RAM Cover"],
-                other=data["Other"],
-                f_tester=self.tester,
-                date=self.timenow,
-                f_bios=self.bios,
-                motherboard_serial=data["motherboard_serial"],
-                price=self.price,
-                f_sale=self.sale
-            )
-            computer.save()
-            self.message += "Existing record has been updated\n"
-            return computer
-        except Computers.DoesNotExist:
-            print("No computer with such serial, inserting a new record")
-            computer = Computers(
-                computer_serial=data['Serial'],
-                f_type=self.type,
-                f_category=self.category,
-                f_manufacturer=self.manufacturer,
-                f_model=self.model,
-                f_cpu=self.cpu,
-                f_gpu=self.gpu,
-                f_ram_size=self.ramsize,
-                f_hdd_size=self.hddsize,
-                f_diagonal=self.diagonal,
-                f_license=self.license,
-                f_camera=self.camera_option,
-                cover=data["Cover"],
-                display=data["Display"],
-                bezel=data["Bezel"],
-                keyboard=data["Keyboard"],
-                mouse=data["Mouse"],
-                sound=data["Sound"],
-                cdrom=data["CD-ROM"],
-                hdd_cover=data["HDD Cover"],
-                ram_cover=data["RAM Cover"],
-                other=data["Other"],
-                f_tester=self.tester,
-                date=self.timenow,
-                f_bios=self.bios,
-                motherboard_serial=data["motherboard_serial"],
-                price=self.price,
-                f_sale=self.sale
             )
             computer.save()
             self.message += "New record has been added\n"
@@ -466,11 +387,10 @@ class Computer_record2:
             if battery_dict:
                 for id in range(self._get_highest_first_number(battery_dict)):
                     battery = Batteries.objects.get_or_create(
-                        serial=battery_dict[str(id + 1) + ' Battery Serial'],
+                        serial=battery_dict[str(id + 1) + ' Battery SN'],
                         wear_out=battery_dict[str(id + 1) + ' Battery Wear Level'],
                         expected_time=battery_dict[str(id + 1) + ' Battery Estimated'],
                         model=battery_dict[str(id + 1) + ' Battery Model'],
-                        current_wh=battery_dict[str(id + 1) + ' Battery Current Wh'],
                         maximum_wh=battery_dict[str(id + 1) + ' Battery Maximum Wh'],
                         factory_wh=battery_dict[str(id + 1) + ' Battery Factory Wh']
                     )[0]
@@ -668,7 +588,7 @@ class Computer_data_dict_builder:
             else:
                 return ''
 
-        others_dict=dict()
+        others_dict = dict()
         # others_dict["Camera"] = get_camera(computer)
         others_dict["License"] = computer.f_license.license_name
         others_dict["Previuos tester"] = computer.f_tester.tester_name

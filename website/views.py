@@ -767,7 +767,7 @@ def new_record(request):
             return HttpResponse(
                 template.render(
                     {
-                        "rtac": rc,
+                        "rc": rc,
                         "error_message": rta.get_error_message()
                     },
                     request
@@ -858,8 +858,7 @@ def edit_order(request, int_index):
     if request.method == 'POST':
         print("This was POST request")
         ote.set_new_data(request.POST.copy())
-        if ote.isSaved():
-            # return HttpResponse("Success", request)
+        if ote.hasErrors():
             return render(request, 'success.html')
         else:
             template = loader.get_template('order_edit.html')

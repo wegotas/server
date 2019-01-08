@@ -18,12 +18,12 @@
                     <div class="item title"><b>Testers:</b></div>
                     {% for tester in ote.testers %}
                     <div class="item">
-                        <input type="checkbox" name="tes" value="{{ tester.tester_name }}" class="chkbx blockableCheckbox"{% if tester.assigned %} checked{% endif %}{% if ote.order.isSent %} disabled{% endif %}>
+                        <input type="checkbox" name="tes" value="{{ tester.tester_name }}" class="chkbx blockableCheckbox"{% if tester.assigned %} checked{% endif %}{% if ote.order.is_sent %} disabled{% endif %}>
                         <div class="chkbx-title">'{{ tester.tester_name }}'</div>
                     </div>
                     {% endfor %}
                 </td>
-                <td rowspan="5"><button type="submit"{% if ote.order.isSent %} disabled{% endif %}>Submit</button></td>
+                <td rowspan="5"><button type="submit"{% if ote.order.is_sent %} disabled{% endif %}>Submit</button></td>
             </tr>
             </tr>
             <tr>
@@ -32,20 +32,20 @@
             </tr>
             <tr>
                 <th>Order name:</th>
-                <td><input class="textbox blockable" name="order_name" type="text" value="{{ ote.order.name }}"{% if ote.order.isSent %} readonly{% endif %}></td>
+                <td><input class="textbox blockable" name="order_name" type="text" value="{{ ote.order.name }}"{% if ote.order.is_sent %} readonly{% endif %}></td>
             </tr>
             <tr>
                 <th>Client name:</th>
-                <td><input class="textbox blockable" name="client_name" type="text" value="{{ ote.order.client }}"{% if ote.order.isSent %} readonly{% endif %}></td>
+                <td><input class="textbox blockable" name="client_name" type="text" value="{{ ote.order.client }}"{% if ote.order.is_sent %} readonly{% endif %}></td>
             </tr>
             <tr>
                 <th>Status:</th>
                 <td><input class="textbox" type="text" value="{{ ote.order.get_status }}" readonly></td>
             </tr>
-            {% if ote.order.isReady %}
+            {% if ote.order.is_ready %}
             <tr>
                 <td colspan="2">
-                    <div class="checkbox-wrapper">Set as sent <input class="checkbox" type="checkbox" name="set_as_sent" id="locker" onclick="disableElements(this)"{% if ote.order.isSent %} checked disabled{% endif %}></div>
+                    <div class="checkbox-wrapper">Set as sent <input class="checkbox" type="checkbox" name="set_as_sent" id="locker" onclick="disableElements(this)"{% if ote.order.is_sent %} checked disabled{% endif %}></div>
                 </td>
             </tr>
             {% endif %}
@@ -79,7 +79,7 @@
                     <td>{{ computer.f_ram_size.ram_size_text }}</td>
                     <td>{{ computer.getOther2lines|linebreaksbr }}</td>
                     <td>
-                        <select name="status_{{ computer.id_computer }}" class="blockableSelect"{% if ote.order.isSent %} disabled{% endif %}>
+                        <select name="status_{{ computer.id_computer }}" class="blockableSelect"{% if ote.order.is_sent %} disabled{% endif %}>
                             <option value="In-Preperation"{% if computer.f_id_comp_ord.is_ready == 0 %} selected{% endif %}>In-Preperation</option>
                             <option value="Ready"{% if computer.f_id_comp_ord.is_ready == 1 %} selected{% endif %}>Ready</option>
                         </select>
@@ -90,8 +90,8 @@
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAy1JREFUSImV02tIU2EYB/D/2TnunDmmQxs4DQMrRMM1jTYjbQ6ipALDOB+rr/lFhCV+CcpYNyMManQvksAuil0U7GaJWCNRsqiG2SojdZaOdciz4+a7PsjEbe24PfB+Oe/7/P7PuVFIoCwWi1alUonR10VRpHp7e/1yvdRyeG1t7ZmVen1FCsf9jd5jGSYozs09tdlsJxIZNKYaGhqOtLe3zzudzlC86uzs/Fxpta6OZyjk8KqqqkMGgyHuGQBQKBQKkRDKarVWWywWJqGAMF5aWkrL4eGigfoQIddpmnYuG5As/qq/X5em1e6laTqdAjZYrdYRnucXeyMCksXtl9rwUr1Ds7liqyo9PX0BpKi109PTrrC9CMXDBUGA3+9HdnZ2JH7xHlpDlfibtgZfPAK25Wvw2zMBSZJAARm5ubmbTCZTKw0Adru9zmg0HsvLy6O9Xi/CSxAEDA8Po6SkBBzHRUzeGqoEUWqAyfcYTi3FR58Se/IV+O2ZwOzsrI+maXtXV9d7mud5pVqtvmYymXSiKGLpkiQJxcXF0Gq1i/jRC3dxewnuYotAhQioGTeGZlKxK58N/vzmbnrW0+MAAEYQBCorK2vKbDbnL/fMGx23cVexMwZPm3gNH7MC/nmaPBoYdQz09DSGe2S/8aV1JAJ/F4OzkpcUfL95dqDjct3SvoQCDp9vxb0I3BCDF461NL99cNEW3Rvz50WX484TtNG7FvCJd3BxkTgX9KHw2/UbQw+vHPxfv+wd/BgbAxv4A25u5r+4KujDfu6FT+MbORnPkA0YHBxEcUEejhsn8SukiZn8pHEcVeWGaTlDNuCTywVCCHQaJVrKp7DK83xx8lPGcdTu2y3XLh8wOjqKjx8+4OrVKwgEAshKU8KxQ41Vwa9o2uBJCAdkXnJfXx88Hg8IIXh4vwPriorg9Xpxq3o9ysrKEsJlA944ndDr9cjIzMRGsxlbysuRkZmZMLxswIGaGqzQ6ZCTk5M0GhOQwjCB6I31RmNCACGEsDL7FACca27eDoY56Pf7U5KZjmXZYECSHtvq60/LBgAAz/NKt9sdSiZAp9Mpuru7Jbkz/wAVAobVY0U2sQAAAABJRU5ErkJggg=="
                             />
                         </button>
-                        {% if not ote.order.isSent %}
-                        <button title="Remove computer from the record" class="img-button" type="button" onclick="remove_from_order({{ computer.id_computer }})"{% if ote.order.isSent %} disabled{% endif %}>
+                        {% if not ote.order.is_sent %}
+                        <button title="Remove computer from the record" class="img-button" type="button" onclick="remove_from_order({{ computer.id_computer }})"{% if ote.order.is_sent %} disabled{% endif %}>
                             <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABX0lEQVR4Xu2UsUoDQRCG/5lsEiNqgqAE0ghqZWPhK9iIvYUvYGeljbX4CBbW0ca3EEXBRrBQNKA2CkKQU8To7Yyz3oVDk1KtbuDjv2Lv25+BO1JV/MVwjyAX52IaAMrbVV6ba9QmUSIUSwpXRACFQgIbIICMMCqAGN5bGvG7EQMcEw7uX843Hjo7NAY0mtOjJzOLCw1hNVEAIAbYoK7QCKEaSOVqpHJvMBwuDo+u1k+vl5wDqsO1yqCTZ6iPwQIUJJVm4nS+S+ENATS0Dc/kMBS/jY8oJpwCSp0nxe0ZiBXsYGQrCHL+IRbJWsKkYuiH4RkStcUrxCUXO5Tnl6HQrClne1UjMwOU4gwWy/Si0IR39yCtFhwAju4id7O5BU1bMvdZRZ91ZO2TJMvoFU7NRBWgvsLYn2LMKkGTooksy95RTVK6aZCCLwXHTcFqt0fdqBr6C99F23j8x99mLs7Fn8+/ojoaHKHsAAAAAElFTkSuQmCC"
                             />

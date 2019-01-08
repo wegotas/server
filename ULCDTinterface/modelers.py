@@ -24,12 +24,11 @@ class Batteries(models.Model):
     wear_out = models.CharField(max_length=45)
     expected_time = models.CharField(max_length=45)
     model = models.CharField(max_length=45, blank=True, null=True)
-    current_wh = models.CharField(max_length=45, blank=True, null=True)
     maximum_wh = models.CharField(max_length=45, blank=True, null=True)
     factory_wh = models.CharField(max_length=45, blank=True, null=True)
 
     def __str__(self):
-        return "serial: {0}, wear_out: {1}, expected_time: {2}, model: {3}, current_wh: {4}, maximum_wh: {5}, factory_wh: {6}".format(self.serial, self.wear_out, self.expected_time, self.model, self.current_wh, self.maximum_wh, self.factory_wh)
+        return "serial: {0}, wear_out: {1}, expected_time: {2}, model: {3}, maximum_wh: {4}, factory_wh: {5}".format(self.serial, self.wear_out, self.expected_time, self.model, self.maximum_wh, self.factory_wh)
 
     class Meta:
         managed = True
