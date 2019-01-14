@@ -8,4 +8,5 @@ urlpatterns = [
     path('data/', views.process_data),
     path('data2/', views.process_data2),
     path('exists/', views.check_if_exists),
+    path('pictures/<int:int_index>/', views.process_pictures),
 ]

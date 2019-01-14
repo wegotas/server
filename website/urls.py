@@ -36,10 +36,6 @@ urlpatterns = [
     path('test/', views.testers, name='testers'),
     path('observ/', views.observations, name='observations'),
 
-    # path('batches/del/<int:int_index>/', views.delBatch, name='delelete_batch'),
-    # path('batches/edit/', views.batch_edit, name='batch_edit'),
-    # path('batches/', views.batches, name='batches'),
-
     path('received_batches/del/<int:int_index>/', views.delreceivedBatch, name='delelete_batch'),
     path('received_batches/edit/', views.recieved_batch_edit, name='batch_edit'),
     path('received_batches/', views.receivedbatches, name='batches'),

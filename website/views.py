@@ -882,11 +882,17 @@ def edit_order(request, int_index):
 
 @csrf_exempt
 def strip_order(request, int_index):
+    def _strip_order_of_computer():
+        computer = Computers.objects.get(id_computer=int_index)
+        compord = CompOrd.objects.get(id_comp_ord=computer.f_id_comp_ord.id_comp_ord)
+        computer.f_id_comp_ord = None
+        computer.save()
+        compord.delete()
+
     print("Strip computer from order")
     if request.method == 'POST':
         print("This was POST request")
-        ctsoo = ComputerToStripOfOrder(int_index)
-        ctsoo.strip()
+        _strip_order_of_computer()
         return HttpResponse(status=200)
     if request.method == 'GET':
         print("This was GET request")

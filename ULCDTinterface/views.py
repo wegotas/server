@@ -121,7 +121,7 @@ def process_data2(request):
     if request.method == "POST":
         print("POST proccess_data2")
         data = JSONParser().parse(request)
-        record = Computer_record2(data)
+        record = ComputerRecord2(data)
         if record.success == True:
             status_code = 200
         elif record.success == False:
@@ -129,7 +129,6 @@ def process_data2(request):
         else:
             status_code = 202
             record.message += "Something gone wrong. Notify administrator of this problem."
-
         if status_code == 200:
             data = {}
             data["Index"] = record.computer.id_computer
@@ -140,12 +139,9 @@ def process_data2(request):
     if request.method == 'GET':
         print("GET proccess_data2")
         query_string = request.META['QUERY_STRING']
-        print("after query_string")
         datastring = unquote(query_string)
-        print("after datastring")
         data = json.loads(datastring)
         try:
-            print("try block")
             csb = Computer_data_dict_builder(str(data["Serial"]).strip())
             print(csb.data_dict)
             return JsonResponse(csb.data_dict)
@@ -156,6 +152,14 @@ def process_data2(request):
             else:
                 print("Something else")
                 return HttpResponse(str(e), status=404)
+
+
+@csrf_exempt
+def process_pictures(request, int_index):
+    print(int_index)
+    print(request.FILES)
+    variable = request.FILES
+
 
 
 def check_if_exists(request):

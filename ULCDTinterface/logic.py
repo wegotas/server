@@ -250,7 +250,7 @@ class Computer_record():
         return ramSize
 
 
-class Computer_record2:
+class ComputerRecord2:
     '''
     Modified version of Computer_record to be compatible with 5th version of build.
     '''
@@ -280,7 +280,6 @@ class Computer_record2:
 
     def _computer_save_and_get(self, data):
         print('_computer_save_and_get')
-        print(data)
         try:
             existing_computer = Computers.objects.get(computer_serial=data['SystemInfo']['Serial Number'])
             print('after existing computer')
@@ -329,7 +328,7 @@ class Computer_record2:
             return existing_computer
         except Computers.DoesNotExist:
             print("No computer with such serial, inserting a new record")
-            recieved_batch = None
+            received_batch = None
             if "Received batch" in data["Others"]:
                 received_batch = Receivedbatches.objects.get(received_batch_name=data["Others"]["Received batch"])
             computer = Computers(
@@ -495,36 +494,46 @@ class Computer_record2:
 
         print("Start of many to many")
         _save_batteries(data_dict["Batteries"])
-        print("_save_batteries()")
         _save_rams(data_dict["RAM"])
-        print("_save_rams")
         _save_gpus(data_dict["GPU"])
-        print("_save_gpus")
         _save_processors(data_dict["Processor"])
-        print("_save_processors")
         _save_drives(data_dict["Drives"])
-        print("_save_drives")
         _save_observations(data_dict['Observations'])
-        print("_save_observations")
         print("End of many to many")
 
     def _one_to_many_connection_save(self, data_dict):
+        print("start of _one_to_many_connection_save")
+        print("before self.category")
         self.category = Categories.objects.get(category_name=data_dict['Others']["Category"])
+        print("before self.type ")
         self.type = Types.objects.get(type_name=data_dict['SystemInfo']["System Type"])
+        print("before self.tester")
         self.tester = Testers.objects.get(tester_name=data_dict['Others']["Tester"])
+        print("before self.bios")
         self.bios = Bioses.objects.get_or_create(bios_text=data_dict['SystemInfo']["BIOS"])[0]
+        print("before self.cpu")
         self.cpu = Cpus.objects.get_or_create(cpu_name=data_dict['Processor']['1 Model'])[0]
+        print("before self.camera_option")
         self.camera_option = CameraOptions.objects.get_or_create(option_name=data_dict['Others']["Camera"])[0]
+        print("before self.diagonal")
         self.diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict['Display']['Diagonal'])[0]
+        print("before self.gpu")
         self.gpu = Gpus.objects.get_or_create(gpu_name='N/A')[0]
+        print("before self.hddsize")
         self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name='N/A')
+        print("before self.license")
         self.license = Licenses.objects.get_or_create(license_name=data_dict['Others']["License"])[0]
+        print("before self.manufacturer")
         self.manufacturer = Manufacturers.objects.get_or_create(
             manufacturer_name=data_dict['SystemInfo']["Manufacturer"]
         )[0]
+        print("before self.model")
         self.model = Models.objects.get_or_create(model_name=data_dict['SystemInfo']['Model'])[0]
+        print("before self.motherboard_serial")
         self.motherboard_serial = data_dict['SystemInfo']["MB Serial"]
+        print("before self.ramsize")
         self.ramsize = RamSizes.objects.get_or_create(ram_size_text=data_dict['RAM']['RAM Capacity'])[0]
+        print("before self.timenow")
         self.timenow = timezone.now()
 
         resolution = Resolutions.objects.get_or_create(resolution_text=data_dict["Display"]["Resolution"])[0]
@@ -536,6 +545,7 @@ class Computer_record2:
 
         cable_type = Cabletypes.objects.get_or_create(cable_type_name=data_dict["Display"]["Cable Type"])[0]
         self.matrix = Matrixes.objects.get_or_create(f_id_cable_type=cable_type)[0]
+        print("end of _one_to_many_connection_save")
 
 
 class Computer_data_dict_builder:

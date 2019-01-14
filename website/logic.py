@@ -1772,7 +1772,7 @@ class OrderToEdit:
         self.order = Order(Orders.objects.get(id_order=index))
         self.computers = Computers.objects.filter(f_id_comp_ord__f_order_id_to_order=self.order.id)
         self.testers = self._get_testers()
-        # Used only during verification(post method) to store what data is missing.
+        # Used during verification(post method) to store what data is missing.
         self.error_list = []
         # Used as index in website
         self.count = 0
@@ -1945,25 +1945,11 @@ class OrderToEdit:
                     )
 
 
-class ComputerToStripOfOrder:
-
-    def __init__(self, index):
-        self.computer = Computers.objects.get(id_computer=index)
-        self.comordId = self.computer.f_id_comp_ord.id_comp_ord
-        self.success = False
-
-    def strip(self):
-        try:
-            self.computer.f_id_comp_ord = None
-            self.computer.save()
-            self.compord = CompOrd.objects.get(id_comp_ord=self.comordId)
-            self.compord.delete()
-            self.success = True
-        except Exception as e:
-            self.success = False
-
-
 def on_start():
+    """
+    This function is called from urls.py to ensure that it's run once.
+    It is responsible for calling in seperate threads observers to monitor file creation.
+    """
     print("on start")
     tarThread = Thread(target=start_tar_observer)
     txtThread = Thread(target=start_txt_observer)
@@ -1972,10 +1958,20 @@ def on_start():
 
 
 def start_tar_observer():
+    """
+    Starts observation of provided directory and uses TarAndLogHandler to log errors and process Tar files.
+    """
     observer = Observer()
     log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
-    logging.basicConfig(filename=log_position, level=logging.WARNING, format="%(asctime)-15s %(threadName)s:%(message)s")
-    observer.schedule(TarAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
+    logging.basicConfig(
+        filename=log_position,
+        level=logging.WARNING,
+        format="%(asctime)-15s %(threadName)s:%(message)s"
+    )
+    observer.schedule(
+        event_handler=TarAndLogHandler(),
+        path=os.path.join(os.path.join(settings.BASE_DIR, 'temp'))
+    )
     logging.warning("Start of tar observer")
     observer.start()
     try:
@@ -1989,12 +1985,18 @@ def start_tar_observer():
 
 
 class TarAndLogHandler(PatternMatchingEventHandler):
+    """
+    Class responsible for evaluating events with tar extension and logging them.
+    """
     patterns = ['*.tar']
 
     def process(self, event):
         logging.warning(event.src_path)
         logging.warning(event.event_type)
-        atp = AlternativeTarProcessor(event.src_path, os.path.basename(event.src_path).replace('.tar', ''))
+        atp = AlternativeTarProcessor(
+            inMemoryFile=event.src_path,
+            filename=os.path.basename(event.src_path).replace('.tar', '')
+        )
         atp.process_data()
         logging.warning('_________________________________________')
 
@@ -2004,8 +2006,10 @@ class TarAndLogHandler(PatternMatchingEventHandler):
 
 
 def start_txt_observer():
+    """
+    Starts observation of provided directory and uses TxtAndLogHandler to log errors and process txt files.
+    """
     observer = Observer()
-    print('Starting txt observer')
     log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
     logging.basicConfig(filename=log_position, level=logging.WARNING, format="%(asctime)-15s %(threadName)s:%(message)s")
     observer.schedule(TxtAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
@@ -2022,12 +2026,15 @@ def start_txt_observer():
 
 
 class TxtAndLogHandler(PatternMatchingEventHandler):
+    """
+    Class responsible for evaluating events with tar extension and logging them.
+    """
     patterns = ['*.txt']
 
     def process(self, event):
         logging.warning(event.src_path)
         logging.warning(event.event_type)
-        ahop = AlternativeHddOrderProcessor(event.src_path)
+        ahop = AlternativeHddOrderProcessor(txtObject=event.src_path)
         logging.warning('_________________________________________')
 
     def on_created(self, event):
@@ -2743,184 +2750,305 @@ class TarProcessor:
         return form_factor_to_return
 
 
+class WriteableMessage:
+    """
+    Class responsible of holding text inside and true/false value
+    for determining whether to use that text for next operations or not.
+    """
+
+    def __init__(self, text=''):
+        self.text = text
+        self.should_write = False
+
+    def add(self, string_to_add, should_write=None):
+        """
+        :param string_to_add: string which is added to self.text attribute.
+        :param should_write: True/False, whether text should be later written into log or not.
+        :return: None is returned always
+        """
+        self.text += string_to_add + '\r\n'
+        if should_write:
+            self.should_write = should_write
+
+
 class AlternativeTarProcessor:
+    """
+    Class responsible of handling tar processing.
+    It is alternative version of TarProcessor.
+    File columns can change their positions, new ones could be added and this class still should be able to process it.
+    """
     headers = ['Serial number', 'Health', 'Power_On', 'Model', 'Capacity', 'Lock', 'Speed', 'Size']
 
     def __init__(self, inMemoryFile, filename=None):
+        """
+        In case of upload through a website filename is not passed to __init__.
+        In case of file creation being caught by watchdog, filename is passed to __init__.
+        :param inMemoryFile: memory file to be processed
+        :param filename: filename which is provided with the help of watchdog.
+        """
         if filename is None:
+            # Lot name is assigned based on file's name.
             self.lot_name = inMemoryFile._name.replace('.tar', '')
             self.tar = tarfile.open(fileobj=inMemoryFile.file)
-            self.fileLoc = ''
+            self.file_loc = ''
         else:
             self.lot_name = filename.replace('.tar', '')
             self.tar = tarfile.open(inMemoryFile)
-            self.fileLoc = filename
-        self.message = ''
-        self.txtFile = self.getTxtFile()
-        self.firstline = self.getFirstLine(self.txtFile)
+            self.file_loc = filename
+        # self.message = ''
+        self.txt_file = self.get_txt_file()
+        # firstline represents header of the custom txt file
+        self.firstline = self.get_first_line(self.txt_file)
+        self.text_to_write = WriteableMessage()
+        self.lot = None
+        self.file_header_indexes = None
+
+    @property
+    def message(self):
+        return self.text_to_write.text
 
     def process_data(self):
         with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
-            textToWrite = '* importing lot ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *\r\n'
-            if self.isHeaderValid(self.firstline):
-                self._save_and_set_lots()
-                self.fileHeaderIndexes = self.getFileHeaderIndexes(self.firstline.split('@'))
-                isMissing = False
-                new_tarfile_loc = os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
-                with tarfile.open(new_tarfile_loc, 'a') as new_tar:
-                    for line in self.txtFile.readlines():
-                        try:
-                            try:
-                                line = line.decode('utf-8')
-                            except:
-                                pass
-                            line_array = line.split('@')
-                            if self.isValid(line_array):
-                                tarmember = self.get_tar_member_by_serial(line_array[self.fileHeaderIndexes['Serial number']])
-                                if self._hdd_exists(line_array):
-                                    isMissing = True
-                                    if tarmember is not None:
-                                        tarmember_to_remove = self.get_tarmember_name(line_array)
-                                        if tarmember_to_remove is not None:
-                                            tarmember_to_remove = self.get_tarmember_name(line_array)
-                                            try:
-                                                new_tar.getmember(tarmember_to_remove)
-                                                os.system(
-                                                    'tar -vf ' + new_tarfile_loc + ' --delete "' + tarmember_to_remove + '"')
-                                            except:
-                                                print('Tarfile opening or its deletion had failed')
-                                                pass
-                                        filename = tarmember.name
-                                        file = self.tar.extractfile(tarmember)
-                                        new_tar.addfile(tarmember, file)
-                                        self._update_existing_hdd(line_array, filename)
-                                        textToWrite += 'SN: ' + line_array[1] + '| info updated. File updated.\r\n'
-                                    else:
-                                        self._update_existing_hdd_without_file(line_array)
-                                        textToWrite += 'SN: ' + line_array[self.fileHeaderIndexes['Serial number']] + '| Record info updated. File info not changed.\r\n'
-                                else:
-                                    if tarmember is not None:
-                                        file = self.tar.extractfile(tarmember)
-                                        filename = tarmember.name
-                                        new_tar.addfile(tarmember, file)
-                                        self._save_new_hdd(line_array, filename)
-                                    else:
-                                        isMissing = True
-                                        textToWrite += 'SN: ' + line_array[self.fileHeaderIndexes['Serial number']] + '| skipped. Not present in database. No file associated.\r\n'
-                        except Exception as e:
-                            isMissing = True
-                            textToWrite += '\r\n Error: ' + str(e) + ' \r\n'
+            self.text_to_write.add('* importing lot ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *')
+            if self.is_header_valid(self.firstline):
+                self.process_file_with_valid_headers()
+                if self.text_to_write.should_write:
+                    logfile.write(self.text_to_write.text)
             else:
-                textToWrite += 'All required fields in '+self.lot_name+' were not found:\n'+str(self.headers)
-                textToWrite += '===============================================\r\n'
-                logfile.write(textToWrite)
-                self.message = textToWrite
+                self.text_to_write.add('All required fields in '+self.lot_name+' were not found:\r\n'+str(self.headers))
+                self.text_to_write.add('===============================================')
+                logfile.write(self.text_to_write.text)
+
+    def process_file_with_valid_headers(self):
+        self.lot = self._save_and_get_lots()
+        self.file_header_indexes = self.get_file_header_indexes(self.firstline.split('@'))
+        new_tarfile_loc = self._get_new_tarfile_location()
+        with tarfile.open(new_tarfile_loc, 'a') as new_tar:
+            for line in self.txt_file.readlines():
+                self.try_processing_line(line=line, new_tar=new_tar, new_tarfile_loc=new_tarfile_loc)
+
+    def try_processing_line(self, line, new_tar, new_tarfile_loc):
+        try:
+            self._process_line(line=line, new_tar=new_tar, new_tarfile_loc=new_tarfile_loc)
+        except Exception as e:
+            self.text_to_write.add(string_to_add='\r\n Error: ' + str(e) + ' \r\n', should_write=True)
+            
+    def _process_line(self, line, new_tar, new_tarfile_loc):
+        line_array = self._get_line_array(line)
+        if self.is_valid(line_array):
+            self._process_valid_line_array(
+                line_array=line_array,
+                new_tar=new_tar,
+                new_tarfile_loc=new_tarfile_loc
+            )
+        else:
+            self.text_to_write.add(
+                string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| skipped. Health or Power on is not a proper digit.',
+                should_write=True
+            )
+
+    def _process_valid_line_array(self, line_array, new_tar, new_tarfile_loc):
+        tarmember = self.get_tar_member_by_serial(line_array[self.file_header_indexes['Serial number']])
+        if self._drive_exists(line_array):
+            self._process_existing_hdd(
+                line_array=line_array,
+                new_tar=new_tar,
+                new_tarfile_loc=new_tarfile_loc,
+                tarmember=tarmember
+            )
+        else:
+            self._process_nonexistant_hdd(line_array=line_array, new_tar=new_tar, tarmember=tarmember)
+
+    def _process_existing_hdd(self, line_array, new_tar, new_tarfile_loc, tarmember):
+        if tarmember:
+            self._process_tarmember_with_existing_hdd(
+                line_array=line_array,
+                new_tar=new_tar,
+                new_tarfile_loc=new_tarfile_loc,
+                tarmember=tarmember
+            )
+            self.text_to_write.add(
+                string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| info updated. File updated.',
+                should_write=True
+            )
+        else:
+            self._update_existing_drive(line_array=line_array)
+            self.text_to_write.add(
+                string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| Record info updated. File info not changed.'
+            )
+
+    def _process_nonexistant_hdd(self, tarmember, new_tar, line_array):
+        if tarmember:
+            new_tar.addfile(tarmember, self.tar.extractfile(tarmember))
+            self._save_new_drive(line_array, tarmember.name)
+        else:
+            self.text_to_write.add(
+                string_to_add='SN: ' + line_array[self.file_header_indexes[
+                    'Serial number']] + '| skipped. Not present in database. No file associated.',
+                should_write=True
+            )
+
+    def _process_tarmember_with_existing_hdd(self, line_array, new_tar, new_tarfile_loc, tarmember):
+        self._try_to_remove_tarmember(
+            line_array=line_array,
+            new_tar=new_tar,
+            new_tarfile_loc=new_tarfile_loc
+        )
+        new_tar.addfile(tarmember, self.tar.extractfile(tarmember))
+        self._update_existing_drive(line_array, tarmember.name)
+
+    def _try_to_remove_tarmember(self, line_array, new_tar, new_tarfile_loc):
+            try:
+                tarmember_to_remove = self.get_tarmember_name(line_array)
+                if tarmember_to_remove is not None:
+                    new_tar.getmember(tarmember_to_remove)
+                    os.system(
+                        'tar -vf ' + new_tarfile_loc + ' --delete "' + tarmember_to_remove + '"')
+            except:
+                print('Tarfile opening or its deletion had failed')
+                pass
+
+    def _get_new_tarfile_location(self):
+        return os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
+
+    def _get_line_array(self, line):
+        try:
+            return line.decode('utf-8').split('@')
+        except:
+            return line.split('@')
 
     def get_tarmember_name(self, line_array):
-        model = HddModels.objects.get_or_create(hdd_models_name=self.fileHeaderIndexes['Model'])[0]
-        hdd = Drives.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
-        return hdd.tar_member_name
+        drive = Drives.objects.filter(
+            hdd_serial=line_array[self.file_header_indexes['Serial number']],
+            f_hdd_models=HddModels.objects.get(hdd_models_name=self.file_header_indexes['Model'])
+        )[0]
+        return drive.tar_member_name
 
-    def _save_and_set_lots(self):
+    def _save_and_get_lots(self):
         try:
-            self.lot = Lots.objects.get(lot_name=self.lot_name)
+            return Lots.objects.get(lot_name=self.lot_name)
         except Lots.DoesNotExist:
-            self.lot = Lots(
+            return Lots.objects.create(
                 lot_name=self.lot_name,
                 date_of_lot=timezone.now().today().date()
             )
-            self.lot.save()
 
-    def getTxtFile(self):
+    def get_txt_file(self):
         for member in self.tar.getmembers():
             if '.txt' in member.name:
-                file = self.tar.extractfile(member)
-                return file
+                return self.tar.extractfile(member)
 
-    def getFirstLine(self, txtObject):
-        line = txtObject.readline()
-        return line.strip().decode('utf8')
+    def get_first_line(self, txt_object):
+        return txt_object.readline().strip().decode('utf8')
 
-    def isHeaderValid(self, line):
+    def is_header_valid(self, line):
+        """
+        :param line: first_line, which should represent file's header row.
+        :return: True if all required headers from self.headers are present in line, returns True, else False.
+        """
         for header in self.headers:
             if header not in line:
                 return False
         return True
 
-    def getFileHeaderIndexes(self, file_headers):
+    def get_file_header_indexes(self, file_headers):
+        """
+        :param file_headers: Headers present in the file.
+        :return: Dictionary of header and index position's pair, of a required columns.
+        """
         fileHeaderIndexes = dict()
-        for i in range(len(self.headers)):
-            fileHeaderIndexes[self.headers[i]] = file_headers.index(self.headers[i])
+        for value in self.headers:
+            fileHeaderIndexes[value] = file_headers.index(value)
         return fileHeaderIndexes
 
-    def isValid(self, line_array):
-        if line_array[self.fileHeaderIndexes['Health']].replace("%", "").strip().isdigit() and line_array[self.fileHeaderIndexes['Power_On']].strip().isdigit():
-            return True
-        return False
+    def is_valid(self, line_array):
+        """
+        :param line_array: list of strings to process.
+        :return: True if health is number, with possible percentage sign and Power_on is number, else False
+        """
+        return line_array[self.file_header_indexes['Health']].replace("%", "").strip().isdigit() and line_array[self.file_header_indexes['Power_On']].strip().isdigit()
 
     def get_tar_member_by_serial(self, serial):
+        """
+        :param serial: Drive's serial to look for in Tar.
+        :return: tarfile if exists or None if doesn't.
+        """
         for member in self.tar.getmembers():
             if '(S-N ' + serial + ')' in member.name:
                 return member
         return None
 
-    def _hdd_exists(self, line_array):
-        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
-        hdd = Drives.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)
-        return hdd.exists()
+    def _drive_exists(self, line_array):
+        """
+        :param line_array: list of strings to process.
+        :return: True/False, whether such drive with such serial and model exists or not.
+        """
+        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.file_header_indexes['Model']])[0]
+        drive = Drives.objects.filter(
+            hdd_serial=line_array[self.file_header_indexes['Serial number']],
+            f_hdd_models=model
+        )
+        return drive.exists()
 
-    def _save_new_hdd(self, line_array, filename):
-        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
-        size = HddSizes.objects.get_or_create(hdd_sizes_name=line_array[self.fileHeaderIndexes['Capacity']])[0]
-        lock_state = LockState.objects.get_or_create(lock_state_name=line_array[self.fileHeaderIndexes['Lock']])[0]
-        speed = Speed.objects.get_or_create(speed_name=line_array[self.fileHeaderIndexes['Speed']])[0]
-        form_factor = FormFactor.objects.get_or_create(form_factor_name=line_array[self.fileHeaderIndexes['Size']])[0]
-        hdd = Drives(
-            hdd_serial=line_array[self.fileHeaderIndexes['Serial number']],
-            health=line_array[self.fileHeaderIndexes['Health']].replace("%", ""),
-            days_on=line_array[self.fileHeaderIndexes['Power_On']],
+    def _save_new_drive(self, line_array, filename):
+        """
+        :param line_array: list of strings to process.
+        :param filename: filename of tarred pdf file.
+        :return: None is returned always.
+        """
+        Drives.objects.create(
+            hdd_serial=line_array[self.file_header_indexes['Serial number']],
+            health=line_array[self.file_header_indexes['Health']].replace("%", ""),
+            days_on=line_array[self.file_header_indexes['Power_On']],
             tar_member_name=filename,
             f_lot=self.lot,
-            f_hdd_models=model,
-            f_hdd_sizes=size,
-            f_lock_state=lock_state,
-            f_speed=speed,
-            f_form_factor=form_factor
+            f_hdd_models=HddModels.objects.get_or_create(
+                hdd_models_name=line_array[self.file_header_indexes['Model']]
+            )[0],
+            f_hdd_sizes=HddSizes.objects.get_or_create(
+                hdd_sizes_name=line_array[self.file_header_indexes['Capacity']]
+            )[0],
+            f_lock_state=LockState.objects.get_or_create(
+                lock_state_name=line_array[self.file_header_indexes['Lock']]
+            )[0],
+            f_speed=Speed.objects.get_or_create(
+                speed_name=line_array[self.file_header_indexes['Speed']]
+            )[0],
+            f_form_factor=FormFactor.objects.get_or_create(
+                form_factor_name=line_array[self.file_header_indexes['Size']]
+            )[0]
         )
-        hdd.save()
 
-    def _update_existing_hdd_without_file(self, line_array):
-        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
-        hdd = Drives.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
-        size = self._save_and_get_size(line_array[self.fileHeaderIndexes['Capacity']])
-        lock_state = self._save_and_get_lock_state(line_array[self.fileHeaderIndexes['Lock']])
-        speed = self._save_and_get_speed(line_array[self.fileHeaderIndexes['Speed']])
-        form_factor = self._save_and_get_form_factor(line_array[self.fileHeaderIndexes['Size']])
-        hdd.f_hdd_sizes = size
-        hdd.f_lock_state = lock_state
-        hdd.f_speed = speed
-        hdd.f_form_factor = form_factor
-        hdd.health = line_array[self.fileHeaderIndexes['Health']].replace("%", "")
-        hdd.days_on = line_array[self.fileHeaderIndexes['Power_On']]
-        hdd.f_lot = self.lot
-        hdd.save()
-
-    def _update_existing_hdd(self, line_array, filename):
-        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
-        hdd = Drives.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)[0]
-        size = self._save_and_get_size(line_array[self.fileHeaderIndexes['Capacity']])
-        lock_state = self._save_and_get_lock_state(line_array[self.fileHeaderIndexes['Lock']])
-        speed = self._save_and_get_speed(line_array[self.fileHeaderIndexes['Speed']])
-        form_factor = self._save_and_get_form_factor(line_array[self.fileHeaderIndexes['Size']])
-        hdd.f_hdd_sizes = size
-        hdd.f_lock_state = lock_state
-        hdd.f_speed = speed
-        hdd.f_form_factor = form_factor
-        hdd.health = line_array[self.fileHeaderIndexes['Health']].replace("%", "")
-        hdd.days_on = line_array[self.fileHeaderIndexes['Power_On']]
-        hdd.tar_member_name = filename
-        hdd.f_lot = self.lot
-        hdd.save()
+    def _update_existing_drive(self, line_array, filename=None):
+        """
+        :param line_array: list of strings to process.
+        :param filename: filename is passed only if drive has coresponding tarred pdf file to it.
+        :return: None is returned always.
+        """
+        drive = Drives.objects.filter(
+            hdd_serial=line_array[self.file_header_indexes['Serial number']],
+            f_hdd_models=HddModels.objects.get_or_create(
+                hdd_models_name=line_array[self.file_header_indexes['Model']]
+            )[0]
+        )[0]
+        drive.f_hdd_sizes = HddSizes.objects.get_or_create(
+            hdd_sizes_name=line_array[self.file_header_indexes['Capacity']]
+        )[0]
+        drive.f_lock_state = LockState.objects.get_or_create(
+            lock_state_name=line_array[self.file_header_indexes['Lock']]
+        )[0]
+        drive.f_speed = Speed.objects.get_or_create(
+            speed_name=line_array[self.file_header_indexes['Speed']]
+        )[0]
+        drive.f_form_factor = FormFactor.objects.get_or_create(
+            form_factor_name=line_array[self.file_header_indexes['Size']]
+        )[0]
+        drive.health = line_array[self.file_header_indexes['Health']].replace("%", "")
+        drive.days_on = line_array[self.file_header_indexes['Power_On']]
+        if filename:
+            drive.tar_member_name = filename
+        drive.f_lot = self.lot
+        drive.save()
 
 
 class PDFViewer:
