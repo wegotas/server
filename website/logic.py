@@ -693,61 +693,61 @@ class AbstractDataFileGenerator(ABC):
 
     @staticmethod
     def _get_cpu_name(computer):
-        if computer.is5th_version():
-            computer_processors = Computerprocessors.objects.filter(f_id_computer=computer)
-            lst = []
-            for computer_processor in computer_processors:
-                string = computer_processor.f_id_processor.f_manufacturer.manufacturer_name + ' ' + computer_processor.f_id_processor.model_name + ' ' + computer_processor.f_id_processor.stock_clock
-                lst.append(string)
-            return ', '.join(lst).replace('Intel Intel', 'Intel').replace(' GHz', '')
         try:
+            if computer.is5th_version():
+                computer_processors = Computerprocessors.objects.filter(f_id_computer=computer)
+                lst = []
+                for computer_processor in computer_processors:
+                    string = computer_processor.f_id_processor.f_manufacturer.manufacturer_name + ' ' + computer_processor.f_id_processor.model_name + ' ' + computer_processor.f_id_processor.stock_clock
+                    lst.append(string)
+                return ', '.join(lst).replace('Intel Intel', 'Intel').replace(' GHz', '')
             return computer.f_cpu.cpu_name
         except:
             return "N/A"
 
     @staticmethod
     def _get_ram_size(computer):
-        if computer.is5th_version():
-            ram_to_comp = RamToComp.objects.filter(f_id_computer_ram_to_com=computer)[0]
-            return computer.f_ram_size.ram_size_text + ' ' + ram_to_comp.f_id_ram_ram_to_com.type
         try:
+            if computer.is5th_version():
+                ram_to_comp = RamToComp.objects.filter(f_id_computer_ram_to_com=computer)[0]
+                return computer.f_ram_size.ram_size_text + ' ' + ram_to_comp.f_id_ram_ram_to_com.type
             return computer.f_ram_size.ram_size_text
         except:
             return "N/A"
 
     @staticmethod
     def _get_gpu_name(computer):
-        if computer.is5th_version():
-            computer_gpus = Computergpus.objects.filter(f_id_computer=computer)
-            lst = []
-            for computer_gpu in computer_gpus:
-                string = computer_gpu.f_id_gpu.f_id_manufacturer.manufacturer_name + ' ' + computer_gpu.f_id_gpu.gpu_name
-                if 'Intel HD' in string:
-                    string = 'Intel HD'
-                lst.append(string)
-            return ', '.join(lst)
         try:
+            if computer.is5th_version():
+                computer_gpus = Computergpus.objects.filter(f_id_computer=computer)
+                lst = []
+                for computer_gpu in computer_gpus:
+                    string = computer_gpu.f_id_gpu.f_id_manufacturer.manufacturer_name + ' ' + computer_gpu.f_id_gpu.gpu_name
+                    if 'Intel HD' in string:
+                        string = 'Intel HD'
+                    lst.append(string)
+                return ', '.join(lst)
             return computer.f_gpu.gpu_name
         except:
             return "N/A"
 
     @staticmethod
     def _get_hdd_size(computer):
-        if computer.is5th_version():
-            computer_drives = Computerdrives.objects.filter(f_id_computer=computer)
-            lst = []
-            for computer_drive in computer_drives:
-                type = ''
-                if computer_drive.f_drive.f_speed.speed_name.isdigit():
-                    type = 'HDD'
-                else:
-                    type = computer_drive.f_drive.f_speed.speed_name
-                string = type + ': ' + computer_drive.f_drive.f_hdd_sizes.hdd_sizes_name
-                lst.append(string)
-            if len(lst) == 0:
-                return 'N/A'
-            return ', '.join(lst)
         try:
+            if computer.is5th_version():
+                computer_drives = Computerdrives.objects.filter(f_id_computer=computer)
+                lst = []
+                for computer_drive in computer_drives:
+                    type = ''
+                    if computer_drive.f_drive.f_speed.speed_name.isdigit():
+                        type = 'HDD'
+                    else:
+                        type = computer_drive.f_drive.f_speed.speed_name
+                    string = type + ': ' + computer_drive.f_drive.f_hdd_sizes.hdd_sizes_name
+                    lst.append(string)
+                if len(lst) == 0:
+                    return 'N/A'
+                return ', '.join(lst)
             return computer.f_hdd_size.hdd_sizes_name
         except:
             return "N/A"
@@ -760,13 +760,16 @@ class AbstractDataFileGenerator(ABC):
         :param int_index: computer's index in database.
         :return: string of computer's supposed expected lasting time on battery.
         """
-        bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=int_index)
-        if len(bat_to_comps) > 2:
-            return "~1h."
-        elif len(bat_to_comps) < 1:
-            return "No"
-        else:
-            return str(bat_to_comps[0].f_bat_bat_to_com.expected_time)
+        try:
+            bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=int_index)
+            if len(bat_to_comps) > 2:
+                return "~1h."
+            elif len(bat_to_comps) < 1:
+                return "No"
+            else:
+                return str(bat_to_comps[0].f_bat_bat_to_com.expected_time)
+        except:
+            return "N/A"
 
     @staticmethod
     def _get_diagonal(computer):
@@ -3807,7 +3810,12 @@ class ComputerSingleSerialPrinter:
         return computer.computer_serial
 
     def print(self):
+        """
+        In case one row should be printed print_as_singular() should be called.
+        In case of two rows call print_as_pairs()
+        """
         self.qr_gen = Qrgenerator(self.base_url, [self.full_serial])
+        # self.qr_gen.print_as_pairs()
         self.qr_gen.print_as_singular()
 
 
@@ -3824,8 +3832,13 @@ class ComputerMultipleSerialPrinter:
         return computer.computer_serial
 
     def print(self):
+        """
+        In case one row should be printed print_as_singular() should be called.
+        In case of two rows call print_as_pairs()
+        """
         self.qr_gen = Qrgenerator(self.base_url, self.final_serials)
-        self.qr_gen.print_as_pairs()
+        # self.qr_gen.print_as_pairs()
+        self.qr_gen.print_as_singular()
 
 
 class Qrgenerator:
