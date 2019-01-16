@@ -157,7 +157,7 @@ def process_data2(request):
 @csrf_exempt
 def process_pictures(request, int_index):
     print(int_index)
-    print(request.FILES)
+    # print(request.FILES)
     variable = request.FILES
 
 

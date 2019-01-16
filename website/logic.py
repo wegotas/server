@@ -446,6 +446,7 @@ class AutoFiltersFromComputers:
         self.screens = computers.values_list('f_diagonal__diagonal_text', flat=True).distinct() \
             .order_by('f_diagonal__diagonal_text')
         self.others = computers.values_list('other', flat=True).distinct().order_by('other')
+        self.testers = computers.values_list('f_tester__tester_name', flat=True).distinct().order_by('f_tester__tester_name')
 
 
 class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
@@ -1360,7 +1361,8 @@ class AutoFilter:
         implemented in filter() method.
     """
 
-    keys = ('man-af', 'sr-af', 'scr-af', 'ram-af', 'gpu-af', 'mod-af', 'cpu-af', 'oth-af', 'cli-af', 'dos-af', 'pri-af')
+    keys = ('man-af', 'sr-af', 'scr-af', 'ram-af', 'gpu-af', 'mod-af', 'cpu-af', 'oth-af', 'cli-af', 'dos-af', 'pri-af',
+            'tes-af')
 
     def __init__(self, data_dict):
         """
@@ -1400,6 +1402,8 @@ class AutoFilter:
                 computers = computers.filter(f_sale__f_id_client__client_name__in=value)
             elif key == 'dos-af':
                 computers = computers.filter(f_sale__date_of_sale__in=value)
+            elif key == 'tes-af':
+                computers = computers.filter(f_tester__tester_name__in=value)
             elif key == 'pri-af':
                 for i in range(len(value)):
                     if value[i] == 'None':
@@ -2881,6 +2885,13 @@ class AlternativeTarProcessor:
             )
 
     def _process_nonexistant_hdd(self, tarmember, new_tar, line_array):
+        """
+        Calls to save new drive if has associated tar member.
+        :param tarmember: uploaded tar file's pdf member.
+        :param new_tar: tar created for this class.
+        :param line_array:list of strings to process.
+        :return:
+        """
         if tarmember:
             new_tar.addfile(tarmember, self.tar.extractfile(tarmember))
             self._save_new_drive(line_array, tarmember.name)
@@ -2892,6 +2903,12 @@ class AlternativeTarProcessor:
             )
 
     def _process_tarmember_with_existing_hdd(self, line_array, new_tar, new_tarfile_loc, tarmember):
+        """
+        :param line_array: list of strings to process.
+        :param new_tar: tar created for this class.
+        :param new_tarfile_loc:
+        :param tarmember:  Location where new_tar is located.
+        """
         self._try_to_remove_tarmember(
             line_array=line_array,
             new_tar=new_tar,
@@ -2901,26 +2918,43 @@ class AlternativeTarProcessor:
         self._update_existing_drive(line_array, tarmember.name)
 
     def _try_to_remove_tarmember(self, line_array, new_tar, new_tarfile_loc):
-            try:
-                tarmember_to_remove = self.get_tarmember_name(line_array)
-                if tarmember_to_remove is not None:
-                    new_tar.getmember(tarmember_to_remove)
-                    os.system(
-                        'tar -vf ' + new_tarfile_loc + ' --delete "' + tarmember_to_remove + '"')
-            except:
-                print('Tarfile opening or its deletion had failed')
-                pass
+        """
+        Removes tarmember out of new tar file, to avoid file duplications in new tar file.
+        :param line_array: list of strings to process.
+        :param new_tar: tar created for this class.
+        :param new_tarfile_loc: Location where new_tar is located.
+        """
+        try:
+            tarmember_to_remove = self.get_tarmember_name(line_array)
+            if tarmember_to_remove is not None:
+                new_tar.getmember(tarmember_to_remove)
+                os.system('tar -vf ' + new_tarfile_loc + ' --delete "' + tarmember_to_remove + '"')
+        except:
+            print('Tarfile opening or its deletion had failed')
+            pass
 
     def _get_new_tarfile_location(self):
+        """
+        :return: full path name wher tarfiles should be saved.
+        """
         return os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
 
     def _get_line_array(self, line):
+        """
+        :param line: string to process.
+        :return: convert line to utf-8 if it's not, and returns it as line_array.
+        """
         try:
             return line.decode('utf-8').split('@')
         except:
             return line.split('@')
 
     def get_tarmember_name(self, line_array):
+        """
+        Returns tarmember name based on line_array's serial number and model.
+        :param line_array: list of strings to process.
+        :return: name of tarmember
+        """
         drive = Drives.objects.filter(
             hdd_serial=line_array[self.file_header_indexes['Serial number']],
             f_hdd_models=HddModels.objects.get(hdd_models_name=self.file_header_indexes['Model'])
@@ -2928,6 +2962,10 @@ class AlternativeTarProcessor:
         return drive.tar_member_name
 
     def _save_and_get_lots(self):
+        """
+        if Lot exists with self.lot_name returns existing one, if not creates new one and returns that one.
+        :return: Lots object
+        """
         try:
             return Lots.objects.get(lot_name=self.lot_name)
         except Lots.DoesNotExist:
@@ -2937,11 +2975,18 @@ class AlternativeTarProcessor:
             )
 
     def get_txt_file(self):
+        """
+        :return: first found txt file in tar.
+        """
         for member in self.tar.getmembers():
             if '.txt' in member.name:
                 return self.tar.extractfile(member)
 
     def get_first_line(self, txt_object):
+        """
+        :param txt_object: text file as an object
+        :return: first line of text file
+        """
         return txt_object.readline().strip().decode('utf8')
 
     def is_header_valid(self, line):

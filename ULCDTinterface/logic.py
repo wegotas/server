@@ -385,168 +385,198 @@ class ComputerRecord2:
 
     def _many_to_many_connection_save(self, data_dict):
         def _save_batteries(battery_dict):
-            # print(battery_dict)
+            print(battery_dict)
             BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer).delete()
             if battery_dict:
                 for id in range(self._get_highest_first_number(battery_dict)):
-                    battery = Batteries.objects.get_or_create(
-                        serial=battery_dict[str(id + 1) + ' Battery']['Serial'],
-                        wear_out=battery_dict[str(id + 1) + ' Battery']['Wear Level'],
-                        expected_time=battery_dict[str(id + 1) + ' Battery']['Estimated'],
-                        model=battery_dict[str(id + 1) + ' Battery']['Model'],
-                        maximum_wh=battery_dict[str(id + 1) + ' Battery']['Maximum Wh'],
-                        factory_wh=battery_dict[str(id + 1) + ' Battery']['Factory Wh']
-                    )[0]
-                    BatToComp.objects.get_or_create(
-                        f_id_computer_bat_to_com=self.computer,
-                        f_bat_bat_to_com=battery
-                    )
+                    if battery_dict[str(id + 1) + ' Battery']:
+                        battery = Batteries.objects.get_or_create(
+                            serial=battery_dict[str(id + 1) + ' Battery']['Serial'],
+                            wear_out=battery_dict[str(id + 1) + ' Battery']['Wear Level'],
+                            expected_time=battery_dict[str(id + 1) + ' Battery']['Estimated'],
+                            model=battery_dict[str(id + 1) + ' Battery']['Model'],
+                            maximum_wh=battery_dict[str(id + 1) + ' Battery']['Maximum Wh'],
+                            factory_wh=battery_dict[str(id + 1) + ' Battery']['Factory Wh']
+                        )[0]
+                        BatToComp.objects.get_or_create(
+                            f_id_computer_bat_to_com=self.computer,
+                            f_bat_bat_to_com=battery
+                        )
 
         def _save_rams(ram_dict):
-            # print(ram_dict)
+            print(ram_dict)
             RamToComp.objects.filter(f_id_computer_ram_to_com=self.computer).delete()
             for id in range(self._get_highest_first_number(ram_dict)):
                 if str(id + 1) + ' Stick' in ram_dict:
-                    ram = Rams.objects.get_or_create(
-                        ram_serial=ram_dict[str(id + 1) + ' Stick']['Serial'],
-                        capacity=ram_dict[str(id + 1) + ' Stick']['Capacity'],
-                        clock=ram_dict[str(id + 1) + ' Stick']['Clock'],
-                        type=ram_dict['Type']
-                    )[0]
-                    RamToComp.objects.get_or_create(
-                        f_id_computer_ram_to_com=self.computer,
-                        f_id_ram_ram_to_com=ram
-                    )
+                    if ram_dict[str(id + 1) + ' Stick']:
+                        ram = Rams.objects.get_or_create(
+                            ram_serial=ram_dict[str(id + 1) + ' Stick']['Serial'],
+                            capacity=ram_dict[str(id + 1) + ' Stick']['Capacity'],
+                            clock=ram_dict[str(id + 1) + ' Stick']['Clock'],
+                            type=ram_dict['Type']
+                        )[0]
+                        RamToComp.objects.get_or_create(
+                            f_id_computer_ram_to_com=self.computer,
+                            f_id_ram_ram_to_com=ram
+                        )
 
         def _save_gpus(gpu_dict):
-            # print(gpu_dict)
+            print(gpu_dict)
             Computergpus.objects.filter(f_id_computer=self.computer).delete()
             for id in range(self._get_highest_first_number(gpu_dict)):
                 if str(id + 1) + ' Device' in gpu_dict:
-                    manufacturer = Manufacturers.objects.get_or_create(
-                        manufacturer_name=gpu_dict[str(id + 1) + ' Device']['Manufacturer']
-                    )[0]
-                    gpu = Gpus.objects.get_or_create(
-                        gpu_name=gpu_dict[str(id + 1) + ' Device']['Model'],
-                        f_id_manufacturer=manufacturer
-                    )[0]
-                    Computergpus.objects.get_or_create(
-                        f_id_gpu=gpu,
-                        f_id_computer=self.computer
-                    )
+                    if gpu_dict[str(id + 1) + ' Device']:
+                        if gpu_dict[str(id + 1) + ' Device']:
+                            manufacturer = Manufacturers.objects.get_or_create(
+                                manufacturer_name=gpu_dict[str(id + 1) + ' Device']['Manufacturer']
+                            )[0]
+                            gpu = Gpus.objects.get_or_create(
+                                gpu_name=gpu_dict[str(id + 1) + ' Device']['Model'],
+                                f_id_manufacturer=manufacturer
+                            )[0]
+                            Computergpus.objects.get_or_create(
+                                f_id_gpu=gpu,
+                                f_id_computer=self.computer
+                            )
 
         def _save_processors(processor_dict):
-            # print(processor_dict)
+            print(processor_dict)
             Computerprocessors.objects.filter(f_id_computer=self.computer).delete()
             for id in range(self._get_highest_first_number(processor_dict)):
                 if str(id + 1) + ' Processor' in processor_dict:
-                    manufacturer = Manufacturers.objects.get_or_create(
-                        manufacturer_name=processor_dict[str(id + 1) + ' Processor']['Manufacturer']
-                    )[0]
-                    processor = Processors.objects.get_or_create(
-                        f_manufacturer=manufacturer,
-                        model_name=processor_dict[str(id + 1) + ' Processor']['Model'],
-                        stock_clock=processor_dict[str(id + 1) + ' Processor']['Stock Clock'],
-                        max_clock=processor_dict[str(id + 1) + ' Processor']['Maximum Clock'],
-                        cores=int(processor_dict[str(id + 1) + ' Processor']['Cores Amount']),
-                        threads=int(processor_dict[str(id + 1) + ' Processor']['Threads Amount'])
-                    )[0]
-                    Computerprocessors.objects.get_or_create(
-                        f_id_computer=self.computer,
-                        f_id_processor=processor
-                    )
+                    if processor_dict[str(id + 1) + ' Processor']:
+                        manufacturer = Manufacturers.objects.get_or_create(
+                            manufacturer_name=processor_dict[str(id + 1) + ' Processor']['Manufacturer']
+                        )[0]
+                        processor = Processors.objects.get_or_create(
+                            f_manufacturer=manufacturer,
+                            model_name=processor_dict[str(id + 1) + ' Processor']['Model'],
+                            stock_clock=processor_dict[str(id + 1) + ' Processor']['Stock Clock'],
+                            max_clock=processor_dict[str(id + 1) + ' Processor']['Maximum Clock'],
+                            cores=int(processor_dict[str(id + 1) + ' Processor']['Cores Amount']),
+                            threads=int(processor_dict[str(id + 1) + ' Processor']['Threads Amount'])
+                        )[0]
+                        Computerprocessors.objects.get_or_create(
+                            f_id_computer=self.computer,
+                            f_id_processor=processor
+                        )
 
         def _save_drives(drives_dict):
-            # print(drives_dict)
+            print(drives_dict)
             Computerdrives.objects.filter(f_id_computer=self.computer).delete()
             if drives_dict:
                 for id in range(self._get_highest_first_number(drives_dict)):
                     if str(id + 1) + ' Drive' in drives_dict:
-                        drive = Drives.objects.get_or_create(
-                            hdd_serial=drives_dict[str(id + 1) + ' Drive']['Serial'],
-                            health=drives_dict[str(id + 1) + ' Drive']['Health'].replace("%", ""),
-                            days_on=drives_dict[str(id + 1) + ' Drive']['Power On'],
-                            f_hdd_models=HddModels.objects.get_or_create(
-                                hdd_models_name=drives_dict[str(id + 1) + ' Drive']['Model']
-                            )[0],
-                            f_hdd_sizes=HddSizes.objects.get_or_create(
-                                hdd_sizes_name=drives_dict[str(id + 1) + ' Drive']['Capacity']
-                            )[0],
-                            f_lock_state=LockState.objects.get_or_create(
-                                lock_state_name=drives_dict[str(id + 1) + ' Drive']['Locked']
-                            )[0],
-                            f_speed=Speed.objects.get_or_create(
-                                speed_name=drives_dict[str(id + 1) + ' Drive']['Speed']
-                            )[0],
-                            f_form_factor=FormFactor.objects.get_or_create(
-                                form_factor_name=drives_dict[str(id + 1) + ' Drive']['Size']
+                        if drives_dict[str(id + 1) + ' Drive']:
+                            drive = Drives.objects.get_or_create(
+                                hdd_serial=drives_dict[str(id + 1) + ' Drive']['Serial'],
+                                health=drives_dict[str(id + 1) + ' Drive']['Health'].replace("%", ""),
+                                days_on=drives_dict[str(id + 1) + ' Drive']['Power On'],
+                                f_hdd_models=HddModels.objects.get_or_create(
+                                    hdd_models_name=drives_dict[str(id + 1) + ' Drive']['Model']
+                                )[0],
+                                f_hdd_sizes=HddSizes.objects.get_or_create(
+                                    hdd_sizes_name=drives_dict[str(id + 1) + ' Drive']['Capacity']
+                                )[0],
+                                f_lock_state=LockState.objects.get_or_create(
+                                    lock_state_name=drives_dict[str(id + 1) + ' Drive']['Locked']
+                                )[0],
+                                f_speed=Speed.objects.get_or_create(
+                                    speed_name=drives_dict[str(id + 1) + ' Drive']['Speed']
+                                )[0],
+                                f_form_factor=FormFactor.objects.get_or_create(
+                                    form_factor_name=drives_dict[str(id + 1) + ' Drive']['Size']
+                                )[0]
                             )[0]
-                        )[0]
-                        Computerdrives.objects.get_or_create(
-                            f_id_computer=self.computer,
-                            f_drive=drive
-                        )
+                            Computerdrives.objects.get_or_create(
+                                f_id_computer=self.computer,
+                                f_drive=drive
+                            )
 
         def _save_observations(observation_dict):
-            # print(observation_dict)
-            Computerobservations.objects.filter(f_id_computer=self.computer).delete()
-            for category_string, value in observation_dict.items():
-                if isinstance(value, dict):
-                    for subcategory_string, shortcode_strings in value.items():
-                        observations = Observations.objects.filter(
-                            f_id_observation_category__category_name=category_string,
-                            f_id_observation_subcategory__subcategory_name=subcategory_string,
-                            shortcode__in=shortcode_strings
-                        )
-                        for observation in observations:
-                            Computerobservations.objects.create(
-                                f_id_computer=self.computer,
-                                f_id_observation=observation
+            print(observation_dict)
+            if observation_dict:
+                Computerobservations.objects.filter(f_id_computer=self.computer).delete()
+                for category_string, value in observation_dict.items():
+                    if isinstance(value, dict):
+                        for subcategory_string, shortcode_strings in value.items():
+                            observations = Observations.objects.filter(
+                                f_id_observation_category__category_name=category_string,
+                                f_id_observation_subcategory__subcategory_name=subcategory_string,
+                                shortcode__in=shortcode_strings
                             )
-                            print(Computerobservations)
+                            for observation in observations:
+                                Computerobservations.objects.create(
+                                    f_id_computer=self.computer,
+                                    f_id_observation=observation
+                                )
 
         print("Start of many to many")
-        _save_batteries(data_dict["Batteries"])
-        _save_rams(data_dict["RAM"])
-        _save_gpus(data_dict["GPU"])
-        _save_processors(data_dict["CPU"])
-        _save_drives(data_dict["Drives"])
-        _save_observations(data_dict['Observations'])
+        try:
+            print('before _save_batteries')
+            _save_batteries(data_dict["Batteries"])
+        except:
+            pass
+        try:
+            print('before _save_rams')
+            _save_rams(data_dict["RAM"])
+        except:
+            pass
+        try:
+            print('before _save_gpus')
+            _save_gpus(data_dict["GPU"])
+        except:
+            pass
+        try:
+            print('before _save_processors')
+            _save_processors(data_dict["CPU"])
+        except:
+            pass
+        try:
+            print('before _save_drives')
+            _save_drives(data_dict["Drives"])
+        except:
+            pass
+        try:
+            print('before _save_observations')
+            _save_observations(data_dict['Observations'])
+        except:
+            pass
         print("End of many to many")
 
     def _one_to_many_connection_save(self, data_dict):
         print("start of _one_to_many_connection_save")
-        # print("before self.category")
+        print("before self.category")
         self.category = Categories.objects.get(category_name=data_dict['Log Information']["Category"])
-        # print("before self.type ")
+        print("before self.type ")
         self.type = Types.objects.get(type_name=data_dict['System Info']["Type"])
-        # print("before self.tester")
+        print("before self.tester")
         self.tester = Testers.objects.get(tester_name=data_dict['Log Information']["Tester"])
-        # print("before self.bios")
+        print("before self.bios")
         self.bios = Bioses.objects.get_or_create(bios_text=data_dict['System Info']["BIOS"])[0]
-        # print("before self.cpu")
+        print("before self.cpu")
         self.cpu = Cpus.objects.get_or_create(cpu_name=data_dict['CPU']['1 Processor']['Model'])[0]
-        # print("before self.camera_option")
+        print("before self.camera_option")
         self.camera_option = CameraOptions.objects.get_or_create(option_name=data_dict['Hardware']["Additional"]["Camera"])[0]
-        # print("before self.diagonal")
+        print("before self.diagonal")
         self.diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict['Display']['Diagonal'])[0]
-        # print("before self.gpu")
+        print("before self.gpu")
         self.gpu = Gpus.objects.get_or_create(gpu_name='N/A')[0]
-        # print("before self.hddsize")
+        print("before self.hddsize")
         self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name='N/A')
-        # print("before self.license")
+        print("before self.license")
         self.license = Licenses.objects.get_or_create(license_name=data_dict['Others']["License"])[0]
-        # print("before self.manufacturer")
+        print("before self.manufacturer")
         self.manufacturer = Manufacturers.objects.get_or_create(
             manufacturer_name=data_dict['System Info']["Manufacturer"]
         )[0]
-        # print("before self.model")
+        print("before self.model")
         self.model = Models.objects.get_or_create(model_name=data_dict['System Info']['Model'])[0]
-        # print("before self.motherboard_serial")
+        print("before self.motherboard_serial")
         self.motherboard_serial = data_dict['System Info']["MB Serial"]
-        # print("before self.ramsize")
+        print("before self.ramsize")
         self.ramsize = RamSizes.objects.get_or_create(ram_size_text=data_dict['RAM']['Total'])[0]
-        # print("before self.timenow")
+        print("before self.timenow")
         self.timenow = timezone.now()
 
         resolution = Resolutions.objects.get_or_create(resolution_text=data_dict["Display"]["Resolution"])[0]
@@ -614,7 +644,7 @@ class Computer_data_dict_builder:
         others_dict = dict()
         # others_dict["Camera"] = get_camera(computer)
         others_dict["License"] = computer.f_license.license_name
-        others_dict["Previuos tester"] = computer.f_tester.tester_name
+        others_dict["Previous tester"] = computer.f_tester.tester_name
         others_dict["Category"] = computer.f_category.category_name
         others_dict["isSold"] = get_is_sold(computer)
         others_dict["Other"] = computer.other

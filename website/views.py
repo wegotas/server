@@ -1290,9 +1290,10 @@ def print_computer_qr(request, int_index):
     print('print_computer_qr')
     if request.method == 'POST':
         print('POST method')
-        variable = JSONParser().parse(request)
+        # variable = JSONParser().parse(request)
         # variable = json.loads(request.body)
-        cssp = ComputerSingleSerialPrinter(variable)
+        # cssp = ComputerSingleSerialPrinter(variable)
+        cssp = ComputerSingleSerialPrinter(JSONParser().parse(request))
         cssp.print()
     if request.method == 'GET':
         print('GET method')
