@@ -182,7 +182,6 @@ class AFManager {
     var mainURL = splittedArray[0];
     var attributesString = splittedArray[1];
     if (attributesString == null) {
-        console.log(mainURL + '?' + this.getAFURLaddon());
     	return mainURL + '?' + this.getAFURLaddon();
     }
     else {
