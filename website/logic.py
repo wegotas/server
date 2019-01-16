@@ -2812,9 +2812,16 @@ class AlternativeTarProcessor:
 
     @property
     def message(self):
+        """
+        Method called from view to return what failed to html response.
+        """
         return self.text_to_write.text
 
     def process_data(self):
+        """
+        Opens logfile failed.log to keep it in case self.text_to_write should be written into.
+        Initiation of whole data processing within the class.
+        """
         with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
             self.text_to_write.add('* importing lot ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *')
             if self.is_header_valid(self.firstline):
@@ -2835,12 +2842,24 @@ class AlternativeTarProcessor:
                 self.try_processing_line(line=line, new_tar=new_tar, new_tarfile_loc=new_tarfile_loc)
 
     def try_processing_line(self, line, new_tar, new_tarfile_loc):
+        """
+        :param line: line in a file representing one drive.
+        :param new_tar: tar created for this class.
+        :param new_tarfile_loc: Location where new_tar is located.
+        """
         try:
             self._process_line(line=line, new_tar=new_tar, new_tarfile_loc=new_tarfile_loc)
         except Exception as e:
             self.text_to_write.add(string_to_add='\r\n Error: ' + str(e) + ' \r\n', should_write=True)
             
     def _process_line(self, line, new_tar, new_tarfile_loc):
+        """
+        Processes one line of txt file representing drive.
+        :param line: line in a file representing one drive.
+        :param new_tar: tar created for this class.
+        :param new_tarfile_loc: Location where new_tar is located.
+        :return:
+        """
         line_array = self._get_line_array(line)
         if self.is_valid(line_array):
             self._process_valid_line_array(
@@ -2855,6 +2874,12 @@ class AlternativeTarProcessor:
             )
 
     def _process_valid_line_array(self, line_array, new_tar, new_tarfile_loc):
+        """
+        :param line_array: list of strings to process.
+        :param new_tar: tar created for this class.
+        :param new_tarfile_loc: Location where new_tar is located.
+        :return:
+        """
         tarmember = self.get_tar_member_by_serial(line_array[self.file_header_indexes['Serial number']])
         if self._drive_exists(line_array):
             self._process_existing_hdd(
@@ -2867,6 +2892,12 @@ class AlternativeTarProcessor:
             self._process_nonexistant_hdd(line_array=line_array, new_tar=new_tar, tarmember=tarmember)
 
     def _process_existing_hdd(self, line_array, new_tar, new_tarfile_loc, tarmember):
+        """
+        :param line_array: list of strings to process.
+        :param new_tar: tar created for this class.
+        :param new_tarfile_loc: Location where new_tar is located.
+        :param tarmember: uploaded tar file's pdf member.
+        """
         if tarmember:
             self._process_tarmember_with_existing_hdd(
                 line_array=line_array,
@@ -2889,7 +2920,7 @@ class AlternativeTarProcessor:
         Calls to save new drive if has associated tar member.
         :param tarmember: uploaded tar file's pdf member.
         :param new_tar: tar created for this class.
-        :param line_array:list of strings to process.
+        :param line_array: list of strings to process.
         :return:
         """
         if tarmember:
@@ -2906,8 +2937,8 @@ class AlternativeTarProcessor:
         """
         :param line_array: list of strings to process.
         :param new_tar: tar created for this class.
-        :param new_tarfile_loc:
-        :param tarmember:  Location where new_tar is located.
+        :param new_tarfile_loc: Location where new_tar is located.
+        :param tarmember: uploaded tar file's pdf member.
         """
         self._try_to_remove_tarmember(
             line_array=line_array,
