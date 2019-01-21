@@ -23,9 +23,9 @@ def index(request):
     # isChargers = getIsChargers(request)
     isChargers = is_get_key_true(request, key='chargers')
     data_dict = request.GET.copy()
-    qty = getQty(data_dict)
-    page = getPage(data_dict)
-    keyword = getKeyword(data_dict)
+    qty = get_qty(data_dict)
+    page = get_page(data_dict)
+    keyword = get_keyword(data_dict)
     autoFilters = AutoFilter(data_dict)
     typcat = TypCat()
     so = SearchOptions()
@@ -405,21 +405,30 @@ def cat_change(request):
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
-    data = JSONParser().parse(request)
-    change_category_for_computers(data)
+    # data = JSONParser().parse(request)
+    change_category_for_computers(JSONParser().parse(request))
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def ord_assign(request):
+    """
+    This method is responsible for assigning computer_ids to a certain order.
+    :param request: request initiated by javascript client side.
+    :return: Nonsensical http response. Since this response should not be processed and only status code is reacted to.
+    """
     print("Mass ord_change")
     if request.method == 'POST':
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    assign_computers_to_order_using_dict(data)
+    order_name = next(iter(data))
+    order = Orders.objects.get(order_name=order_name)
+    for indx in data[order_name]:
+        compord = CompOrd.objects.create(is_ready=0, f_order_id_to_order=order)
+        Computers.objects.select_for_update().filter(id_computer=indx).update(f_id_comp_ord=compord)
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
@@ -787,6 +796,7 @@ def new_record(request):
 @csrf_exempt
 def cat_to_sold(request):
     print("cat_to_sold")
+    computers = Computers.objects.filter(id_computer__in=request.GET.copy().pop('id'))
     if request.method == 'POST':
         print("This was POST request")
         executor = ExecutorOfCatToSold(request.POST.copy())
@@ -794,7 +804,6 @@ def cat_to_sold(request):
             executor.write_to_database()
             return render(request, 'success.html')
         else:
-            computers = computers_for_cat_to_sold(request.GET.copy())
             template = loader.get_template('catToSold.html')
             return HttpResponse(
                 template.render(
@@ -807,7 +816,6 @@ def cat_to_sold(request):
             )
     if request.method == 'GET':
         print("This was GET request")
-        computers = computers_for_cat_to_sold(request.GET.copy())
         template = loader.get_template('catToSold.html')
         return HttpResponse(
             template.render(
@@ -884,7 +892,9 @@ def edit_order(request, int_index):
 def strip_order(request, int_index):
     def _strip_order_of_computer():
         computer = Computers.objects.get(id_computer=int_index)
+        print(computer)
         compord = CompOrd.objects.get(id_comp_ord=computer.f_id_comp_ord.id_comp_ord)
+        print(compord)
         computer.f_id_comp_ord = None
         computer.save()
         compord.delete()
@@ -905,7 +915,7 @@ def hdd_edit(request, int_index):
     hte = HddToEdit(int_index)
     if request.method == 'POST':
         print('POST method')
-        hte.process_edit(int_index, request.POST.copy())
+        hte.process_edit(request.POST.copy())
         return render(request, 'success.html')
     if request.method == 'GET':
         print('GET method')
@@ -939,21 +949,23 @@ def hdd_delete(request, int_index):
 def view_pdf(request, int_index):
     print('Index is: ' + str(int_index))
     print('view_pdf')
-    pv = PDFViewer(int_index)
+
     if request.method == 'POST':
         print('POST request')
     elif request.method == 'GET':
         print('GET request')
-        if pv.success:
-            return HttpResponse(pv.pdf_content, content_type='application/pdf')
-        else:
+        try:
+            hdd = Drives.objects.get(hdd_id=int_index)
+            tf = tarfile.open(os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), hdd.f_lot.lot_name + '.tar'))
+            pdf_content = tf.extractfile(tf.getmember(hdd.tar_member_name)).read()
+            return HttpResponse(pdf_content, content_type='application/pdf')
+        except:
             return render(
                 request,
                 'failure.html',
                 {'message': "Failed to fetch pdf.\r\nMost likely cause is that pdf is nonexistant."},
                 status=404
             )
-
 
 @csrf_exempt
 def hdd_order_content(request, int_index):
@@ -1052,6 +1064,7 @@ def hdd_orderAlt(request):
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             ahop = AlternativeHddOrderProcessor(request.FILES['document'])
+            ahop.process_data()
             if ahop.message != '':
                 return render(
                     request,
@@ -1167,7 +1180,7 @@ def serial_processing(request, serial):
     csp = ChargerSerialProcessor(serial)
     if request.method == 'POST':
         print('POST method')
-        csp.proccess()
+        csp.process()
         if csp.message == '':
             return render(request, 'success.html')
         else:
@@ -1179,7 +1192,7 @@ def serial_processing(request, serial):
     if request.method == 'GET':
         print('GET method')
         # csp.proccess()
-        if csp.check_serial_existance():
+        if csp.serial_exists():
             print('Such serial exists')
             ch = ChargerHolder(serial=serial)
             return render(

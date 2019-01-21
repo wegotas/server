@@ -25,7 +25,7 @@ import sys
 from abc import ABC
 
 
-class Bat_holder():
+class BatHolder:
     def __init__(self, index=1, id=0, serial="N/A", wear="N/A", time="N/A"):
         self.index = index
         self.id = id
@@ -42,7 +42,7 @@ def get_batteries(computer_id):
         for battery in batteries.iterator():
             i += 1
             if battery.f_bat_bat_to_com.serial != "N/A" and battery.f_bat_bat_to_com.wear_out != "N/A" and battery.f_bat_bat_to_com.expected_time != "N/A":
-                bat = Bat_holder(
+                bat = BatHolder(
                     index=i,
                     id=battery.id_bat_to_comp,
                     serial=battery.f_bat_bat_to_com.serial,
@@ -51,7 +51,7 @@ def get_batteries(computer_id):
                 )
                 bat_list.append(bat)
         if len(bat_list) == 0:
-            bat = Bat_holder()
+            bat = BatHolder()
             bat_list.append(bat)
     else:
         print("Batteries asociated with this computer do not exist")
@@ -542,21 +542,21 @@ def is_get_key_true(request, key):
             return False
 
 
-def getQty(data_dict):
+def get_qty(data_dict):
     if data_dict.get('qty') is None:
         return 10
     else:
         return int(data_dict.pop('qty')[0])
 
 
-def getPage(data_dict):
+def get_page(data_dict):
     if data_dict.get('page') is None:
         return 1
     else:
         return int(data_dict.pop('page')[0])
 
 
-def getKeyword(data_dict):
+def get_keyword(data_dict):
     if data_dict.get('keyword') is None or data_dict.get('keyword') == "":
         return None
     else:
@@ -992,11 +992,9 @@ def delete_tester(index):
 
 
 def get_observation_category_list():
-    query_set = Observationcategory.objects.all()
     lst = []
-    for member in query_set:
-        newItem = Item(member.id_observation_category, member.category_name)
-        lst.append(newItem)
+    for member in Observationcategory.objects.all():
+        lst.append(Item(item_id=member.id_observation_category, item_name=member.category_name))
     return lst
 
 
@@ -1017,11 +1015,9 @@ def edit_observation_category(data):
 
 
 def get_observation_subcategory_list():
-    query_set = Observationsubcategory.objects.all()
     lst = []
-    for member in query_set:
-        newItem = Item(member.id_observation_subcategory, member.subcategory_name)
-        lst.append(newItem)
+    for member in Observationsubcategory.objects.all():
+        lst.append(Item(item_id=member.id_observation_subcategory, item_name=member.subcategory_name))
     return lst
 
 
@@ -1458,15 +1454,7 @@ def get_query(query_string):
 
 
 def search(keyword, computers):
-    entry_query = get_query(keyword)
-    computers = computers.filter(entry_query)
-    return computers
-
-
-def computers_for_cat_to_sold(data_dict):
-    ids = data_dict.pop('id')
-    computers = Computers.objects.filter(id_computer__in=ids)
-    return computers
+    return computers.filter(get_query(keyword))
 
 
 class ExecutorOfCatToSold:
@@ -1489,7 +1477,7 @@ class ExecutorOfCatToSold:
                 self.client = value
             if "price" in key:
                 if self._is_price_valid(value):
-                    self.idPrices[self._getId(key)] = self._get_price(value)
+                    self.idPrices[self._get_id(key)] = self._get_price(value)
         self.validated = len(self.error_list) == 0
 
     def write_to_database(self):
@@ -1521,7 +1509,7 @@ class ExecutorOfCatToSold:
             return 0
         return float(price.replace(",", "."))
 
-    def _getId(self, key):
+    def _get_id(self, key):
         return key.split("_")[1]
 
     def get_error_message(self):
@@ -1581,9 +1569,9 @@ class NewOrder:
             if Orders.objects.filter(order_name=self.data.get('order_name')).exists():
                 self.error_list.append("Order with such name already exists")
 
-        for i in range(len(fieldnames)):
-            if self.data.get(fieldnames[i]) == "" or self.data.get(fieldnames[i]) is None:
-                self.error_list.append(error_messages[i])
+        for indx, fieldname in enumerate(fieldnames):
+            if self.data.get(fieldname) == "" or self.data.get(fieldname) is None:
+                self.error_list.append(error_messages[indx])
 
     def _save_and_get_order(self):
         return Orders.objects.create(
@@ -1610,10 +1598,7 @@ class Order:
         """
         :return: string of concatinated tester list.
         """
-        try:
-            return ", ".join(self.testers)
-        except:
-            return ""
+        return ", ".join(self.testers)
 
     def is_ready(self):
         """
@@ -1647,7 +1632,7 @@ class Order:
 
 class OrdersClassAutoFilter:
     """
-    Class responsible of holding unique values to filter by in website,
+    Class responsible of holding unique values of order to filter by in website,
     """
 
     def __init__(self, orders):
@@ -1658,26 +1643,27 @@ class OrdersClassAutoFilter:
         self.testers = []
         self.statuses = []
         for order in orders:
-            self.append_unique_to_list(order.name, self.names)
-            self.append_unique_to_list(order.client, self.clients)
-            self.append_unique_to_list(order.count(), self.qtys)
-            self.append_unique_to_list(order.date, self.dates)
+            self._append_unique_to_list(order.name, self.names)
+            self._append_unique_to_list(order.client, self.clients)
+            self._append_unique_to_list(order.count(), self.qtys)
+            self._append_unique_to_list(order.date, self.dates)
             self.testers.extend(order.testers)
-            self.append_unique_to_list(order.get_status(), self.statuses)
+            self._append_unique_to_list(order.get_status(), self.statuses)
         self.names.sort()
         self.clients.sort()
         self.qtys.sort()
         self.dates.sort()
-        self.testers = self.removeDuplicatesAndSort(self.testers)
+        self.testers = self._remove_duplicates_and_sort(self.testers)
         self.statuses.sort()
 
 
-    def removeDuplicatesAndSort(self, lst):
+    def _remove_duplicates_and_sort(self, lst):
+        # This line removes duplicates.
         lst = list(set(lst))
-        lst.sort()
-        return lst
+        # Returns sorted list
+        return sorted(lst)
 
-    def append_unique_to_list(self, value, lst):
+    def _append_unique_to_list(self, value, lst):
         if value not in lst:
             lst.append(value)
 
@@ -1738,23 +1724,6 @@ class PossibleOrders:
         Class holds orders which are not set_as_sent. Available as choices to be assigned to for computers.
         """
         self.orders = Orders.objects.exclude(is_sent=1).values_list("order_name", flat=True)
-
-
-def assign_computers_to_order_using_dict(dict):
-    """
-    This method is responsible for assigning computer_ids to a certain order.
-    :param dict: key of order_name and values are computer ids
-    :return: None is returned always
-    """
-    order_name = next(iter(dict))
-    indexes = dict[order_name]
-    order = Orders.objects.get(order_name=order_name)
-    for ind in indexes:
-        compord = CompOrd(is_ready=0, f_order_id_to_order=order)
-        compord.save()
-        computer = Computers.objects.get(id_computer=ind)
-        computer.f_id_comp_ord = compord
-        computer.save()
 
 
 class TesterCustomClass:
@@ -2001,7 +1970,7 @@ class TarAndLogHandler(PatternMatchingEventHandler):
         logging.warning(event.src_path)
         logging.warning(event.event_type)
         atp = AlternativeTarProcessor(
-            inMemoryFile=event.src_path,
+            in_memory_file=event.src_path,
             filename=os.path.basename(event.src_path).replace('.tar', '')
         )
         atp.process_data()
@@ -2041,14 +2010,15 @@ class TxtAndLogHandler(PatternMatchingEventHandler):
     def process(self, event):
         logging.warning(event.src_path)
         logging.warning(event.event_type)
-        ahop = AlternativeHddOrderProcessor(txtObject=event.src_path)
+        ahop = AlternativeHddOrderProcessor(txt_object=event.src_path)
+        ahop.process_data()
         logging.warning('_________________________________________')
 
     def on_created(self, event):
         if not event.is_directory:
             self.process(event)
 
-
+'''
 class HddWriter:
 
     def __init__(self, file, filename):
@@ -2139,7 +2109,7 @@ class HddWriter:
     def _save_and_get_form_factor(self, form_factor):
         form_factor_to_return = FormFactor.objects.get_or_create(form_factor_name=form_factor)[0]
         return form_factor_to_return
-
+'''
 
 class LotHolder:
 
@@ -2151,21 +2121,25 @@ class LotHolder:
 
 
 class LotsHolderAutoFilter:
+    """
+    Class responsible of holding unique values of hdd lots to filter by in website.
+    """
 
     def __init__(self, lots):
         self.lots_names = []
         self.dates_of_lots = []
         self.counts = []
         for lot in lots:
-            self.lots_names.append(lot.lot_name)
-            self.dates_of_lots.append(lot.date_of_lot)
-            self.counts.append(lot.count)
-        self.lots_names = list(set(self.lots_names))
+            self._append_unique_to_list(lot.lot_name, self.lots_names)
+            self._append_unique_to_list(lot.date_of_lot, self.dates_of_lots)
+            self._append_unique_to_list(lot.count, self.counts)
         self.lots_names.sort()
-        self.dates_of_lots = list(set(self.dates_of_lots))
         self.dates_of_lots.sort()
-        self.counts = list(set(self.counts))
         self.counts.sort()
+
+    def _append_unique_to_list(self, value, lst):
+        if value not in lst:
+            lst.append(value)
 
 
 class LotsHolder:
@@ -2180,12 +2154,16 @@ class LotsHolder:
         return ''
 
     def _get_lots(self):
-        lots = Lots.objects.all()
         lots_to_return = []
-        for lot in lots:
-            count = Drives.objects.filter(f_lot=lot.lot_id).count()
-            lh = LotHolder(lot.lot_id, lot.lot_name, lot.date_of_lot, count)
-            lots_to_return.append(lh)
+        for lot in Lots.objects.all():
+            lots_to_return.append(
+                LotHolder(
+                    lot_id=lot.lot_id,
+                    lot_name=lot.lot_name,
+                    date_of_lot=lot.date_of_lot,
+                    count=Drives.objects.filter(f_lot=lot.lot_id).count()
+                )
+            )
         return lots_to_return
 
     def filter(self, data_dict):
@@ -2254,97 +2232,27 @@ class HddHolder:
 
 
 class HddAutoFilterOptions:
+    """
+    Class responsible of holding unique values of hdd to filter by in website,
+    """
 
     def __init__(self, hdds):
-        self._get_serials(hdds)
-        self._get_models(hdds)
-        self._get_sizes(hdds)
-        self._get_locks(hdds)
-        self._get_speeds(hdds)
-        self._get_forms(hdds)
-        self._get_healths(hdds)
-        self._get_days(hdds)
+        self.serials = hdds.values_list('hdd_serial', flat=True).distinct().order_by('hdd_serial')
+        self.models = hdds.values_list('f_hdd_models__hdd_models_name', flat=True).distinct().order_by(
+            'f_hdd_models__hdd_models_name')
+        self.sizes = hdds.values_list('f_hdd_sizes__hdd_sizes_name', flat=True).distinct().order_by(
+            'f_hdd_sizes__hdd_sizes_name')
+        self.locks = hdds.values_list('f_lock_state__lock_state_name', flat=True).distinct().order_by(
+            'f_lock_state__lock_state_name')
+        self.speeds = hdds.values_list('f_speed__speed_name', flat=True).distinct().order_by('f_speed__speed_name')
+        self.forms = hdds.values_list('f_form_factor__form_factor_name', flat=True).distinct().order_by(
+            'f_form_factor__form_factor_name')
+        self.healths = hdds.values_list('health', flat=True).distinct().order_by('health')
+        self.days = hdds.values_list('days_on', flat=True).distinct().order_by('days_on')
 
-    def _get_serials(self, hdds):
-        serials = hdds.values('hdd_serial').distinct()
-        self.serials = [a['hdd_serial'] for a in serials]
-        self.serials.sort()
-
-    def _get_models(self, hdds):
-        f_models = hdds.values('f_hdd_models').distinct()
-        models_ids = [a['f_hdd_models'] for a in f_models]
-        self.models = []
-        for id in models_ids:
-            if id is None:
-                self.models.append('')
-            else:
-                model = HddModels.objects.get(hdd_models_id=id)
-                self.models.append(model.hdd_models_name)
-        self.models = list(set(self.models))
-        self.models.sort()
-
-    def _get_sizes(self, hdds):
-        f_sizes = hdds.values('f_hdd_sizes').distinct()
-        sizes_ids = [a['f_hdd_sizes'] for a in f_sizes]
-        self.sizes = []
-        for id in sizes_ids:
-            if id is None:
-                self.sizes.append('')
-            else:
-                size = HddSizes.objects.get(hdd_sizes_id=id)
-                self.sizes.append(size.hdd_sizes_name)
-        self.sizes = list(set(self.sizes))
-        self.sizes.sort()
-
-    def _get_locks(self, hdds):
-        f_locks = hdds.values('f_lock_state').distinct()
-        locks_ids = [a['f_lock_state'] for a in f_locks]
-        self.locks = []
-        for id in locks_ids:
-            if id is None:
-                self.sizes.append('')
-            else:
-                lock = LockState.objects.get(lock_state_id=id)
-                self.locks.append(lock.lock_state_name)
-        self.locks = list(set(self.locks))
-        self.locks.sort()
-
-    def _get_speeds(self, hdds):
-        f_speeds = hdds.values('f_speed').distinct()
-        speeds_ids = [a['f_speed'] for a in f_speeds]
-        self.speeds = []
-        for id in speeds_ids:
-            if id is None:
-                self.speeds.append('')
-            else:
-                speed = Speed.objects.get(speed_id=id)
-                self.speeds.append(speed.speed_name)
-        self.speeds = list(set(self.speeds))
-        self.speeds.sort()
-
-    def _get_forms(self, hdds):
-        f_forms = hdds.values('f_form_factor').distinct()
-        forms_ids = [a['f_form_factor'] for a in f_forms]
-        self.forms = []
-        for id in forms_ids:
-            if id is None:
-                self.forms.append('')
-            else:
-                formfactor = FormFactor.objects.get(form_factor_id=id)
-                self.forms.append(formfactor.form_factor_name)
-        self.forms = list(set(self.forms))
-        self.forms.sort()
-
-    def _get_healths(self, hdds):
-        healths = hdds.values('health').distinct()
-        self.healths = [a['health'] for a in healths]
-        #self.healths.sort()
-        self.healths = sorted(self.healths, key=lambda x: (x is None, x), reverse=True)
-
-    def _get_days(self, hdds):
-        days = hdds.values('days_on').distinct()
-        self.days = [a['days_on'] for a in days]
-        self.days = sorted(self.days, key=lambda x: (x is None, x), reverse=True)
+    def _append_unique_to_list(self, value, lst):
+        if value not in lst:
+            lst.append(value)
 
 
 class LotContentHolder:
@@ -2398,7 +2306,6 @@ class HddOrderToDelete:
         except Exception as e:
             self.message = str(e)
             self.success = False
-
 
 
 class HddOrderContentHolder:
@@ -2460,66 +2367,38 @@ class HddOrderContentHolder:
 
 
 class HddToEdit:
+    """
+    Class responsible of editing hdd attributes and providing unique values of hdd's sizes, states, speeds and
+    form factors to be used for hdd modifying.
+    """
 
     def __init__(self, index):
         self.hdd = Drives.objects.get(hdd_id=index)
-        self.get_sizes()
-        self.get_states()
-        self.get_speeds()
-        self.get_form_factors()
+        self.sizes = HddSizes.objects.values_list('hdd_sizes_name', flat=True).distinct().order_by('hdd_sizes_name')
+        self.states = LockState.objects.values_list('lock_state_name', flat=True).distinct().order_by('lock_state_name')
+        self.speeds = Speed.objects.values_list('speed_name', flat=True).distinct().order_by('speed_name')
+        self.form_factors = FormFactor.objects.values_list('form_factor_name', flat=True).distinct()\
+            .order_by('form_factor_name')
 
-    def get_sizes(self):
-        self.sizes = [record[0] for record in HddSizes.objects.values_list('hdd_sizes_name')]
-        self.sizes.sort()
-
-    def get_states(self):
-        self.states = [record[0] for record in LockState.objects.values_list('lock_state_name')]
-        self.sizes.sort()
-
-    def get_speeds(self):
-        self.speeds = [record[0] for record in Speed.objects.values_list('speed_name')]
-        self.speeds.sort()
-
-    def get_form_factors(self):
-        self.form_factors = [record[0] for record in FormFactor.objects.values_list('form_factor_name')]
-        self.form_factors.sort()
-
-    def process_edit(self, index, data_dict):
-        model = self.get_or_save_model(data_dict.pop('model')[0])
-        size = self.get_or_save_size(data_dict.pop('size')[0])
-        state = self.get_or_save_state(data_dict.pop('state')[0])
-        speed = self.get_or_save_speed(data_dict.pop('speed')[0])
-        form_factor = self.get_or_save_form_factor(data_dict.pop('form_factor')[0])
-        hdd = Drives.objects.get(hdd_id=index)
-        hdd.hdd_serial = data_dict.pop('serial')[0]
-        hdd.health = data_dict.pop('health')[0]
-        hdd.days_on = data_dict.pop('days')[0]
-        hdd.f_hdd_models = model
-        hdd.f_hdd_sizes = size
-        hdd.f_lock_state = state
-        hdd.f_speed = speed
-        hdd.f_form_factor = form_factor
-        hdd.save()
-
-    def get_or_save_model(self, model_text):
-        model = HddModels.objects.get_or_create(hdd_models_name=model_text)[0]
-        return model
-
-    def get_or_save_size(self, size_text):
-        size = HddSizes.objects.get_or_create(hdd_sizes_name=size_text)[0]
-        return size
-
-    def get_or_save_state(self, state_text):
-        state = LockState.objects.get_or_create(lock_state_name=state_text)[0]
-        return state
-
-    def get_or_save_speed(self, speed_text):
-        speed = Speed.objects.get_or_create(speed_name=speed_text)[0]
-        return speed
-
-    def get_or_save_form_factor(self, form_factor_text):
-        form_factor = FormFactor.objects.get_or_create(form_factor_name=form_factor_text)[0]
-        return form_factor
+    def process_edit(self, data_dict):
+        '''
+        Edits hdd's attributes based on provided data_dict
+        :param data_dict: Attributes passed from website.
+        '''
+        model = HddModels.objects.get_or_create(hdd_models_name=data_dict.pop('model')[0])[0]
+        size = HddSizes.objects.get_or_create(hdd_sizes_name=data_dict.pop('size')[0])[0]
+        state = LockState.objects.get_or_create(lock_state_name=data_dict.pop('state')[0])[0]
+        speed = Speed.objects.get_or_create(speed_name=data_dict.pop('speed')[0])[0]
+        form_factor = FormFactor.objects.get_or_create(form_factor_name=data_dict.pop('form_factor')[0])[0]
+        self.hdd.hdd_serial = data_dict.pop('serial')[0]
+        self.hdd.health = data_dict.pop('health')[0]
+        self.hdd.days_on = data_dict.pop('days')[0]
+        self.hdd.f_hdd_models = model
+        self.hdd.f_hdd_sizes = size
+        self.hdd.f_lock_state = state
+        self.hdd.f_speed = speed
+        self.hdd.f_form_factor = form_factor
+        self.hdd.save()
 
 
 class HddToDelete:
@@ -2786,23 +2665,22 @@ class AlternativeTarProcessor:
     """
     headers = ['Serial number', 'Health', 'Power_On', 'Model', 'Capacity', 'Lock', 'Speed', 'Size']
 
-    def __init__(self, inMemoryFile, filename=None):
+    def __init__(self, in_memory_file, filename=None):
         """
         In case of upload through a website filename is not passed to __init__.
         In case of file creation being caught by watchdog, filename is passed to __init__.
-        :param inMemoryFile: memory file to be processed
+        :param in_memory_file: memory file to be processed
         :param filename: filename which is provided with the help of watchdog.
         """
         if filename is None:
             # Lot name is assigned based on file's name.
-            self.lot_name = inMemoryFile._name.replace('.tar', '')
-            self.tar = tarfile.open(fileobj=inMemoryFile.file)
+            self.lot_name = in_memory_file._name.replace('.tar', '')
+            self.tar = tarfile.open(fileobj=in_memory_file.file)
             self.file_loc = ''
         else:
             self.lot_name = filename.replace('.tar', '')
-            self.tar = tarfile.open(inMemoryFile)
+            self.tar = tarfile.open(in_memory_file)
             self.file_loc = filename
-        # self.message = ''
         self.txt_file = self.get_txt_file()
         # firstline represents header of the custom txt file
         self.firstline = self.get_first_line(self.txt_file)
@@ -2826,16 +2704,20 @@ class AlternativeTarProcessor:
             self.text_to_write.add('* importing lot ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *')
             if self.is_header_valid(self.firstline):
                 self.process_file_with_valid_headers()
-                if self.text_to_write.should_write:
-                    logfile.write(self.text_to_write.text)
             else:
-                self.text_to_write.add('All required fields in '+self.lot_name+' were not found:\r\n'+str(self.headers))
+                self.text_to_write.add(
+                    # string_to_add='All required fields in '+self.lot_name+' were not found:\r\n'+str(self.headers),
+                    string_to_add='All required fields in {0} were not found:\r\n{1}'
+                    .format(self.lot_name, self.headers),
+                    should_write=True
+                )
                 self.text_to_write.add('===============================================')
+            if self.text_to_write.should_write:
                 logfile.write(self.text_to_write.text)
 
     def process_file_with_valid_headers(self):
         self.lot = self._save_and_get_lots()
-        self.file_header_indexes = self.get_file_header_indexes(self.firstline.split('@'))
+        self.file_header_indexes = self._get_file_header_indexes(self.firstline.split('@'))
         new_tarfile_loc = self._get_new_tarfile_location()
         with tarfile.open(new_tarfile_loc, 'a') as new_tar:
             for line in self.txt_file.readlines():
@@ -2850,7 +2732,7 @@ class AlternativeTarProcessor:
         try:
             self._process_line(line=line, new_tar=new_tar, new_tarfile_loc=new_tarfile_loc)
         except Exception as e:
-            self.text_to_write.add(string_to_add='\r\n Error: ' + str(e) + ' \r\n', should_write=True)
+            self.text_to_write.add(string_to_add='\r\n Error: {0} \r\n'.format(e), should_write=True)
             
     def _process_line(self, line, new_tar, new_tarfile_loc):
         """
@@ -2869,7 +2751,9 @@ class AlternativeTarProcessor:
             )
         else:
             self.text_to_write.add(
-                string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| skipped. Health or Power on is not a proper digit.',
+                # string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| skipped. Health or Power on is not a proper digit.',
+                tring_to_add='SN: {0}| skipped. Health or Power on is not a proper digit.'
+                .format(line_array[self.file_header_indexes['Serial number']]),
                 should_write=True
             )
 
@@ -2906,13 +2790,17 @@ class AlternativeTarProcessor:
                 tarmember=tarmember
             )
             self.text_to_write.add(
-                string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| info updated. File updated.',
+                # string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| info updated. File updated.',
+                string_to_add='SN: {0}| info updated. File updated.'
+                .format(line_array[self.file_header_indexes['Serial number']]),
                 should_write=True
             )
         else:
             self._update_existing_drive(line_array=line_array)
             self.text_to_write.add(
-                string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| Record info updated. File info not changed.'
+                # string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| Record info updated. File info not changed.'
+                string_to_add='SN: {0}| Record info updated. File info not changed.'
+                .format(line_array[self.file_header_indexes['Serial number']])
             )
 
     def _process_nonexistant_hdd(self, tarmember, new_tar, line_array):
@@ -2928,8 +2816,9 @@ class AlternativeTarProcessor:
             self._save_new_drive(line_array, tarmember.name)
         else:
             self.text_to_write.add(
-                string_to_add='SN: ' + line_array[self.file_header_indexes[
-                    'Serial number']] + '| skipped. Not present in database. No file associated.',
+                # string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| skipped. Not present in database. No file associated.',
+                string_to_add='SN: {0}| skipped. Not present in database. No file associated.'
+                .format(line_array[self.file_header_indexes['Serial number']]),
                 should_write=True
             )
 
@@ -2959,7 +2848,8 @@ class AlternativeTarProcessor:
             tarmember_to_remove = self.get_tarmember_name(line_array)
             if tarmember_to_remove is not None:
                 new_tar.getmember(tarmember_to_remove)
-                os.system('tar -vf ' + new_tarfile_loc + ' --delete "' + tarmember_to_remove + '"')
+                # os.system('tar -vf ' + new_tarfile_loc + ' --delete "' + tarmember_to_remove + '"')
+                os.system('tar -vf {0} --delete "{1}"'.format(new_tarfile_loc, tarmember_to_remove))
         except:
             print('Tarfile opening or its deletion had failed')
             pass
@@ -2968,7 +2858,8 @@ class AlternativeTarProcessor:
         """
         :return: full path name wher tarfiles should be saved.
         """
-        return os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
+        # return os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
+        return os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), '{0}.tar'.format(self.lot_name))
 
     def _get_line_array(self, line):
         """
@@ -3030,22 +2921,23 @@ class AlternativeTarProcessor:
                 return False
         return True
 
-    def get_file_header_indexes(self, file_headers):
+    def _get_file_header_indexes(self, file_headers):
         """
         :param file_headers: Headers present in the file.
         :return: Dictionary of header and index position's pair, of a required columns.
         """
-        fileHeaderIndexes = dict()
+        file_header_indexes = dict()
         for value in self.headers:
-            fileHeaderIndexes[value] = file_headers.index(value)
-        return fileHeaderIndexes
+            file_header_indexes[value] = file_headers.index(value)
+        return file_header_indexes
 
     def is_valid(self, line_array):
         """
         :param line_array: list of strings to process.
         :return: True if health is number, with possible percentage sign and Power_on is number, else False
         """
-        return line_array[self.file_header_indexes['Health']].replace("%", "").strip().isdigit() and line_array[self.file_header_indexes['Power_On']].strip().isdigit()
+        return line_array[self.file_header_indexes['Health']].replace("%", "").strip().isdigit() \
+            and line_array[self.file_header_indexes['Power_On']].strip().isdigit()
 
     def get_tar_member_by_serial(self, serial):
         """
@@ -3130,22 +3022,6 @@ class AlternativeTarProcessor:
         drive.save()
 
 
-class PDFViewer:
-
-    def __init__(self, pk):
-        self.success = False
-        try:
-            hdd = Drives.objects.get(hdd_id=pk)
-            tf = tarfile.open(os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), hdd.f_lot.lot_name + '.tar'))
-            tarmember = tf.getmember(hdd.tar_member_name)
-            pdf = tf.extractfile(tarmember)
-            pdf_content = pdf.read()
-            self.pdf_content = pdf_content
-            self.success = True
-        except:
-            pass
-
-
 class HddOrderProcessor:
 
     def __init__(self, txtObject):
@@ -3218,122 +3094,202 @@ class HddOrderProcessor:
 
 
 class AlternativeHddOrderProcessor:
-    '''
-    headers = ['Serial number', 'Model', 'Capacity', 'Lock', 'Speed', 'Size', 'Health', 'Power_On', 'Interface',
-               'Notes', 'Manufacturer', 'Family', 'Width', 'Height', 'Length', 'Weight', 'Spinup', 'PowerSeek',
-               'PowerIdle', 'PowerStandby', 'Inspection Date']
-    '''
+    """
+    Class responsible for processing order txt files,
+    either provided from website or as a file copied into temp directory.
+    """
     headers = ['Serial number', 'Health', 'Power_On', 'Model', 'Capacity', 'Lock', 'Speed', 'Size']
 
-    def __init__(self, txtObject):
-        print('Constructor initiated')
-        self.message = ''
-        if type(txtObject) is str:
-            filename = os.path.basename(txtObject)
-            txtObject = open(txtObject, "r")
+    def __init__(self, txt_object):
+        if type(txt_object) is str:
+            self.filename = os.path.basename(txt_object)
+            self.txt_object = open(txt_object, "r")
         else:
-            filename = txtObject._name
-        firstline = self.getFirstLine(txtObject)
-        # isValid = self.isHeaderValid(firstline)
-        # if isValid:
-        if self.isHeaderValid(firstline):
-            file_headers = firstline.split('@')
-            self.fileHeaderIndexes = self.getFileHeaderIndexes(file_headers)
-            hddOrder = self.get_hdd_order(filename)
-            with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
-                isMissing = False
-                textToWrite = '* importing order ' + filename.replace('.txt', '') + ' || ' + str(
-                    datetime.date.today()) + ' *\r\n'
-                for line in txtObject.readlines():
-                    try:
-                        line = line.decode('utf-8')
-                    except:
-                        pass
-                    line_array = line.split('@')
-                    if self.isValid(line_array):
-                        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.fileHeaderIndexes['Model']])[0]
-                        hdds = Drives.objects.filter(hdd_serial=line_array[self.fileHeaderIndexes['Serial number']], f_hdd_models=model)
-                        if hdds.exists():
-                            if hdds[0].f_hdd_order is not None:
-                                isMissing = True
-                                textToWrite += 'SN: ' + hdds[
-                                    0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_hdd_order.order_name +'\r\n'
-                            hdds.update(f_hdd_order=hddOrder)
-                        else:
-                            size = HddSizes.objects.get_or_create(hdd_sizes_name=line_array[self.fileHeaderIndexes['Capacity']])[0]
-                            lock_state = LockState.objects.get_or_create(lock_state_name=line_array[self.fileHeaderIndexes['Lock']])[0]
-                            speed = Speed.objects.get_or_create(speed_name=line_array[self.fileHeaderIndexes['Speed']])[0]
-                            form_factor = FormFactor.objects.get_or_create(form_factor_name=line_array[self.fileHeaderIndexes['Size']])[0]
-                            hdd = Drives(
-                                hdd_serial=line_array[self.fileHeaderIndexes['Serial number']],
-                                health=line_array[self.fileHeaderIndexes['Health']].replace("%", ""),
-                                days_on=line_array[self.fileHeaderIndexes['Power_On']],
-                                f_hdd_models=model,
-                                f_hdd_sizes=size,
-                                f_lock_state=lock_state,
-                                f_speed=speed,
-                                f_form_factor=form_factor,
-                                f_hdd_order=hddOrder
-                            )
-                            hdd.save()
-                    else:
-                        textToWrite += 'Hdd with S/N: '+line_array[self.fileHeaderIndexes['Serial number']] + ' most likely has incorrect health and days_on, because they were not found to be numbers.\r\n'
-                textToWrite += '===============================================\r\n'
-                if isMissing:
-                    logfile.write(textToWrite)
-                    self.message = textToWrite
+            self.filename = txt_object._name
+            self.txt_object = txt_object
+        self.hddOrder = None
+        self.file_header_indexes = None
+        self.text_to_write = WriteableMessage()
+
+    def process_data(self):
+        """
+        Processes text file representing an order.
+        """
+        firstline = self._get_first_line(self.txt_object)
+        if self._is_header_valid(firstline):
+            self._process_file_with_valid_headers(firstline)
         else:
-            self.message = 'All required fields in '+filename+' were not found:\n'+str(self.headers)
+            self.text_to_write.text = 'All required fields in '+self.filename+' were not found:\r\n'+str(self.headers)+'\r\n'
+            self.text_to_write.should_write = True
 
-    def getFileHeaderIndexes(self, file_headers):
-        fileHeaderIndexes = dict()
-        for i in range(len(self.headers)):
-            fileHeaderIndexes[self.headers[i]] = file_headers.index(self.headers[i])
-        return fileHeaderIndexes
+    def _process_file_with_valid_headers(self, firstline):
+        """
+        :param firstline: first line of text file.
+        """
+        file_headers = firstline.split('@')
+        self.file_header_indexes = self._get_file_header_indexes(file_headers)
+        self.hddOrder = self._get_hdd_order(self.filename)
+        with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
+            self.text_to_write.add(
+                string_to_add='* importing order ' + self.filename.replace('.txt', '') + ' || ' + str(
+                    datetime.date.today()) + ' *'
+            )
+            for line in self.txt_object.readlines():
+                self._process_line(line)
+            self.text_to_write.add('===============================================')
+            if self.text_to_write.should_write:
+                logfile.write(self.text_to_write.text)
+            
+    def _process_line(self, line):
+        """
+        Processes line, if it's valid passes to _process_valid_line_array, else add's to logfile that line is not valid.
+        :param line: One line of text read from txt file.
+        """
+        line_array = self._get_line_array(line)
+        if self._is_valid(line_array):
+            self._process_valid_line_array(line_array)
+        else:
+            self.text_to_write.add(
+                string_to_add='Hdd with S/N: ' + line_array[self.file_header_indexes[
+                    'Serial number']] + ' most likely has incorrect health and days_on, because they were not found to be numbers.',
+                should_write=True
+            )
 
-    def getFirstLine(self, txtObject):
-        line = txtObject.readline()
-        string = line.strip()
+    def _process_valid_line_array(self, line_array):
+        """
+        :param line_array: list of strings to process.
+        """
+        model = HddModels.objects.get_or_create(
+            hdd_models_name=line_array[self.file_header_indexes['Model']]
+        )[0]
+        hdds = Drives.objects.filter(
+            hdd_serial=line_array[self.file_header_indexes['Serial number']],
+            f_hdd_models=model
+        )
+        self._process_hdd(line_array, model, hdds)
+
+    def _process_hdd(self, line_array, model, hdds):
+        """
+        Calls _update_existing_hdd() or _save_new_drive() based whether there are any hdds in given queryset.
+        :param line_array: list of strings to process.
+        :param model: HddModel object.
+        :param hdds:queryset of hdds.
+        :return:
+        """
+        if hdds.exists():
+            self._update_existing_hdd(hdds)
+        else:
+            self._save_new_drive(line_array, model)
+
+    def _update_existing_hdd(self, hdds):
+        '''
+        Updates existing hdds with new order.
+        :param hdds: queryset of hdds.
+        '''
+        if hdds[0].f_hdd_order:
+            self.text_to_write.add(
+                string_to_add='SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_hdd_order.order_name,
+                should_write=True
+            )
+        hdds.update(f_hdd_order=self.hddOrder)
+
+    @property
+    def message(self):
+        """
+        Method called from view to return what failed to html response.
+        """
+        return self.text_to_write.text
+
+    def _save_new_drive(self, line_array, model):
+        """
+        Saves order's new  drive.
+        :param line_array: list of strings to process.
+        :param model: HddModel object for a drive saving.
+        """
+        Drives.objects.create(
+            hdd_serial=line_array[self.file_header_indexes['Serial number']],
+            health=line_array[self.file_header_indexes['Health']].replace("%", ""),
+            days_on=line_array[self.file_header_indexes['Power_On']],
+            f_hdd_models=model,
+            f_hdd_sizes=HddSizes.objects.get_or_create(
+                hdd_sizes_name=line_array[self.file_header_indexes['Capacity']]
+            )[0],
+            f_lock_state=LockState.objects.get_or_create(
+                lock_state_name=line_array[self.file_header_indexes['Lock']]
+            )[0],
+            f_speed=Speed.objects.get_or_create(
+                speed_name=line_array[self.file_header_indexes['Speed']]
+            )[0],
+            f_form_factor=FormFactor.objects.get_or_create(
+                form_factor_name=line_array[self.file_header_indexes['Size']]
+            )[0],
+            f_hdd_order=self.hddOrder
+        )
+
+    def _get_line_array(self, line):
+        """
+        :param line: string to process.
+        :return: convert line to utf-8 if it's not, and returns it as line_array.
+        """
         try:
-            string = string.decode('utf8')
+            return line.decode('utf-8').split('@')
         except:
-            pass
-        return string
+            return line.split('@')
 
-    def isHeaderValid(self, line):
+    def _get_file_header_indexes(self, file_headers):
+        """
+        :param file_headers: Headers present in the file.
+        :return: Dictionary of header and index position's pair, of a required columns.
+        """
+        file_header_indexes = dict()
+        for value in self.headers:
+            file_header_indexes[value] = file_headers.index(value)
+        return file_header_indexes
+
+    def _get_first_line(self, txt_object):
+        """
+        :param txt_object: text file as an object
+        :return: first line of text file
+        """
+        try:
+            return txt_object.readline().strip().decode('utf8')
+        except:
+            return txt_object.readline().strip()
+
+    def _is_header_valid(self, line):
+        """
+        :param line: first_line, which should represent file's header row.
+        :return: True if all required headers from self.headers are present in line, returns True, else False.
+        """
         for header in self.headers:
             if header not in line:
                 return False
         return True
 
-    def isValid(self, line_array):
-        if line_array[self.fileHeaderIndexes['Health']].replace("%", "").strip().isdigit() and line_array[self.fileHeaderIndexes['Power_On']].strip().isdigit():
-            return True
-        return False
+    def _is_valid(self, line_array):
+        """
+        :param line_array: list of strings to process.
+        :return: True if health is number, with possible percentage sign and Power_on is number, else False
+        """
+        return line_array[self.file_header_indexes['Health']].replace("%", "").strip().isdigit() \
+            and line_array[self.file_header_indexes['Power_On']].strip().isdigit()
 
-    def get_hdd_order(self, txtFileName):
-        hddOrders = HddOrder.objects.filter(order_name=txtFileName.replace('.txt', ''))
-        if hddOrders.exists():
+    def _get_hdd_order(self, txt_file_name):
+        """
+        Strips hdds out of existing order with same name, and deletes order with text file's name as an order's name.
+        :return: HddOrder's object which should have Prepared status and text file's name as an order's name.
+        """
+        hdd_orders = HddOrder.objects.filter(order_name=txt_file_name.replace('.txt', ''))
+        if hdd_orders.exists():
             print('Such hdd orders exists')
-            hdds = Drives.objects.filter(f_hdd_order=hddOrders[0].order_id)
-            hdds.update(f_hdd_order=None)
-            hddOrders[0].delete()
-        orderStatus = OrderStatus.objects.get(order_status_id=3)
-        '''
-        hddOrder = HddOrder(
-            order_name=txtFileName.replace('.txt', ''),
+            Drives.objects.filter(f_hdd_order=hdd_orders[0].order_id).update(f_hdd_order=None)
+            hdd_orders[0].delete()
+
+        return HddOrder.objects.create(
+            order_name=txt_file_name.replace('.txt', ''),
             date_of_order=timezone.now().today().date(),
-            f_order_status=orderStatus
+            f_order_status=OrderStatus.objects.get(order_status_id=3)
         )
-        hddOrder.save()
-        '''
-        hddOrder = HddOrder.objects.create(
-            order_name=txtFileName.replace('.txt', ''),
-            date_of_order=timezone.now().today().date(),
-            f_order_status=orderStatus
-        )
-        print('Hdd order saved')
-        return hddOrder
 
 
 class HddOrderHolder:
@@ -3347,6 +3303,9 @@ class HddOrderHolder:
 
 
 class HddOrdersHolderAutoFilter:
+    """
+    Class responsible of holding unique values of hdd orders to filter by in website.
+    """
 
     def __init__(self, orders):
         self.orders_names = []
@@ -3354,25 +3313,25 @@ class HddOrdersHolderAutoFilter:
         self.order_status_names = []
         self.counts = []
         for order in orders:
-            self.orders_names.append(order.order_name)
-            self.dates_of_orders.append(order.date_of_order)
-            self.order_status_names.append(order.order_status_name)
-            self.counts.append(order.count)
-        self.orders_names = list(set(self.orders_names))
+            self._append_unique_to_list(order.order_name, self.orders_names)
+            self._append_unique_to_list(order.date_of_order, self.dates_of_orders)
+            self._append_unique_to_list(order.order_status_name, self.order_status_names)
+            self._append_unique_to_list(order.count, self.counts)
         self.orders_names.sort()
-        self.dates_of_orders = list(set(self.dates_of_orders))
         self.dates_of_orders.sort()
-        self.order_status_names = list(set(self.order_status_names))
         self.order_status_names.sort()
-        self.counts = list(set(self.counts))
         self.counts.sort()
+
+    def _append_unique_to_list(self, value, lst):
+        if value not in lst:
+            lst.append(value)
 
 
 class HddOrdersHolder:
 
     def __init__(self):
         self.count = 0
-        self.set_orders()
+        self.orders = self._get_orders()
         self.autoFilters = HddOrdersHolderAutoFilter(self.orders)
 
     def increment(self):
@@ -3404,68 +3363,69 @@ class HddOrdersHolder:
                         self.orders.remove(order)
         self.autoFilters = HddOrdersHolderAutoFilter(self.orders)
 
-    def set_orders(self):
-        orders = HddOrder.objects.all()
-        self.orders = []
-        for order in orders:
-            count = Drives.objects.filter(f_hdd_order=order).count()
-            oh = HddOrderHolder(order.order_id, order.order_name, order.date_of_order, order.f_order_status.order_status_name, count)
-            self.orders.append(oh)
+    def _get_orders(self):
+        orders = []
+        for order in HddOrder.objects.all():
+            orders.append(
+                HddOrderHolder(
+                    order_id=order.order_id,
+                    order_name=order.order_name,
+                    date_of_order=order.date_of_order,
+                    order_status_name=order.f_order_status.order_status_name,
+                    count=Drives.objects.filter(f_hdd_order=order).count()
+                )
+            )
+        return orders
 
-"""
-WORK IN PROGRESS
-This method reserved for printing over the network qr codes in batches.
-Input comes from mass selections on website and prints those codes.
-"""
-def serialToQRToPrint(*args):
-    print()
 
 class ChargerSerialProcessor:
+    """
+    Class responsible for processing scanned charger QRs .
+    """
 
     def __init__(self, serial):
-        self.manufacturer, middle_section, self.charger_serial = serial.split('_')
-        self.power, self.connector_type = middle_section.split('W', 1)
+        self.manufacturer_name, middle_section, self.charger_serial = serial.split('_')
+        self.wattage, self.connector_type = middle_section.split('W', 1)
         self.message = ''
 
-    def check_serial_existance(self):
-        charger = Chargers.objects.filter(charger_serial=self.charger_serial)
-        return charger.exists()
+    def serial_exists(self):
+        return Chargers.objects.filter(charger_serial=self.charger_serial).exists()
 
-    def proccess(self):
+    def process(self):
         if self._is_category_existing():
             print('Such charger category allready exists')
-            self._proccess_existing_charger()
+            self._proccess_existing_category_charger()
         else:
             print('No such charger category  exist')
-            self._proccess_new_charger()
+            self._proccess_new_category_charger()
 
     def _is_category_existing(self):
-        charger_category = ChargerCategories.objects.filter(
-            f_manufacturer__manufacturer_name=self.manufacturer,
-            watts=self.power,
+        return ChargerCategories.objects.filter(
+            f_manufacturer__manufacturer_name=self.manufacturer_name,
+            watts=self.wattage,
             connector_type=self.connector_type
-        )
-        return charger_category.exists()
+        ).exists()
 
-    def _proccess_existing_charger(self):
-        charger_category = ChargerCategories.objects.get(f_manufacturer__manufacturer_name=self.manufacturer, watts=self.power, connector_type=self.connector_type)
-        charger = Chargers.objects.get_or_create(
+    def _proccess_existing_category_charger(self):
+        Chargers.objects.get_or_create(
             charger_serial=self.charger_serial,
-            f_charger_category=charger_category
-        )[0]
+            f_charger_category=ChargerCategories.objects.get(
+                f_manufacturer__manufacturer_name=self.manufacturer_name,
+                watts=self.wattage,
+                connector_type=self.connector_type
+            )
+        )
         print('End of existing_charger')
 
-    def _proccess_new_charger(self):
-        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=self.manufacturer)[0]
-        new_charger_category = ChargerCategories.objects.create(
-            watts=self.power,
-            f_manufacturer=manufacturer,
-            connector_type=self.connector_type
-        )
-        new_charger = Chargers.objects.get_or_create(
+    def _proccess_new_category_charger(self):
+        Chargers.objects.get_or_create(
             charger_serial=self.charger_serial,
-            f_charger_category=new_charger_category
-        )[0]
+            f_charger_category=ChargerCategories.objects.create(
+                watts=self.wattage,
+                f_manufacturer=Manufacturers.objects.get_or_create(manufacturer_name=self.manufacturer_name)[0],
+                connector_type=self.connector_type
+            )
+        )
         print('End of new_charger')
 
 
@@ -3488,11 +3448,9 @@ class ChargerCategoriesHolder:
 
     def __init__(self):
         self.count = 0
-        chargerCategories = ChargerCategories.objects.all()
         self.chargerCategories = []
-        for cat in chargerCategories:
-            cch = ChargerCategoryHolder(cat)
-            self.chargerCategories.append(cch)
+        for cat in ChargerCategories.objects.all():
+            self.chargerCategories.append(ChargerCategoryHolder(cat))
 
     def filter(self, data_dict):
         keys = ('man-af', 'watts-af', 'dcmin-af', 'dcmax-af', 'count-af', 'orig-af', 'used-af')
@@ -3532,7 +3490,6 @@ class ChargerCategoriesHolder:
                     if not str(cat.chargerCategory.is_used()) in new_dict['used-af']:
                         self.chargerCategories.remove(cat)
 
-
     def increment(self):
         self.count += 1
         return ''
@@ -3540,44 +3497,48 @@ class ChargerCategoriesHolder:
     def unique_manufacturers(self):
         holder = []
         for chargerCategory in self.chargerCategories:
-            holder.append(chargerCategory.chargerCategory.f_manufacturer.manufacturer_name)
-        return list(set(holder))
+            self._append_unique_to_list(chargerCategory.chargerCategory.f_manufacturer.manufacturer_name, holder)
+        return sorted(holder)
 
     def unique_watts(self):
         holder = []
         for chargerCategory in self.chargerCategories:
-            holder.append(chargerCategory.chargerCategory.watts)
-        return list(set(holder))
+            self._append_unique_to_list(chargerCategory.chargerCategory.watts, holder)
+        return sorted(holder)
 
     def unique_dcoutvoltsmin(self):
         holder = []
         for chargerCategory in self.chargerCategories:
-            holder.append(chargerCategory.chargerCategory.dcoutvoltsmin)
-        return list(set(holder))
+            self._append_unique_to_list(chargerCategory.chargerCategory.dcoutvoltsmin, holder)
+        return sorted(holder)
 
     def unique_dcoutvoltsmax(self):
         holder = []
         for chargerCategory in self.chargerCategories:
-            holder.append(chargerCategory.chargerCategory.dcoutvoltsmax)
-        return list(set(holder))
+            self._append_unique_to_list(chargerCategory.chargerCategory.dcoutvoltsmax, holder)
+        return sorted(holder)
 
     def unique_counts(self):
         holder = []
         for chargerCategory in self.chargerCategories:
-            holder.append(chargerCategory.qty)
-        return list(set(holder))
+            self._append_unique_to_list(chargerCategory.qty, holder)
+        return sorted(holder)
 
     def unique_originals(self):
         holder = []
         for chargerCategory in self.chargerCategories:
-            holder.append(chargerCategory.chargerCategory.is_original())
-        return list(set(holder))
+            self._append_unique_to_list(chargerCategory.chargerCategory.is_original(), holder)
+        return sorted(holder)
 
     def unique_used(self):
         holder = []
         for chargerCategory in self.chargerCategories:
-            holder.append(chargerCategory.chargerCategory.is_used())
-        return list(set(holder))
+            self._append_unique_to_list(chargerCategory.chargerCategory.is_used(), holder)
+        return sorted(holder)
+
+    def _append_unique_to_list(self, value, lst):
+        if value not in lst:
+            lst.append(value)
 
 
 class ChargerCategoryToEdit:
@@ -3604,42 +3565,44 @@ class ChargerCategoryToEdit:
         optional_decimal_fields = ('acinampers', 'acinvoltsmin', 'acinvoltsmax')
         optional_decimal_values = [None, None, None]
         try:
-            for index in range(len(required_string_fields)):
-                required_string_values[index] = self._get_required_string_field_value(data_dict,
-                                                                                      required_string_fields[index])
-            for index in range(len(required_boolean_fields)):
-                required_boolean_values[index] = self._get_required_bool_field_value(data_dict,
-                                                                                     required_boolean_fields[index])
-            for index in range(len(required_integer_fields)):
-                required_integer_values[index] = self._get_required_integer_field_value(data_dict,
-                                                                                        required_integer_fields[index])
-            for index in range(len(required_decimal_fields)):
-                required_decimal_values[index] = self._get_required_decimal_field_value(data_dict,
-                                                                                        required_decimal_fields[index])
-            for index in range(len(optional_integer_fields)):
-                optional_integer_values[index] = self._get_optional_decimal_field_value(data_dict,
-                                                                                        optional_integer_fields[index])
-            for index in range(len(optional_decimal_fields)):
-                optional_decimal_values[index] = self._get_optional_decimal_field_value(data_dict,
-                                                                                        optional_decimal_fields[index])
+            self._run_method_on_lists(required_string_fields, required_string_values,
+                                      self._get_required_string_field_value, data_dict)
+
+            self._run_method_on_lists(required_boolean_fields, required_boolean_values,
+                                      self._get_required_bool_field_value, data_dict)
+
+            self._run_method_on_lists(required_integer_fields, required_integer_values,
+                                      self._get_required_integer_field_value, data_dict)
+
+            self._run_method_on_lists(required_decimal_fields, required_decimal_values,
+                                      self._get_required_decimal_field_value, data_dict)
+
+            self._run_method_on_lists(optional_integer_fields, optional_integer_values,
+                                      self._get_optional_decimal_field_value, data_dict)
+
+            self._run_method_on_lists(optional_decimal_fields, optional_decimal_values,
+                                      self._get_optional_decimal_field_value, data_dict)
+
             if self.isValidData:
                 print('Charger edit data passed is valid')
                 print(self.message)
-                self._save(required_string_values,
-                           required_boolean_values,
-                           required_integer_values,
-                           required_decimal_values,
-                           optional_integer_values,
-                           optional_decimal_values)
+                self._save(rsv=required_string_values, rbv=required_boolean_values,
+                           riv=required_integer_values, rdv=required_decimal_values,
+                           oiv=optional_integer_values, odv=optional_decimal_values)
             else:
                 print('Charger edit data passed is wrong')
                 print(self.message)
+
         except Exception as e:
             self.isValidData = False
             self.message = str(e)
 
-    def _save(self, rsv, rbv, riv, rdv, oiv, odv):
+    def _run_method_on_lists(self, fields, values, method, data_dict):
+        for index, value in enumerate(fields):
+            values[index] = method(data_dict, value)
 
+    def _save(self, rsv, rbv, riv, rdv, oiv, odv):
+        print('Starting saving process')
         manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=rsv[0])[0]
         self.chargerCategory.f_manufacturer = manufacturer
         self.chargerCategory.watts = riv[1]
@@ -3658,6 +3621,7 @@ class ChargerCategoryToEdit:
         self.chargerCategory.used_status = rbv[1]
         self.chargerCategory.connector_type = rsv[1]
         self.chargerCategory.save()
+        print('Finished saving process')
 
     def _get_optional_decimal_field_value(self, data_dict, field_name):
         try:
@@ -3988,7 +3952,8 @@ class Qrgenerator:
     def _formImagePair(self, firstSerial, secondSerial=None):
         firstImage = self._fromSerialToImage(firstSerial)
         # margin is meant to determine how much additional space is added to the all sides of a image.
-        # The idea is hat as dimensions of image increase printer resizes image during printing to fit to it's standard, therefore dimensions of QR itself on the printed sticker decrease.
+        # The idea is hat as dimensions of image increase printer resizes image during printing to fit to it's standard,
+        # therefore dimensions of QR itself on the printed sticker decrease.
         margin = 10
         padding = 50
         heightDisplacement = -14
@@ -4008,6 +3973,7 @@ class Qrgenerator:
         lpr = subprocess.Popen("/usr/bin/lpr", stdin=subprocess.PIPE)
         lpr.stdin.write(imgByteArr.getvalue())
 
+
 class ChargerToDelete:
 
     def __init__(self, data):
@@ -4015,6 +3981,7 @@ class ChargerToDelete:
 
     def delete(self):
         self.charger.delete()
+
 
 class ChargerCategoryToDelete:
 
