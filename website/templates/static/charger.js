@@ -45,7 +45,10 @@ function search_using_keyword() {
 
 function toggleDisabled(button, index) {
     button.innerHTML.includes()
-    inputbox = button.parentElement.getElementsByClassName('charger-serial')[0]
+    inputbox = button.parentElement.parentElement.getElementsByClassName('charger-serial')[0];
+    // console.log(inputbox);
+    // console.log(button.parentElement);
+    // console.log(button.parentElement.parentElement.getElementsByClassName('charger-serial'));
     if (inputbox.disabled) {
         inputbox.disabled = false;
         button.innerHTML= 'Save';

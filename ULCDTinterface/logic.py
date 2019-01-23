@@ -549,7 +549,7 @@ class ComputerRecord2:
         print("before self.category")
         self.category = Categories.objects.get(category_name=data_dict['Log Information']["Category"])
         print("before self.type ")
-        self.type = Types.objects.get(type_name=data_dict['System Info']["Type"])
+        self.type = Types.objects.get_or_create(type_name=data_dict['System Info']["Type"])[0]
         print("before self.tester")
         self.tester = Testers.objects.get(tester_name=data_dict['Log Information']["Tester"])
         print("before self.bios")

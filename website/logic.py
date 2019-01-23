@@ -3542,6 +3542,9 @@ class ChargerCategoriesHolder:
 
 
 class ChargerCategoryToEdit:
+    """
+    Class responsible for editing charger category.
+    """
 
     def __init__(self, index):
         self.chargerCategory = ChargerCategories.objects.get(charger_category_id=index)
@@ -3551,7 +3554,12 @@ class ChargerCategoryToEdit:
         self.message = ''
         self.isValidData = True
 
-    def proccess(self, data_dict):
+    def process(self, data_dict):
+        """
+        Checks validity of data passed by website.
+        If data is valid it is saved.
+        :param data_dict: data passed from website in a form of dictionary.
+        """
         required_string_fields = ('manufacturer_name', 'connector_type')
         required_string_values = [None, None]
         required_boolean_fields = ('is_original', 'is_used')
@@ -3564,24 +3572,18 @@ class ChargerCategoryToEdit:
         optional_integer_values = [None, None]
         optional_decimal_fields = ('acinampers', 'acinvoltsmin', 'acinvoltsmax')
         optional_decimal_values = [None, None, None]
+
+        fields_list = [required_string_fields, required_boolean_fields, required_integer_fields,
+                  required_decimal_fields, optional_integer_fields, optional_decimal_fields]
+        values_list = [required_string_values, required_boolean_values, required_integer_values,
+                  required_decimal_values, optional_integer_values, optional_decimal_values]
+        methods_list = [self._get_required_string_field_value, self._get_required_bool_field_value,
+                   self._get_required_integer_field_value, self._get_required_decimal_field_value,
+                   self._get_optional_integer_field_value, self._get_optional_decimal_field_value]
+
         try:
-            self._run_method_on_lists(required_string_fields, required_string_values,
-                                      self._get_required_string_field_value, data_dict)
-
-            self._run_method_on_lists(required_boolean_fields, required_boolean_values,
-                                      self._get_required_bool_field_value, data_dict)
-
-            self._run_method_on_lists(required_integer_fields, required_integer_values,
-                                      self._get_required_integer_field_value, data_dict)
-
-            self._run_method_on_lists(required_decimal_fields, required_decimal_values,
-                                      self._get_required_decimal_field_value, data_dict)
-
-            self._run_method_on_lists(optional_integer_fields, optional_integer_values,
-                                      self._get_optional_decimal_field_value, data_dict)
-
-            self._run_method_on_lists(optional_decimal_fields, optional_decimal_values,
-                                      self._get_optional_decimal_field_value, data_dict)
+            for fields, values, method in zip(fields_list, values_list, methods_list):
+                self._run_method_on_lists(fields, values, method, data_dict)
 
             if self.isValidData:
                 print('Charger edit data passed is valid')
@@ -3598,10 +3600,26 @@ class ChargerCategoryToEdit:
             self.message = str(e)
 
     def _run_method_on_lists(self, fields, values, method, data_dict):
+        """
+        Iterates through fields, values and methods and assigns using methods and fieldnames appropriate values.
+        :param fields: List of fields from which values should be extracted out of data dict.
+        :param values: List of values in which extracted values should be stored.
+        :param method: Methods which should be run in order to check validity of extracted values.
+        :param data_dict: data passed from website in a form of dictionary.
+        """
         for index, value in enumerate(fields):
             values[index] = method(data_dict, value)
 
     def _save(self, rsv, rbv, riv, rdv, oiv, odv):
+        """
+        Saves charger category based on value lists given.
+        :param rsv: required_string_values.
+        :param rbv: required_boolean_values.
+        :param riv: required_integer_values.
+        :param rdv: required_decimal_values.
+        :param oiv: optional_integer_values.
+        :param odv: optional_decimal_values.
+        """
         print('Starting saving process')
         manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=rsv[0])[0]
         self.chargerCategory.f_manufacturer = manufacturer
@@ -3624,6 +3642,15 @@ class ChargerCategoryToEdit:
         print('Finished saving process')
 
     def _get_optional_decimal_field_value(self, data_dict, field_name):
+        """
+        Check's if value in a given fieldname out of data_dict is valid float value or not.
+        If value is empty string or 'none' returns None,
+        if value valid float then function returns float number,
+        if neither adds error to the message and returns None.
+        :param data_dict: data passed from website in a form of dictionary.
+        :param field_name: Fieldname of value to extract out of data dict.
+        :return: float or None.
+        """
         try:
             value = data_dict.pop(field_name, '')[0]
             value = value.replace(',', '.')
@@ -3637,6 +3664,15 @@ class ChargerCategoryToEdit:
             self.message += 'Failed to retrieve ' + field_name + '\r\n'
 
     def _get_optional_integer_field_value(self, data_dict, field_name):
+        """
+        Check's if value in a given fieldname out of data_dict is valid int value or not.
+        If value is empty string or 'none' returns None
+        if value valid int then function returns int number,
+        if neither adds error to the message and returns None.
+        :param data_dict: data passed from website in a form of dictionary.
+        :param field_name: Fieldname of value to extract out of data dict.
+        :return: Integer or None.
+        """
         try:
             value = data_dict.pop(field_name, '')[0]
             if value == '' or value.lower() == 'none':
@@ -3649,6 +3685,13 @@ class ChargerCategoryToEdit:
             self.message += 'Failed to retrieve ' + field_name + '\r\n'
 
     def _get_required_string_field_value(self, data_dict, field_name):
+        """
+        Check's if value in a given fieldname out of data_dict is valid string value or not.
+        If valid then function returns string value, if not adds error to the message and returns None.
+        :param data_dict: data passed from website in a form of dictionary.
+        :param field_name: Fieldname of value to extract out of data dict.
+        :return: string or None.
+        """
         try:
             value = data_dict.pop(field_name, '')[0]
             if self._is_string_valid(value):
@@ -3661,6 +3704,13 @@ class ChargerCategoryToEdit:
             self.isValidData = False
 
     def _get_required_bool_field_value(self, data_dict, field_name):
+        """
+        Check's if value in a given fieldname out of data_dict is valid boolean value or not.
+        If valid then function returns boolean value, if not adds error to the message and returns None.
+        :param data_dict: data passed from website in a form of dictionary.
+        :param field_name: Fieldname of value to extract out of data dict.
+        :return: boolean or None
+        """
         try:
             value = data_dict.pop(field_name, '')[0]
             if self._is_bool_valid(value):
@@ -3673,6 +3723,13 @@ class ChargerCategoryToEdit:
             self.isValidData = False
 
     def _get_required_integer_field_value(self, data_dict, field_name):
+        """
+        Check's if value in a given fieldname out of data_dict is valid int value or not.
+        If valid then function returns int number, if not adds error to the message and returns None.
+        :param data_dict: data passed from website in a form of dictionary.
+        :param field_name: Fieldname of value to extract out of data dict.
+        :return: int or None.
+        """
         try:
             value = data_dict.pop(field_name, '')[0]
             if value.isdigit():
@@ -3685,6 +3742,13 @@ class ChargerCategoryToEdit:
             self.isValidData = False
 
     def _get_required_decimal_field_value(self, data_dict, field_name):
+        """
+        Check's if value in a given fieldname out of data_dict is valid decimal value or not.
+        If valid then function returns float number, if not adds error to the message and returns None.
+        :param data_dict: data passed from website in a form of dictionary.
+        :param field_name: Fieldname of value to extract out of data dict.
+        :return: float or None.
+        """
         try:
             value = data_dict.pop(field_name, '')[0]
             value = value.replace(',', '.')
@@ -3698,85 +3762,34 @@ class ChargerCategoryToEdit:
             self.isValidData = False
 
     def _string_to_bool(self, string):
+        """
+        Returns True or False based on which boolean value is represented in string.
+        True - 'true', '1', 't', 'y', 'yes'
+        False - 'false', '0', 'n', 'f', 'no'
+        :param string: bool in a form as string
+        :return: True/False.
+        """
         if string.lower() in ['true', '1', 't', 'y', 'yes']:
             return True
         if string.lower() in ['false', '0', 'n', 'f', 'no']:
             return False
 
     def _is_bool_valid(self, string):
-        if string.lower() in ['true', '1', 't', 'y', 'yes', 'false', '0', 'n', 'f', 'no']:
-            return True
-        return False
+        """
+        If string fits into possible_values returns True, else False.
+        :param string: String to check if fits in possible_values.
+        :return: True/False.
+        """
+        possible_values = ['true', '1', 't', 'y', 'yes', 'false', '0', 'n', 'f', 'no']
+        return string.lower() in possible_values
 
     def _is_string_valid(self, string):
-        if string == '' or string.lower() == 'none':
-            return False
-        return True
-
-    def increment(self):
-        self.counter += 1
-        return ''
-
-    def isSecond(self):
-        return bool(self.counter%2)
-
-    def unique_manufacturers(self):
-        manufacturers_list = []
-        for man in Manufacturers.objects.all():
-            manufacturers_list.append(man.manufacturer_name)
-        manufacturers_list.sort()
-        return manufacturers_list
-
-    def _unique_values_returner(self, column_name):
-        holder = []
-        for tupple_holder in ChargerCategories.objects.values_list(column_name).distinct():
-            holder.append(tupple_holder[0])
-        return holder
-
-    def unique_originality_statuses(self):
-        return [True, False]
-
-    def unique_used_statuses(self):
-        return [True, False]
-
-    def unique_connector_types(self):
-        return self._unique_values_returner('connector_type')
-
-    def unique_watts(self):
-        return self._unique_values_returner('watts')
-
-    def unique_connectors_inner_diameter(self):
-        return self._unique_values_returner('connector_inner_diameter')
-
-    def unique_connectors_outer_diameter(self):
-        return self._unique_values_returner('connector_outer_diameter')
-
-    def unique_dcoutvoltsmin(self):
-        return self._unique_values_returner('dcoutvoltsmin')
-
-    def unique_dcoutvoltsmax(self):
-        return self._unique_values_returner('dcoutvoltsmax')
-
-    def unique_dcoutampers(self):
-        return self._unique_values_returner('dcoutampers')
-
-    def unique_connector_contacts_qtys(self):
-        return self._unique_values_returner('connector_contacts_qty')
-
-    def unique_acinvoltsmins(self):
-        return self._unique_values_returner('acinvoltsmin')
-
-    def unique_acinvoltsmaxs(self):
-        return self._unique_values_returner('acinvoltsmax')
-
-    def unique_acinhzmins(self):
-        return self._unique_values_returner('acinhzmin')
-
-    def unique_acinhzmaxs(self):
-        return self._unique_values_returner('acinhzmax')
-
-    def unique_acinamperses(self):
-        return self._unique_values_returner('acinampers')
+        """
+        If string is empty or it's none as lowercase it will return False, otherwise True.
+        :param string: String to check.
+        :return: True/False.
+        """
+        return not (string == '' or string.lower() == 'none')
 
 
 class ChargerSerialEditor:
@@ -3785,7 +3798,7 @@ class ChargerSerialEditor:
         self.index = data['Index']
         self.serial = data['Serial']
 
-    def proccess(self):
+    def process(self):
         charger = Chargers.objects.get(charger_id=self.index)
         charger.charger_serial = self.serial
         charger.save()

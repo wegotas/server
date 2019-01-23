@@ -1210,10 +1210,11 @@ def serial_processing(request, serial):
 
 @csrf_exempt
 def edit_charger(request, int_index):
+    ccte = ChargerCategoryToEdit(int_index)
     if request.method == 'POST':
         print('POST method')
-        ccte = ChargerCategoryToEdit(int_index)
-        ccte.proccess(request.POST.copy())
+        # ccte = ChargerCategoryToEdit(int_index)
+        ccte.process(request.POST.copy())
         if ccte.isValidData:
             return render(
                 request,
@@ -1227,7 +1228,7 @@ def edit_charger(request, int_index):
              )
     if request.method == 'GET':
         print('GET method')
-        ccte = ChargerCategoryToEdit(int_index)
+        # ccte = ChargerCategoryToEdit(int_index)
         return render(
             request,
             'charger_edit.html',
@@ -1241,7 +1242,7 @@ def edit_charger_serial(request, int_index):
     if request.method == 'POST':
         print('POST method')
         cse = ChargerSerialEditor(JSONParser().parse(request))
-        cse.proccess()
+        cse.process()
     if request.method == 'GET':
         print('GET method')
 
