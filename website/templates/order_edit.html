@@ -5,9 +5,18 @@
     <meta charset="UTF-8">
     <title>Order edit</title>
     <link rel="stylesheet" type="text/css" href="{% static 'order_edit.css' %}">
+    <!-- <script src="jquery.min.js" ></script> -->
+    <script src="{% static 'jquery.min.js' %}" ></script>
     <script type="text/javascript" src="{% static 'order_edit.js' %}"></script>
 </head>
 <body>
+    <!-- <p id="demo"></p> -->
+    <div align="center">
+        <button onclick="toggle_search_result_div()">Show/Hide</button>
+        <input type="text" class="searchInput"><button onclick="search()">Search</button>
+    </div>
+    <div align="center" id="searchResults" class="hidden">
+    </div>
     <form method="post" onsubmit="beforeSubmit()">
         <div class="error">{{ error_message|linebreaks }}</div>
         <table>
@@ -63,7 +72,7 @@
                     <th>RAM</th>
                     <th>Other</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th colspan="2">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -90,6 +99,8 @@
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAy1JREFUSImV02tIU2EYB/D/2TnunDmmQxs4DQMrRMM1jTYjbQ6ipALDOB+rr/lFhCV+CcpYNyMManQvksAuil0U7GaJWCNRsqiG2SojdZaOdciz4+a7PsjEbe24PfB+Oe/7/P7PuVFIoCwWi1alUonR10VRpHp7e/1yvdRyeG1t7ZmVen1FCsf9jd5jGSYozs09tdlsJxIZNKYaGhqOtLe3zzudzlC86uzs/Fxpta6OZyjk8KqqqkMGgyHuGQBQKBQKkRDKarVWWywWJqGAMF5aWkrL4eGigfoQIddpmnYuG5As/qq/X5em1e6laTqdAjZYrdYRnucXeyMCksXtl9rwUr1Ds7liqyo9PX0BpKi109PTrrC9CMXDBUGA3+9HdnZ2JH7xHlpDlfibtgZfPAK25Wvw2zMBSZJAARm5ubmbTCZTKw0Adru9zmg0HsvLy6O9Xi/CSxAEDA8Po6SkBBzHRUzeGqoEUWqAyfcYTi3FR58Se/IV+O2ZwOzsrI+maXtXV9d7mud5pVqtvmYymXSiKGLpkiQJxcXF0Gq1i/jRC3dxewnuYotAhQioGTeGZlKxK58N/vzmbnrW0+MAAEYQBCorK2vKbDbnL/fMGx23cVexMwZPm3gNH7MC/nmaPBoYdQz09DSGe2S/8aV1JAJ/F4OzkpcUfL95dqDjct3SvoQCDp9vxb0I3BCDF461NL99cNEW3Rvz50WX484TtNG7FvCJd3BxkTgX9KHw2/UbQw+vHPxfv+wd/BgbAxv4A25u5r+4KujDfu6FT+MbORnPkA0YHBxEcUEejhsn8SukiZn8pHEcVeWGaTlDNuCTywVCCHQaJVrKp7DK83xx8lPGcdTu2y3XLh8wOjqKjx8+4OrVKwgEAshKU8KxQ41Vwa9o2uBJCAdkXnJfXx88Hg8IIXh4vwPriorg9Xpxq3o9ysrKEsJlA944ndDr9cjIzMRGsxlbysuRkZmZMLxswIGaGqzQ6ZCTk5M0GhOQwjCB6I31RmNCACGEsDL7FACca27eDoY56Pf7U5KZjmXZYECSHtvq60/LBgAAz/NKt9sdSiZAp9Mpuru7Jbkz/wAVAobVY0U2sQAAAABJRU5ErkJggg=="
                             />
                         </button>
+                    </td>
+                    <td>
                         {% if not ote.order.is_sent %}
                         <button title="Remove computer from the record" class="img-button" type="button" onclick="remove_from_order({{ computer.id_computer }})"{% if ote.order.is_sent %} disabled{% endif %}>
                             <img

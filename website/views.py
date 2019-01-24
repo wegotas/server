@@ -910,6 +910,21 @@ def strip_order(request, int_index):
 
 
 @csrf_exempt
+def computer_search_table_from_order(request):
+    print("Computer search table from order")
+    if request.method == 'POST':
+        print("This was POST request")
+        keyword = None
+        query = get_query_for_computer_search_from_order_edit(keyword)
+        computers = Computers.objects.filter(query)
+        # _strip_order_of_computer()
+        # return HttpResponse(status=200)
+    if request.method == 'GET':
+        print("This was GET request")
+        # return HttpResponse('This should not be returned', status=404)
+
+
+@csrf_exempt
 def hdd_edit(request, int_index):
     print('hdd_edit')
     hte = HddToEdit(int_index)

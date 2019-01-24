@@ -261,7 +261,7 @@
                     <input name="" value="{{ charger.charger_id }}" type="checkbox" class="record-chkbx" onclick="serialSelect(this)">
                 </td>
                 <td>
-                    <input class="charger-serial" type="text" value="{{ charger.charger_serial }}">
+                    <input class="charger-serial" type="text" value="{{ charger.charger_serial }}" disabled="disabled">
                 </td>
                 <td>
                     <button class="edit-button" onclick="toggleDisabled(this, {{ charger.charger_id }})">Edit&nbsp;</button>

@@ -73,3 +73,28 @@ function remove_from_order(index) {
     }
   }
 }
+
+function search() {
+    /*
+    search_result_div = document.getElementById('searchResults');
+    search_result_div.classList.toggle("hidden");
+    */
+    search_result_div = document.getElementById('searchResults');
+    show_element(search_result_div);
+}
+
+function toggle_search_result_div() {
+    document.getElementById('searchResults').classList.toggle("hidden");
+}
+
+function show_element(element) {
+    element.classList.remove("hidden");
+}
+
+
+
+/*
+$(document).ready(function() {
+    $("#demo").html("Hello, World!");
+});
+*/

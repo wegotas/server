@@ -1,0 +1,27 @@
+<table align="center" class="searchTable">
+    <thead>
+        <th>Serial:</th>
+        <th>Manufacturer:</th>
+        <th>Model:</th>
+        <th>CPU:</th>
+        <th>GPU:</th>
+        <th>RAM:</th>
+        <th>Other:</th>
+        <th colspan="2">Actions:</th>
+    </thead>
+    <tbody>
+        {% for computer in computers %}
+        <tr>
+            <td>{{ computer.computer_serial }}</td>
+            <td>{{ computer.f_manufacturer.manufacturer_name }}</td>
+            <td>{{ computer.f_model.model_name }}</td>
+            <td>{{ computer.f_cpu.cpu_name }}</td>
+            <td>{{ computer.f_gpu.gpu_name }}</td>
+            <td>{{ computer.f_ram_size.ram_size_text }}</td>
+            <td>{{ computer.getOther2lines|linebreaksbr }}</td>
+            <td><button>Edit</button></td>
+            <td><button>+</button></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
