@@ -5,18 +5,17 @@
     <meta charset="UTF-8">
     <title>Order edit</title>
     <link rel="stylesheet" type="text/css" href="{% static 'order_edit.css' %}">
-    <!-- <script src="jquery.min.js" ></script> -->
-    <script src="{% static 'jquery.min.js' %}" ></script>
     <script type="text/javascript" src="{% static 'order_edit.js' %}"></script>
 </head>
 <body>
-    <!-- <p id="demo"></p> -->
+    {% if not ote.order.is_sent %}
     <div align="center">
-        <button onclick="toggle_search_result_div()">Show/Hide</button>
-        <input type="text" class="searchInput"><button onclick="search()">Search</button>
+        <button id="show_hide_search_result" class="hidden search_left_button" onclick="toggle_search_result()">Show/Hide</button>
+        <input type="text" id="search_input" class="searchInput search_input_text" placeholder="Search keyword">
+        <button id="search_button" class="search_right_button" onclick="search()" disabled="disabled">Search</button>
     </div>
-    <div align="center" id="searchResults" class="hidden">
-    </div>
+    {% endif %}
+    <div align="center" id="searchResults" class="hidden"></div>
     <form method="post" onsubmit="beforeSubmit()">
         <div class="error">{{ error_message|linebreaks }}</div>
         <table>

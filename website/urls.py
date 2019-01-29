@@ -15,8 +15,12 @@ urlpatterns = [
     path('edit_charger/<int:int_index>/print_serials/', views.print_chargers_serials, name='print_chargers_serials'),
     path('edit_charger/<int:int_index>/delete/', views.delete_charger, name='delete_charger'),
     path('edit_charger/<int:int_index>/', views.edit_charger, name='edit_charger'),
+
     path('edit_order/<int:int_index>/', views.edit_order, name='edit_order'),
     path('strip_order/<int:int_index>/', views.strip_order, name='strip_order'),
+    path('computer_search_table_from_order/', views.computer_search_table_from_order, name='computer_search_table_from_order'),
+    path('edit_order/<int:order_id>/add_computer/', views.add_computer_to_order, name='add_computer_to_order'),
+
     path('mass_delete/', views.mass_delete, name='mass_delete'),
     path('mass_excel/', views.mass_excel, name='mass_excel'),
     path('mass_csv/', views.mass_csv, name='mass_csv'),

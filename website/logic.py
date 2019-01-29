@@ -4110,12 +4110,12 @@ class SearchOptions:
             if ordered in lst:
                 query = Q(f_sale__isnull=True, f_id_comp_ord__isnull=False)
             if sold in lst:
-                if query == None:
+                if not query:
                     query = Q(f_sale__isnull=False)
                 else:
                     query = query | Q(f_sale__isnull=False)
             if no_status in lst:
-                if query == None:
+                if not query:
                     query = Q(f_id_comp_ord__isnull=True, f_sale__isnull=True)
                 else:
                     query = query | Q(f_id_comp_ord__isnull=True, f_sale__isnull=True)
@@ -4606,4 +4606,4 @@ def get_query_for_computer_search_from_order_edit(query_string):
             query = or_query
         else:
             query = query & or_query
-    return query
+    return query & Q(f_id_comp_ord__isnull=True, f_sale__isnull=True)

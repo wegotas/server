@@ -1,15 +1,20 @@
+{% if computers %}
 <table align="center" class="searchTable">
-    <thead>
-        <th>Serial:</th>
-        <th>Manufacturer:</th>
-        <th>Model:</th>
-        <th>CPU:</th>
-        <th>GPU:</th>
-        <th>RAM:</th>
-        <th>Other:</th>
-        <th colspan="2">Actions:</th>
+    <!--
+    <thead class="center">
+        <tr class="center">
+            <th class="center">Serial:</th>
+            <th class="center">Manufacturer:</th>
+            <th class="center">Model:</th>
+            <th class="center">CPU:</th>
+            <th class="center">GPU:</th>
+            <th class="center">RAM:</th>
+            <th class="center">Other:</th>
+            <th class="center" colspan="2">Actions:</th>
+        </tr>
     </thead>
-    <tbody>
+    -->
+    <tbody id="tbody">
         {% for computer in computers %}
         <tr>
             <td>{{ computer.computer_serial }}</td>
@@ -19,9 +24,12 @@
             <td>{{ computer.f_gpu.gpu_name }}</td>
             <td>{{ computer.f_ram_size.ram_size_text }}</td>
             <td>{{ computer.getOther2lines|linebreaksbr }}</td>
-            <td><button>Edit</button></td>
-            <td><button>+</button></td>
+            <td width="64"><button onclick="edit({{ computer.id_computer }})">Edit</button></td>
+            <td width="64"><button onclick="add_to_order(this, {{ computer.id_computer }})">+</button></td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+{% else %}
+<p class="message">No computer fits this keyword</p>
+{% endif %}

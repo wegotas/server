@@ -914,14 +914,32 @@ def computer_search_table_from_order(request):
     print("Computer search table from order")
     if request.method == 'POST':
         print("This was POST request")
-        keyword = None
-        query = get_query_for_computer_search_from_order_edit(keyword)
-        computers = Computers.objects.filter(query)
-        # _strip_order_of_computer()
-        # return HttpResponse(status=200)
+        return HttpResponse("Disallowed action", status=404)
     if request.method == 'GET':
         print("This was GET request")
-        # return HttpResponse('This should not be returned', status=404)
+        keyword = request.GET['keyword']
+        query = get_query_for_computer_search_from_order_edit(keyword)
+        computers = Computers.objects.filter(query)
+        return render(request, 'computer_search_from_order_table.html', {'computers': computers})
+
+
+@csrf_exempt
+def add_computer_to_order(request, order_id):
+    if request.method == 'POST':
+        print("This was POST request")
+        try:
+            order = Orders.objects.get(id_order=order_id)
+            comp_ord = CompOrd.objects.create(is_ready=0, f_order_id_to_order=order)
+            computer = Computers.objects.get(id_computer=JSONParser().parse(request)['computer_id'])
+            computer.f_id_comp_ord = comp_ord
+            computer.save()
+            counter = Computers.objects.filter(f_id_comp_ord__f_order_id_to_order=order).count()
+            return render(request, 'computer_search_from_order_row.html', {'counter': counter, 'computer': computer})
+        except Exception as e:
+            return HttpResponse(e, status=404)
+    if request.method == 'GET':
+        print("This was GET request")
+        return HttpResponse('Get request not Implemented', status=404)
 
 
 @csrf_exempt

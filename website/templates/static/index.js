@@ -82,6 +82,9 @@ class SearchOptions {
         } else {
             search_button.disabled = true;
         }
+        if (searchKeyword.split(' ').join('').length === 0) {
+            search_button.disabled = true;
+        }
     }
 
     getOptionsAddon() {
