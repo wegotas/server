@@ -4,15 +4,9 @@ function load() {
     search_textbox = document.getElementById('search_input');
     search_textbox.addEventListener('keyup', function(event) {
         event.preventDefault();
-        /*
-        searchoptions.toggle_search_button();
-        */
         toggle_search_button();
         search_button = document.getElementById('search_button');
         if (event.keyCode === 13 && !search_button.disabled) {
-            /*
-            search_using_keyword();
-            */
             search();
         }
     })
@@ -93,16 +87,13 @@ function remove_from_order(index) {
      xhr.setRequestHeader("Content-type", "application/json");
      xhr.send();
      xhr.onreadystatechange = function() {
-      if (xhr.readyState != 4) return;
-      if (xhr.status == 200) {
-        console.log(xhr.responseText);
-        var infoWindow = window.open('', "", "width=1100,height=650");
-        infoWindow.document.body.innerHTML = xhr.responseText;
-        location.reload();
-      }
-      else if (xhr.status == 404) {
-        alert('Failed to remove this computer from order');
-      }
+        if (xhr.readyState != 4) return;
+        if (xhr.status == 200) {
+            location.reload();
+        }
+        else if (xhr.status == 404) {
+            alert('Failed to remove this computer from order');
+        }
     }
   }
 }

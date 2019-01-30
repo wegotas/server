@@ -892,9 +892,7 @@ def edit_order(request, int_index):
 def strip_order(request, int_index):
     def _strip_order_of_computer():
         computer = Computers.objects.get(id_computer=int_index)
-        print(computer)
         compord = CompOrd.objects.get(id_comp_ord=computer.f_id_comp_ord.id_comp_ord)
-        print(compord)
         computer.f_id_comp_ord = None
         computer.save()
         compord.delete()
