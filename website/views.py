@@ -1240,6 +1240,23 @@ def serial_processing(request, serial):
 
 
 @csrf_exempt
+def delete_charger_from_scan(request, serial):
+    if request.method == 'POST':
+        print('POST method')
+        '''
+        charger = Chargers.objects.get(charger_id=JSONParser().parse(request)['charger_id'])
+        charger.delete()
+        '''
+        # Chargers.objects.get(charger_serial=serial.split('_'[2])).delete()
+        # print(serial.split('_')[2])
+        Chargers.objects.get(charger_serial=serial.split('_')[2]).delete()
+        return HttpResponse('POST request finished', status=200)
+    if request.method == 'GET':
+        print('GET method')
+        return HttpResponse('Get request not Implemented', status=404)
+
+
+@csrf_exempt
 def edit_charger(request, int_index):
     ccte = ChargerCategoryToEdit(int_index)
     if request.method == 'POST':

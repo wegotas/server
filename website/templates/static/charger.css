@@ -40,3 +40,7 @@
 .header {
     display: block;
 }
+
+.center {
+    text-align: center;
+}

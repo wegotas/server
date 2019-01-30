@@ -7,14 +7,17 @@ urlpatterns = [
     # path('edit/<int:int_index>/', views.edit, name='edit'),
     path('edit/<int:int_index>/', views.edit2, name='edit'),
     path('edit/<int:int_index>/print_qr/', views.print_computer_qr, name='print_computer_qr'),
+
     path('delete_charger_cat/<int:int_index>/', views.delete_charger_category, name='edit'),
     path('by_serial/<slug:serial>/', views.edit_by_serial, name='edit_by_serial'),
     path('serial/<slug:serial>/', views.serial_processing, name='serial_processing'),
+    path('serial/<slug:serial>/delete/', views.delete_charger_from_scan, name='delete_charger'),
     path('edit_charger/<int:int_index>/edit/', views.edit_charger_serial, name='edit_charger'),
     path('edit_charger/<int:int_index>/print/', views.print_charger_serial, name='print_charger'),
     path('edit_charger/<int:int_index>/print_serials/', views.print_chargers_serials, name='print_chargers_serials'),
     path('edit_charger/<int:int_index>/delete/', views.delete_charger, name='delete_charger'),
     path('edit_charger/<int:int_index>/', views.edit_charger, name='edit_charger'),
+
 
     path('edit_order/<int:int_index>/', views.edit_order, name='edit_order'),
     path('strip_order/<int:int_index>/', views.strip_order, name='strip_order'),

@@ -90,9 +90,9 @@ function deleteCharger(index) {
     xhr.open('POST', 'delete/', true);
     xhr.send(object);
     xhr.onreadystatechange = function(e) {
-      if (xhr.readyState === 4) {
-        location.reload();
-      }
+        if (xhr.readyState === 4) {
+            location.reload();
+        }
     }
 }
 
@@ -103,9 +103,9 @@ function serialSelect(checkbox) {
         selected_serials.splice(selected_serials.indexOf(checkbox.value), 1);
     }
     if (selected_serials.length>0) {
-      document.getElementById("printButton").style.display = "inline-block";
+        document.getElementById("printButton").style.display = "inline-block";
     } else {
-      document.getElementById("printButton").style.display = "none";
+        document.getElementById("printButton").style.display = "none";
     }
 }
 
@@ -125,3 +125,16 @@ function printSelectedSerials() {
     xhr.send(object);
 }
 
+function delete_charger(charger_id) {
+    if (confirm("Delete charger?")) {
+        console.log(charger_id);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'delete/', true);
+        xhr.send();
+        xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+                location.reload();
+            }
+        }
+    }
+}
