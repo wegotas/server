@@ -23,6 +23,7 @@ import tempfile
 import math
 import sys
 from abc import ABC
+from pathlib import Path
 
 
 class BatHolder:
@@ -3933,7 +3934,9 @@ class Qrgenerator:
                 imgByteArr = io.BytesIO()
                 image.save(imgByteArr, format='PNG')
                 temp.write(imgByteArr.getvalue())
+                temp.flush()
                 subprocess.call(['lpr', temp.name])
+                
 
     def _generateQR(self, serial):
         qrImg = qrcode.make(self.base_url + serial + '/')

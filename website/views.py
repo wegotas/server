@@ -389,7 +389,8 @@ def mass_csv(request):
 
 @csrf_exempt
 def mass_qr_print(request):
-    print("Mass csv")
+    # print(JSONParser().parse(request))
+    print("Mass qr print")
     if request.method == 'POST':
         print("This was POST request")
     if request.method == 'GET':
