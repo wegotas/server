@@ -3936,7 +3936,6 @@ class Qrgenerator:
                 temp.write(imgByteArr.getvalue())
                 temp.flush()
                 subprocess.call(['lpr', temp.name])
-                
 
     def _generateQR(self, serial):
         qrImg = qrcode.make(self.base_url + serial + '/')
