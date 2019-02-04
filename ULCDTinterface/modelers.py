@@ -282,7 +282,7 @@ class FormFactor(models.Model):
 
 class Gpus(models.Model):
     id_gpu = models.AutoField(primary_key=True)
-    gpu_name = models.CharField(max_length=45)
+    gpu_name = models.CharField(max_length=150)
     f_id_manufacturer = models.ForeignKey('Manufacturers', models.DO_NOTHING, db_column='f_id_manufacturer', blank=True,
                                           null=True)
 

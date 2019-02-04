@@ -547,8 +547,9 @@ class ComputerRecord2:
     def _one_to_many_connection_save(self, data_dict):
         print("start of _one_to_many_connection_save")
         print("before self.category")
+        print()
         self.category = Categories.objects.get(category_name=data_dict['Log Information']["Category"])
-        print("before self.type ")
+        print("before self.type")
         self.type = Types.objects.get_or_create(type_name=data_dict['System Info']["Type"])[0]
         print("before self.tester")
         self.tester = Testers.objects.get(tester_name=data_dict['Log Information']["Tester"])

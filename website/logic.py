@@ -3906,9 +3906,9 @@ class Qrgenerator:
             serial_pair = self._get_serial_pair(index)
             image = self._formImagePair(serial_pair[0], serial_pair[1])
             with tempfile.NamedTemporaryFile() as temp:
-                imgByteArr = io.BytesIO()
-                image.save(imgByteArr, format='PNG')
-                temp.write(imgByteArr.getvalue())
+                img_byte_arr = io.BytesIO()
+                image.save(img_byte_arr, format='PNG')
+                temp.write(img_byte_arr.getvalue())
                 subprocess.call(['lpr', temp.name])
 
     def _get_pair_cycles(self):
@@ -3931,16 +3931,16 @@ class Qrgenerator:
             # image = self._formImagePair(serial, None)
             image = self._fromSerialToImage(serial)
             with tempfile.NamedTemporaryFile() as temp:
-                imgByteArr = io.BytesIO()
-                image.save(imgByteArr, format='PNG')
-                temp.write(imgByteArr.getvalue())
+                img_byte_arr = io.BytesIO()
+                image.save(img_byte_arr, format='PNG')
+                temp.write(img_byte_arr.getvalue())
                 temp.flush()
                 subprocess.call(['lpr', temp.name])
 
-    def _generateQR(self, serial):
-        qrImg = qrcode.make(self.base_url + serial + '/')
-        qrImg.thumbnail((410, 410), Image.ANTIALIAS)
-        return qrImg
+    def _generate_qr(self, serial):
+        qr_img = qrcode.make(self.base_url + serial + '/')
+        qr_img.thumbnail((410, 410), Image.ANTIALIAS)
+        return qr_img
 
     def _formPrintableSerial(self, serial):
         if len(serial) > 7:
@@ -3957,7 +3957,7 @@ class Qrgenerator:
         return textImg
 
     def _fromSerialToImage(self, serial):
-        qrImg = self._generateQR(serial)
+        qrImg = self._generate_qr(serial)
         textImg = self._generateTxtImg(serial)
         image = Image.new('RGB', (350, 400), color=(255, 255, 255))
         image.paste(qrImg, (-30, -30))
@@ -4248,7 +4248,9 @@ class Computer4th:
         manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=data_dict.pop('manufacturer_name')[0])[0]
         model = Models.objects.get_or_create(model_name=data_dict.pop('model_name')[0])[0]
         cpu = Cpus.objects.get_or_create(cpu_name=data_dict.pop('cpu_name')[0])[0]
+        print('Start of problematic section')
         gpu = Gpus.objects.get_or_create(gpu_name=data_dict.pop('gpu_name')[0])[0]
+        print('End of problematic section')
         ram_size = RamSizes.objects.get_or_create(ram_size_text=data_dict.pop('ram_size_text')[0])[0]
         hdd_size = HddSizes.objects.get_or_create(hdd_sizes_name=data_dict.pop('hdd_sizes_name')[0])[0]
         diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict.pop('diagonal_text')[0])[0]
