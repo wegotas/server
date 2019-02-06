@@ -142,6 +142,7 @@ def process_data2(request):
         datastring = unquote(query_string)
         data = json.loads(datastring)
         try:
+            print(data["Serial"])
             csb = Computer_data_dict_builder(str(data["Serial"]).strip())
             print(csb.data_dict)
             return JsonResponse(csb.data_dict)

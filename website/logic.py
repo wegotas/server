@@ -3850,13 +3850,8 @@ class ChargerDualSerialPrinter:
 
 class ComputerSingleSerialPrinter:
 
-    def __init__(self, data):
-        print(type(data))
-        print(data)
-        print(data['Index'])
-        # print(type(data['Index']))
-        # print(data['Index'])
-        self.full_serial = self._form_serial(data['Index'])
+    def __init__(self, int_index):
+        self.full_serial = self._form_serial(int_index)
         self.base_url = 'http://192.168.8.254:8000/website/by_serial/'
 
     def _form_serial(self, int_index):

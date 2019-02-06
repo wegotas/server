@@ -1356,7 +1356,9 @@ def print_computer_qr(request, int_index):
         # variable = JSONParser().parse(request)
         # variable = json.loads(request.body)
         # cssp = ComputerSingleSerialPrinter(variable)
-        cssp = ComputerSingleSerialPrinter(JSONParser().parse(request))
+        # cssp = ComputerSingleSerialPrinter(JSONParser().parse(request))
+
+        cssp = ComputerSingleSerialPrinter(int_index)
         cssp.print()
     if request.method == 'GET':
         print('GET method')
