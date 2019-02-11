@@ -73,29 +73,28 @@ function beforeSubmit() {
 }
 
 function remove_from_order(index) {
-  if (confirm('Do you really want to remove this computer from this order?')) {
-     URLtoWorkWith = location.href;
-     parts = URLtoWorkWith.split('/');
-     parts.pop();
-     parts.pop();
-     parts.pop();
-     URLtoWorkWith = parts.join('/');
-     URLtoWorkWith = URLtoWorkWith + '/strip_order/'+index+'/'
-     console.log(URLtoWorkWith);
-     var xhr = new XMLHttpRequest();
-     xhr.open('POST', URLtoWorkWith);
-     xhr.setRequestHeader("Content-type", "application/json");
-     xhr.send();
-     xhr.onreadystatechange = function() {
-        if (xhr.readyState != 4) return;
-        if (xhr.status == 200) {
-            location.reload();
-        }
-        else if (xhr.status == 404) {
-            alert('Failed to remove this computer from order');
+    if (confirm('Do you really want to remove this computer from this order?')) {
+         URLtoWorkWith = location.href;
+         parts = URLtoWorkWith.split('/');
+         parts.pop();
+         parts.pop();
+         parts.pop();
+         URLtoWorkWith = parts.join('/');
+         URLtoWorkWith = URLtoWorkWith + '/strip_order/'+index+'/'
+         console.log(URLtoWorkWith);
+         var xhr = new XMLHttpRequest();
+         xhr.open('POST', URLtoWorkWith);
+         xhr.setRequestHeader("Content-type", "application/json");
+         xhr.send();
+         xhr.onreadystatechange = function() {
+            if (xhr.readyState != 4) return;
+            if (xhr.status == 200) {
+                location.reload();
+            } else if (xhr.status == 404) {
+                alert('Failed to remove this computer from order');
+            }
         }
     }
-  }
 }
 
 function search() {

@@ -893,6 +893,21 @@ def edit_order(request, int_index):
         request
     )
 
+@csrf_exempt
+def delete_order(request, int_index):
+    if request.method == 'POST':
+        print("This was POST request")
+        try:
+            order = Orders.objects.get(id_order=int_index)
+            OrdTes.objects.filter(f_order=order).delete()
+            order.delete()
+            return render(request, 'success.html')
+        except Exception as e:
+            return HttpResponse(e, status=404)
+    if request.method == 'GET':
+        print("This was GET request")
+        return HttpResponse("You shouldn't be here", status=404)
+
 
 @csrf_exempt
 def strip_order(request, int_index):

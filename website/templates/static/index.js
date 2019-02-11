@@ -301,6 +301,26 @@ function editOrder(index) {
   var editWindow = window.open('edit_order/'+index+'/', "", "width=1000,height=650");
 }
 
+function deleteOrder(index) {
+    if (confirm("Do you really want to delete this order?")) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'delete_order/' + index + '/', true);
+        xhr.send();
+        xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+                console.log(xhr.status);
+                if (xhr.status == 200) {
+                    location.reload();
+                }
+                else {
+                    var infoWindow = window.open('', '', "width=1000,height=650");
+                    infoWindow.document.body.innerHTML = xhr.responseText;
+                }
+            }
+        }
+    }
+}
+
 function autoFilterMenu(filterDivId){
     filterDiv = document.getElementById(filterDivId);
     filterDiv.classList.toggle("show");

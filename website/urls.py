@@ -19,6 +19,7 @@ urlpatterns = [
     path('edit_charger/<int:int_index>/', views.edit_charger, name='edit_charger'),
 
 
+    path('delete_order/<int:int_index>/', views.delete_order, name='delete_order'),
     path('edit_order/<int:int_index>/', views.edit_order, name='edit_order'),
     path('strip_order/<int:int_index>/', views.strip_order, name='strip_order'),
     path('computer_search_table_from_order/', views.computer_search_table_from_order, name='computer_search_table_from_order'),
