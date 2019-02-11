@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Adding the new computer</title>
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <script type="text/javascript" src="{% static 'new_record.js' %}"></script>
 </head>
 <style>
 th, td {
@@ -78,6 +79,12 @@ input:read-only {
                         <option value="{{ category }}">{{ category }}</option>
                         {% endfor %}
                     </select>
+                </td>
+            </tr>
+            <tr>
+                <th>Box number<font color="red">*</font>:</th>
+                <td>
+                    <input id="intTextBox" name="box_number">
                 </td>
             </tr>
             <tr>

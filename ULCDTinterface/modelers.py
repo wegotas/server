@@ -198,10 +198,16 @@ class Computers(models.Model):
                                                   db_column='f_id_computer_resolutions', blank=True, null=True)
     f_id_received_batches = models.ForeignKey('Receivedbatches', models.DO_NOTHING, db_column='f_id_received_batches',
                                               blank=True, null=True)
+    box_number = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'Computers'
+
+    def get_box_number(self):
+        if not self.box_number:
+            return ''
+        return self.box_number
 
     def getDate(self):
         if self.date is None:

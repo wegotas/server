@@ -131,6 +131,8 @@ def process_data2(request):
             record.message += "Something gone wrong. Notify administrator of this problem."
         if status_code == 200:
             data = {}
+            print(type(record.computer))
+            print(record.computer)
             data["Index"] = record.computer.id_computer
             json_data = json.dumps(data)
             return HttpResponse(json_data, status=status_code)

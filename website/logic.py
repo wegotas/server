@@ -608,7 +608,7 @@ class AbstractDataFileGenerator(ABC):
             return ''
         for commentPart in self.unwantedCommentParts:
             string = string.replace(commentPart, '')
-        return string.strip(' ,;')
+        return string.strip(' ,;').replace('\r', ' ')
 
     def _form_comment_part(self, field, title=None):
         """
@@ -1224,6 +1224,7 @@ class RecordToAdd:
 
     def __init__(self, data_dict):
         self.data = data_dict
+        print(data_dict)
         self.error_list = []
 
     def get_error_message(self):
@@ -1264,7 +1265,8 @@ class RecordToAdd:
                 date=timezone.now(),
                 f_id_received_batches=Receivedbatches.objects.get(
                     received_batch_name=self.data.get("received_batch_name")
-                )
+                ),
+                box_number=self.data.get("box_number")
             )
             print("record_to_add save end")
         else:
@@ -1281,7 +1283,7 @@ class RecordToAdd:
 
     def _validate(self):
         """"
-        Validates if al required fieldnames are present within provided queryset.
+        Validates if all required fieldnames are present within provided queryset.
         """
         fieldnames = (
             "serial",
@@ -1297,7 +1299,8 @@ class RecordToAdd:
             "ram_cover",
             "other",
             "tester_name",
-            "received_batch_name"
+            "received_batch_name",
+            "box_number"
         )
 
         error_messages = (
@@ -1314,7 +1317,8 @@ class RecordToAdd:
             "RAM cover was not set",
             "Other was not set",
             "Tester was not set",
-            "Received batch was not set"
+            "Received batch was not set",
+            "Box number was not set"
         )
 
         for i in range(len(fieldnames)):
@@ -4176,6 +4180,8 @@ class Computer4th:
             if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
                 received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
                 self.computer.f_id_received_batches = received_batch
+            if data_dict['box_number']:
+                self.computer.box_number = data_dict.pop('box_number')[0]
             self.computer.save()
 
         def _save_ordered_computer():
@@ -4206,6 +4212,9 @@ class Computer4th:
             if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
                 received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
                 self.computer.f_id_received_batches = received_batch
+            if data_dict['box_number']:
+                print("Passed box_number check")
+                self.computer.box_number = data_dict.pop('box_number')[0]
             self.computer.save()
 
         def _save_stored_computer():
@@ -4236,6 +4245,9 @@ class Computer4th:
             if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
                 received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
                 self.computer.f_id_received_batches = received_batch
+            if data_dict['box_number']:
+                print("Passed box_number check")
+                self.computer.box_number = data_dict.pop('box_number')[0]
             self.computer.save()
 
         type = Types.objects.get_or_create(type_name=data_dict.pop('type_name')[0])[0]
@@ -4391,6 +4403,8 @@ class Computer5th:
             if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
                 received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
                 self.computer.f_id_received_batches = received_batch
+            if data_dict['box_number']:
+                self.computer.box_number = data_dict.pop('box_number')[0]
             self.computer.save()
 
         def _save_ordered_computer():
@@ -4410,6 +4424,8 @@ class Computer5th:
             if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
                 received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
                 self.computer.f_id_received_batches = received_batch
+            if data_dict['box_number']:
+                self.computer.box_number = data_dict.pop('box_number')[0]
             self.computer.save()
 
         def _save_stored_computer():
@@ -4429,6 +4445,8 @@ class Computer5th:
             if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
                 received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
                 self.computer.f_id_received_batches = received_batch
+            if data_dict['box_number']:
+                self.computer.box_number = data_dict.pop('box_number')[0]
             self.computer.save()
 
         print(data_dict)

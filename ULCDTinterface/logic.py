@@ -275,6 +275,7 @@ class ComputerRecord2:
         except Exception as e:
             self.message += "Failure exception\nPossible reason:\n"
             self.message += str(e)
+            print(str(e))
             self.success = False
 
     def _computer_save_and_get(self, data):
@@ -313,6 +314,7 @@ class ComputerRecord2:
             existing_computer.motherboard_serial = self.motherboard_serial
             existing_computer.f_id_matrix = self.matrix
             existing_computer.f_id_computer_resolutions = self.computer_resolution
+            existing_computer.box_number = data['Others']['Box number']
             if "Received batch" in data["Log Information"] and existing_computer.f_id_received_batches is None:
                 existing_computer.f_id_received_batches = Receivedbatches.objects.get(received_batch_name=data["Log Information"]["Received batch"])
             if existing_computer.f_id_comp_ord:
@@ -363,7 +365,8 @@ class ComputerRecord2:
                 motherboard_serial=self.motherboard_serial,
                 f_id_matrix=self.matrix,
                 f_id_computer_resolutions=self.computer_resolution,
-                f_id_received_batches=received_batch
+                f_id_received_batches=received_batch,
+                box_number=data['Others']['Box number']
             )
             computer.save()
             self.message += "New record has been added\n"
@@ -648,6 +651,8 @@ class Computer_data_dict_builder:
         others_dict["Category"] = computer.f_category.category_name
         others_dict["isSold"] = get_is_sold(computer)
         others_dict["Other"] = computer.other
+        if computer.box_number:
+            others_dict['Box number'] = computer.box_number
         if computer.f_id_received_batches:
             others_dict["Received batch"] = computer.f_id_received_batches.received_batch_name
         self.data_dict["Others"] = others_dict
