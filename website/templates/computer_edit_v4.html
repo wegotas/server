@@ -82,12 +82,6 @@ input:read-only {
             </td>
         </tr>
         <tr>
-            <th>Box number:</th>
-            <td>
-                <input id="intTextBox" name="box_number" value="{{ record.computer.get_box_number }}">
-            </td>
-        </tr>
-        <tr>
             <th>Manufacturer:</th>
             <td>
                 <input list="manufacturers" name="manufacturer_name" value="{{ record.computer.f_manufacturer.manufacturer_name }}">
@@ -301,6 +295,12 @@ input:read-only {
                     </option>
                     {% endfor %}
                 </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Box number:</th>
+            <td>
+                <input id="intTextBox" name="box_number" value="{{ record.computer.get_box_number }}">
             </td>
         </tr>
         <tr>

@@ -271,7 +271,7 @@ def edit(request, int_index):
 @csrf_exempt
 def edit2(request, int_index):
     print("EDIT ")
-    cte = ComputerToEdit(int_index)
+    cte = ComputerToEdit(int_index=int_index)
     if request.method == 'POST':
         print("This was POST request")
         cte.process_post(request.POST.copy())
@@ -308,32 +308,37 @@ def edit2(request, int_index):
 def edit_by_serial(request, serial):
     print("EDIT ")
     print(serial)
-    rc = RecordChoices()
+    cte = ComputerToEdit(serial=serial)
     if request.method == 'POST':
         print("This was POST request")
-        ecr = Edit_computer_record(request.POST.copy())
-        return render(request, 'success.html')
-
+        cte.process_post(request.POST.copy())
+        if cte.record.version == 4:
+            if cte.success():
+                return render(request, 'success.html')
+            else:
+                return render(
+                    request,
+                    'failure.html',
+                    {'message': cte.message},
+                    status=404
+                )
+        elif cte.record.version == 5:
+            if cte.success():
+                return render(request, 'success.html')
+            else:
+                return render(
+                    request,
+                    'failure.html',
+                    {'message': cte.message},
+                    status=404
+                )
     if request.method == 'GET':
         print("This was GET request")
-        template = loader.get_template('computer_edit2.html')
-        computer = Computers.objects.get(computer_serial=serial)
-        int_index = computer.id_computer
-        batteries = get_batteries(int_index)
-        rams = get_rams(int_index)
-        hdds = get_hdds(int_index)
-        return HttpResponse(
-            template.render(
-                {
-                    'computer': computer,
-                    'bat_list': batteries,
-                    "ram_list": rams,
-                    "hdd_list": hdds,
-                    "rc": rc
-                },
-                request
-            )
-        )
+        cte.process_get()
+        if cte.record.version == 4:
+            return render(request, 'computer_edit_v4.html', {'record': cte.record})
+        elif cte.record.version == 5:
+            return render(request, 'computer_edit_v5.html', {'record': cte.record})
 
 
 @csrf_exempt

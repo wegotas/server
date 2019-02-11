@@ -70,6 +70,7 @@
                     <th>GPU</th>
                     <th>RAM</th>
                     <th>Other</th>
+                    <th>Box number</th>
                     <th>Status</th>
                     <th colspan="2">Actions</th>
                 </tr>
@@ -86,6 +87,7 @@
                     <td>{{ computer.f_gpu.gpu_name }}</td>
                     <td>{{ computer.f_ram_size.ram_size_text }}</td>
                     <td>{{ computer.getOther2lines|linebreaksbr }}</td>
+                    <td>{{ computer.get_box_number }}</td>
                     <td>
                         <select name="status_{{ computer.id_computer }}" class="blockableSelect"{% if ote.order.is_sent %} disabled{% endif %}>
                             <option value="In-Preperation"{% if computer.f_id_comp_ord.is_ready == 0 %} selected{% endif %}>In-Preperation</option>

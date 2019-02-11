@@ -826,8 +826,9 @@ class ExcelGenerator(AbstractDataFileGenerator):
         worksheet.write("J1", "Optical", bold_bordered)
         worksheet.write("K1", "COA", bold_bordered)
         worksheet.write("L1", "Cam", bold_bordered)
-        worksheet.write("M1", "Comment", bold_bordered)
-        worksheet.write("N1", "Price", bold_bordered)
+        worksheet.write("M1", "Box no.", bold_bordered)
+        worksheet.write("N1", "Comment", bold_bordered)
+        worksheet.write("O1", "Price", bold_bordered)
         row = 1
         col = 0
         for int_index in indexes:
@@ -844,7 +845,8 @@ class ExcelGenerator(AbstractDataFileGenerator):
             worksheet.write(row, col + 9, self._get_cdrom(computer), bordered)
             worksheet.write(row, col + 10, self._get_license(computer), bordered)
             worksheet.write(row, col + 11, self._get_camera_option(computer), bordered)
-            worksheet.write(row, col + 12, self._form_comment(computer), bordered)
+            worksheet.write(row, col + 12, computer.box_number, bordered)
+            worksheet.write(row, col + 13, self._form_comment(computer), bordered)
             row += 1
         workbook.close()
         return self.memfile
@@ -856,7 +858,7 @@ class CsvGenerator(AbstractDataFileGenerator):
         self.memfile = io.StringIO()
         super().__init__()
         self.fieldnames = ["S/N", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Batteries', 'LCD', 'Optical', 'COA',
-                      'Cam', 'Comment', 'Price']
+                      'Cam', 'Box no.', 'Comment', 'Price']
 
     def generate_file(self, indexes):
         writer = csv.DictWriter(self.memfile, fieldnames=self.fieldnames)
@@ -876,6 +878,7 @@ class CsvGenerator(AbstractDataFileGenerator):
                 'Optical': self._get_cdrom(computer),
                 'COA': self._get_license(computer),
                 'Cam': self._get_camera_option(computer),
+                'Box no.': computer.box_number,
                 'Comment': self._form_comment(computer),
                 'Price': ''
             })
@@ -4532,9 +4535,14 @@ class Computer5th:
 
 class ComputerToEdit:
 
-    def __init__(self, int_index):
+    def __init__(self, int_index=None, serial=None):
         print('ComputerToEdit constructor')
-        self.computer = Computers.objects.get(id_computer=int_index)
+        if int_index:
+            self.computer = Computers.objects.get(id_computer=int_index)
+        elif serial:
+            self.computer = Computers.objects.get(computer_serial=serial)
+        else:
+            raise Exception("Neither index, nor serial were passed to ComputerToEdit class.")
         self.message = ''
 
     def success(self):
