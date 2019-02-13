@@ -23,7 +23,8 @@ import tempfile
 import math
 import sys
 from abc import ABC
-from pathlib import Path
+import magic
+import xlrd
 
 
 class BatHolder:
@@ -1797,7 +1798,7 @@ class OrderToEdit:
 
     def get_error_message(self):
         """
-        :return: Concated error_list as string.
+        :return: Concatenated error_list as string.
         """
         return "\r\n".join(self.error_list)
 
@@ -1822,7 +1823,7 @@ class OrderToEdit:
                 "!!!No order id!!!",
                 "Order name was not set",
                 "Client name was not set",
-                "Testers were not set",
+                "Testers were not set"
             )
 
             for fieldname, error_message in zip(fieldnames, error_messages):
@@ -1927,6 +1928,48 @@ class OrderToEdit:
                         is_ready_value=_get_status_index(value),
                         sale=sale
                     )
+
+    def process_uploaded_file(self, file):
+        print("in process_uploaded_file")
+        # print(file)
+        # print(type(file))
+        # print(magic.from_buffer(file.read(), mime=True))
+        mimetype = magic.from_buffer(file.read(), mime=True)
+        # print(mimetype.encode("unicode-escape"))
+        # print(type(mimetype))
+        file.seek(0)
+        if mimetype == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            print("Excel")
+            self._process_excel_file(file)
+        elif mimetype == "text/plain":
+            print("CSV")
+            self._process_csv_file(file)
+        else:
+            print("Smth else")
+
+    def _process_excel_file(self, file):
+        print("Processing Excel file")
+        book = xlrd.open_workbook(file_contents=file.read())
+        first_sheet = book.sheet_by_index(0)
+        print(first_sheet)
+        print(first_sheet.row(0))
+        for cell in first_sheet.row(0):
+            # print(dir(cell))
+            # print("Type: {0}, Value: {1}".format(type(cell), cell))
+            # print("Value: {0}".format(cell.value))
+            print(cell.value)
+        '''
+        num_cols = first_sheet.ncols
+        for row_id in range(1, first_sheet.nrows):
+            for col_id in range(0, num_cols):
+                cell = first_sheet.cell(row_id, col_id)
+                print("Row id: {0}, Column id: {1}, Cell: {2}".format(row_id, col_id, cell))
+            
+            print("=========================================")
+        '''
+
+    def _process_csv_file(self, file):
+        print("Processing CSV file")
 
 
 def on_start():

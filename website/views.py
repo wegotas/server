@@ -871,6 +871,7 @@ def edit_order(request, int_index):
     print(int_index)
     if request.method == 'POST':
         print("This was POST request")
+        ote.process_uploaded_file(request.FILES["csv_excel"])
         ote.set_new_data(request.POST.copy())
         if ote.hasErrors():
             return render(request, 'success.html')

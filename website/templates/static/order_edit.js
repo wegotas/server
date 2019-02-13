@@ -140,17 +140,13 @@ function add_to_order(button, computer_id) {
     xhr.send(json_to_send);
     xhr.onreadystatechange = function(e) {
         if (xhr.readyState === 4) {
-        console.log(xhr.status);
             if (xhr.status == 200) {
                 button.disabled = true;
-                /*
-                console.log(xhr.responseText);
-                */
                 table = document.getElementsByClassName("mainTable")[0];
-                var cell = table.insertRow(-1);
-                cell.innerHTML = xhr.responseText
+                var new_row = table.insertRow(-1);
+                new_row.innerHTML = xhr.responseText
             }
-            else if (xhr.status == 404) {
+            else {
                 alert(xhr.responseText);
             }
         }

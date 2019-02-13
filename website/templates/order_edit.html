@@ -16,7 +16,12 @@
     </div>
     {% endif %}
     <div align="center" id="searchResults" class="hidden"></div>
-    <form method="post" onsubmit="beforeSubmit()">
+    <form method="post" onsubmit="beforeSubmit()" enctype="multipart/form-data">
+        <!--
+        <div align="center">
+            <input type="file" name="csv_excel" title="Import CSV/Excel">
+        </div>
+        -->
         <div class="error">{{ error_message|linebreaks }}</div>
         <table>
             <tr>
@@ -31,7 +36,9 @@
                     </div>
                     {% endfor %}
                 </td>
-                <td rowspan="5"><button type="submit"{% if ote.order.is_sent %} disabled{% endif %}>Submit</button></td>
+                <td rowspan="5">
+                    <button type="submit"{% if ote.order.is_sent %} disabled{% endif %}>Submit</button>
+                </td>
             </tr>
             </tr>
             <tr>
@@ -58,7 +65,6 @@
             </tr>
             {% endif %}
         </table>
-
         <table class="mainTable">
             <thead>
                 <tr>
