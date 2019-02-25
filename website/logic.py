@@ -1929,6 +1929,7 @@ class OrderToEdit:
                         sale=sale
                     )
 
+    """
     def process_uploaded_file(self, file):
         print("in process_uploaded_file")
         # print(file)
@@ -1949,28 +1950,54 @@ class OrderToEdit:
 
     def _process_excel_file(self, file):
         print("Processing Excel file")
+        id_dict = {
+            "S/N": None,
+            "Manufacturer": None,
+            "Model": None,
+            "CPU": None,
+            "RAM": None,
+            "GPU": None,
+            "HDD": None,
+            "Batteries": None,
+            "LCD": None,
+            "Optical": None,
+            "COA": None,
+            "Cam": None,
+            "Box no.": None,
+            "Comment": None,
+            "Price": None
+        }
         book = xlrd.open_workbook(file_contents=file.read())
         first_sheet = book.sheet_by_index(0)
         print(first_sheet)
         print(first_sheet.row(0))
-        for cell in first_sheet.row(0):
+        for index, cell in enumerate(first_sheet.row(0)):
             # print(dir(cell))
             # print("Type: {0}, Value: {1}".format(type(cell), cell))
             # print("Value: {0}".format(cell.value))
-            print(cell.value)
-        '''
+            print("Index: {0}, Value: {1}".format(index, cell.value))
+            id_dict[cell.value] = index
+        print(id_dict)
         num_cols = first_sheet.ncols
         for row_id in range(1, first_sheet.nrows):
+            print(first_sheet.cell(row_id, id_dict["S/N"]).value)
+            computers = Computers.objects.filter(computer_serial=first_sheet.cell(row_id, id_dict["S/N"]).value)
+            print(computers)
+            if computers.exists():
+                print("Exists")
+                comp_ord, created = CompOrd.objects.get_or_create(f_order_id_to_order=self.order, is_ready=0)
+                print(created)
+                computers.update(f_id_comp_ord=comp_ord)
+            '''
             for col_id in range(0, num_cols):
                 cell = first_sheet.cell(row_id, col_id)
                 print("Row id: {0}, Column id: {1}, Cell: {2}".format(row_id, col_id, cell))
-            
+            '''
             print("=========================================")
-        '''
 
     def _process_csv_file(self, file):
         print("Processing CSV file")
-
+    """
 
 def on_start():
     """

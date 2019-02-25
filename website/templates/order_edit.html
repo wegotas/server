@@ -109,7 +109,7 @@
                     </td>
                     <td>
                         {% if not ote.order.is_sent %}
-                        <button title="Remove computer from the record" class="img-button" type="button" onclick="remove_from_order({{ computer.id_computer }})"{% if ote.order.is_sent %} disabled{% endif %}>
+                        <button title="Remove computer from the order" class="img-button" type="button" onclick="remove_from_order({{ computer.id_computer }})"{% if ote.order.is_sent %} disabled{% endif %}>
                             <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABX0lEQVR4Xu2UsUoDQRCG/5lsEiNqgqAE0ghqZWPhK9iIvYUvYGeljbX4CBbW0ca3EEXBRrBQNKA2CkKQU8To7Yyz3oVDk1KtbuDjv2Lv25+BO1JV/MVwjyAX52IaAMrbVV6ba9QmUSIUSwpXRACFQgIbIICMMCqAGN5bGvG7EQMcEw7uX843Hjo7NAY0mtOjJzOLCw1hNVEAIAbYoK7QCKEaSOVqpHJvMBwuDo+u1k+vl5wDqsO1yqCTZ6iPwQIUJJVm4nS+S+ENATS0Dc/kMBS/jY8oJpwCSp0nxe0ZiBXsYGQrCHL+IRbJWsKkYuiH4RkStcUrxCUXO5Tnl6HQrClne1UjMwOU4gwWy/Si0IR39yCtFhwAju4id7O5BU1bMvdZRZ91ZO2TJMvoFU7NRBWgvsLYn2LMKkGTooksy95RTVK6aZCCLwXHTcFqt0fdqBr6C99F23j8x99mLs7Fn8+/ojoaHKHsAAAAAElFTkSuQmCC"
                             />
