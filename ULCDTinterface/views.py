@@ -111,7 +111,6 @@ def aux_data2(request):
         # dict_dict['Batches'] = list(Batches.objects.all().values_list('batch_name', flat=True))
         dict_dict['Received batches'] = list(Receivedbatches.objects.all().values_list('received_batch_name', flat=True))
         dict_dict['Observations'] = _get_formed_observations_dict()
-        print(dict_dict)
         return JsonResponse(dict_dict)
 
 
@@ -144,9 +143,7 @@ def process_data2(request):
         datastring = unquote(query_string)
         data = json.loads(datastring)
         try:
-            print(data["Serial"])
             csb = Computer_data_dict_builder(str(data["Serial"]).strip())
-            print(csb.data_dict)
             return JsonResponse(csb.data_dict)
         except Exception as e:
             if str(e) == 'Computers matching query does not exist.':

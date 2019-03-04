@@ -406,7 +406,7 @@ class Manufacturers(models.Model):
 
 class Models(models.Model):
     id_model = models.AutoField(primary_key=True)
-    model_name = models.CharField(max_length=45)
+    model_name = models.CharField(max_length=100)
 
     class Meta:
         managed = True

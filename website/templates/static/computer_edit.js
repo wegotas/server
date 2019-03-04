@@ -14,9 +14,7 @@ function toggle_visibility(button) {
 }
 
 function open_order(index) {
-    console.log(index);
     URLtoWorkWith = location.href;
-    console.log(URLtoWorkWith);
     parts = URLtoWorkWith.split('/')
     for (var i =0; i<3; i++) {
 		parts.pop();
@@ -41,6 +39,17 @@ function setInputFilter(textbox, inputFilter) {
 
 function load() {
     setInputFilter(document.getElementById("intTextBox"), function(value) { return /^-?\d*$/.test(value); });
+    setInputFilter(document.getElementById("coreCount"), function(value) { return /^-?\d*$/.test(value); });
+    setInputFilter(document.getElementById("threadCount"), function(value) { return /^-?\d*$/.test(value); });
 }
 
 window.onload = function() {load()}
+
+function open_drive_edit(index) {
+    URLtoWorkWith = location.href;
+    parts = URLtoWorkWith.split('/')
+    for (var i =0; i<3; i++) {
+		parts.pop();
+	}
+	var driveEditWindow = window.open(parts.join('/')+'/hdd_edit/'+index+'/', "", "width=400,height=650");
+}

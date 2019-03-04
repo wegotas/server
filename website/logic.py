@@ -4522,7 +4522,180 @@ class Computer5th:
                 self.computer.box_number = data_dict.pop('box_number')[0]
             self.computer.save()
 
-        print(data_dict)
+        def _save_many_to_many():
+            """
+            Function responsible of handling many to many relationship record updating in database.
+            Tables which records are updated: Rams, Batteries, Processors and Gpus.
+            """
+            def _get_unique_ids(object_dict):
+                """
+                :param object_dict: Dictionary item, having keys in a pattern 'entity_field_id'
+                :return: list of unique ids
+                """
+                lst = []
+                for keyx, valuex in object_dict.items():
+                    object_id = keyx.split('_')[2]
+                    if object_id not in lst:
+                        lst.append(object_id)
+                return lst
+
+            def _save_rams():
+                """
+                Updates new values to Rams.
+                If that Ram record is referenced somewhere else, those values change just as well.
+                """
+                for keyx, valuex in ram_dict.items():
+                    if "ram_type" in keyx:
+                        ram = Rams.objects.get(id_ram=keyx.split('_')[2])
+                        ram.type = valuex
+                        ram.save()
+
+            def _save_batteries():
+                """
+                Updates new values to Batteries.
+                If that Batteries record is referenced somewhere else, those values change just as well.
+                """
+                bat_ids = _get_unique_ids(bat_dict)
+
+                for bat_id in bat_ids:
+                    battery = Batteries.objects.get(id_battery=bat_id)
+                    battery.wear_out = bat_dict["bat_wearout_" + str(bat_id)]
+                    battery.expected_time = bat_dict["bat_expectedtime_" + str(bat_id)]
+                    battery.model = bat_dict["bat_model_" + str(bat_id)]
+                    battery.maximum_wh = bat_dict["bat_maximumwh_" + str(bat_id)]
+                    battery.factory_wh = bat_dict["bat_factorywh_" + str(bat_id)]
+                    battery.save()
+
+            def _save_processors():
+                """
+                If Processors record is referenced more than once in Computerprocessors:
+                    * Creates new record and changes computer reference to a new record with edited values in Processors.
+                If Processors record is referenced only once in Computerprocessors and there is already Processors with
+                provided new values:
+                    * Reference that Processors record in Computerprocessors.
+                If Processors record is referenced only once in Computerprocessors:
+                    * Updates new values to Processors.
+                """
+                proc_ids = _get_unique_ids(proc_dict)
+                for proc_id in proc_ids:
+                    processor = Processors.objects.get(id_processor=proc_id)
+                    count_of_computer_processors = Computerprocessors.objects.filter(f_id_processor=processor).count()
+                    if not (processor.f_manufacturer.manufacturer_name == proc_dict[
+                        "proc_manufacturername_" + str(proc_id)]
+                            and processor.model_name == proc_dict["proc_modelname_" + str(proc_id)]
+                            and processor.stock_clock == proc_dict["proc_stockclock_" + str(proc_id)]
+                            and processor.max_clock == proc_dict["proc_maxclock_" + str(proc_id)]
+                            and processor.cores == int(proc_dict["proc_cores_" + str(proc_id)])
+                            and processor.threads == int(proc_dict["proc_threads_" + str(proc_id)])):
+                        manufacturer = Manufacturers.objects.get_or_create(
+                            manufacturer_name=proc_dict["proc_manufacturername_" + str(proc_id)])[0]
+                        if count_of_computer_processors > 1:
+                            Computerprocessors.objects.get(
+                                f_id_computer=self.computer,
+                                f_id_processor=processor
+                            ).delete()
+                            new_processor = Processors.objects.get_or_create(
+                                f_manufacturer=manufacturer,
+                                model_name=proc_dict["proc_modelname_" + str(proc_id)],
+                                stock_clock=proc_dict["proc_stockclock_" + str(proc_id)],
+                                max_clock=proc_dict["proc_maxclock_" + str(proc_id)],
+                                cores=int(proc_dict["proc_cores_" + str(proc_id)]),
+                                threads=int(proc_dict["proc_threads_" + str(proc_id)])
+                            )[0]
+                            Computerprocessors.objects.get_or_create(
+                                f_id_computer=self.computer,
+                                f_id_processor=new_processor
+                            )
+                        elif count_of_computer_processors == 1:
+                            try:
+                                existing_processor = Processors.objects.get(
+                                    f_manufacturer=manufacturer,
+                                    model_name=proc_dict["proc_modelname_" + str(proc_id)],
+                                    stock_clock=proc_dict["proc_stockclock_" + str(proc_id)],
+                                    max_clock=proc_dict["proc_maxclock_" + str(proc_id)],
+                                    cores=int(proc_dict["proc_cores_" + str(proc_id)]),
+                                    threads=int(proc_dict["proc_threads_" + str(proc_id)]),
+                                )
+                                computer_processor = Computerprocessors.objects.get(
+                                    f_id_computer=self.computer,
+                                    f_id_processor=processor
+                                )
+                                computer_processor.f_id_processor = existing_processor
+                                computer_processor.save()
+                                processor.delete()
+                            except Processors.DoesNotExist:
+                                processor.f_manufacturer = manufacturer
+                                processor.model_name = proc_dict["proc_modelname_" + str(proc_id)]
+                                processor.stock_clock = proc_dict["proc_stockclock_" + str(proc_id)]
+                                processor.max_clock = proc_dict["proc_maxclock_" + str(proc_id)]
+                                processor.cores = int(proc_dict["proc_cores_" + str(proc_id)])
+                                processor.threads = int(proc_dict["proc_threads_" + str(proc_id)])
+                                processor.save()
+
+            def _save_gpus():
+                """
+                If Gpus record is referenced more than once in Computergpus:
+                    * Creates new record and changes computer reference to a new record with edited values in Gpus.
+                If Gpus record is referenced only once in Computergpus and there is already Gpus with
+                provided new values:
+                    * Reference that Gpus record in Computergpus.
+                If Gpus record is referenced only once in Computergpus:
+                    * Updates new values to Gpus.
+                """
+                gpu_ids = _get_unique_ids(gpu_dict)
+                for gpu_id in gpu_ids:
+                    gpu = Gpus.objects.get(id_gpu=gpu_id)
+                    count_of_computer_gpus = Computergpus.objects.filter(f_id_gpu=gpu).count()
+                    if not (gpu.f_id_manufacturer.manufacturer_name == gpu_dict["gpu_manufacturername_" + str(gpu_id)]
+                        and gpu.gpu_name == gpu_dict["gpu_gpuname_" + str(gpu_id)]):
+                        manufacturer = Manufacturers.objects.get_or_create(
+                            manufacturer_name=gpu_dict["gpu_manufacturername_" + str(gpu_id)])[0]
+                        if count_of_computer_gpus > 1:
+                            Computergpus.objects.get(
+                                f_id_gpu=gpu,
+                                f_id_computer=self.computer
+                            ).delete()
+                            new_gpu = Gpus.objects.get_or_create(
+                                gpu_name=gpu_dict["gpu_gpuname_" + str(gpu_id)],
+                                f_id_manufacturer=manufacturer
+                            )[0]
+                            Computergpus.objects.get_or_create(
+                                f_id_gpu=new_gpu,
+                                f_id_computer=self.computer
+                            )
+                        elif count_of_computer_gpus == 1:
+                            try:
+                                existing_gpu = Gpus.objects.get(
+                                    f_id_manufacturer=manufacturer,
+                                    gpu_name=gpu_dict["gpu_gpuname_" + str(gpu_id)]
+                                )
+                                computer_gpu = Computergpus.objects.get(f_id_gpu=gpu, f_id_computer=self.computer)
+                                computer_gpu.f_id_gpu = existing_gpu
+                                computer_gpu.save()
+                                gpu.delete()
+                            except Gpus.DoesNotExist:
+                                gpu.f_id_manufacturer = manufacturer
+                                gpu.gpu_name = gpu_dict["gpu_gpuname_" + str(gpu_id)]
+                                gpu.save()
+
+            ram_dict = {}
+            bat_dict = {}
+            proc_dict = {}
+            gpu_dict = {}
+            for key, value in data_dict.items():
+                if 'ram' in key:
+                    ram_dict[key] = value
+                elif 'bat' in key:
+                    bat_dict[key] = value
+                elif 'proc' in key:
+                    proc_dict[key] = value
+                elif 'gpu' in key:
+                    gpu_dict[key] = value
+            _save_rams()
+            _save_batteries()
+            _save_processors()
+            _save_gpus()
+
         type = Types.objects.get_or_create(type_name=data_dict.pop('type_name')[0])[0]
         category = Categories.objects.get_or_create(category_name=data_dict.pop('category_name')[0])[0]
         manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=data_dict.pop('manufacturer_name')[0])[0]
@@ -4545,6 +4718,7 @@ class Computer5th:
             _save_ordered_computer()
         else:
             _save_stored_computer()
+        _save_many_to_many()
 
     def delete(self):
 
@@ -4626,7 +4800,6 @@ class ComputerToEdit:
         data_dict.pop('serial')
         data_dict.pop('motherboard_serial')
         data_dict.pop('date')
-        print(data_dict)
         if self._is5thVersion(self.computer):
             print('Computer is of 5th version')
             try:

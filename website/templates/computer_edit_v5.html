@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Overview of the 5th version's computer</title>
+    <title>{{ record.computer.id_computer }} {{ record.computer.computer_serial }} Overview of the 5th version's computer</title>
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
     <script type="text/javascript" src="{% static 'computer_edit.js' %}"></script>
 </head>
@@ -357,7 +357,7 @@
                         </tr>
                         <tr>
                             <th>Type:</th>
-                            <td><input type="text" value="{{ member.type }}" readonly></td>
+                            <td><input type="text" name="ram_type_{{ member.id_ram }}" value="{{ member.type }}"></td>
                         </tr>
                     </table>
                 </div>
@@ -374,6 +374,9 @@
                 {% for member in record.drives %}
                 <div class="table-holder">
                     <table class="table">
+                        <tr>
+                            <td colspan="2"><button type="button" onclick="open_drive_edit({{ member.hdd_id }})">Edit drive</button></td>
+                        </tr>
                         <tr>
                             <th>Serial:</th>
                             <td><input type="text" value="{{ member.hdd_serial }}" readonly></td>
@@ -427,23 +430,23 @@
                         </tr>
                         <tr>
                             <th>Wear out:</th>
-                            <td><input type="text" value="{{ member.wear_out }}" readonly></td>
+                            <td><input type="text" name="bat_wearout_{{ member.id_battery }}" value="{{ member.wear_out }}"></td>
                         </tr>
                         <tr>
                             <th>Expected time:</th>
-                            <td><input type="text" value="{{ member.expected_time }}" readonly></td>
+                            <td><input type="text" name="bat_expectedtime_{{ member.id_battery }}" value="{{ member.expected_time }}"></td>
                         </tr>
                         <tr>
                             <th>Model:</th>
-                            <td><input type="text" value="{{ member.model }}" readonly></td>
+                            <td><input type="text" name="bat_model_{{ member.id_battery }}" value="{{ member.model }}"></td>
                         </tr>
                         <tr>
                             <th>Maximum wh:</th>
-                            <td><input type="text" value="{{ member.maximum_wh }}" readonly></td>
+                            <td><input type="text" name="bat_maximumwh_{{ member.id_battery }}" value="{{ member.maximum_wh }}"></td>
                         </tr>
                         <tr>
                             <th>Factory wh:</th>
-                            <td><input type="text" value="{{ member.factory_wh }}" readonly></td>
+                            <td><input type="text" name="bat_factorywh_{{ member.id_battery }}" value="{{ member.factory_wh }}"></td>
                         </tr>
                     </table>
                 </div>
@@ -462,27 +465,27 @@
                     <table class="table">
                         <tr>
                             <th>Manufacturer:</th>
-                            <td><input type="text" value="{{ member.f_manufacturer.manufacturer_name }}" readonly></td>
+                            <td><input type="text" name="proc_manufacturername_{{ member.id_processor }}" value="{{ member.f_manufacturer.manufacturer_name }}"></td>
                         </tr>
                         <tr>
                             <th>Model:</th>
-                            <td><input type="text" value="{{ member.model_name }}" readonly></td>
+                            <td><input type="text" name="proc_modelname_{{ member.id_processor }}" value="{{ member.model_name }}"></td>
                         </tr>
                         <tr>
                             <th>Stock clock:</th>
-                            <td><input type="text" value="{{ member.stock_clock }}" readonly></td>
+                            <td><input type="text" name="proc_stockclock_{{ member.id_processor }}" value="{{ member.stock_clock }}"></td>
                         </tr>
                         <tr>
                             <th>Max clock:</th>
-                            <td><input type="text" value="{{ member.max_clock }}" readonly></td>
+                            <td><input type="text" name="proc_maxclock_{{ member.id_processor }}" value="{{ member.max_clock }}"></td>
                         </tr>
                         <tr>
                             <th>Core count:</th>
-                            <td><input type="text" value="{{ member.cores }}" readonly></td>
+                            <td><input type="text" id="coreCount" name="proc_cores_{{ member.id_processor }}" value="{{ member.cores }}"></td>
                         </tr>
                         <tr>
                             <th>Thread count:</th>
-                            <td><input type="text" value="{{ member.threads }}" readonly></td>
+                            <td><input type="text" id="threadCount" name="proc_threads_{{ member.id_processor }}" value="{{ member.threads }}"></td>
                         </tr>
                     </table>
                 </div>
@@ -501,11 +504,11 @@
                     <table class="table">
                         <tr>
                             <th>Manufacturer:</th>
-                            <td><input type="text" value="{{ member.f_id_manufacturer.manufacturer_name }}" readonly></td>
+                            <td><input name="gpu_manufacturername_{{ member.id_gpu }}" type="text" value="{{ member.f_id_manufacturer.manufacturer_name }}"></td>
                         </tr>
                         <tr>
                             <th>GPU:</th>
-                            <td><input type="text" value="{{ member.gpu_name }}" readonly></td>
+                            <td><input name="gpu_gpuname_{{ member.id_gpu }}" type="text" value="{{ member.gpu_name }}"></td>
                         </tr>
                     </table>
                 </div>

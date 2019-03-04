@@ -618,7 +618,7 @@ class Computer_data_dict_builder:
             order_dict['Testers'] = testers
             order_dict['Order name'] = computer.f_id_comp_ord.f_order_id_to_order.order_name
             order_dict['Current status'] = "In-Preperation" if computer.f_id_comp_ord.is_ready == 0 else "Ready"
-            order_dict['Statusses'] = ["In-Preperation", "Ready"]
+            order_dict['Statuses'] = ["In-Preperation", "Ready"]
             order_dict['Client'] = computer.f_id_comp_ord.f_order_id_to_order.f_id_client.client_name
             self.data_dict["Order"] = order_dict
 
