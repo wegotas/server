@@ -516,12 +516,78 @@
             </div>
         </div>
         {% endif %}
-        {% if record.observations %}
         <div align="center" class="show-hide-section">
             <div>
                 <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">Observations show/hide</button>
             </div>
             <div class="section-member hidden">
+                <!--
+                <div id="observation-adder">
+                    <table id="observation-search-results" align="center">
+                        <tbody>
+                            <tr>
+                                <td>Category</td>
+                                <td>Subcategory</td>
+                                <td>Shortcode</td>
+                                <td>Description</td>
+                                <td><button type="button">+</button></td>
+                            </tr>
+                            <tr>
+                                <td>Category</td>
+                                <td>Subcategory</td>
+                                <td>Shortcode</td>
+                                <td>Description</td>
+                                <td><button type="button">+</button></td>
+                            </tr>
+                            <tr>
+                                <td>Category</td>
+                                <td>Subcategory</td>
+                                <td>Shortcode</td>
+                                <td>Description</td>
+                                <td><button type="button">+</button></td>
+                            </tr>
+                            <tr>
+                                <td>Category</td>
+                                <td>Subcategory</td>
+                                <td>Shortcode</td>
+                                <td>Description</td>
+                                <td><button type="button">+</button></td>
+                            </tr>
+                            <tr>
+                                <td>Category</td>
+                                <td>Subcategory</td>
+                                <td>Shortcode</td>
+                                <td>DescriptionDescription</td>
+                                <td><button type="button">+</button></td>
+                            </tr>
+                            <tr>
+                                <td>Category</td>
+                                <td>Subcategory</td>
+                                <td>ShortcodeShortcode</td>
+                                <td>Description</td>
+                                <td><button type="button">+</button></td>
+                            </tr>
+                            <tr>
+                                <td>Category</td>
+                                <td>SubcategorySubcategory</td>
+                                <td>Shortcode</td>
+                                <td>Description</td>
+                                <td><button type="button">+</button></td>
+                            </tr>
+                            <tr>
+                                <td>CategoryCategory</td>
+                                <td>Subcategory</td>
+                                <td>Shortcode</td>
+                                <td>Description</td>
+                                <td><button type="button">+</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <input type="text" onclick="search_observation()" placeholder="search keyword">
+                <button type="button" onclick="toggle_observation_results">Hide/Show results</button>
+                -->
                 {% for member in record.observations %}
                 <div class="table-holder">
                     <table class="table">
@@ -548,7 +614,6 @@
                 {% endfor%}
             </div>
         </div>
-        {% endif %}
     </form>
 </body>
 </html>

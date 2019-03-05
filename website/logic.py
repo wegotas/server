@@ -4451,7 +4451,6 @@ class Computer5th:
         if self.computer.f_id_received_batches != None:
             self.received_batch = self.computer.f_id_received_batches.received_batch_name
 
-
     def save_info(self, data_dict):
         def _save_sold_computer():
             print('saving sold computer')

@@ -208,3 +208,28 @@ input:read-only {
 .hidden {
     display: none;
 }
+
+#observation-adder {
+    border: 1px solid black;
+    border-radius: 6px 6px 6px 6px;
+    z-index: 1;
+}
+
+#observation-adder tr:nth-of-type(odd) {
+    background-color: rgba(94, 93, 130, 0.0);
+    text-align: center;
+}
+
+#observation-adder tr:nth-of-type(even) {
+    background-color: rgba(94, 93, 130, 0.4);
+    text-align: center;
+}
+
+#observation-search-results {
+    border-collapse: collapse;
+    width: 300px;
+}
+
+#observation-search-results td {
+    border: 1px solid black;
+}

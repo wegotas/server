@@ -173,15 +173,6 @@ input.searchButton {
     text-align: center;
 }
 
-/*
-.searchTable thead, tbody { display: block; )
-
-.searchTable thead, .searchTable tr {
-    display: table;
-    table-layout: fixed;
-}
-*/
-
 .searchTable tbody {
     display: block;
     max-height: 500px;
