@@ -199,14 +199,10 @@ class Computers(models.Model):
     f_id_received_batches = models.ForeignKey('Receivedbatches', models.DO_NOTHING, db_column='f_id_received_batches',
                                               blank=True, null=True)
     box_number = models.IntegerField(blank=True, null=True)
-    reliable_record = models.IntegerField(blank=False, null=False, default=1)
 
     class Meta:
         managed = True
         db_table = 'Computers'
-
-    def is_reliable_record(self):
-        return bool(self.reliable_record)
 
     def get_box_number(self):
         if not self.box_number:
