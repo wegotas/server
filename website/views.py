@@ -405,6 +405,18 @@ def mass_qr_print(request):
 
 
 @csrf_exempt
+def mass_qr_print_with_printer(request, printer):
+    # print(JSONParser().parse(request))
+    print("Mass qr print")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    cmsp = ComputerMultipleSerialPrinter(JSONParser().parse(request), printer)
+    cmsp.print()
+
+
+@csrf_exempt
 def cat_change(request):
     print("Mass cat_change")
     if request.method == 'POST':
@@ -1375,11 +1387,33 @@ def print_computer_qr(request, int_index):
     if request.method == 'POST':
         print('POST method')
         # variable = JSONParser().parse(request)
-        # variable = json.loads(request.body)
+        # variable = json.loads(request.bod y)
         # cssp = ComputerSingleSerialPrinter(variable)
         # cssp = ComputerSingleSerialPrinter(JSONParser().parse(request))
 
         cssp = ComputerSingleSerialPrinter(int_index)
         cssp.print()
+        return HttpResponse("Not implemented return", status=200)
+    if request.method == 'GET':
+        print('GET method')
+
+@csrf_exempt
+def print_computer_qr_with_printer(request, int_index, printer):
+    print('print_computer_qr')
+    if request.method == 'POST':
+        print('POST method')
+        print(int_index)
+        print(printer)
+        """
+        if printer == "Godex_DT4x":
+            cssp = ComputerSingleSerialPrinter(int_index, printer)
+            cssp.print()
+        elif printer == "Godex_g500":
+            cmsp = ComputerMultipleSerialPrinter([int_index], printer)
+            cmsp.print()
+        """
+        cssp = ComputerSingleSerialPrinter(int_index, printer)
+        cssp.print()
+        return HttpResponse("Not implemented return", status=200)
     if request.method == 'GET':
         print('GET method')

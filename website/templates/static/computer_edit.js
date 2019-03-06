@@ -3,8 +3,17 @@ function google_search(search_term) {
 }
 
 function print_qr() {
+    /*
     var xhr = new XMLHttpRequest();
     xhr.open('POST', 'print_qr/', true);
+    xhr.send();
+    */
+    var xhr = new XMLHttpRequest();
+    if (confirm("Do you want to print in the office?")) {
+        xhr.open('POST', 'print_qr/Godex_DT4x/', true);
+    } else {
+        xhr.open('POST', 'print_qr/Godex_g500/', true);
+    }
     xhr.send();
 }
 

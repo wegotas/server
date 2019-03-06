@@ -264,11 +264,11 @@ function remove_keyword() {
 }
 
 function collectSelectedAF() {
-  filterDivs = document.getElementsByClassName("autofilter");
-  for (var i = 0; i < filterDivs.length; i++ ){
-    afmanager.process_collection_of_filters(filterDivs[i].id);
-  }
-  afmanager.set_possible_fieldnames();
+    filterDivs = document.getElementsByClassName("autofilter");
+    for (var i = 0; i < filterDivs.length; i++ ){
+        afmanager.process_collection_of_filters(filterDivs[i].id);
+    }
+    afmanager.set_possible_fieldnames();
 }
 
 function recordSelect(checkbox){
@@ -278,9 +278,9 @@ function recordSelect(checkbox){
         selected_records.splice(selected_records.indexOf(checkbox.value), 1);
     }
     if (selected_records.length>0) {
-      document.getElementById("mass-select-options").style.display = "inline-block";
+        document.getElementById("mass-select-options").style.display = "inline-block";
     } else {
-      document.getElementById("mass-select-options").style.display = "none";
+        document.getElementById("mass-select-options").style.display = "none";
     }
 }
 
@@ -288,8 +288,8 @@ function recordSelectAll(checkbox){
     workingDiv = document.getElementById("records");
     recordCheckboxes = workingDiv.getElementsByClassName("record-chkbx");
     for (var i =0; i < recordCheckboxes.length; i++) {
-      if (recordCheckboxes[i].checked != checkbox.checked)
-        recordCheckboxes[i].click();
+        if (recordCheckboxes[i].checked != checkbox.checked)
+          recordCheckboxes[i].click();
     }
 }
 
@@ -505,6 +505,18 @@ function mass_qr_print() {
     var runAsync = true ;
     indexArray = JSON.stringify(selected_records);
     xhr.open('POST', 'mass_qr_print/', true);
+    /*
+    * Incomplete, should be finished, to be able to choose from which printer to print.
+    * And printing should be working properly, one row with dt4x, two rows with g500.
+    */
+    /*
+    if (confirm("Do you want to print in the office?")) {
+        xhr.open('POST', 'mass_qr_print/Godex_DT4x/', true);
+    }
+    else {
+        xhr.open('POST', 'mass_qr_print/Godex_g500/', true);
+    }
+    */
     xhr.responseType = "arraybuffer";
     xhr.send(indexArray);
 }

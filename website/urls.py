@@ -7,6 +7,7 @@ urlpatterns = [
     # path('edit/<int:int_index>/', views.edit, name='edit'),
     path('edit/<int:int_index>/', views.edit2, name='edit'),
     path('edit/<int:int_index>/print_qr/', views.print_computer_qr, name='print_computer_qr'),
+    path('edit/<int:int_index>/print_qr/<slug:printer>/', views.print_computer_qr_with_printer, name='print_computer_qr_with_printer'),
 
     path('delete_charger_cat/<int:int_index>/', views.delete_charger_category, name='edit'),
     path('by_serial/<slug:serial>/', views.edit_by_serial, name='edit_by_serial'),
@@ -29,6 +30,8 @@ urlpatterns = [
     path('mass_excel/', views.mass_excel, name='mass_excel'),
     path('mass_csv/', views.mass_csv, name='mass_csv'),
     path('mass_qr_print/', views.mass_qr_print, name='mass_qr_print'),
+    path('mass_qr_print/<slug:printer>/', views.mass_qr_print_with_printer, name='mass_qr_print_with_printer'),
+
     path('cat_change/', views.cat_change, name='cat_change'),
     path('ord_assign/', views.ord_assign, name='ord_assign'),
     path('new_record/', views.new_record, name='new_record'),

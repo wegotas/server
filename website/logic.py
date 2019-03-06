@@ -3927,8 +3927,9 @@ class ChargerDualSerialPrinter:
 
 class ComputerSingleSerialPrinter:
 
-    def __init__(self, int_index):
+    def __init__(self, int_index, printer=None):
         self.full_serial = self._form_serial(int_index)
+        self.printer = printer
         self.base_url = 'http://192.168.8.254:8000/website/by_serial/'
 
     def _form_serial(self, int_index):
@@ -3940,15 +3941,20 @@ class ComputerSingleSerialPrinter:
         In case one row should be printed print_as_singular() should be called.
         In case of two rows call print_as_pairs()
         """
-        self.qr_gen = Qrgenerator(self.base_url, [self.full_serial])
+        self.qr_gen = Qrgenerator(self.base_url, [self.full_serial], self.printer)
         # self.qr_gen.print_as_pairs()
-        self.qr_gen.print_as_singular()
+        # self.qr_gen.print_as_singular()
+        if self.printer == "Godex_g500":
+            self.qr_gen.print_as_pairs()
+        elif not self.printer or self.printer == "Godex_DT4x":
+            self.qr_gen.print_as_singular()
 
 
 class ComputerMultipleSerialPrinter:
 
-    def __init__(self, data):
+    def __init__(self, data, printer=None):
         self.final_serials = []
+        self.printer = printer
         for member in data:
             self.final_serials.append(self._form_serial(member))
         self.base_url = 'http://192.168.8.254:8000/website/by_serial/'
@@ -3962,19 +3968,29 @@ class ComputerMultipleSerialPrinter:
         In case one row should be printed print_as_singular() should be called.
         In case of two rows call print_as_pairs()
         """
-        self.qr_gen = Qrgenerator(self.base_url, self.final_serials)
+        self.qr_gen = Qrgenerator(self.base_url, self.final_serials, self.printer)
         # self.qr_gen.print_as_pairs()
         self.qr_gen.print_as_singular()
+        '''
+        if self.printer == "Godex_g500":
+            print("Printing as pairs")
+            self.qr_gen.print_as_pairs()
+        elif not self.printer or self.printer == "Godex_DT4x":
+            print("Printing as singulars")
+            self.qr_gen.print_as_singular()
+        '''
 
 
 class Qrgenerator:
 
-    def __init__(self, base_url, serials):
+    def __init__(self, base_url, serials, printer):
+        self.printer = printer
         self.base_url = base_url
         self.serials = serials
 
     def print_as_pairs(self):
         for index in range(self._get_pair_cycles()):
+            print("Index: {0}".format(index))
             serial_pair = self._get_serial_pair(index)
             image = self._formImagePair(serial_pair[0], serial_pair[1])
             with tempfile.NamedTemporaryFile() as temp:
@@ -4007,7 +4023,10 @@ class Qrgenerator:
                 image.save(img_byte_arr, format='PNG')
                 temp.write(img_byte_arr.getvalue())
                 temp.flush()
-                subprocess.call(['lpr', temp.name])
+                if self.printer:
+                    subprocess.call(['lpr', '-P', self.printer, temp.name])
+                else:
+                    subprocess.call(['lpr', temp.name])
 
     def _generate_qr(self, serial):
         qr_img = qrcode.make(self.base_url + serial + '/')
