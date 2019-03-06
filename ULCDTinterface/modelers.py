@@ -215,6 +215,7 @@ class Computers(models.Model):
         else:
             return self.date.strftime('%Y-%m-%d')
 
+
     def getOther2lines(self):
         if '\n' in self.get_other():
             otherList = self.get_other().split('\n')
