@@ -3942,7 +3942,7 @@ class ComputerSingleSerialPrinter:
         self.qr_gen = Qrgenerator(self.base_url, [self.full_serial], self.printer)
         # self.qr_gen.print_as_pairs()
         # self.qr_gen.print_as_singular()
-        if self.printer == "Godex_g500":
+        if self.printer == "Godex_G500":
             self.qr_gen.print_as_pairs()
         elif not self.printer or self.printer == "Godex_DT4x":
             self.qr_gen.print_as_singular()
@@ -3995,7 +3995,10 @@ class Qrgenerator:
                 img_byte_arr = io.BytesIO()
                 image.save(img_byte_arr, format='PNG')
                 temp.write(img_byte_arr.getvalue())
-                subprocess.call(['lpr', temp.name])
+                if self.printer:
+                    subprocess.call(['lpr', '-P', self.printer, temp.name])
+                else:
+                    subprocess.call(['lpr', temp.name])
 
     def _get_pair_cycles(self):
         # Returns how many cycles of pairs of images should be done.
