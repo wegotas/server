@@ -23,8 +23,6 @@ import tempfile
 import math
 import sys
 from abc import ABC
-import magic
-import xlrd
 
 
 class BatHolder:
