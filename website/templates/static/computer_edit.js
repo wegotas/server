@@ -2,18 +2,21 @@ function google_search(search_term) {
     var editChargerWindow = window.open('http://www.google.com/search?q='+search_term+'&tbm=isch', "", "width=700,height=620");
 }
 
+/*
 function print_qr() {
-    /*
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'print_qr/', true);
-    xhr.send();
-    */
     var xhr = new XMLHttpRequest();
     if (confirm("Do you want to print in the office?")) {
         xhr.open('POST', 'print_qr/Godex_DT4x/', true);
     } else {
         xhr.open('POST', 'print_qr/Godex_G500/', true);
     }
+    xhr.send();
+}
+*/
+
+function print_qr_with(printer) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'print_qr/' + printer + '/', true);
     xhr.send();
 }
 
@@ -66,3 +69,79 @@ function open_drive_edit(index) {
 function search_observation() {
 
 }
+
+function modaljs(id, closeable) {
+    var body = document.querySelector("body");
+    var parent = document.querySelector(id);
+    parent.classList.toggle('on');
+    var bg = document.createElement("div");
+    var close = document.createElement("div");
+    bg.className = "modal-js-overlay";
+    close.className = "modal-js-close";
+
+    var godex_dt4x_printer_button = document.createElement("button");
+    godex_dt4x_printer_button.innerHTML = "Print in office (Godex_DT4x)";
+    godex_dt4x_printer_button.type = "button";
+    godex_dt4x_printer_button.display = "block";
+
+    var godex_g500_printer_button = document.createElement("button");
+    godex_g500_printer_button.innerHTML = "Print in warehouse (Godex_G500)";
+    godex_g500_printer_button.type = "button";
+    godex_g500_printer_button.display = "block";
+
+    if (closeable) {
+        close.innerHTML = "x";
+        close.addEventListener('click', function () {
+            var overlay = body.querySelector(".modal-js-overlay");
+            var closebtn = parent.querySelector(".modal-js-close");
+            body.removeChild(overlay);
+            parent.classList.toggle('on');
+            parent.removeChild(closebtn);
+            parent.removeChild(godex_dt4x_printer_button);
+            parent.removeChild(godex_g500_printer_button);
+        });
+        parent.appendChild(close);
+    }
+    body.appendChild(bg);
+
+    godex_dt4x_printer_button.addEventListener('click', function () {
+        print_qr_with("Godex_DT4x");
+        var overlay = body.querySelector(".modal-js-overlay");
+        var closebtn = parent.querySelector(".modal-js-close");
+        body.removeChild(overlay);
+        parent.classList.toggle('on');
+        parent.removeChild(closebtn);
+        parent.removeChild(godex_dt4x_printer_button);
+        parent.removeChild(godex_g500_printer_button);
+    });
+    parent.appendChild(godex_dt4x_printer_button);
+
+    godex_g500_printer_button.addEventListener('click', function () {
+        print_qr_with("Godex_G500");
+        var overlay = body.querySelector(".modal-js-overlay");
+        var closebtn = parent.querySelector(".modal-js-close");
+        body.removeChild(overlay);
+        parent.classList.toggle('on');
+        parent.removeChild(closebtn);
+        parent.removeChild(godex_dt4x_printer_button);
+        parent.removeChild(godex_g500_printer_button);
+    });
+    parent.appendChild(godex_g500_printer_button);
+}
+
+function modaljsoff(id) {
+    var body = document.querySelector("body");
+    var parent = document.querySelector(id);
+    var overlay = body.querySelector(".modal-js-overlay");
+    var closebtn = parent.querySelector(".modal-js-close");
+    body.removeChild(overlay);
+    parent.classList.toggle('on');
+    //parent.style.display = "none";
+    $(id).toggle('fast');
+}
+window.addEventListener('load', function () {
+    var els = document.querySelectorAll('.modaljs');
+    for (var i = 0; i < els.length; i++) {
+        //els[i].style.display = "none";
+    }
+});
