@@ -521,6 +521,86 @@ function mass_qr_print() {
     xhr.send(indexArray);
 }
 
+function mass_qr_print_with_printer(printer) {
+    var xhr = new XMLHttpRequest();
+    var runAsync = true ;
+    indexArray = JSON.stringify(selected_records);
+    xhr.open('POST', 'mass_qr_print/' + printer + '/', true);
+    /*
+    * Incomplete, should be finished, to be able to choose from which printer to print.
+    * And printing should be working properly, one row with dt4x, two rows with g500.
+    */
+    /*
+    if (confirm("Do you want to print in the office?")) {
+        xhr.open('POST', 'mass_qr_print/Godex_DT4x/', true);
+    }
+    else {
+        xhr.open('POST', 'mass_qr_print/Godex_g500/', true);
+    }
+    */
+    xhr.responseType = "arraybuffer";
+    xhr.send(indexArray);
+}
+
+function modaljs(id, closeable) {
+    var body = document.querySelector("body");
+    var parent = document.querySelector(id);
+    parent.classList.toggle('on');
+    var bg = document.createElement("div");
+    var close = document.createElement("div");
+    bg.className = "modal-js-overlay";
+    close.className = "modal-js-close";
+
+    var godex_dt4x_printer_button = document.createElement("button");
+    godex_dt4x_printer_button.innerHTML = "Print in office (Godex_DT4x)";
+    godex_dt4x_printer_button.type = "button";
+    godex_dt4x_printer_button.display = "block";
+
+    var godex_g500_printer_button = document.createElement("button");
+    godex_g500_printer_button.innerHTML = "Print in warehouse (Godex_G500)";
+    godex_g500_printer_button.type = "button";
+    godex_g500_printer_button.display = "block";
+
+    if (closeable) {
+        close.innerHTML = "x";
+        close.addEventListener('click', function () {
+            var overlay = body.querySelector(".modal-js-overlay");
+            var closebtn = parent.querySelector(".modal-js-close");
+            body.removeChild(overlay);
+            parent.classList.toggle('on');
+            parent.removeChild(closebtn);
+            parent.removeChild(godex_dt4x_printer_button);
+            parent.removeChild(godex_g500_printer_button);
+        });
+        parent.appendChild(close);
+    }
+    body.appendChild(bg);
+
+    godex_dt4x_printer_button.addEventListener('click', function () {
+        mass_qr_print_with_printer("Godex_DT4x");
+        var overlay = body.querySelector(".modal-js-overlay");
+        var closebtn = parent.querySelector(".modal-js-close");
+        body.removeChild(overlay);
+        parent.classList.toggle('on');
+        parent.removeChild(closebtn);
+        parent.removeChild(godex_dt4x_printer_button);
+        parent.removeChild(godex_g500_printer_button);
+    });
+    parent.appendChild(godex_dt4x_printer_button);
+
+    godex_g500_printer_button.addEventListener('click', function () {
+        mass_qr_print_with_printer("Godex_G500");
+        var overlay = body.querySelector(".modal-js-overlay");
+        var closebtn = parent.querySelector(".modal-js-close");
+        body.removeChild(overlay);
+        parent.classList.toggle('on');
+        parent.removeChild(closebtn);
+        parent.removeChild(godex_dt4x_printer_button);
+        parent.removeChild(godex_g500_printer_button);
+    });
+    parent.appendChild(godex_g500_printer_button);
+}
+
 function mass_catchange(element) {
   if (confirm("Do you really want do move these records to another category?")) {
     var xhr = new XMLHttpRequest();

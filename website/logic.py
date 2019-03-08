@@ -3951,6 +3951,8 @@ class ComputerSingleSerialPrinter:
 class ComputerMultipleSerialPrinter:
 
     def __init__(self, data, printer=None):
+        print("Printer: {0}".format(printer))
+        print("Indexes: {0}".format(data))
         self.final_serials = []
         self.printer = printer
         for member in data:

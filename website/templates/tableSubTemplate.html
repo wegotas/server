@@ -1,21 +1,21 @@
 {% block 'table' %}
 {% if po and computers and global  %}
-{% include 'computersSearchedSubTemplate.html' %}
+    {% include 'computersSearchedSubTemplate.html' %}
 {% elif po and computers  %}
-{% include 'computersSubTemplate.html' %}
+    {% include 'computersSubTemplate.html' %}
 {% elif orders %}
-{% include 'computerOrdersSubTemplate.html' %}
+    {% include 'computerOrdersSubTemplate.html' %}
 {% elif computers %}
-{% include 'soldComputersSubTemplate.html' %}
+    {% include 'soldComputersSubTemplate.html' %}
 {% elif cch %}
-{% include 'chargersCategoriesSubtemplate.html' %}
+    {% include 'chargersCategoriesSubtemplate.html' %}
 {% elif lh %}
-{% include 'hddLotsSubTemplate.html' %}
+    {% include 'hddLotsSubTemplate.html' %}
 {% elif hh.hdds %}
-{% include 'hddsSubTemplate.html' %}
+    {% include 'hddsSubTemplate.html' %}
 {% elif oh %}
-{% include 'hddOrdersSubTemplate.html' %}
+    {% include 'hddOrdersSubTemplate.html' %}
 {% else %}
-{% include 'noRecordsSubTemplate.html' %}
+    {% include 'noRecordsSubTemplate.html' %}
 {% endif %}
 {% endblock %}

@@ -14,7 +14,7 @@ function print_qr() {
 }
 */
 
-function print_qr_with(printer) {
+function print_qr_with_printer(printer) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', 'print_qr/' + printer + '/', true);
     xhr.send();
@@ -105,7 +105,7 @@ function modaljs(id, closeable) {
     body.appendChild(bg);
 
     godex_dt4x_printer_button.addEventListener('click', function () {
-        print_qr_with("Godex_DT4x");
+        print_qr_with_printer("Godex_DT4x");
         var overlay = body.querySelector(".modal-js-overlay");
         var closebtn = parent.querySelector(".modal-js-close");
         body.removeChild(overlay);
@@ -117,7 +117,7 @@ function modaljs(id, closeable) {
     parent.appendChild(godex_dt4x_printer_button);
 
     godex_g500_printer_button.addEventListener('click', function () {
-        print_qr_with("Godex_G500");
+        print_qr_with_printer("Godex_G500");
         var overlay = body.querySelector(".modal-js-overlay");
         var closebtn = parent.querySelector(".modal-js-close");
         body.removeChild(overlay);

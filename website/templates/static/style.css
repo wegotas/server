@@ -263,6 +263,7 @@ input:read-only {
     border-radius: 10px;
     display:none;
 }
+
 .modaljs.on{
     display:block;
 }
@@ -303,8 +304,24 @@ input:read-only {
 @media screen and (max-width: 890px) {
 
 .modaljs{
+    text-align: center;
     width: 100%;
     box-sizing: border-box;
     left: 0px;
     margin-left: 0px;
+}
+
+.modaljs button {
+    /*
+    display: block;
+    margin: auto;
+    text-align: center;
+    */
+    /*
+    position: absolute;
+    right: 0px;
+    padding: 10px;
+    */
+    float: right;
+    padding: 10px;
 }
