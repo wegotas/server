@@ -3940,8 +3940,6 @@ class ComputerSingleSerialPrinter:
         In case of two rows call print_as_pairs()
         """
         self.qr_gen = Qrgenerator(self.base_url, [self.full_serial], self.printer)
-        # self.qr_gen.print_as_pairs()
-        # self.qr_gen.print_as_singular()
         if self.printer == "Godex_G500":
             self.qr_gen.print_as_pairs()
         elif not self.printer or self.printer == "Godex_DT4x":
@@ -3969,16 +3967,10 @@ class ComputerMultipleSerialPrinter:
         In case of two rows call print_as_pairs()
         """
         self.qr_gen = Qrgenerator(self.base_url, self.final_serials, self.printer)
-        # self.qr_gen.print_as_pairs()
-        self.qr_gen.print_as_singular()
-        '''
-        if self.printer == "Godex_g500":
-            print("Printing as pairs")
+        if self.printer == "Godex_G500":
             self.qr_gen.print_as_pairs()
         elif not self.printer or self.printer == "Godex_DT4x":
-            print("Printing as singulars")
             self.qr_gen.print_as_singular()
-        '''
 
 
 class Qrgenerator:
@@ -3989,6 +3981,7 @@ class Qrgenerator:
         self.serials = serials
 
     def print_as_pairs(self):
+        print("Printing as pairs")
         for index in range(self._get_pair_cycles()):
             print("Index: {0}".format(index))
             serial_pair = self._get_serial_pair(index)
