@@ -1,5 +1,7 @@
 2019-03-14
+
 LT:
+
 ** Pokyciai Django serveryje: Pridetas funkcionalumas redaguoti daug su daug rysius 5versijos kompiuteriuose. **
 * Laikinos atminties leidzia keisti tik tipa. Seriala, dydi ir dazni neleis nes juos turi imti per klientine programa.
     Issaugojama paspaudus issaugojimo mygtuka.
@@ -24,7 +26,9 @@ LT:
 
 
 
+
 EN
+
 ** Changes in Django server: Added functionality to edit many to many relationships in 5th version computers. **
 * RAM allows changing only memory type. Serial, capacity, clock is not allowed to edit, because they should be entered through a client program.
     Saves when pressed saving button.
@@ -41,6 +45,7 @@ EN
 * Observations searched, assigned and removed assignation in the same page. If change is visible in page, that means that change has happened.
     Observations are searched by inputing keyword in text box and pressing "Enter". Table with results of observations appears above textbox. These results are selected according to what was unassigned to a present computer and according to a keyword split by spaces. These results in tables have buttons "+", which assigns corresponing observation to a edited computer.
     Observations are removed by pressing "x" button next to observation that needs to be removed.
+
 
 ** Short version: **
 * RAMs, Processors and GPUs are edited on pressing save button.
