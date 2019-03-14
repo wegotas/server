@@ -343,8 +343,6 @@ def edit_by_serial(request, serial):
 
 @csrf_exempt
 def observations_to_add(request, int_index, keyword):
-    print(int_index)
-    print(keyword)
     observations = Observations.objects.exclude(
         id_observation__in=Computerobservations.objects.filter(
             f_id_computer=int_index
@@ -355,8 +353,6 @@ def observations_to_add(request, int_index, keyword):
 
 @csrf_exempt
 def assign_observation_to_computer(request, observation_id, computer_id):
-    print(observation_id)
-    print(computer_id)
     observation = Observations.objects.get(id_observation=observation_id)
     Computerobservations.objects.create(
         f_id_computer=Computers.objects.get(id_computer=computer_id),
@@ -367,8 +363,6 @@ def assign_observation_to_computer(request, observation_id, computer_id):
 
 @csrf_exempt
 def remove_observation_from_computer(request, observation_id, computer_id):
-    print(observation_id)
-    print(computer_id)
     Computerobservations.objects.filter(
         f_id_computer=Computers.objects.get(id_computer=computer_id),
         f_id_observation=Observations.objects.get(id_observation=observation_id)
