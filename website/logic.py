@@ -3983,7 +3983,6 @@ class Qrgenerator:
     def print_as_pairs(self):
         print("Printing as pairs")
         for index in range(self._get_pair_cycles()):
-            print("Index: {0}".format(index))
             serial_pair = self._get_serial_pair(index)
             image = self._formImagePair(serial_pair[0], serial_pair[1])
             with tempfile.NamedTemporaryFile() as temp:
@@ -4889,3 +4888,32 @@ def get_query_for_computer_search_from_order_edit(query_string):
         else:
             query = query & or_query
     return query & Q(f_id_comp_ord__isnull=True, f_sale__isnull=True)
+
+def get_query_for_observation_search_from_computer_edit(query_string):
+    """
+    Forms Q query to be used with filter() models method.
+    Used for creating search from order edit.
+    :param query_string: searchable string string collection in form of string
+    :return: Q object.
+    """
+    searchfields = (
+        'full_name',
+        'shortcode',
+        'f_id_observation_category__category_name',
+        'f_id_observation_subcategory__subcategory_name'
+    )
+    query = None
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None
+        for field_name in searchfields:
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query

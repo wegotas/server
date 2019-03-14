@@ -105,7 +105,6 @@ function search() {
     parts.pop();
     URLtoWorkWith = parts.join('/');
     var xhr = new XMLHttpRequest();
-    var objectToSend = {};
     xhr.open('GET', URLtoWorkWith + '/computer_search_table_from_order/?keyword=' + urlify(search_text), true);
     xhr.send();
     document.body.style.cursor = "wait";
@@ -123,7 +122,6 @@ function search() {
 function toggle_search_result() {
     document.getElementById('searchResults').classList.toggle("hidden");
 }
-
 
 function urlify (url) {
     urlToReturn = url.split('#').join('%23');

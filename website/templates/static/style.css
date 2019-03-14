@@ -6,6 +6,7 @@ body {
 .container {
     flex: 1 100%;
 }
+
 .main-table thead th {
     background-color: #1d96b2;
     border: 1px solid #1d96b2;
@@ -13,9 +14,11 @@ body {
     text-align: center;
     color: white;
 }
+
 .main-table thead th:first-of-type {
     text-align: left;
 }
+
 .main-table tbody,
 .main-table tr,
 .main-table th,
@@ -29,6 +32,7 @@ body {
 .main-table tr {
     display: table-row;
 }
+
 .main-table th,
 .main-table td {
     padding: .5em;
@@ -151,7 +155,7 @@ header {
     height: 70px;
 }
 
-.pic-button:hover{
+.pic-button:hover {
     cursor: pointer;
 }
 
@@ -182,6 +186,7 @@ header {
 .table-holder {
     padding: 5px;
     display: inline-block;
+    position: relative;
 }
 
 th, td {
@@ -210,8 +215,6 @@ input:read-only {
 }
 
 #observation-adder {
-    border: 1px solid black;
-    border-radius: 6px 6px 6px 6px;
     z-index: 1;
 }
 
@@ -292,7 +295,7 @@ input:read-only {
     font-weight: bold;
 }
 
-.modaljs.shelf{
+.modaljs.shelf {
     top:0px;
     right:0px;
     left: auto;
@@ -300,8 +303,6 @@ input:read-only {
     max-height:100%;
     width:50%;
 }
-
-@media screen and (max-width: 890px) {
 
 .modaljs{
     text-align: center;
@@ -315,14 +316,13 @@ input:read-only {
     display: block;
     margin: auto;
     text-align: center;
+}
 
-    /*
+.close_button {
     position: absolute;
-    right: 0px;
-    padding: 10px;
-    */
-    /*
-    float: right;
-    padding: 10px;
-    */
+    background: red;
+    color: white;
+    top: -3px;
+    right: -6px;
+    border-radius: 10px;
 }

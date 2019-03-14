@@ -1,0 +1,13 @@
+<table id="observation-search-results" align="center">
+    <tbody>
+        {% for observation in observations %}
+        <tr>
+            <td>{{ observation.f_id_observation_category.category_name }}</td>
+            <td>{{ observation.f_id_observation_subcategory.subcategory_name }}</td>
+            <td>{{ observation.shortcode }}</td>
+            <td>{{ observation.full_name }}</td>
+            <td><button type="button" onclick="add_observation(this, {{ observation.id_observation }})">+</button></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

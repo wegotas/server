@@ -237,19 +237,19 @@ function manButPress() {
 window.onload = function() {load()}
 
 function load() {
-  collectSelectedAF();
-  lockStatuses();
-  search_textbox = document.getElementById('search_input');
-  search_textbox.addEventListener('keyup', function(event) {
-    event.preventDefault();
-    searchoptions.toggle_search_button();
-    search_button = document.getElementById('search_button');
-    if (event.keyCode === 13 && !search_button.disabled) {
-      search_using_keyword();
-    }
-  })
-  searchoptions.set_option_row_count();
-  searchoptions.callect_initial_options();
+    collectSelectedAF();
+    lockStatuses();
+    search_textbox = document.getElementById('search_input');
+    search_textbox.addEventListener('keyup', function(event) {
+        event.preventDefault();
+        searchoptions.toggle_search_button();
+        search_button = document.getElementById('search_button');
+        if (event.keyCode === 13 && !search_button.disabled) {
+            search_using_keyword();
+        }
+    })
+    searchoptions.set_option_row_count();
+    searchoptions.callect_initial_options();
 }
 
 function remove_keyword() {

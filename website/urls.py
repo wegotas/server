@@ -8,6 +8,9 @@ urlpatterns = [
     path('edit/<int:int_index>/', views.edit2, name='edit'),
     path('edit/<int:int_index>/print_qr/', views.print_computer_qr, name='print_computer_qr'),
     path('edit/<int:int_index>/print_qr/<slug:printer>/', views.print_computer_qr_with_printer, name='print_computer_qr_with_printer'),
+    path('observations_to_add/<int:int_index>/<keyword>/', views.observations_to_add, name='observations_to_add'),
+    path('assign_observation_to_computer/<int:observation_id>/<int:computer_id>/', views.assign_observation_to_computer, name='assign_observation_to_computer'),
+    path('remove_observation_from_computer/<int:observation_id>/<int:computer_id>/', views.remove_observation_from_computer, name='remove_observation_from_computer'),
 
     path('delete_charger_cat/<int:int_index>/', views.delete_charger_category, name='edit'),
     path('by_serial/<slug:serial>/', views.edit_by_serial, name='edit_by_serial'),

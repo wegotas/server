@@ -25,7 +25,7 @@
                         <tr>
                             <th>Computer ID:</th>
                             <td>
-                                <input type="text" name="id_computer" value="{{ record.computer.id_computer }}" readonly>
+                                <input type="text" name="id_computer" id="computer_id" value="{{ record.computer.id_computer }}" readonly>
                             </td>
                         </tr>
                         <tr>
@@ -521,98 +521,38 @@
             <div>
                 <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">Observations show/hide</button>
             </div>
-            <div class="section-member hidden">
-                <!--
-                <div id="observation-adder">
-                    <table id="observation-search-results" align="center">
-                        <tbody>
-                            <tr>
-                                <td>Category</td>
-                                <td>Subcategory</td>
-                                <td>Shortcode</td>
-                                <td>Description</td>
-                                <td><button type="button">+</button></td>
-                            </tr>
-                            <tr>
-                                <td>Category</td>
-                                <td>Subcategory</td>
-                                <td>Shortcode</td>
-                                <td>Description</td>
-                                <td><button type="button">+</button></td>
-                            </tr>
-                            <tr>
-                                <td>Category</td>
-                                <td>Subcategory</td>
-                                <td>Shortcode</td>
-                                <td>Description</td>
-                                <td><button type="button">+</button></td>
-                            </tr>
-                            <tr>
-                                <td>Category</td>
-                                <td>Subcategory</td>
-                                <td>Shortcode</td>
-                                <td>Description</td>
-                                <td><button type="button">+</button></td>
-                            </tr>
-                            <tr>
-                                <td>Category</td>
-                                <td>Subcategory</td>
-                                <td>Shortcode</td>
-                                <td>DescriptionDescription</td>
-                                <td><button type="button">+</button></td>
-                            </tr>
-                            <tr>
-                                <td>Category</td>
-                                <td>Subcategory</td>
-                                <td>ShortcodeShortcode</td>
-                                <td>Description</td>
-                                <td><button type="button">+</button></td>
-                            </tr>
-                            <tr>
-                                <td>Category</td>
-                                <td>SubcategorySubcategory</td>
-                                <td>Shortcode</td>
-                                <td>Description</td>
-                                <td><button type="button">+</button></td>
-                            </tr>
-                            <tr>
-                                <td>CategoryCategory</td>
-                                <td>Subcategory</td>
-                                <td>Shortcode</td>
-                                <td>Description</td>
-                                <td><button type="button">+</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div id="holder_of_observations" class="section-member hidden" align="center">
+                <div>
+                    <div id="observation-adder" align="center" class="hidden">
+                    </div>
+                    <input type="text" id="observation-search-box" placeholder="search keyword">
+                    <button type="button" id="observation_result_toggler" class="hidden" onclick="toggle_observation_results()">Hide/Show results</button>
                 </div>
-
-                <input type="text" onclick="search_observation()" placeholder="search keyword">
-                <button type="button" onclick="toggle_observation_results">Hide/Show results</button>
-                -->
-                {% for member in record.observations %}
+                {% for observation in record.observations %}
                 <div class="table-holder">
+                    <button type="button" class="close_button" onclick="remove_observation_from_computer(this, {{ record.computer.id_computer }}, {{ observation.id_observation }})">x</button>
                     <table class="table">
                         <tr>
                             <th>Shortcode:</th>
-                            <td><input type="text" value="{{ member.shortcode }}" readonly></td>
+                            <td><input type="text" value="{{ observation.shortcode }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Category:</th>
-                            <td><input type="text" value="{{ member.f_id_observation_category.category_name }}" readonly></td>
+                            <td><input type="text" value="{{ observation.f_id_observation_category.category_name }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Subcategory:</th>
-                            <td><input type="text" value="{{ member.f_id_observation_subcategory.subcategory_name }}" readonly></td>
+                            <td><input type="text" value="{{ observation.f_id_observation_subcategory.subcategory_name }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Full description:</th>
                             <td>
-                                <textarea rows="4" cols="23" type="text" style="resize: none;" readonly>{{ member.full_name }}</textarea>
+                                <textarea rows="4" cols="23" type="text" style="resize: none;" readonly>{{ observation.full_name }}</textarea>
                             </td>
                         </tr>
                     </table>
                 </div>
-                {% endfor%}
+                {% endfor %}
             </div>
         </div>
     </form>

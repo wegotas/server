@@ -49,10 +49,37 @@ function setInputFilter(textbox, inputFilter) {
     });
 }
 
+function wait(ms)
+{
+    var d = new Date();
+    var d2 = null;
+    do { d2 = new Date(); }
+    while(d2-d < ms);
+}
+
 function load() {
     setInputFilter(document.getElementById("intTextBox"), function(value) { return /^-?\d*$/.test(value); });
     setInputFilter(document.getElementById("coreCount"), function(value) { return /^-?\d*$/.test(value); });
     setInputFilter(document.getElementById("threadCount"), function(value) { return /^-?\d*$/.test(value); });
+    observationSearchBox = document.getElementById("observation-search-box")
+    observationSearchBox.addEventListener('keypress', function(event) {
+        if ((event.keyCode === 13) && (keyword_suitable_for_search(observationSearchBox.value))) {
+            search_observation(observationSearchBox.value);
+            event.preventDefault();
+        }
+    })
+}
+
+function keyword_suitable_for_search(keyword) {
+    // checks if keyword is empty
+    if (keyword  === '') {
+        return false;
+    }
+    // checks if whole keyword consists only of space characters
+    if (keyword.split(' ').join('').length === 0) {
+        return false;
+    }
+    return true
 }
 
 window.onload = function() {load()}
@@ -60,14 +87,63 @@ window.onload = function() {load()}
 function open_drive_edit(index) {
     URLtoWorkWith = location.href;
     parts = URLtoWorkWith.split('/')
-    for (var i =0; i<3; i++) {
+    for (var i = 0; i<3; i++) {
 		parts.pop();
 	}
 	var driveEditWindow = window.open(parts.join('/')+'/hdd_edit/'+index+'/', "", "width=400,height=650");
 }
 
-function search_observation() {
+function search_observation(keyword) {
+    observation_result_toggler = document.getElementById("observation_result_toggler");
+    observation_adder = document.getElementById("observation-adder");
+    parts = location.href.split('/');
+    parts.pop();
+    parts.pop();
+    parts.pop();
+    URLtoWorkWith = parts.join('/');
+    var xhr = new XMLHttpRequest();
+    computer_id = document.getElementById("computer_id").value
+    xhr.open('GET', URLtoWorkWith + '/observations_to_add/' + computer_id + '/' + urlify(keyword) + '/', true)
+    xhr.send();
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            observation_adder.classList.remove("hidden");
+            observation_result_toggler.classList.remove('hidden');
+            observation_adder.innerHTML = xhr.responseText;
+        }
+    }
+}
 
+function add_observation(button, observation_id) {
+    computer_id = document.getElementById("computer_id").value;
+    parts = location.href.split('/');
+    parts.pop();
+    parts.pop();
+    parts.pop();
+    URLtoWorkWith = parts.join('/');
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', URLtoWorkWith + '/assign_observation_to_computer/' + observation_id + '/' + computer_id + '/');
+    xhr.send();
+    holder_of_observations = document.getElementById("holder_of_observations");
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status == 200) {
+                row = button.parentNode.parentNode;
+                console.log(row);
+                table = document.getElementById("observation-search-results");
+                console.log(table);
+                row.parentNode.removeChild(row);
+                holder_of_observations.innerHTML += xhr.responseText;
+            }
+            else {
+                alert(xhr.responseText);
+            }
+        }
+    }
+}
+
+function toggle_observation_results() {
+    document.getElementById("observation-adder").classList.toggle("hidden");
 }
 
 function modaljs(id, closeable) {
@@ -136,12 +212,41 @@ function modaljsoff(id) {
     var closebtn = parent.querySelector(".modal-js-close");
     body.removeChild(overlay);
     parent.classList.toggle('on');
-    //parent.style.display = "none";
-    $(id).toggle('fast');
 }
+
 window.addEventListener('load', function () {
     var els = document.querySelectorAll('.modaljs');
     for (var i = 0; i < els.length; i++) {
         //els[i].style.display = "none";
     }
 });
+
+function urlify (url) {
+    urlToReturn = url.split('#').join('%23');
+    return urlToReturn;
+}
+
+function remove_observation_from_computer(button, computer_id, observation_id) {
+    console.log(button)
+    console.log("computer_id " + computer_id);
+    console.log("observation_id " + observation_id);
+    parts = location.href.split('/');
+    parts.pop();
+    parts.pop();
+    parts.pop();
+    URLtoWorkWith = parts.join('/');
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', URLtoWorkWith + '/remove_observation_from_computer/' + observation_id + '/' + computer_id + '/');
+    xhr.send();
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status == 200) {
+                table_holder = button.parentNode;
+                table_holder.parentNode.removeChild(table_holder);
+            }
+            else {
+                alert(xhr.responseText);
+            }
+        }
+    }
+}

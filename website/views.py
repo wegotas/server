@@ -342,6 +342,41 @@ def edit_by_serial(request, serial):
 
 
 @csrf_exempt
+def observations_to_add(request, int_index, keyword):
+    print(int_index)
+    print(keyword)
+    observations = Observations.objects.exclude(
+        id_observation__in=Computerobservations.objects.filter(
+            f_id_computer=int_index
+        ).values_list('f_id_observation', flat=True)
+    ).filter(get_query_for_observation_search_from_computer_edit(keyword))
+    return render(request, 'observations_to_add.html', {'observations': observations})
+
+
+@csrf_exempt
+def assign_observation_to_computer(request, observation_id, computer_id):
+    print(observation_id)
+    print(computer_id)
+    observation = Observations.objects.get(id_observation=observation_id)
+    Computerobservations.objects.create(
+        f_id_computer=Computers.objects.get(id_computer=computer_id),
+        f_id_observation=observation
+    )
+    return render(request, 'observation_template.html', {'observation': observation, 'computer_id': computer_id})
+
+
+@csrf_exempt
+def remove_observation_from_computer(request, observation_id, computer_id):
+    print(observation_id)
+    print(computer_id)
+    Computerobservations.objects.filter(
+        f_id_computer=Computers.objects.get(id_computer=computer_id),
+        f_id_observation=Observations.objects.get(id_observation=observation_id)
+    ).delete()
+    return HttpResponse("Succesfully removed observation from computer")
+
+
+@csrf_exempt
 def mass_delete(request):
     print("Mass delete")
     if request.method == 'POST':
@@ -1402,8 +1437,6 @@ def print_computer_qr_with_printer(request, int_index, printer):
     print('print_computer_qr')
     if request.method == 'POST':
         print('POST method')
-        print(int_index)
-        print(printer)
         """
         if printer == "Godex_DT4x":
             cssp = ComputerSingleSerialPrinter(int_index, printer)
