@@ -129,9 +129,7 @@ function add_observation(button, observation_id) {
         if (xhr.readyState === 4) {
             if (xhr.status == 200) {
                 row = button.parentNode.parentNode;
-                console.log(row);
                 table = document.getElementById("observation-search-results");
-                console.log(table);
                 row.parentNode.removeChild(row);
                 holder_of_observations.innerHTML += xhr.responseText;
             }

@@ -1,22 +1,27 @@
 <div class="table-holder">
+    <input type="hidden" name="observation" value="{{ observation.id_observation }}" />
+    {% if computer_id %}
     <button type="button" class="close_button" onclick="remove_observation_from_computer(this, {{ computer_id }}, {{ observation.id_observation }})">x</button>
+    {% else %}
+    <button type="button" class="close_button" onclick="remove_observation(this)">x</button>
+    {% endif%}
     <table class="table">
         <tr>
             <th>Shortcode:</th>
-            <td><input type="text" value="{{ observation.shortcode }}" readonly></td>
+            <td><input type="text" class="observation_textbox" value="{{ observation.shortcode }}" readonly="readonly" /></td>
         </tr>
         <tr>
             <th>Category:</th>
-            <td><input type="text" value="{{ observation.f_id_observation_category.category_name }}" readonly></td>
+            <td><input type="text" class="observation_textbox" value="{{ observation.f_id_observation_category.category_name }}" readonly="readonly" /></td>
         </tr>
         <tr>
             <th>Subcategory:</th>
-            <td><input type="text" value="{{ observation.f_id_observation_subcategory.subcategory_name }}" readonly></td>
+            <td><input type="text" class="observation_textbox" value="{{ observation.f_id_observation_subcategory.subcategory_name }}" readonly="readonly" /></td>
         </tr>
         <tr>
             <th>Full description:</th>
             <td>
-                <textarea rows="4" cols="23" type="text" style="resize: none;" readonly>{{ observation.full_name }}</textarea>
+                <textarea rows="4" cols="23" type="text" style="resize: none;" readonly="readonly">{{ observation.full_name }}</textarea>
             </td>
         </tr>
     </table>

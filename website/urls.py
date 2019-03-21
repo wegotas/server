@@ -11,6 +11,7 @@ urlpatterns = [
     path('observations_to_add/<int:int_index>/<keyword>/', views.observations_to_add, name='observations_to_add'),
     path('assign_observation_to_computer/<int:observation_id>/<int:computer_id>/', views.assign_observation_to_computer, name='assign_observation_to_computer'),
     path('remove_observation_from_computer/<int:observation_id>/<int:computer_id>/', views.remove_observation_from_computer, name='remove_observation_from_computer'),
+    path('get_observation/<int:observation_id>/', views.get_observation, name='get_observation'),
 
     path('delete_charger_cat/<int:int_index>/', views.delete_charger_category, name='edit'),
     path('by_serial/<slug:serial>/', views.edit_by_serial, name='edit_by_serial'),
@@ -37,7 +38,10 @@ urlpatterns = [
 
     path('cat_change/', views.cat_change, name='cat_change'),
     path('ord_assign/', views.ord_assign, name='ord_assign'),
-    path('new_record/', views.new_record, name='new_record'),
+    # path('new_record/', views.new_record, name='new_record'),
+    path('new_recordv4/', views.new_record, name='new_record'),
+    path('new_recordv5/', views.new_recordv5, name='new_record'),
+
     path('new_order/', views.new_order, name='new_order'),
     path('cat/del/<int:int_index>/', views.delCat, name='categoryDeletion'),
     path('cat/edit/', views.cat_edit, name='categoryEdit'),

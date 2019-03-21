@@ -326,3 +326,11 @@ input:read-only {
     right: -6px;
     border-radius: 10px;
 }
+
+.observation_textbox {
+    width: 160px;
+}
+
+.input {
+    width: 160px;
+}

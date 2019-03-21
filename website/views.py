@@ -371,6 +371,11 @@ def remove_observation_from_computer(request, observation_id, computer_id):
 
 
 @csrf_exempt
+def get_observation(request, observation_id):
+    observation = Observations.objects.get(id_observation=observation_id)
+    return render(request, 'observation_template.html', {'observation': observation})
+
+@csrf_exempt
 def mass_delete(request):
     print("Mass delete")
     if request.method == 'POST':
@@ -838,6 +843,67 @@ def new_record(request):
         ),
         request
     )
+
+
+@csrf_exempt
+def new_recordv5(request):
+    def remove_none_if_exists(query):
+        lst = list(query)
+        try:
+            lst.remove(None)
+        except ValueError:
+            pass
+        return lst
+
+    def get_unique_models_field_values(model, field):
+        return remove_none_if_exists(model.objects.order_by(field).values_list(field, flat=True).distinct())
+
+    print("new_record")
+    rc = RecordChoices()
+    many_to_many_unique_values_dict = {
+        "RAMs": {
+            "capacities": get_unique_models_field_values(Rams, "capacity"),
+            "clocks": get_unique_models_field_values(Rams, "clock"),
+            "types": get_unique_models_field_values(Rams, "type")
+        },
+        "Processors": {
+            "manufacturer_names": get_unique_models_field_values(Processors, "f_manufacturer__manufacturer_name"),
+            "model_names": get_unique_models_field_values(Processors, "model_name"),
+            "stock_clocks": get_unique_models_field_values(Processors, "stock_clock"),
+            "max_clocks": get_unique_models_field_values(Processors, "max_clock"),
+            "cores": get_unique_models_field_values(Processors, "cores"),
+            "threads": get_unique_models_field_values(Processors, "threads"),
+        },
+        "GPUs": {
+            "gpu_names": get_unique_models_field_values(Gpus, "gpu_name"),
+            "manufacturer_names": get_unique_models_field_values(Gpus, "f_id_manufacturer__manufacturer_name"),
+        }
+    }
+
+    if request.method == 'POST':
+        '''
+        print("This was POST request")
+        rta = RecordToAdd(request.POST.copy())
+        rta.save()
+        if rta.isSaved():
+            return render(request, 'success.html')
+        else:
+            template = loader.get_template('new_recordv5.html')
+            return HttpResponse(
+                template.render(
+                    {
+                        "rc": rc,
+                        "error_message": rta.get_error_message()
+                    },
+                    request
+                )
+            )
+        '''
+        print(request.POST)
+    if request.method == 'GET':
+        print("This was GET request")
+
+        return render(request, 'new_recordv5.html', {"rc": rc, "many_to_many_unique_values_dict": many_to_many_unique_values_dict})
 
 
 @csrf_exempt
