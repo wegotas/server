@@ -375,6 +375,58 @@ def get_observation(request, observation_id):
     observation = Observations.objects.get(id_observation=observation_id)
     return render(request, 'observation_template.html', {'observation': observation})
 
+
+@csrf_exempt
+def ramsticks_to_add(request, int_index, keyword):
+    rams = Rams.objects.exclude(
+        id_ram__in=RamToComp.objects.filter(
+            f_id_computer_ram_to_com=int_index
+        ).values_list('f_id_ram_ram_to_com', flat=True)
+    ).filter(get_query_for_ram_search_from_computer_edit(keyword))
+    return render(request, 'rams_to_add.html', {'rams': rams})
+
+
+@csrf_exempt
+def get_ramstick(request, observation_id):
+    return None
+    # observation = Observations.objects.get(id_observation=observation_id)
+    # return render(request, 'observation_template.html', {'observation': observation})
+
+
+@csrf_exempt
+def processors_to_add(request, int_index, keyword):
+    processors = Processors.objects.exclude(
+        id_processor__in=Computerprocessors.objects.filter(
+            f_id_computer=int_index
+        ).values_list('f_id_processor', flat=True)
+    ).filter(get_query_for_processor_search_from_computer_edit(keyword))
+    return render(request, 'processors_to_add.html', {'processors': processors})
+
+
+@csrf_exempt
+def get_processor(request, observation_id):
+    return None
+    # observation = Observations.objects.get(id_observation=observation_id)
+    # return render(request, 'observation_template.html', {'observation': observation})
+
+
+@csrf_exempt
+def gpus_to_add(request, int_index, keyword):
+    gpus = Gpus.objects.exclude(
+        id_gpu__in=Computergpus.objects.filter(
+            f_id_computer=int_index
+        ).values_list('f_id_gpu', flat=True)
+    ).filter(get_query_for_gpu_search_from_computer_edit(keyword))
+    return render(request, 'gpus_to_add.html', {'gpus': gpus})
+
+
+@csrf_exempt
+def get_gpu(request, observation_id):
+    return None
+    # observation = Observations.objects.get(id_observation=observation_id)
+    # return render(request, 'observation_template.html', {'observation': observation})
+
+
 @csrf_exempt
 def mass_delete(request):
     print("Mass delete")

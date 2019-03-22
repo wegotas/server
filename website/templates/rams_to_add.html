@@ -1,0 +1,15 @@
+<table id="ram-search-results" align="center">
+    <tbody>
+        {% for ram in rams %}
+        <tr>
+            <td>{{ ram.ram_serial }}</td>
+            <td>{{ ram.capacity }}</td>
+            <td>{{ ram.clock }}</td>
+            <td>{{ ram.type }}</td>
+            <td>
+                <button type="button" onclick="add_ramstick(this, {{ ram.id_ram }})">+</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -21,76 +21,77 @@ function setInputFilter(textbox, inputFilter) {
 }
 
 function load() {
+    toggler_variable_pair = {
+        "ramsticks_result_toggler":"ramstick-adder" ,
+        "processors_result_toggler": "processor-adder",
+        "gpus_result_toggler": "gpu-adder",
+        "observation_result_toggler": "observation-adder"
+    }
+
+    Object.entries(toggler_variable_pair).forEach(entry => {
+        let toggler = entry[0];
+        let adder = entry[1];
+        document.getElementById(toggler).onclick = function(event) {
+            document.getElementById(adder).classList.toggle("hidden");
+        }
+    });
+
     setInputFilter(document.getElementById("intTextBox"), function(value) { return /^-?\d*$/.test(value); });
     observationSearchBox = document.getElementById("observation-search-box");
     observationSearchBox.addEventListener('keypress', function(event) {
         if (enter_pressed_and_keyword_suitable(event, observationSearchBox.value)) {
-            search_observation(observationSearchBox.value);
+            search_item(observationSearchBox.value, "observation_result_toggler", "observation-adder", "observations_to_add");
         }
     })
 
     ramstick_searchbox = document.getElementById("ramstick_searchbox");
     ramstick_searchbox.addEventListener('keypress', function(event) {
         if (enter_pressed_and_keyword_suitable(event, ramstick_searchbox.value)) {
-            search_ramsticks(ramstick_searchbox.value);
+            search_item(ramstick_searchbox.value, "ramsticks_result_toggler", "ramstick-adder", "ramsticks_to_add");
         }
     })
 
     processor_searchbox = document.getElementById("processor_searchbox");
     processor_searchbox.addEventListener('keypress', function(event) {
         if (enter_pressed_and_keyword_suitable(event, processor_searchbox.value)) {
-            search_processors(processor_searchbox.value);
+            search_item(processor_searchbox.value, "processors_result_toggler", "processor-adder", "processors_to_add");
         }
     })
 
     gpu_searchbox = document.getElementById("gpu_searchbox");
     gpu_searchbox.addEventListener('keypress', function(event) {
         if (enter_pressed_and_keyword_suitable(event, gpu_searchbox.value)) {
-            search_gpus(gpu_searchbox.value);
+            search_item(gpu_searchbox.value, "gpus_result_toggler", "gpu-adder", "gpus_to_add");
         }
     })
 }
 
-function search_ramsticks(keyword) {
-    ramstick_result_toggler = document.getElementById("ramsticks_result_toggler");
-    ramstick_adder = document.getElementById("observation-adder");
+function search_item(keyword, item_result_toggler_idname, item_adder_idname, urlpart) {
+    item_result_toggler = document.getElementById(item_result_toggler_idname);
+    item_adder = document.getElementById(item_adder_idname);
     var xhr = new XMLHttpRequest();
     computer_id = 0
-    xhr.open('GET', getURLtoWorkWith() + '/ramsticks_to_add/' + computer_id + '/' + urlify(keyword) + '/', true)
+    xhr.open('GET', getURLtoWorkWith() + '/' + urlpart +'/' + computer_id + '/' + urlify(keyword) + '/', true)
     xhr.send();
     xhr.onreadystatechange = function(e) {
         if (request_succesful(xhr)) {
-            console.log("search_ramsticks succesful");
+            item_adder.classList.remove("hidden");
+            item_result_toggler.classList.remove('hidden');
+            item_adder.innerHTML = xhr.responseText;
         }
     }
 }
 
-function search_processors(keyword) {
-    ramstick_result_toggler = document.getElementById("ramsticks_result_toggler");
-    ramstick_adder = document.getElementById("observation-adder");
-    var xhr = new XMLHttpRequest();
-    computer_id = 0
-    xhr.open('GET', getURLtoWorkWith() + '/processors_to_add/' + computer_id + '/' + urlify(keyword) + '/', true)
-    xhr.send();
-    xhr.onreadystatechange = function(e) {
-        if (request_succesful(xhr)) {
-            console.log("search_ramsticks succesful");
-        }
-    }
+function add_gpu(button, id_gpu) {
+    console.log("Adding gpu");
 }
 
-function search_gpus(keyword) {
-    ramstick_result_toggler = document.getElementById("ramsticks_result_toggler");
-    ramstick_adder = document.getElementById("observation-adder");
-    var xhr = new XMLHttpRequest();
-    computer_id = 0
-    xhr.open('GET', getURLtoWorkWith() + '/gpus_to_add/' + computer_id + '/' + urlify(keyword) + '/', true)
-    xhr.send();
-    xhr.onreadystatechange = function(e) {
-        if (request_succesful(xhr)) {
-            console.log("search_ramsticks succesful");
-        }
-    }
+function add_ramstick(button, id_ram) {
+    console.log("Adding ramstick");
+}
+
+function add_processor(button, id_processor) {
+    console.log("Adding processor");
 }
 
 window.onload = function() {load()}
@@ -128,34 +129,14 @@ function urlify (url) {
     return urlToReturn;
 }
 
-function search_observation(keyword) {
-    observation_result_toggler = document.getElementById("observation_result_toggler");
-    observation_adder = document.getElementById("observation-adder");
-    var xhr = new XMLHttpRequest();
-    computer_id = 0
-    xhr.open('GET', getURLtoWorkWith() + '/observations_to_add/' + computer_id + '/' + urlify(keyword) + '/', true)
-    xhr.send();
-    xhr.onreadystatechange = function(e) {
-        if (request_succesful(xhr)) {
-            observation_adder.classList.remove("hidden");
-            observation_result_toggler.classList.remove('hidden');
-            observation_adder.innerHTML = xhr.responseText;
-        }
-    }
-}
-
 function request_succesful(xhr) {
     if (xhr.readyState === 4) {
-        if (xhr.status == 200){
+        if (xhr.status == 200) {
             return true;
         }
         return false;
     }
     return false;
-}
-
-function toggle_observation_results() {
-    document.getElementById("observation-adder").classList.toggle("hidden");
 }
 
 function add_observation(button, observation_id) {

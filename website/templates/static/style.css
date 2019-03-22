@@ -214,6 +214,30 @@ input:read-only {
     display: none;
 }
 
+.search_result_adder {
+    z-index: 1;
+}
+
+.search_result_adder tr:nth-of-type(odd) {
+    background-color: rgba(94, 93, 130, 0.0);
+    text-align: center;
+}
+
+.search_result_adder tr:nth-of-type(even) {
+    background-color: rgba(94, 93, 130, 0.4);
+    text-align: center;
+}
+
+.search_result_adder table {
+    border-collapse: collapse;
+    width: 300px;
+}
+
+.search_result_adder td {
+    border: 1px solid black;
+}
+
+/*
 #observation-adder {
     z-index: 1;
 }
@@ -227,7 +251,8 @@ input:read-only {
     background-color: rgba(94, 93, 130, 0.4);
     text-align: center;
 }
-
+*/
+/*
 #observation-search-results {
     border-collapse: collapse;
     width: 300px;
@@ -236,7 +261,7 @@ input:read-only {
 #observation-search-results td {
     border: 1px solid black;
 }
-
+*/
 .top-choices {
     width: 100%;
     height: 70px;

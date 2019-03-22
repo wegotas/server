@@ -4925,3 +4925,93 @@ def get_query_for_observation_search_from_computer_edit(query_string):
         else:
             query = query & or_query
     return query
+
+
+def get_query_for_ram_search_from_computer_edit(query_string):
+    """
+    Forms Q query to be used with filter() models method.
+    Used for creating search from order edit.
+    :param query_string: searchable string string collection in form of string
+    :return: Q object.
+    """
+    searchfields = (
+        'ram_serial',
+        'capacity',
+        'clock',
+        'type'
+    )
+    query = None
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None
+        for field_name in searchfields:
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query
+
+
+def get_query_for_processor_search_from_computer_edit(query_string):
+    """
+    Forms Q query to be used with filter() models method.
+    Used for creating search from order edit.
+    :param query_string: searchable string string collection in form of string
+    :return: Q object.
+    """
+    searchfields = (
+        'f_manufacturer__manufacturer_name',
+        'model_name',
+        'stock_clock',
+        'max_clock',
+        'cores',
+        'threads'
+    )
+    query = None
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None
+        for field_name in searchfields:
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query
+
+
+def get_query_for_gpu_search_from_computer_edit(query_string):
+    """
+    Forms Q query to be used with filter() models method.
+    Used for creating search from order edit.
+    :param query_string: searchable string string collection in form of string
+    :return: Q object.
+    """
+    searchfields = (
+        'f_id_manufacturer__manufacturer_name',
+        'gpu_name'
+    )
+    query = None
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None
+        for field_name in searchfields:
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query

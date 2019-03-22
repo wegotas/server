@@ -1,0 +1,13 @@
+<table id="processor-search-results" align="center">
+    <tbody>
+        {% for gpu in gpus %}
+        <tr>
+            <td>{{ gpu.f_id_manufacturer.manufacturer_name }}</td>
+            <td>{{ gpu.gpu_name }}</td>
+            <td>
+                <button type="button" onclick="add_gpu(this, {{ gpu.id_gpu }})">+</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

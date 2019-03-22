@@ -1,0 +1,17 @@
+<table id="processor-search-results" align="center">
+    <tbody>
+        {% for processor in processors %}
+        <tr>
+            <td>{{ processor.f_manufacturer.manufacturer_name }}</td>
+            <td>{{ processor.model_name }}</td>
+            <td>{{ processor.stock_clock }}</td>
+            <td>{{ processor.max_clock }}</td>
+            <td>{{ processor.cores }}</td>
+            <td>{{ processor.threads }}</td>
+            <td>
+                <button type="button" onclick="add_processor(this, {{ processor.id_processor }})">+</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

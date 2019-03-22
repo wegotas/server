@@ -179,11 +179,11 @@
                     <h3>RAM sticks:</h3>
                     <div id="holder_of_ramsticks" class="section-member" align="center">
                         <div>
-                            <div id="ramstick-adder" align="center">
+                            <div id="ramstick-adder" align="center" class="hidden search_result_adder">
                             </div>
                             <button type="button" onclick="new_ramstick(this)">New ramstick</button>
                             <input id="ramstick_searchbox" type="text" placeholder="search existing ramsticks">
-                            <button type="button" id="ramsticks_result_toggler" class="hidden" onclick="toggle_observation_results()">Hide/Show observation results</button>
+                            <button type="button" id="ramsticks_result_toggler" class="hidden">Hide/Show ramsticks results</button>
                         </div>
                     </div>
                 </td>
@@ -191,15 +191,13 @@
             <tr>
                 <td colspan="2" align="center">
                     <h3>Processors:</h3>
-
                     <div id="holder_of_processors" class="section-member" align="center">
                         <div>
-                            <div id="processor-adder" align="center">
-
+                            <div id="processor-adder" align="center" class="hidden search_result_adder">
                             </div>
                             <button type="button" onclick="new_processor(this)">New processor</button>
                             <input id="processor_searchbox" type="text" placeholder="search existing processors">
-                            <button type="button" id="processors_result_toggler" class="hidden" onclick="toggle_observation_results()">Hide/Show observation results</button>
+                            <button type="button" id="processors_result_toggler" class="hidden">Hide/Show processors results</button>
                         </div>
                     </div>
                 </td>
@@ -209,11 +207,11 @@
                     <h3>GPUs:</h3>
                     <div id="holder_of_gpus" class="section-member" align="center">
                         <div>
-                            <div id="gpu-adder" align="center">
+                            <div id="gpu-adder" align="center" class="hidden search_result_adder">
                             </div>
                             <button type="button" onclick="new_gpu(this)">New GPU</button>
                             <input id="gpu_searchbox" type="text" placeholder="search existing gpus">
-                            <button type="button" id="gpus_result_toggler" class="hidden" onclick="toggle_observation_results()">Hide/Show observation results</button>
+                            <button type="button" id="gpus_result_toggler" class="hidden">Hide/Show gpus results</button>
                         </div>
                     </div>
                 </td>
@@ -223,10 +221,10 @@
                     <h3>Observations:</h3>
                     <div id="holder_of_observations" class="section-member" align="center">
                         <div>
-                            <div id="observation-adder" align="center" class="hidden">
+                            <div id="observation-adder" align="center" class="hidden search_result_adder">
                             </div>
                             <input type="text" id="observation-search-box" placeholder="search observations">
-                            <button type="button" id="observation_result_toggler" class="hidden" onclick="toggle_observation_results()">Hide/Show observation results</button>
+                            <button type="button" id="observation_result_toggler" class="hidden">Hide/Show observation results</button>
                         </div>
                     </div>
                 <td>

@@ -391,7 +391,7 @@ class ComputerRecord2:
             print(battery_dict)
             BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer).delete()
             if battery_dict:
-                for id in range(self._get_highest_first_number(battery_dict)):
+                for id in range(0, self._get_highest_first_number(battery_dict)):
                     if battery_dict[str(id + 1) + ' Battery']:
                         battery = Batteries.objects.get_or_create(
                             serial=battery_dict[str(id + 1) + ' Battery']['Serial'],
@@ -409,7 +409,7 @@ class ComputerRecord2:
         def _save_rams(ram_dict):
             print(ram_dict)
             RamToComp.objects.filter(f_id_computer_ram_to_com=self.computer).delete()
-            for id in range(self._get_highest_first_number(ram_dict)):
+            for id in range(0, self._get_highest_first_number(ram_dict)):
                 if str(id + 1) + ' Stick' in ram_dict:
                     if ram_dict[str(id + 1) + ' Stick']:
                         ram = Rams.objects.get_or_create(
@@ -426,7 +426,7 @@ class ComputerRecord2:
         def _save_gpus(gpu_dict):
             print(gpu_dict)
             Computergpus.objects.filter(f_id_computer=self.computer).delete()
-            for id in range(self._get_highest_first_number(gpu_dict)):
+            for id in range(0, self._get_highest_first_number(gpu_dict)):
                 if str(id + 1) + ' Device' in gpu_dict:
                     if gpu_dict[str(id + 1) + ' Device']:
                         if gpu_dict[str(id + 1) + ' Device']:
@@ -445,7 +445,7 @@ class ComputerRecord2:
         def _save_processors(processor_dict):
             print(processor_dict)
             Computerprocessors.objects.filter(f_id_computer=self.computer).delete()
-            for id in range(self._get_highest_first_number(processor_dict)):
+            for id in range(0, self._get_highest_first_number(processor_dict)):
                 if str(id + 1) + ' Processor' in processor_dict:
                     if processor_dict[str(id + 1) + ' Processor']:
                         manufacturer = Manufacturers.objects.get_or_create(
@@ -468,7 +468,7 @@ class ComputerRecord2:
             print(drives_dict)
             Computerdrives.objects.filter(f_id_computer=self.computer).delete()
             if drives_dict:
-                for id in range(self._get_highest_first_number(drives_dict)):
+                for id in range(0, self._get_highest_first_number(drives_dict)):
                     if str(id + 1) + ' Drive' in drives_dict:
                         if drives_dict[str(id + 1) + ' Drive']:
                             drive = Drives.objects.get_or_create(

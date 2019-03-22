@@ -13,6 +13,10 @@ urlpatterns = [
     path('remove_observation_from_computer/<int:observation_id>/<int:computer_id>/', views.remove_observation_from_computer, name='remove_observation_from_computer'),
     path('get_observation/<int:observation_id>/', views.get_observation, name='get_observation'),
 
+    path('ramsticks_to_add/<int:int_index>/<keyword>/', views.ramsticks_to_add, name='ramsticks_to_add'),
+    path('processors_to_add/<int:int_index>/<keyword>/', views.processors_to_add, name='processors_to_add'),
+    path('gpus_to_add/<int:int_index>/<keyword>/', views.gpus_to_add, name='gpus_to_add'),
+
     path('delete_charger_cat/<int:int_index>/', views.delete_charger_category, name='edit'),
     path('by_serial/<slug:serial>/', views.edit_by_serial, name='edit_by_serial'),
     path('serial/<slug:serial>/', views.serial_processing, name='serial_processing'),
