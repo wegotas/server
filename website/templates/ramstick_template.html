@@ -1,0 +1,26 @@
+<div class="table-holder">
+    <input type="hidden" name="rams" value="{{ ramstick.id_ram }}" />
+    {% if computer_id %}
+    <button type="button" class="close_button" onclick="remove_ramstick_from_computer(this, {{ computer_id }}, {{ ramstick.id_ram }})">x</button>
+    {% else %}
+    <button type="button" class="close_button" onclick="remove_item(this)">x</button>
+    {% endif%}
+    <table class="table">
+        <tr>
+            <th>Serial:</th>
+            <td><input class="input" type="text" value="{{ ramstick.ram_serial }}" readonly></td>
+        </tr>
+        <tr>
+            <th>Capacity:</th>
+            <td><input class="input" type="text" value="{{ ramstick.capacity }}" readonly></td>
+        </tr>
+        <tr>
+            <th>Clock:</th>
+            <td><input class="input" type="text" value="{{ ramstick.clock }}" readonly></td>
+        </tr>
+        <tr>
+            <th>Type:</th>
+            <td><input class="input" type="text" name="ram_type_{{ ramstick.id_ram }}" value="{{ ramstick.type }}" readonly></td>
+        </tr>
+    </table>
+</div>

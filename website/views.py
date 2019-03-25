@@ -343,11 +343,17 @@ def edit_by_serial(request, serial):
 
 @csrf_exempt
 def observations_to_add(request, int_index, keyword):
+    searchfields = (
+        'full_name',
+        'shortcode',
+        'f_id_observation_category__category_name',
+        'f_id_observation_subcategory__subcategory_name'
+    )
     observations = Observations.objects.exclude(
         id_observation__in=Computerobservations.objects.filter(
             f_id_computer=int_index
         ).values_list('f_id_observation', flat=True)
-    ).filter(get_query_for_observation_search_from_computer_edit(keyword))
+    ).filter(get_query_for_item_search_from_computer_edit(keyword, searchfields))
     return render(request, 'observations_to_add.html', {'observations': observations})
 
 
@@ -378,53 +384,67 @@ def get_observation(request, observation_id):
 
 @csrf_exempt
 def ramsticks_to_add(request, int_index, keyword):
+    searchfields = (
+        'ram_serial',
+        'capacity',
+        'clock',
+        'type'
+    )
     rams = Rams.objects.exclude(
         id_ram__in=RamToComp.objects.filter(
             f_id_computer_ram_to_com=int_index
         ).values_list('f_id_ram_ram_to_com', flat=True)
-    ).filter(get_query_for_ram_search_from_computer_edit(keyword))
+    ).filter(get_query_for_item_search_from_computer_edit(keyword, searchfields))
     return render(request, 'rams_to_add.html', {'rams': rams})
 
 
 @csrf_exempt
-def get_ramstick(request, observation_id):
-    return None
-    # observation = Observations.objects.get(id_observation=observation_id)
-    # return render(request, 'observation_template.html', {'observation': observation})
+def get_ramstick(request, ramstick_id):
+    return render(request, 'ramstick_template.html', {'ramstick': Rams.objects.get(id_ram=ramstick_id)})
 
 
 @csrf_exempt
 def processors_to_add(request, int_index, keyword):
+    searchfields = (
+        'f_manufacturer__manufacturer_name',
+        'model_name',
+        'stock_clock',
+        'max_clock',
+        'cores',
+        'threads'
+    )
     processors = Processors.objects.exclude(
         id_processor__in=Computerprocessors.objects.filter(
             f_id_computer=int_index
         ).values_list('f_id_processor', flat=True)
-    ).filter(get_query_for_processor_search_from_computer_edit(keyword))
+    ).filter(get_query_for_item_search_from_computer_edit(keyword, searchfields))
     return render(request, 'processors_to_add.html', {'processors': processors})
 
 
 @csrf_exempt
-def get_processor(request, observation_id):
-    return None
-    # observation = Observations.objects.get(id_observation=observation_id)
-    # return render(request, 'observation_template.html', {'observation': observation})
+def get_processor(request, processor_id):
+    return render(request, 'processor_template.html', {'processor': Processors.objects.get(id_processor=processor_id)})
 
 
 @csrf_exempt
 def gpus_to_add(request, int_index, keyword):
+    searchfields = ('f_id_manufacturer__manufacturer_name', 'gpu_name')
     gpus = Gpus.objects.exclude(
         id_gpu__in=Computergpus.objects.filter(
             f_id_computer=int_index
         ).values_list('f_id_gpu', flat=True)
-    ).filter(get_query_for_gpu_search_from_computer_edit(keyword))
+    ).filter(get_query_for_item_search_from_computer_edit(keyword, searchfields))
     return render(request, 'gpus_to_add.html', {'gpus': gpus})
 
 
 @csrf_exempt
-def get_gpu(request, observation_id):
-    return None
-    # observation = Observations.objects.get(id_observation=observation_id)
-    # return render(request, 'observation_template.html', {'observation': observation})
+def get_gpu(request, gpu_id):
+    print("get_gpu")
+    print(gpu_id)
+    return render(request, 'gpu_template.html', {'gpu': Gpus.objects.get(id_gpu=gpu_id)})
+    # gpu = Gpus.objects.get(id_gpu=gpu_id)
+    # return render(request, 'gpu_to_add.html', {'gpu': gpu})
+    # return None
 
 
 @csrf_exempt
@@ -1097,7 +1117,12 @@ def computer_search_table_from_order(request):
     if request.method == 'GET':
         print("This was GET request")
         keyword = request.GET['keyword']
-        query = get_query_for_computer_search_from_order_edit(keyword)
+        searchfields = (
+            'computer_serial',
+            'f_model__model_name',
+            'f_manufacturer__manufacturer_name'
+        )
+        query = get_query_for_item_search_from_computer_edit(keyword, searchfields)
         computers = Computers.objects.filter(query)
         return render(request, 'computer_search_from_order_table.html', {'computers': computers})
 

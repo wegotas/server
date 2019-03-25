@@ -82,18 +82,6 @@ function search_item(keyword, item_result_toggler_idname, item_adder_idname, url
     }
 }
 
-function add_gpu(button, id_gpu) {
-    console.log("Adding gpu");
-}
-
-function add_ramstick(button, id_ram) {
-    console.log("Adding ramstick");
-}
-
-function add_processor(button, id_processor) {
-    console.log("Adding processor");
-}
-
 window.onload = function() {load()}
 
 function getURLtoWorkWith() {
@@ -139,6 +127,44 @@ function request_succesful(xhr) {
     return false;
 }
 
+function add_item(button, item_id, urlpart, holder_item_idname, item_search_results_idname) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', getURLtoWorkWith() + '/' + urlpart + '/' + item_id + '/');
+    xhr.send();
+    holder_of_observations = document.getElementById(holder_item_idname);
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status == 200) {
+                row = button.parentNode.parentNode;
+                table = document.getElementById(item_search_results_idname);
+                row.parentNode.removeChild(row);
+                var nodes = new DOMParser().parseFromString(xhr.response.trim(), 'text/html').body.childNodes[0];
+                holder_of_observations.appendChild(nodes);
+            }
+            else {
+                alert(xhr.responseText);
+            }
+        }
+    }
+}
+
+function add_observation(button, observation_id) {
+    add_item(button, observation_id, "get_observation", "holder_of_observations", "observation-search-results");
+}
+
+function add_ramstick(button, ramstick_id) {
+    add_item(button, ramstick_id, "get_ramstick", "holder_of_ramsticks", "ram-search-results");
+}
+
+function add_processor(button, id_processor) {
+    add_item(button, id_processor, "get_processor", "holder_of_processors", "processor-search-results");
+}
+
+function add_gpu(button, id_gpu) {
+    add_item(button, id_gpu, "get_gpu", "holder_of_gpus", "processor-search-results");
+}
+
+/*
 function add_observation(button, observation_id) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', getURLtoWorkWith() + '/get_observation/' + observation_id + '/');
@@ -159,8 +185,9 @@ function add_observation(button, observation_id) {
         }
     }
 }
+*/
 
-function remove_observation(button) {
+function remove_item(button) {
     button.parentNode.parentNode.removeChild(button.parentNode);
 }
 

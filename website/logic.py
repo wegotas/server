@@ -273,76 +273,6 @@ class Edit_computer_record:
         self.computer.save()
 
 
-'''
-def edit_post(data_dict):
-    data_dict.pop("edit", "")
-    id_computer = data_dict.pop("id_computer", "")[0]
-    serial = data_dict.pop("serial", "")[0]
-    type_name = data_dict.pop("type_name", "")[0]
-    category_name = data_dict.pop("category_name", "")[0]
-    manufacturer = data_dict.pop("manufacturer_name", "")[0]
-    model = data_dict.pop("model_name", "")[0]
-    cpu = data_dict.pop("cpu_name", "")[0]
-    gpu = data_dict.pop("gpu_name", "")[0]
-    ram_size = data_dict.pop("ram_size_text", "")[0]
-    hdd_size = data_dict.pop("hdd_sizes_name", "")[0]
-    diagonal = data_dict.pop("diagonal_text", "")[0]
-    license_name = data_dict.pop("license_name", "")[0]
-    option_name = data_dict.pop("option_name", "")[0]
-    cover = data_dict.pop("cover", "")[0]
-    display = data_dict.pop("display", "")[0]
-    bezel = data_dict.pop("bezel", "")[0]
-    keyboard = data_dict.pop("keyboard", "")[0]
-    mouse = data_dict.pop("mouse", "")[0]
-    sound = data_dict.pop("sound", "")[0]
-    cdrom = data_dict.pop("cdrom", "")[0]
-    hdd_cover = data_dict.pop("hdd_cover", "")[0]
-    ram_cover = data_dict.pop("ram_cover", "")[0]
-    other = data_dict.pop("other", "")[0]
-    tester_name = data_dict.pop("tester_name", "")[0]
-    date = data_dict.pop("date", "")[0]
-    bios_text = data_dict.pop("bios_text", "")[0]
-    motherboard = data_dict.pop("motherboard_serial", "")[0]
-    bat_list = []
-    ram_list = []
-    hdd_list = []
-    for key, value in data_dict.items():
-        if "bat" in key:
-            continue
-        elif "ram" in key:
-            classname, attribute, dbindex = get_key_tupple(key)
-            ram = Ram_Hdd_holder(
-                id=dbindex,
-                serial=value
-            )
-            ram_list.append(ram)
-        elif "hdd" in key:
-            classname, attribute, dbindex = get_key_tupple(key)
-            hdd = Ram_Hdd_holder(
-                id=dbindex,
-                serial=value
-            )
-            hdd_list.append(hdd)
-    for ram in ram_list:
-        data_dict.pop("ram_serial_" + ram.id)
-    for hdd in hdd_list:
-        data_dict.pop("hdd_serial_" + hdd.id)
-    while len(data_dict) > 2:
-        key = next(iter(data_dict))
-        classname, attribute, dbindex = get_key_tupple(key)
-        serial = data_dict.pop("bat_serial_" + dbindex)[0]
-        wear = data_dict.pop("bat_wear_" + dbindex)[0]
-        time = data_dict.pop("bat_time_" + dbindex)[0]
-        battery = Bat_holder(
-            id=dbindex,
-            serial=serial,
-            wear=wear,
-            time=time
-        )
-        bat_list.append(battery)
-'''
-
-
 def get_key_tupple(key):
     return tuple(key.split("_"))
 
@@ -378,54 +308,6 @@ class QtySelect:
         elif qty==1000:
             self.state1000 = "selected"
 
-
-'''
-class AutoFilters:
-
-    def __init__(self):
-        print("Modified Autofilters")
-        self.getSerials()
-        self.getManufacturers()
-        self.getModels()
-        self.getCpus()
-        self.getRams()
-        self.getGpus()
-        self.getScreens()
-        self.getOther()
-
-    def getSerials(self):
-        serials = Computers.objects.values('computer_serial').distinct()
-        # self.serials = [a['computer_serial'] for a in serials]
-        self.serials =serials.values_list('computer_serial', flat=True)
-
-    def getManufacturers(self):
-        manufacturers = Manufacturers.objects.values('manufacturer_name').distinct()
-        self.manufacturers = [a['manufacturer_name'] for a in manufacturers]
-
-    def getModels(self):
-        models = Models.objects.values('model_name').distinct()
-        self.models = [a['model_name'] for a in models]
-
-    def getCpus(self):
-        cpus = Cpus.objects.values('cpu_name').distinct()
-        self.cpus = [a['cpu_name'] for a in cpus]
-
-    def getRams(self):
-        rams = RamSizes.objects.values('ram_size_text').distinct()
-        self.rams = [a['ram_size_text'] for a in rams]
-
-    def getGpus(self):
-        gpus = Gpus.objects.values('gpu_name').distinct()
-        self.gpus = [a['gpu_name'] for a in gpus]
-
-    def getScreens(self):
-        screens = Diagonals.objects.values('diagonal_text').distinct()
-        self.screens = [a['diagonal_text'] for a in screens]
-
-    def getOther(self):
-        others = Computers.objects.values('other').distinct()
-        self.others = [a['other'] for a in others]
-'''
 
 
 class AutoFiltersFromComputers:
@@ -1432,12 +1314,7 @@ def normalize_query(query_string,
     return [normspace('', (str(t[0]) or str(t[1])).strip()) for t in findterms(query_string)]
 
 
-def get_query(query_string):
-    """
-    Forms Q query to be used with filter() models method.
-    :param query_string: searchable string string collection in form of string
-    :return: Q object.
-    """
+def search(keyword, computers):
     searchfields = (
         'computer_serial',
         'other',
@@ -1451,25 +1328,7 @@ def get_query(query_string):
         'f_sale__date_of_sale',
         'price'
     )
-    query = None
-    terms = normalize_query(query_string)
-    for term in terms:
-        or_query = None
-        for field_name in searchfields:
-            q = Q(**{"%s__icontains" % field_name: term})
-            if or_query is None:
-                or_query = q
-            else:
-                or_query = or_query | q
-        if query is None:
-            query = or_query
-        else:
-            query = query & or_query
-    return query
-
-
-def search(keyword, computers):
-    return computers.filter(get_query(keyword))
+    return computers.filter(get_query_for_item_search_from_computer_edit(keyword, searchfields))
 
 
 class ExecutorOfCatToSold:
@@ -4869,142 +4728,19 @@ class ComputerToEdit:
                 or Computerdrives.objects.filter(f_id_computer=computer).count() > 0
 
 
-def get_query_for_computer_search_from_order_edit(query_string):
+def get_query_for_item_search_from_computer_edit(query_string, searchfields_tupple):
     """
     Forms Q query to be used with filter() models method.
     Used for creating search from order edit.
-    :param query_string: searchable string string collection in form of string
-    :return: Q object.
+    :param query_string: searchable string string collection in form of string.
+    :param searchfields_tupple: Fields by which search should be done.
+    :return:
     """
-    searchfields = (
-        'computer_serial',
-        'f_model__model_name',
-        'f_manufacturer__manufacturer_name'
-    )
     query = None
     terms = normalize_query(query_string)
     for term in terms:
         or_query = None
-        for field_name in searchfields:
-            q = Q(**{"%s__icontains" % field_name: term})
-            if or_query is None:
-                or_query = q
-            else:
-                or_query = or_query | q
-        if query is None:
-            query = or_query
-        else:
-            query = query & or_query
-    return query & Q(f_id_comp_ord__isnull=True, f_sale__isnull=True)
-
-def get_query_for_observation_search_from_computer_edit(query_string):
-    """
-    Forms Q query to be used with filter() models method.
-    Used for creating search from order edit.
-    :param query_string: searchable string string collection in form of string
-    :return: Q object.
-    """
-    searchfields = (
-        'full_name',
-        'shortcode',
-        'f_id_observation_category__category_name',
-        'f_id_observation_subcategory__subcategory_name'
-    )
-    query = None
-    terms = normalize_query(query_string)
-    for term in terms:
-        or_query = None
-        for field_name in searchfields:
-            q = Q(**{"%s__icontains" % field_name: term})
-            if or_query is None:
-                or_query = q
-            else:
-                or_query = or_query | q
-        if query is None:
-            query = or_query
-        else:
-            query = query & or_query
-    return query
-
-
-def get_query_for_ram_search_from_computer_edit(query_string):
-    """
-    Forms Q query to be used with filter() models method.
-    Used for creating search from order edit.
-    :param query_string: searchable string string collection in form of string
-    :return: Q object.
-    """
-    searchfields = (
-        'ram_serial',
-        'capacity',
-        'clock',
-        'type'
-    )
-    query = None
-    terms = normalize_query(query_string)
-    for term in terms:
-        or_query = None
-        for field_name in searchfields:
-            q = Q(**{"%s__icontains" % field_name: term})
-            if or_query is None:
-                or_query = q
-            else:
-                or_query = or_query | q
-        if query is None:
-            query = or_query
-        else:
-            query = query & or_query
-    return query
-
-
-def get_query_for_processor_search_from_computer_edit(query_string):
-    """
-    Forms Q query to be used with filter() models method.
-    Used for creating search from order edit.
-    :param query_string: searchable string string collection in form of string
-    :return: Q object.
-    """
-    searchfields = (
-        'f_manufacturer__manufacturer_name',
-        'model_name',
-        'stock_clock',
-        'max_clock',
-        'cores',
-        'threads'
-    )
-    query = None
-    terms = normalize_query(query_string)
-    for term in terms:
-        or_query = None
-        for field_name in searchfields:
-            q = Q(**{"%s__icontains" % field_name: term})
-            if or_query is None:
-                or_query = q
-            else:
-                or_query = or_query | q
-        if query is None:
-            query = or_query
-        else:
-            query = query & or_query
-    return query
-
-
-def get_query_for_gpu_search_from_computer_edit(query_string):
-    """
-    Forms Q query to be used with filter() models method.
-    Used for creating search from order edit.
-    :param query_string: searchable string string collection in form of string
-    :return: Q object.
-    """
-    searchfields = (
-        'f_id_manufacturer__manufacturer_name',
-        'gpu_name'
-    )
-    query = None
-    terms = normalize_query(query_string)
-    for term in terms:
-        or_query = None
-        for field_name in searchfields:
+        for field_name in searchfields_tupple:
             q = Q(**{"%s__icontains" % field_name: term})
             if or_query is None:
                 or_query = q

@@ -1,0 +1,18 @@
+<div class="table-holder">
+    <input type="hidden" name="gpu" value="{{ gpu.id_gpu }}" />
+    {% if computer_id %}
+    <button type="button" class="close_button" onclick="remove_gpu_from_computer(this, {{ computer_id }}, {{ gpu.id_gpu }})">x</button>
+    {% else %}
+    <button type="button" class="close_button" onclick="remove_item(this)">x</button>
+    {% endif%}
+    <table class="table">
+        <tr>
+            <th>Manufacturer:</th>
+            <td><input class="input" name="gpu_manufacturername_{{ gpu.id_gpu }}" type="text" value="{{ gpu.f_id_manufacturer.manufacturer_name }}"  readonly="readonly"></td>
+        </tr>
+        <tr>
+            <th>GPU:</th>
+            <td><input class="input" name="gpu_gpuname_{{ gpu.id_gpu }}" type="text" value="{{ gpu.gpu_name }}"  readonly="readonly"></td>
+        </tr>
+    </table>
+</div>

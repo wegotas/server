@@ -14,8 +14,13 @@ urlpatterns = [
     path('get_observation/<int:observation_id>/', views.get_observation, name='get_observation'),
 
     path('ramsticks_to_add/<int:int_index>/<keyword>/', views.ramsticks_to_add, name='ramsticks_to_add'),
+    path('get_ramstick/<int:ramstick_id>/', views.get_ramstick, name='get_ramstick'),
+
     path('processors_to_add/<int:int_index>/<keyword>/', views.processors_to_add, name='processors_to_add'),
+    path('get_processor/<int:processor_id>/', views.get_processor, name='get_processor'),
+
     path('gpus_to_add/<int:int_index>/<keyword>/', views.gpus_to_add, name='gpus_to_add'),
+    path('get_gpu/<int:gpu_id>/', views.get_gpu, name='get_gpu'),
 
     path('delete_charger_cat/<int:int_index>/', views.delete_charger_category, name='edit'),
     path('by_serial/<slug:serial>/', views.edit_by_serial, name='edit_by_serial'),

@@ -3,7 +3,7 @@
     {% if computer_id %}
     <button type="button" class="close_button" onclick="remove_observation_from_computer(this, {{ computer_id }}, {{ observation.id_observation }})">x</button>
     {% else %}
-    <button type="button" class="close_button" onclick="remove_observation(this)">x</button>
+    <button type="button" class="close_button" onclick="remove_item(this)">x</button>
     {% endif%}
     <table class="table">
         <tr>
