@@ -953,28 +953,18 @@ def new_recordv5(request):
     }
 
     if request.method == 'POST':
-        '''
         print("This was POST request")
-        rta = RecordToAdd(request.POST.copy())
-        rta.save()
-        if rta.isSaved():
+        rta = RecordToAddv5(request.POST.copy())
+        if rta.validate():
+            rta.save()
             return render(request, 'success.html')
-        else:
-            template = loader.get_template('new_recordv5.html')
-            return HttpResponse(
-                template.render(
-                    {
-                        "rc": rc,
-                        "error_message": rta.get_error_message()
-                    },
-                    request
-                )
-            )
-        '''
-        print(request.POST)
+        return render(request, 'new_recordv5.html', {
+            "rc": rc,
+            "error_message": rta.get_error_message(),
+            "many_to_many_unique_values_dict": many_to_many_unique_values_dict
+        })
     if request.method == 'GET':
         print("This was GET request")
-
         return render(request, 'new_recordv5.html', {"rc": rc, "many_to_many_unique_values_dict": many_to_many_unique_values_dict})
 
 

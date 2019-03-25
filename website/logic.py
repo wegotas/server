@@ -1218,6 +1218,100 @@ class RecordToAdd:
                 self.error_list.append(error_messages[i])
 
 
+class RecordToAddv5:
+
+    def __init__(self, data_dict):
+        self.data = data_dict
+        print(data_dict)
+        self.error_list = []
+
+    def get_error_message(self):
+        """
+        :return: string of concatinated errors by a newline characters.
+        """
+        return "\r\n".join(self.error_list)
+
+    def save(self):
+        """
+        Saves computer record sent from website's querydict
+        """
+        print("rta save start")
+        self._one_to_many_connection_save()
+        self._save()
+        self._many_to_many_connection_save()
+
+    def _one_to_many_connection_save(self):
+        print('_one_to_many_connection_save')
+        type_of_computer = Types.objects.get_or_create(type_name=self.data.get('type_name'))[0]
+        category = Categories.objects.get_or_create(category_name=self.data.get('category_name'))[0]
+        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=self.data.get('manufacturer_name'))[0]
+        model = Models.objects.get_or_create(model_name=self.data.get('model_name'))[0]
+        tester = Testers.objects.get_or_create(tester_name=self.data.get('tester_name'))[0]
+        license_of_computer = Licenses.objects.get_or_create(license_name=self.data.get('license_name'))[0]
+        received_batch = Receivedbatches.objects.get_or_create(received_batch_name=self.data.get('received_batch_name'))[0]
+        diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data.get('diagonal_text'))[0]
+        ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data.get('ram_size_text'))[0]
+        print(type_of_computer)
+        print(category)
+        print(manufacturer)
+        print(model)
+        print(tester)
+        print(license_of_computer)
+        print(received_batch)
+        print(diagonal)
+        print(ramsize)
+
+    def _save(self):
+        print('_save')
+        serial = self.data.get('serial')
+        box_number = self.data.get('box_number')
+        other = self.data.get('other')
+        print(serial)
+        print(box_number)
+        print(other)
+
+    def _many_to_many_connection_save(self):
+        print('_many_to_many_connection_save')
+
+    def validate(self):
+        """"
+        Validates if all required fieldnames are present within provided queryset.
+        """
+        necessary_fieldnames = (
+            "serial",
+            "type_name",
+            "category_name",
+            'box_number',
+            "manufacturer_name",
+            "model_name",
+            "tester_name",
+            "license_name",
+            "received_batch_name",
+            "diagonal_text"
+        )
+
+        error_messages = (
+            "Serial was not set",
+            "Type was not set",
+            "Category was not set",
+            "Box number was not set",
+            "Manufacturer was not set",
+            "Model was not set",
+            "Tester was not set",
+            "License was not set",
+            "Received batch was not set",
+            "Diagonal was not set",
+        )
+        
+        # for i in range(len(necessary_fieldnames)):
+        for error_message, necessary_fieldname in zip(error_messages, necessary_fieldnames):
+            if self.data.get(necessary_fieldname) == "" or self.data.get(necessary_fieldname) is None:
+                self.error_list.append(error_message)
+        if Computers.objects.filter(computer_serial=self.data.get("serial")):
+            self.error_list.append("Computer having the same serial allready exists")
+        return not self.error_list
+
+
 class RecordChoices:
     """
     This class is representative of unique values available for manual data insertion in relation to computers.
