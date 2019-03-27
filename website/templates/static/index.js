@@ -663,12 +663,8 @@ function launchReceivedBatchesWindow() {
     var receivedBatchesWindow = window.open('received_batches/', "", "width=400,height=650");
 }
 
-function launchNewRecordWindowv4() {
-    var recordWindow = window.open('new_recordv4/', "", "width=400,height=650");
-}
-
-function launchNewRecordWindowv5() {
-    var recordWindow = window.open('new_recordv5/', "", "width=400,height=650");
+function launchNewRecordWindow() {
+    var recordWindow = window.open('new_record/', "", "width=400,height=650");
 }
 
 function launchCatToSoldWindow() {

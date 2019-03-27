@@ -47,9 +47,7 @@ urlpatterns = [
 
     path('cat_change/', views.cat_change, name='cat_change'),
     path('ord_assign/', views.ord_assign, name='ord_assign'),
-    # path('new_record/', views.new_record, name='new_record'),
-    path('new_recordv4/', views.new_record, name='new_record'),
-    path('new_recordv5/', views.new_recordv5, name='new_record'),
+    path('new_record/', views.new_record, name='new_record'),
 
     path('new_order/', views.new_order, name='new_order'),
     path('cat/del/<int:int_index>/', views.delCat, name='categoryDeletion'),

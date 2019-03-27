@@ -233,8 +233,13 @@ class Computers(models.Model):
     def get_gpu(self):
         if self.is5th_version():
             comp_gpus = Computergpus.objects.filter(f_id_computer=self)
-            return ", ".join(comp_gpus.values_list("f_id_gpu__gpu_name", flat=True))
-        return self.f_gpu.gpu_name
+            if comp_gpus.count() > 0:
+                return ", ".join(comp_gpus.values_list("f_id_gpu__gpu_name", flat=True))
+            else:
+                return ''
+        if self.f_gpu:
+            return self.f_gpu.gpu_name
+        return ''
 
     def get_other(self):
         if self.is5th_version():

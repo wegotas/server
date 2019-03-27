@@ -23,6 +23,7 @@ import tempfile
 import math
 import sys
 from abc import ABC
+import difflib
 
 
 class BatHolder:
@@ -1111,7 +1112,7 @@ class ObservationToAdd:
             f_id_observation_subcategory=subcategory
         )
 
-
+'''
 class RecordToAdd:
 
     def __init__(self, data_dict):
@@ -1216,9 +1217,10 @@ class RecordToAdd:
         for i in range(len(fieldnames)):
             if self.data.get(fieldnames[i]) == "" or self.data.get(fieldnames[i]) is None:
                 self.error_list.append(error_messages[i])
+'''
 
 
-class RecordToAddv5:
+class RecordToAdd:
 
     def __init__(self, data_dict):
         self.data = data_dict
@@ -1233,45 +1235,142 @@ class RecordToAddv5:
 
     def save(self):
         """
-        Saves computer record sent from website's querydict
+        Saves computer record sent using website's querydict
         """
-        print("rta save start")
-        self._one_to_many_connection_save()
-        self._save()
-        self._many_to_many_connection_save()
-
-    def _one_to_many_connection_save(self):
-        print('_one_to_many_connection_save')
         type_of_computer = Types.objects.get_or_create(type_name=self.data.get('type_name'))[0]
         category = Categories.objects.get_or_create(category_name=self.data.get('category_name'))[0]
         manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=self.data.get('manufacturer_name'))[0]
         model = Models.objects.get_or_create(model_name=self.data.get('model_name'))[0]
         tester = Testers.objects.get_or_create(tester_name=self.data.get('tester_name'))[0]
         license_of_computer = Licenses.objects.get_or_create(license_name=self.data.get('license_name'))[0]
-        received_batch = Receivedbatches.objects.get_or_create(received_batch_name=self.data.get('received_batch_name'))[0]
+        received_batch = Receivedbatches.objects.get_or_create(
+            received_batch_name=self.data.get('received_batch_name')
+        )[0]
         diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data.get('diagonal_text'))[0]
         ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data.get('ram_size_text'))[0]
-        print(type_of_computer)
-        print(category)
-        print(manufacturer)
-        print(model)
-        print(tester)
-        print(license_of_computer)
-        print(received_batch)
-        print(diagonal)
-        print(ramsize)
+        option = CameraOptions.objects.get_or_create(option_name="Not tested")[0]
+        computer = Computers.objects.create(
+            computer_serial=self.data.get('serial'),
+            box_number=self.data.get('box_number'),
+            other=self.data.get('other'),
+            f_type=type_of_computer,
+            f_category=category,
+            f_manufacturer=manufacturer,
+            f_model=model,
+            f_tester=tester,
+            f_license=license_of_computer,
+            f_id_received_batches=received_batch,
+            f_diagonal=diagonal,
+            f_ram_size=ramsize,
+            f_camera=option,
+        )
+        self._many_to_many_connection_save(computer)
 
-    def _save(self):
-        print('_save')
-        serial = self.data.get('serial')
-        box_number = self.data.get('box_number')
-        other = self.data.get('other')
-        print(serial)
-        print(box_number)
-        print(other)
+    def _many_to_many_connection_save(self, computer):
+        def _form_main_dict():
+            new_ramsticks_dict = {}
+            existing_ramsticks_list = []
+            new_processors_dict = {}
+            existing_processors_list = []
+            new_gpus_dict = {}
+            existing_gpus_list = []
+            existing_observations_list = []
 
-    def _many_to_many_connection_save(self):
-        print('_many_to_many_connection_save')
+            for key, value in self.data.items():
+                if "newramstick" in key:
+                    new_ramsticks_dict[key] = value
+                elif "rams" == key:
+                    existing_ramsticks_list = self.data.getlist(key)
+                elif "newproc" in key:
+                    new_processors_dict[key] = value
+                elif "processors" == key:
+                    existing_processors_list = self.data.getlist(key)
+                elif "newgpu" in key:
+                    new_gpus_dict[key] = value
+                elif "gpus" == key:
+                    existing_gpus_list = self.data.getlist(key)
+                elif "observations" == key:
+                    existing_observations_list = self.data.getlist(key)
+            return {
+                "new_ramsticks": new_ramsticks_dict,
+                "existing_ramsticks": existing_ramsticks_list,
+                "new_processors": new_processors_dict,
+                "existing_processors": existing_processors_list,
+                "new_gpus": new_gpus_dict,
+                "existing_gpus": existing_gpus_list,
+                "existing_observations": existing_observations_list
+            }
+
+        def _get_unique_ids(dict):
+            ids = []
+            for key, value in dict.items():
+                idx = key.split('_')[-1]
+                if idx not in ids:
+                    ids.append(idx)
+                    yield idx
+
+        def _save_new_ramsticks(ramsticks_dict):
+            for idx in _get_unique_ids(ramsticks_dict):
+                new_ramstick = Rams.objects.get_or_create(
+                    ram_serial='N/A',
+                    capacity=ramsticks_dict['newramstick_capacity_' + idx],
+                    clock=ramsticks_dict['newramstick_clock_' + idx],
+                    type=ramsticks_dict['newramstick_type_' + idx]
+                )[0]
+                RamToComp.objects.get_or_create(f_id_computer_ram_to_com=computer, f_id_ram_ram_to_com=new_ramstick)
+
+        def _save_existing_ramsticks(existing_ramsticks_list):
+            for idx in existing_ramsticks_list:
+                ram = Rams.objects.get(id_ram=idx)
+                RamToComp.objects.get_or_create(f_id_computer_ram_to_com=computer, f_id_ram_ram_to_com=ram)
+
+        def _save_new_processors(new_processors_dict):
+            for idx in _get_unique_ids(new_processors_dict):
+                processor = Processors.objects.get_or_create(
+                    f_manufacturer=Manufacturers.objects.get_or_create(
+                        manufacturer_name=new_processors_dict["newproc_manufacturername_" + idx],
+                    )[0],
+                    model_name=new_processors_dict["newproc_modelname_" + idx],
+                    stock_clock=new_processors_dict["newproc_stockclock_" + idx],
+                    max_clock=new_processors_dict["newproc_maxclock_" + idx],
+                    cores=new_processors_dict["newproc_cores_" + idx],
+                    threads=new_processors_dict["newproc_threads_" + idx]
+                )[0]
+                Computerprocessors.objects.get_or_create(f_id_computer=computer, f_id_processor=processor)
+
+        def _save_existing_processors(existing_processors_list):
+            for idx in existing_processors_list:
+                processor = Processors.objects.get(id_processor=idx)
+                Computerprocessors.objects.get_or_create(f_id_computer=computer, f_id_processor=processor)
+            
+        def _save_new_gpus(new_gpus_dict):
+            for idx in _get_unique_ids(new_gpus_dict):
+                gpu = Gpus.objects.get_or_create(
+                    gpu_name=new_gpus_dict["newgpu_gpuname_" + idx],
+                    f_id_manufacturer=Manufacturers.objects.get_or_create(
+                        manufacturer_name=new_gpus_dict["newgpu_manufacturername_" + idx]
+                    )[0],
+                )[0]
+                Computergpus.objects.get_or_create(f_id_computer=computer, f_id_gpu=gpu)
+
+        def _save_existing_gpus(existing_gpus_list):
+            for idx in existing_gpus_list:
+                gpu = Gpus.objects.get(id_gpu=idx)
+                Computergpus.objects.get_or_create(f_id_computer=computer, f_id_gpu=gpu)
+                
+        def _save_existing_observations(existing_observations_list):
+            for idx in existing_observations_list:
+                observation = Observations.objects.get(id_observation=idx)
+                Computerobservations.objects.get_or_create(f_id_computer=computer, f_id_observation=observation)
+
+        main_dict = _form_main_dict()
+        _save_new_ramsticks(main_dict["new_ramsticks"])
+        _save_existing_ramsticks(main_dict["existing_ramsticks"])
+        _save_new_processors(main_dict["new_processors"])
+        _save_existing_processors(main_dict["existing_processors"])
+        _save_new_gpus(main_dict["new_gpus"])
+        _save_existing_gpus(main_dict["existing_gpus"])
+        _save_existing_observations(main_dict["existing_observations"])
 
     def validate(self):
         """"
@@ -1302,13 +1401,13 @@ class RecordToAddv5:
             "Received batch was not set",
             "Diagonal was not set",
         )
-        
-        # for i in range(len(necessary_fieldnames)):
         for error_message, necessary_fieldname in zip(error_messages, necessary_fieldnames):
             if self.data.get(necessary_fieldname) == "" or self.data.get(necessary_fieldname) is None:
                 self.error_list.append(error_message)
         if Computers.objects.filter(computer_serial=self.data.get("serial")):
             self.error_list.append("Computer having the same serial allready exists")
+        if not self.data.get("observations"):
+            self.error_list.append('No observation specified: At least one observation must be set.')
         return not self.error_list
 
 
@@ -4733,12 +4832,19 @@ class Computer5th:
 
         # gathering objects
         computer_resolution = self.computer.f_id_computer_resolutions
-        resolution = computer_resolution.f_id_resolution
-        resolution_category = computer_resolution.f_id_resolution_category
+        if computer_resolution:
+            resolution = computer_resolution.f_id_resolution
+            resolution_category = computer_resolution.f_id_resolution_category
+        else:
+            resolution = None
+            resolution_category = None
         sale = self.computer.f_sale
         comp_ord = self.computer.f_id_comp_ord
         matrix = self.computer.f_id_matrix
-        cable_type = matrix.f_id_cable_type
+        if matrix:
+            cable_type = matrix.f_id_cable_type
+        else:
+            cable_type = None
 
         # objects deletion
         try_to_delete(self.computer)

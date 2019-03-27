@@ -442,9 +442,6 @@ def get_gpu(request, gpu_id):
     print("get_gpu")
     print(gpu_id)
     return render(request, 'gpu_template.html', {'gpu': Gpus.objects.get(id_gpu=gpu_id)})
-    # gpu = Gpus.objects.get(id_gpu=gpu_id)
-    # return render(request, 'gpu_to_add.html', {'gpu': gpu})
-    # return None
 
 
 @csrf_exempt
@@ -887,38 +884,6 @@ def tes_edit(request):
 
 @csrf_exempt
 def new_record(request):
-    print("new_record")
-    rc = RecordChoices()
-    if request.method == 'POST':
-        print("This was POST request")
-        rta = RecordToAdd(request.POST.copy())
-        rta.save()
-        if rta.isSaved():
-            return render(request, 'success.html')
-        else:
-            template = loader.get_template('new_record.html')
-            return HttpResponse(
-                template.render(
-                    {
-                        "rc": rc,
-                        "error_message": rta.get_error_message()
-                    },
-                    request
-                )
-            )
-    if request.method == 'GET':
-        print("This was GET request")
-    template = loader.get_template('new_record.html')
-    return HttpResponse(
-        template.render(
-            {"rc": rc}
-        ),
-        request
-    )
-
-
-@csrf_exempt
-def new_recordv5(request):
     def remove_none_if_exists(query):
         lst = list(query)
         try:
@@ -954,7 +919,7 @@ def new_recordv5(request):
 
     if request.method == 'POST':
         print("This was POST request")
-        rta = RecordToAddv5(request.POST.copy())
+        rta = RecordToAdd(request.POST.copy())
         if rta.validate():
             rta.save()
             return render(request, 'success.html')

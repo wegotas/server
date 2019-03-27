@@ -237,31 +237,6 @@ input:read-only {
     border: 1px solid black;
 }
 
-/*
-#observation-adder {
-    z-index: 1;
-}
-
-#observation-adder tr:nth-of-type(odd) {
-    background-color: rgba(94, 93, 130, 0.0);
-    text-align: center;
-}
-
-#observation-adder tr:nth-of-type(even) {
-    background-color: rgba(94, 93, 130, 0.4);
-    text-align: center;
-}
-*/
-/*
-#observation-search-results {
-    border-collapse: collapse;
-    width: 300px;
-}
-
-#observation-search-results td {
-    border: 1px solid black;
-}
-*/
 .top-choices {
     width: 100%;
     height: 70px;

@@ -1,5 +1,5 @@
 <div class="table-holder">
-    <input type="hidden" name="gpu" value="{{ gpu.id_gpu }}" />
+    <input type="hidden" name="gpus" value="{{ gpu.id_gpu }}" />
     {% if computer_id %}
     <button type="button" class="close_button" onclick="remove_gpu_from_computer(this, {{ computer_id }}, {{ gpu.id_gpu }})">x</button>
     {% else %}

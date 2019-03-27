@@ -164,29 +164,6 @@ function add_gpu(button, id_gpu) {
     add_item(button, id_gpu, "get_gpu", "holder_of_gpus", "processor-search-results");
 }
 
-/*
-function add_observation(button, observation_id) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', getURLtoWorkWith() + '/get_observation/' + observation_id + '/');
-    xhr.send();
-    holder_of_observations = document.getElementById("holder_of_observations");
-    xhr.onreadystatechange = function(e) {
-        if (xhr.readyState === 4) {
-            if (xhr.status == 200) {
-                row = button.parentNode.parentNode;
-                table = document.getElementById("observation-search-results");
-                row.parentNode.removeChild(row);
-                var nodes = new DOMParser().parseFromString(xhr.response.trim(), 'text/html').body.childNodes[0];
-                holder_of_observations.appendChild(nodes);
-            }
-            else {
-                alert(xhr.responseText);
-            }
-        }
-    }
-}
-*/
-
 function remove_item(button) {
     button.parentNode.parentNode.removeChild(button.parentNode);
 }
@@ -250,7 +227,7 @@ function create_item_holder() {
 
     close_button = document.createElement("button");
     close_button.type = "button";
-    close_button.addEventListener("click", function() {remove_observation(this)});
+    close_button.addEventListener("click", function() {remove_item(this)});
     close_button.innerHTML = 'x';
     close_button.classList.add("close_button");
     item_holder.appendChild(close_button);
@@ -265,7 +242,6 @@ function create_row(title_name, name, list_name=null, values=null, applyNumberFi
     cell = document.createElement("td");
     input = document.createElement('input');
     input.type = "text";
-    // input.name = name + index;
     input.name = name;
     input.classList.add('input');
 

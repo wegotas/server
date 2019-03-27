@@ -1,5 +1,5 @@
 <div class="table-holder">
-    <input type="hidden" name="processor" value="{{ processor.id_processor }}" />
+    <input type="hidden" name="processors" value="{{ processor.id_processor }}" />
     {% if computer_id %}
     <button type="button" class="close_button" onclick="remove_processor_from_computer(this, {{ computer_id }}, {{ processor.id_processor }})">x</button>
     {% else %}

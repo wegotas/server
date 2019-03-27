@@ -1,5 +1,5 @@
 <div class="table-holder">
-    <input type="hidden" name="observation" value="{{ observation.id_observation }}" />
+    <input type="hidden" name="observations" value="{{ observation.id_observation }}" />
     {% if computer_id %}
     <button type="button" class="close_button" onclick="remove_observation_from_computer(this, {{ computer_id }}, {{ observation.id_observation }})">x</button>
     {% else %}
