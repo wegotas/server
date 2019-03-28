@@ -1,3 +1,106 @@
+2019-03-28
+
+LT:
+
+** Pokyciai Django serveryje: Pakeistas rankinis kompiuterio iraso pridejimas, kad pridejinetu 5v kompiuterio irasus vietoj 4v. **
+* Butini laukai:
+    
+    "pp" - reiskia yra papildomi pasirinkimai, sarasas kuris issiskleidzia paspaudus kairi peles mygtuka ant iskleidziamo lauko, arba dukart paspaudus ant tekstinio laukelio, rasant i tekstini laukeli yra siulomi papildomi pasirinkimai panasus i vedama. Sio funkcionalumo veikimas smarkiai priklauso nuo naudojamos narsykles ir jos versijos.
+     
+    * Serial: Kompiuterio seriala galima rasti ant kompiuterio lidpuko, BIOS'e, diagnostines sistemas ar ant motinines plokstes.
+    
+    * Type(pp): Kompiuterio tipas iprastai yra "Desktop" jei stacionarus arba "Laptop" jei nesiojamas. Ateityje tai gali keistis(tartis su darbu vadovu).
+    
+    * Category(pp): Kategorija, kuriai sis kompiuteris yra priskirtas(tartis su darbu vadovu).
+    
+    * Box number(pp): Deze/pozicija ir kuria sis kompiuteris bus padetas sandeliuoti(tartis su darbu vadovu).
+    
+    * Manufacturer(pp): Kompiuterio gamintoja galima atpazinti pagal logotipa.
+    
+    * Model(pp): Kompiuterio modeli galima rasti parasyta ant kompiuterio, lipduku, BIOS ar diagnostines sistemas.
+    
+    * Tester(pp): Testuotojas kuris si kompiuteri suvedineja.
+    
+    * License(pp): Kompiuterio licenzija galima atpazinti pagal ant jo uzklijuota lipduka. Jei lipduko nera nustatyti "N/A"
+    
+    * Received batch(pp): Partija su kuria kompiuteris atkeliavo.
+    
+    * Diagonal(pp): Isstrizaine galima ivertini is akies arba su matavimo priemone. Stacionariems kompiuteriams rasyti "0".
+    
+    * Observation: Pastaba apie kompiuteri. Butina bent viena pastaba(sis ribotumas skirtas kad atskirti 5v nuo 4v kompus).
+
+* Nebutini laukai:
+
+    * Other: Komentaras apie kompiuteri.
+    
+    * Total RAM(pp): Viso laikinosios atminties galima atrasti (nevisada) per bios ar diagnostines sistemas.
+
+* Daug su daug esybes ir ju jungtis (Laikinosios atminties kaulas, Procesoriai, Vaizdo plokstes, Pastabos):
+
+    "n" - nauja esybe. Sukuriama nauja tuscia lentele pagal esybes laukus. Dauguma siu lauku tures papildomus pasirinkimus.
+    
+    "e" - esama esybe. Esybe ieskoma pagal raktazodi is rodomu lauku. Radus tinkamus variantus virs tekstinio lauko bus pateikiami pasiulymai. Paspaudus '+' mygtuka sis variantas bus pridetas kaip lentele prie norimu esybiu rinkinio. Laukai neredaguojami.
+    
+    * RAM sticks(n, e): Laikinosios atminties kaulus galima issiaiskint praardzius kompiuteri, per bios ar diagnostines sistemas.  
+    
+    * Processors(n, e): Procesoriu informacija galima issiaiskinti per bios ar diagnostines sistemas. 
+        * Procesoriai yra daug-su-daug esybe, nes nors dauguma kompiuteriu turi viena procesoriu, ateityje gali tekti suvedineti serverinius kompiuterius su daugiau nei vienu procesoriumi.
+    
+    * GPUs(n, e): Vaizdo plokste galima issiaiskinti per bios ar diagnostines sistemas. 
+    
+    * Observations(e): Pastabos i kurias vertetu atsizvelgti ateityje surinkejams.
+    
+EN:
+
+** Changes in Django server: Changed manual computer record adding, so that computer would be added as 5v insteand of 4v. **
+* Necessary fields:
+    
+    "pp" - aditional choices are available, list of possible values appear after left mouse click on listbox, or twice on textbox, writint in textbox also offers similar choices to the one which is being entered. This functionality is highly dependable on web browser used and it's version.
+     
+    * Serial: Computer serial can be found on a computer's sticker, BIOS, diagnostic system or on motherboard.
+    
+    * Type(pp): Computer types usually is "Desktop" if it is stationary of "Laptop" if it is laptop. In the future this can change(consult supervisor).
+    
+    * Category(pp): Category, to which this computer belongs to(consult supervisor).
+    
+    * Box number(pp): Box/position where computer will be stored(consult supervisor).
+    
+    * Manufacturer(pp): Computer manufactured can be identified by logo.
+    
+    * Model(pp): Computer model can be found written on computer, sticker, BIOS or diagnostic system.
+    
+    * Tester(pp): Tester who is filling in this computer.
+    
+    * License(pp): Computer license can be identified by sticker. If it is missing set "N/A".
+    
+    * Received batch(pp): Batch with which computer was received.
+    
+    * Diagonal(pp): Diagonal can be identified just by looking or measuring tool. Stationary computers write in value "0".
+    
+    * Observation: Observation about computer. Atleast one observation should be filled in(this requirement exists to be able identify 5v from 4v computer).
+
+* Optional fields:
+
+    * Other: Comment about computer.
+    
+    * Total RAM(pp): Total random access memory can be found(not always) in BIOS or diagnostic system.
+
+* Many to many entities and their connections (RAMs, Processors, GPUs, observations):
+
+    "n" - new entity. Creates new empty table based on the entity. Most of these fields will have additional choices.
+    
+    "e" - existing entity. Entity which is found based on the keyword by searchfields. Options which fit the criteria will be displayed above textfield. Pressing "+" button will allow for that option to be added as table in a list wamted entities. Fields are not editable.
+    
+    * RAM sticks(n, e): Ram sticks can be found by disassembling computer, in BIOS or diagnostic system.
+    
+    * Processors(n, e): Processor information can be found in BIOS or diagnostic system. 
+        * Processors are part of many-to-many entitity because even though most computers have only one processor, in the future records could be added with more than one processor.
+    
+    * GPUs(n, e): GPU can be found in BIOS or diagnostic system. 
+    
+    * Observations(e): Observations of which assemblers should be aware of.
+
+---
 2019-03-14
 
 LT:
@@ -51,4 +154,4 @@ EN
 * RAMs, Processors and GPUs are edited on pressing save button.
 * Drives are saved on page which is opened by pressing "Edit_drive" button.
 * Observations relations are changed using javascript calls. If change is visible in the page, that means change has happened.
-----------------------------------------------------------------------------------
+---

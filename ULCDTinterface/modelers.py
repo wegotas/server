@@ -153,6 +153,15 @@ class Computerresolutions(models.Model):
         db_table = 'ComputerResolutions'
 
 
+class ComputerFormFactors(models.Model):
+    id_computer_form_factor = models.AutoField(primary_key=True)
+    form_factor_name = models.CharField(max_length=45)
+
+    class Meta:
+        managed = False
+        db_table = 'Computer_form_factors'
+
+
 class Receivedbatches(models.Model):
     id_received_batch = models.AutoField(primary_key=True)
     received_batch_name = models.CharField(max_length=45, blank=True, null=True)
@@ -199,6 +208,8 @@ class Computers(models.Model):
     f_id_received_batches = models.ForeignKey('Receivedbatches', models.DO_NOTHING, db_column='f_id_received_batches',
                                               blank=True, null=True)
     box_number = models.IntegerField(blank=True, null=True)
+    f_id_computer_form_factor = models.ForeignKey(ComputerFormFactors, models.DO_NOTHING,
+                                                  db_column='f_id_computer_form_factor', blank=True, null=True)
 
     class Meta:
         managed = True

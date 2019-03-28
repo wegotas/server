@@ -663,6 +663,10 @@ function launchReceivedBatchesWindow() {
     var receivedBatchesWindow = window.open('received_batches/', "", "width=400,height=650");
 }
 
+function launchComputerFormFactorsWindow() {
+    var computerFormFactorsWindow = window.open('computer_form_factors/', "", "width=400,height=650");
+}
+
 function launchNewRecordWindow() {
     var recordWindow = window.open('new_record/', "", "width=400,height=650");
 }
