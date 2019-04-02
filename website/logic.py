@@ -448,16 +448,6 @@ def get_keyword(data_dict):
         return data_dict.pop('keyword')[0]
 
 
-def change_category_for_computers(dict):
-    category_name = next(iter(dict))
-    indexes = dict[category_name]
-    category = Categories.objects.get(category_name=category_name)
-    for ind in indexes:
-        computer = Computers.objects.get(id_computer=ind)
-        computer.f_category = category
-        computer.save()
-
-
 class AbstractDataFileGenerator(ABC):
 
     # Parts of comments which should be removed out of comment, preserving the rest of the comment.
@@ -785,167 +775,7 @@ class Item:
         self.permanence = bool(permanence)
 
 
-def get_computer_form_factors():
-    computer_form_factor_list = []
-    for computer_form_factor in ComputerFormFactors.objects.all():
-        item = Item(computer_form_factor.id_computer_form_factor, computer_form_factor.form_factor_name)
-        computer_form_factor_list.append(item)
-    return computer_form_factor_list
-
-
-def save_computer_form_factor(name):
-    if name != '':
-        ComputerFormFactors.objects.get_or_create(form_factor_name=name)
-
-
-def get_received_batches_list():
-    received_batches = Receivedbatches.objects.all()
-    received_batchlist = []
-    for batch in received_batches:
-        newItem = Item(batch.id_received_batch, batch.received_batch_name)
-        received_batchlist.append(newItem)
-    return received_batchlist
-
-
-def save_received_batch(name):
-    if name != "":
-        Receivedbatches.objects.get_or_create(received_batch_name=name)
-
-
-def edit_received_batch(data):
-    recieved_batch = Receivedbatches.objects.get(id_received_batch=data["ItemId"])
-    recieved_batch.received_batch_name = data["ItemName"]
-    recieved_batch.save()
-
-
-def delete_batch(index):
-    recieved_batch = Receivedbatches.objects.get(id_received_batch=index)
-    recieved_batch.delete()
-
-
-def get_categories_list():
-    cats = Categories.objects.all()
-    catlist = []
-    for cat in cats:
-        newItem = Item(cat.id_category, cat.category_name, cat.permanent)
-        catlist.append(newItem)
-    return catlist
-
-
-def save_category(name):
-    if name != "":
-        Categories.objects.get_or_create(category_name=name)
-
-
-def edit_category(data):
-    cat = Categories.objects.get(id_category=data["ItemId"])
-    if cat.permanent != 1:
-        cat.category_name = data["ItemName"]
-        cat.save()
-
-
-def delete_category(index):
-    cat = Categories.objects.get(id_category=index)
-    if cat.permanent != 1:
-        cat.delete()
-
-
-def get_types_list():
-    types = Types.objects.all()
-    typeslist = []
-    for typie in types:
-        newItem = Item(typie.id_type, typie.type_name)
-        typeslist.append(newItem)
-    return typeslist
-
-
-def save_type(name):
-    if name != "":
-        Types.objects.get_or_create(type_name=name)
-
-
-def edit_type(data):
-    typ = Types.objects.get(id_type=data["ItemId"])
-    typ.type_name = data["ItemName"]
-    typ.save()
-
-
-def delete_type(index):
-    typ = Types.objects.get(id_type=index)
-    typ.delete()
-
-
-def get_testers_list():
-    testers = Testers.objects.all()
-    testerslist = []
-    for tester in testers:
-        newItem = Item(tester.id_tester, tester.tester_name)
-        testerslist.append(newItem)
-    return testerslist
-
-
-def save_tester(name):
-    if name != "":
-        Testers.objects.get_or_create(tester_name=name)
-
-
-def edit_tester(data):
-    tes = Testers.objects.get(id_tester=data["ItemId"])
-    tes.tester_name = data["ItemName"]
-    tes.save()
-
-
-def delete_tester(index):
-    tes = Testers.objects.get(id_tester=index)
-    tes.delete()
-
-
-def get_observation_category_list():
-    lst = []
-    for member in Observationcategory.objects.all():
-        lst.append(Item(item_id=member.id_observation_category, item_name=member.category_name))
-    return lst
-
-
-def save_observation_category(name):
-    if name != "":
-        Observationcategory.objects.get_or_create(category_name=name)
-
-
-def delete_observation_category(index):
-    item = Observationcategory.objects.get(id_observation_category=index)
-    item.delete()
-
-
-def edit_observation_category(data):
-    item = Observationcategory.objects.get(id_observation_category=data["ItemId"])
-    item.category_name = data["ItemName"]
-    item.save()
-
-
-def get_observation_subcategory_list():
-    lst = []
-    for member in Observationsubcategory.objects.all():
-        lst.append(Item(item_id=member.id_observation_subcategory, item_name=member.subcategory_name))
-    return lst
-
-
-def save_observation_subcategory(name):
-    if name != "":
-        Observationsubcategory.objects.get_or_create(subcategory_name=name)
-
-
-def delete_observation_subcategory(index):
-    item = Observationsubcategory.objects.get(id_observation_subcategory=index)
-    item.delete()
-
-
-def edit_observation_subcategory(data):
-    item = Observationsubcategory.objects.get(id_observation_subcategory=data["ItemId"])
-    item.subcategory_name = data["ItemName"]
-    item.save()
-
-
+'''
 def get_all_observations_dict():
     variables = Observations.objects.all()
     observation_dict = dict()
@@ -961,7 +791,7 @@ def get_all_observations_dict():
             observation_dict[cat_name][sub_cat_name] = {}
         observation_dict[cat_name][sub_cat_name][full_name] = shortcode
     return observation_dict
-
+'''
 
 class ObservationMember:
 

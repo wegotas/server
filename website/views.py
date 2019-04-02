@@ -526,8 +526,14 @@ def cat_change(request):
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
-    # data = JSONParser().parse(request)
-    change_category_for_computers(JSONParser().parse(request))
+    data = JSONParser().parse(request)
+    category_name = next(iter(data))
+    indexes = data[category_name]
+    category = Categories.objects.get(category_name=category_name)
+    for ind in indexes:
+        computer = Computers.objects.get(id_computer=ind)
+        computer.f_category = category
+        computer.save()
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
@@ -556,14 +562,22 @@ def ord_assign(request):
 
 @csrf_exempt
 def computer_form_factors(request):
+    def get_computer_form_factors():
+        computer_form_factor_list = []
+        for computer_form_factor in ComputerFormFactors.objects.all():
+            item = Item(computer_form_factor.id_computer_form_factor, computer_form_factor.form_factor_name)
+            computer_form_factor_list.append(item)
+        return computer_form_factor_list
+
     print("Computer form factors")
     if request.method == 'POST':
         print("This was POST request")
-        save_computer_form_factor(request.POST.get("item_name"))
+        name = request.POST.get("item_name")
+        if name != '':
+            ComputerFormFactors.objects.get_or_create(form_factor_name=name)
     if request.method == 'GET':
         print("This was GET request")
-    computer_form_factor_list = get_computer_form_factors()
-    return render(request, 'items.html', {'items': computer_form_factor_list})
+    return render(request, 'items.html', {'items': get_computer_form_factors()})
 
 
 @csrf_exempt
@@ -571,10 +585,11 @@ def del_computer_form_factor(request, int_index):
     print("Delete computer_form_factor")
     if request.method == 'POST':
         print("This was POST request")
-        # delete_batch(int_index)
         ComputerFormFactors.objects.get(id_computer_form_factor=int_index).delete()
     if request.method == 'GET':
         print("This was GET request")
+    return HttpResponse(
+        "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -594,20 +609,22 @@ def computer_form_factor_edit(request):
 
 @csrf_exempt
 def receivedbatches(request):
+    def get_received_batches_list():
+        received_batchlist = []
+        for batch in Receivedbatches.objects.all():
+            new_item = Item(batch.id_received_batch, batch.received_batch_name)
+            received_batchlist.append(new_item)
+        return received_batchlist
+
     print("Batches")
     if request.method == 'POST':
         print("This was POST request")
-        save_received_batch(request.POST.get("item_name"))
+        name = request.POST.get("item_name")
+        if name != "":
+            Receivedbatches.objects.get_or_create(received_batch_name=name)
     if request.method == 'GET':
         print("This was GET request")
-    received_batches = get_received_batches_list()
-    template = loader.get_template('items.html')
-    return HttpResponse(
-        template.render(
-            {'items': received_batches},
-            request
-        )
-    )
+    return render(request, 'items.html', {'items': get_received_batches_list()})
 
 
 @csrf_exempt
@@ -615,9 +632,11 @@ def delreceivedBatch(request, int_index):
     print("Delete batch")
     if request.method == 'POST':
         print("This was POST request")
-        delete_batch(int_index)
+        Receivedbatches.objects.get(id_received_batch=int_index).delete()
     if request.method == 'GET':
         print("This was GET request")
+    return HttpResponse(
+        "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -628,28 +647,32 @@ def recieved_batch_edit(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    edit_received_batch(data)
+    received_batch = Receivedbatches.objects.get(id_received_batch=data["ItemId"])
+    received_batch.received_batch_name = data["ItemName"]
+    received_batch.save()
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def categories(request):
+    def get_categories_list():
+        catlist = []
+        for cat in Categories.objects.all():
+            newItem = Item(cat.id_category, cat.category_name, cat.permanent)
+            catlist.append(newItem)
+        return catlist
+
     print("Categories")
     if request.method == 'POST':
         print("This was POST request")
-        save_category(request.POST.get("item_name"))
+        name = request.POST.get("item_name")
+        if name != "":
+            Categories.objects.get_or_create(category_name=name)
         print("Finished")
     if request.method == 'GET':
         print("This was GET request")
-    categories = get_categories_list()
-    template = loader.get_template('items.html')
-    return HttpResponse(
-        template.render(
-            {'items': categories},
-            request
-        )
-    )
+    return render(request, 'items.html', {'items': get_categories_list()})
 
 
 @csrf_exempt
@@ -657,9 +680,13 @@ def delCat(request, int_index):
     print("Delete category")
     if request.method == 'POST':
         print("This was POST request")
-        delete_category(int_index)
+        cat = Categories.objects.get(id_category=int_index)
+        if cat.permanent != 1:
+            cat.delete()
     if request.method == 'GET':
         print("This was GET request")
+    return HttpResponse(
+        "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -670,27 +697,32 @@ def cat_edit(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    edit_category(data)
+    cat = Categories.objects.get(id_category=data["ItemId"])
+    if cat.permanent != 1:
+        cat.category_name = data["ItemName"]
+        cat.save()
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def types(request):
+    def get_types_list():
+        typeslist = []
+        for typie in Types.objects.all():
+            newItem = Item(typie.id_type, typie.type_name)
+            typeslist.append(newItem)
+        return typeslist
+
     print("types")
     if request.method == 'POST':
         print("This was POST request")
-        save_type(request.POST.get("item_name"))
+        name = request.POST.get("item_name")
+        if name != "":
+            Types.objects.get_or_create(type_name=name)
     if request.method == 'GET':
         print("This was GET request")
-    types = get_types_list()
-    template = loader.get_template('items.html')
-    return HttpResponse(
-        template.render(
-            {'items': types},
-            request
-        )
-    )
+    return render(request, 'items.html', {'items': get_types_list()})
 
 
 @csrf_exempt
@@ -698,9 +730,11 @@ def delTyp(request, int_index):
     print("Delete type")
     if request.method == 'POST':
         print("This was POST request")
-        delete_type(int_index)
+        Types.objects.get(id_type=int_index).delete()
     if request.method == 'GET':
         print("This was GET request")
+    return HttpResponse(
+        "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -711,27 +745,58 @@ def typ_edit(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    edit_type(data)
+    typ = Types.objects.get(id_type=data["ItemId"])
+    typ.type_name = data["ItemName"]
+    typ.save()
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def testers(request):
+    def get_testers_list():
+        testerslist = []
+        for tester in Testers.objects.all():
+            newItem = Item(tester.id_tester, tester.tester_name)
+            testerslist.append(newItem)
+        return testerslist
+
     print("testers")
     if request.method == 'POST':
         print("This was POST request")
-        save_tester(request.POST.get("item_name"))
+        name = request.POST.get("item_name")
+        if name != "":
+            Testers.objects.get_or_create(tester_name=name)
     if request.method == 'GET':
         print("This was GET request")
-    testers = get_testers_list()
-    template = loader.get_template('items.html')
+    return render(request, 'items.html', {'items': get_testers_list()})
+
+
+@csrf_exempt
+def delTes(request, int_index):
+    print("Delete tester")
+    if request.method == 'POST':
+        print("This was POST request")
+        Testers.objects.get(id_tester=int_index).delete()
+    if request.method == 'GET':
+        print("This was GET request")
     return HttpResponse(
-        template.render(
-            {'items': testers},
-            request
-        )
-    )
+        "If you see this message that means after changes post update on JS side page reload has failed")
+
+
+@csrf_exempt
+def tes_edit(request):
+    print("tes_edit")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    tes = Testers.objects.get(id_tester=data["ItemId"])
+    tes.tester_name = data["ItemName"]
+    tes.save()
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -746,10 +811,18 @@ def observations(request):
 
 @csrf_exempt
 def observation_category(request):
+    def get_observation_category_list():
+        lst = []
+        for member in Observationcategory.objects.all():
+            lst.append(Item(item_id=member.id_observation_category, item_name=member.category_name))
+        return lst
+
     print("observation_category")
     if request.method == 'POST':
         print("This was POST request")
-        save_observation_category(request.POST.get("item_name"))
+        name = request.POST.get("item_name")
+        if name != "":
+            Observationcategory.objects.get_or_create(category_name=name)
     if request.method == 'GET':
         print("This was GET request")
     return render(request, "observationsCategorySubtemplate.html", {'items': get_observation_category_list()})
@@ -760,22 +833,11 @@ def del_observation_category(request, int_index):
     print("Delete observation_category")
     if request.method == 'POST':
         print("This was POST request")
-        delete_observation_category(int_index)
+        Observationcategory.objects.get(id_observation_category=int_index).delete()
     if request.method == 'GET':
         print("This was GET request")
-
-
-@csrf_exempt
-def observation_subcategory_edit(request):
-    print("observation_category edit")
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
-    data = JSONParser().parse(request)
-    edit_observation_category(data)
     return HttpResponse(
-        "If you see this message that means after deletion post update on JS side page reload has failed")
+        "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -786,17 +848,27 @@ def observation_category_edit(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    edit_observation_category(data)
+    item = Observationcategory.objects.get(id_observation_category=data["ItemId"])
+    item.category_name = data["ItemName"]
+    item.save()
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def observation_subcategory(request):
+    def get_observation_subcategory_list():
+        lst = []
+        for member in Observationsubcategory.objects.all():
+            lst.append(Item(item_id=member.id_observation_subcategory, item_name=member.subcategory_name))
+        return lst
+
     print("observation_subcategory")
     if request.method == 'POST':
         print("This was POST request")
-        save_observation_subcategory(request.POST.get("item_name"))
+        name = request.POST.get("item_name")
+        if name != "":
+            Observationsubcategory.objects.get_or_create(subcategory_name=name)
     if request.method == 'GET':
         print("This was GET request")
     return render(request, "observationsSubcategorySubtemplate.html", {'items': get_observation_subcategory_list()})
@@ -807,9 +879,11 @@ def del_observation_subcategory(request, int_index):
     print("Delete observation_subcategory")
     if request.method == 'POST':
         print("This was POST request")
-        delete_observation_subcategory(int_index)
+        Observationsubcategory.objects.get(id_observation_subcategory=int_index).delete()
     if request.method == 'GET':
         print("This was GET request")
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -820,7 +894,9 @@ def observation_subcategory_edit(request):
     if request.method == 'GET':
         print("This was GET request")
     data = JSONParser().parse(request)
-    edit_observation_subcategory(data)
+    item = Observationsubcategory.objects.get(id_observation_subcategory=data["ItemId"])
+    item.subcategory_name = data["ItemName"]
+    item.save()
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
@@ -846,7 +922,7 @@ def observations_details(request):
             request,
             "observationsDetailsSubtemplate.html",
             {
-                'message':ota.message,
+                'message': ota.message,
                 "categories": Observationcategory.objects.all().values_list('category_name', flat=True),
                 "subcategories": Observationsubcategory.objects.all().values_list('subcategory_name', flat=True),
                 'observations': ObservationsCollection()
@@ -885,37 +961,6 @@ def edit_observations_details(request):
     observation.shortcode = data['shortcode']
     observation.full_name = data['fullname']
     observation.save()
-    return HttpResponse(
-        "If you see this message that means after deletion post update on JS side page reload has failed")
-
-
-@csrf_exempt
-def delTes(request, int_index):
-    print("Delete tester")
-    message = ""
-    if request.method == 'POST':
-        print("This was POST request")
-        delete_tester(int_index)
-    if request.method == 'GET':
-        print("This was GET request")
-    template = loader.get_template('items.html')
-    return HttpResponse(
-        template.render(
-            {'items': testers},
-            request
-        )
-    )
-
-
-@csrf_exempt
-def tes_edit(request):
-    print("tes_edit")
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
-    data = JSONParser().parse(request)
-    edit_tester(data)
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
