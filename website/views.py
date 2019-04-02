@@ -944,8 +944,7 @@ def observations_details(request):
 @csrf_exempt
 def delete_observations_details(request, int_index):
     print('delete_observations_details')
-    observation = Observations.objects.get(id_observation=int_index)
-    observation.delete()
+    Observations.objects.get(id_observation=int_index).delete()
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
@@ -955,8 +954,6 @@ def edit_observations_details(request):
     print('edit_observations_details')
     print(request.POST)
     data = JSONParser().parse(request)
-    # ote = ObservationToEdit(data)
-    # edit_observation(data)
     observation = Observations.objects.get(id_observation=data['observation_id'])
     observation.shortcode = data['shortcode']
     observation.full_name = data['fullname']

@@ -774,7 +774,7 @@ class Item:
         self.name = item_name
         self.permanence = bool(permanence)
 
-
+# TODO: check what this function is used for? and determine wether i should keep it or remove it.
 '''
 def get_all_observations_dict():
     variables = Observations.objects.all()
