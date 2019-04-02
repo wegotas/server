@@ -3,49 +3,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Adding the new computer</title>
+    <title>New computer record</title>
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
     <script type="text/javascript" src="{% static 'new_record.js' %}"></script>
+    <style>
+    th, td {
+    font-size: 13px;
+    }
+    th {
+    text-align: right;
+    padding-right: 10px;
+    }
+
+    input {
+      width: 260px;
+    }
+
+    .edit_width {
+      width: auto;
+    }
+
+    input:read-only {
+      background-color: darkgrey;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+    }
+
+    </style>
+    <script type="text/javascript">
+        var many_to_many_unique_values = JSON.parse("{{ many_to_many_unique_values_dict|safe }}".replace(/'/g, '"'));
+    </script>
 </head>
-<style>
-th, td {
-font-size: 13px;
-}
-th {
-text-align: right;
-padding-right: 10px;
-}
 
-input {
-  width: 260px;
-}
-
-.edit_width {
-  width: auto;
-}
-
-input:read-only {
-  background-color: darkgrey;
-}
-
-.error {
-  color: red;
-  text-align: center;
-}
-
-</style>
 <body>
-    <table align="center">
-        <form action="" method="post">
-          <div style="width: 100%; height: 70px;">
-            <div style="width: 200px; float: left;">
-              <header>
-                  <img src="{% static '/img/Logo.jpg' %}">
-              </header>
-            </div>
-            <div align="center" style="padding-top: 34px">
-              <input class="edit_width" type="image" name="edit" value="Edit" src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAWBJREFUWIXtl7FOwzAURQ8lA9AFKZSyo3RG6kfQHQSCj2HjazqwIOAHKqEwMkViZAqUERhAMNgGtzy7cUjaCnolS8mzn++V83z1Av8dS0IsAg6AHrBZEU8OXAJ94M23cAtIgY+axjXQdpFHNZPbIiJJwPEUyM04NKQNS0DPdTQOPAKZHsPA3C8u+yhCCi4DdoBX/b4K3ALbBfNb5qHhW+XBnUUO8KJjwSgroDIsBMxcgGgIFjLk4roRYimyzSZAp4iYK0bN4gFYKZI4AWvA09je52bS9wmGjF61snjWAkTMvAZ8AjZQDvdbNIHYNekrwhhlr1IRpsDJWOwU6AprE2C9jABQ3i75u1TtXWB3wn4/MNc1sBAw1wISlMMZNHUsGPYtyAPyOsA93w4X47lqAkSuI6bXlO5LAiJUy1w3+QBYdh1Nu2YRA6yGFNy/Znuo1rklzJdBDlwAZ8B7RXv+EXwCoevGfewJkkwAAAAASUVORK5CYII=">
-            </div>
+    <form method="post">
+        <table align="center">
+            <div style="width: 100%; height: 70px;">
+                <div style="width: 200px; float: left;">
+                  <header>
+                      <img src="{% static '/img/Logo.jpg' %}">
+                  </header>
+                </div>
+                <div align="center" style="padding-top: 34px">
+                  <input class="edit_width" type="image" name="edit" value="Edit" src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAWBJREFUWIXtl7FOwzAURQ8lA9AFKZSyo3RG6kfQHQSCj2HjazqwIOAHKqEwMkViZAqUERhAMNgGtzy7cUjaCnolS8mzn++V83z1Av8dS0IsAg6AHrBZEU8OXAJ94M23cAtIgY+axjXQdpFHNZPbIiJJwPEUyM04NKQNS0DPdTQOPAKZHsPA3C8u+yhCCi4DdoBX/b4K3ALbBfNb5qHhW+XBnUUO8KJjwSgroDIsBMxcgGgIFjLk4roRYimyzSZAp4iYK0bN4gFYKZI4AWvA09je52bS9wmGjF61snjWAkTMvAZ8AjZQDvdbNIHYNekrwhhlr1IRpsDJWOwU6AprE2C9jABQ3i75u1TtXWB3wn4/MNc1sBAw1wISlMMZNHUsGPYtyAPyOsA93w4X47lqAkSuI6bXlO5LAiJUy1w3+QBYdh1Nu2YRA6yGFNy/Znuo1rklzJdBDlwAZ8B7RXv+EXwCoevGfewJkkwAAAAASUVORK5CYII=">
+                </div>
             </div>
             <div class="error">
                 {{ error_message|linebreaks }}
@@ -54,7 +58,7 @@ input:read-only {
                 <font color="red">*</font> Signifies fields which must be filled in.
             </div>
             <tr>
-                <th>Serial<font color="red">*</font>:</th>
+                <th title="Can be found on computer's sticker&#13;or in BIOS&#13;or on motherboard">Serial<font color="red">*</font>:</th>
                 <td>
                     <input type="text" name="serial">
                 </td>
@@ -82,7 +86,20 @@ input:read-only {
                 </td>
             </tr>
             <tr>
-                <th>Box number<font color="red">*</font>:</th>
+                <th>Form Factor:</th>
+                <td>
+                    <select name="form_factor" value="">
+                        <!--
+                        <option value="" selected disabled hidden>Choose form factor</option>
+                        -->
+                        {% for computer_form_factor in rc.computer_form_factors %}
+                        <option value="{{ computer_form_factor }}">{{ computer_form_factor }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th title="Number of a box where this computer will be stored">Box number<font color="red">*</font>:</th>
                 <td>
                     <input id="intTextBox" name="box_number">
                 </td>
@@ -99,7 +116,7 @@ input:read-only {
                 </td>
             </tr>
             <tr>
-                <th>Model<font color="red">*</font>:</th>
+                <th title="Can be found on computer&#13;or in BIOS">Model<font color="red">*</font>:</th>
                 <td>
                     <input list="models" name="model_name">
                     <datalist id="models">
@@ -107,108 +124,6 @@ input:read-only {
                         <option value="{{ model }}"></option>
                         {% endfor %}
                     </datalist>
-                </td>
-            </tr>
-            <tr>
-                <th>CPU:</th>
-                <td>
-                    <input list="cpus" name="cpu_name">
-                    <datalist id="cpus">
-                        {% for cpu in rc.cpus %}
-                        <option value="{{ cpu }}"></option>
-                        {% endfor %}
-                    </datalist>
-                </td>
-            </tr>
-            <tr>
-                <th>GPU:</th>
-                <td>
-                    <input list="gpus" name="gpu_name">
-                    <datalist id="gpus">
-                        {% for gpu in rc.gpus %}
-                        <option value="{{ gpu }}"></option>
-                        {% endfor %}
-                    </datalist>
-                </td>
-            </tr>
-            <tr>
-                <th>RAM:</th>
-                <td>
-                    <input list="ram_sizes" name="ram_size_text">
-                    <datalist id="ram_sizes">
-                        {% for ram in rc.rams %}
-                        <option value="{{ ram }}"></option>
-                        {% endfor %}
-                    </datalist>
-                </td>
-            </tr>
-            <tr>
-                <th>HDD:</th>
-                <td>
-                    <input list="hdd_sizes" name="hdd_sizes_name">
-                    <datalist id="hdd_sizes">
-                        {% for hdd in rc.hdds %}
-                        <option value="{{ hdd }}"></option>
-                        {% endfor %}
-                    </datalist>
-                </td>
-            </tr>
-            <tr>
-                <th>Diagonal<font color="red">*</font>:</th>
-                <td>
-                    <input list="diagonals" name="diagonal_text">
-                    <datalist id="diagonals">
-                        {% for diagonal in rc.diagonals %}
-                        <option value="{{ diagonal }}"></option>
-                        {% endfor %}
-                    </datalist>
-                </td>
-            </tr>
-            <tr>
-                <th>License<font color="red">*</font>:</th>
-                <td>
-                    <select name="license_name" value="">
-                        <option value="" selected disabled hidden>Choose license</option>
-                        {% for license in rc.licenses %}
-                        <option value="{{ license }}">{{ license }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th>Cover<font color="red">*</font>:</th>
-                <td>
-                    <input type="text" name="cover">
-                </td>
-            </tr>
-            <tr>
-                <th>Display:</th>
-                <td>
-                    <input type="text" name="display">
-                </td>
-            </tr>
-            <tr>
-                <th>Bezel<font color="red">*</font>:</th>
-                <td>
-                    <input type="text" name="bezel">
-                </td>
-            </tr>
-            <tr>
-                <th>HDD cover<font color="red">*</font>:</th>
-                <td>
-                    <input type="text" name="hdd_cover">
-                </td>
-            </tr>
-            <tr>
-                <th>RAM cover<font color="red">*</font></th>
-                <td>
-                    <input type="text" name="ram_cover">
-                </td>
-            </tr>
-            <tr>
-                <th>Other<font color="red">*</font></th>
-                <td>
-                    <input type="text" name="other">
                 </td>
             </tr>
             <tr>
@@ -223,7 +138,18 @@ input:read-only {
                 </td>
             </tr>
             <tr>
-                <th>Received batch<font color="red">*</font>:</th>
+                <th>License<font color="red">*</font>:</th>
+                <td>
+                    <select name="license_name" value="">
+                        <option value="" selected disabled hidden>Choose license</option>
+                        {% for license in rc.licenses %}
+                        <option value="{{ license }}">{{ license }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th title="Batch with which computer was received with">Received batch<font color="red">*</font>:</th>
                 <td>
                     <select name="received_batch_name">
                         <option value="" selected disabled hidden>Choose received batch</option>
@@ -233,10 +159,90 @@ input:read-only {
                     </select>
                 </td>
             </tr>
-            <!--
-            self.received_batches
-            -->
-        </form>
-    </table>
+            <tr>
+                <th>Other:</th>
+                <td>
+                    <textarea rows="6" cols="37" style="resize: none;" name="other"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <th>Diagonal<font color="red">*</font>:</th>
+                <td>
+                    <input list="diagonals" name="diagonal_text">
+                    <datalist id="diagonals">
+                        {% for diagonal in rc.diagonals %}
+                        <option value="{{ diagonal }}"></option>
+                        {% endfor %}
+                    </datalist>
+                </td>
+            </tr>
+            <tr>
+                <th>Total RAM:</th>
+                <td>
+                    <input list="ram_sizes" name="ram_size_text">
+                    <datalist id="ram_sizes">
+                        {% for ram in rc.rams %}
+                        <option value="{{ ram }}"></option>
+                        {% endfor %}
+                    </datalist>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <h3>RAM sticks:</h3>
+                    <div id="holder_of_ramsticks" class="section-member" align="center">
+                        <div>
+                            <div id="ramstick-adder" align="center" class="hidden search_result_adder">
+                            </div>
+                            <button type="button" onclick="new_ramstick(this)">New ramstick</button>
+                            <input id="ramstick_searchbox" type="text" placeholder="search existing ramsticks">
+                            <button type="button" id="ramsticks_result_toggler" class="hidden">Hide/Show ramsticks results</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <h3>Processors:</h3>
+                    <div id="holder_of_processors" class="section-member" align="center">
+                        <div>
+                            <div id="processor-adder" align="center" class="hidden search_result_adder">
+                            </div>
+                            <button type="button" onclick="new_processor(this)">New processor</button>
+                            <input id="processor_searchbox" type="text" placeholder="search existing processors">
+                            <button type="button" id="processors_result_toggler" class="hidden">Hide/Show processors results</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <h3>GPUs:</h3>
+                    <div id="holder_of_gpus" class="section-member" align="center">
+                        <div>
+                            <div id="gpu-adder" align="center" class="hidden search_result_adder">
+                            </div>
+                            <button type="button" onclick="new_gpu(this)">New GPU</button>
+                            <input id="gpu_searchbox" type="text" placeholder="search existing gpus">
+                            <button type="button" id="gpus_result_toggler" class="hidden">Hide/Show gpus results</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <h3>Observations:</h3>
+                    <div id="holder_of_observations" class="section-member" align="center">
+                        <div>
+                            <div id="observation-adder" align="center" class="hidden search_result_adder">
+                            </div>
+                            <input type="text" id="observation-search-box" placeholder="search observations">
+                            <button type="button" id="observation_result_toggler" class="hidden">Hide/Show observation results</button>
+                        </div>
+                    </div>
+                <td>
+            </tr>
+        </table>
+    </form>
 </body>
 </html>

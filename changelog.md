@@ -1,3 +1,34 @@
+TBA
+
+LT:
+
+** Pokyciai Django serveryje ir duombazes strukturoje: Pridetas formos faktoriaus funkcionalumas.
+
+* Duombaze laiko formos faktoriaus reiksme.
+* Form faktoriai sukuriami tinklalapyje kairiajame meniu.
+* Form faktorio reiksme galima priskirti naujam kompiuteriui per klientine programa (konstantino darbas) ir per tinklalapi pridedant nauja irasa. 
+* Form faktorio leidziama pakeisti per kompiuterio redagavimo langa tinklalapyje(v4, v5).
+* Form faktorius turi savo stulpeli pagrindinioje kompiuteriu rodomoje leneleje. Sioje lenteje galima filtruoti sia reiksme.
+
+**Trumpa versija:**
+
+Igyvendintas form faktoriu funkcionalumas.
+
+EN:
+
+** Changes in Django server and database structure: **
+
+* Database holds form factor's value.
+* Form factors are created in the website's left menu.
+* Form factor value can be assigned for a new computer in client program (konstantin's work) and in website when adding a new record.
+* Form factor can be changed through computer editing window in a website(v4, v5), 
+* Form factor has it's own column in main viewing table of computers. Filters can be applied to it.
+
+**Short version:**
+
+Implemented form factor functionality.
+
+---
 2019-03-28
 
 LT:
@@ -122,7 +153,7 @@ LT:
     Observation'ai ieskomi ivedant i tekstini laukeli raktazodzius ir paspaudus "Enter". Virs tekstinio laukelio islenda lentele su observation'u rezultatais. Sie rezultatai yra atrenkami pagal tai kurie dar nepriskirti kompiuteriui ir atitinka raktazodzius perskirtus tarpais. Siose rezultatu lentelese yra mygtukai "+", jie priskiria atitinkama observation'a prie redaguojamo kompiuterio.
     Observation'ai salinami paspaudus "x" mygtuka prie norimo pasalinti observation'o.
 
-** Trumpa versija: **
+**Trumpa versija:**
 * Laikina atmintis, Procesoriai ir Vaizdo plokstes atsinaujina paspaudus issaugojimo mygtuka.
 * Draivai per "Edit_drive" mygtuka atsidaranciame puslapyje saugojimi.
 * Observation'u sarysiai keiciami javascripto uzklausom. Jeigu matosi pokytis puslapyje, vadinas issaugojimas ivyko.
@@ -150,7 +181,7 @@ EN
     Observations are removed by pressing "x" button next to observation that needs to be removed.
 
 
-** Short version: **
+**Short version:**
 * RAMs, Processors and GPUs are edited on pressing save button.
 * Drives are saved on page which is opened by pressing "Edit_drive" button.
 * Observations relations are changed using javascript calls. If change is visible in the page, that means change has happened.

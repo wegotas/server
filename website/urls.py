@@ -53,18 +53,24 @@ urlpatterns = [
     path('cat/del/<int:int_index>/', views.delCat, name='categoryDeletion'),
     path('cat/edit/', views.cat_edit, name='categoryEdit'),
     path('cat/', views.categories, name='categories'),
+
     path('typ/del/<int:int_index>/', views.delTyp, name='typeDeletion'),
     path('typ/edit/', views.typ_edit, name='typeEdit'),
     path('typ/', views.types, name='types'),
+
     path('test/del/<int:int_index>/', views.delTes, name='testerDeletion'),
     path('test/edit/', views.tes_edit, name='testEdit'),
     path('test/', views.testers, name='testers'),
-    path('observ/', views.observations, name='observations'),
 
     path('received_batches/del/<int:int_index>/', views.delreceivedBatch, name='delelete_batch'),
     path('received_batches/edit/', views.recieved_batch_edit, name='batch_edit'),
     path('received_batches/', views.receivedbatches, name='batches'),
 
+    path('computer_form_factors/', views.computer_form_factors, name='computer_form_factors'),
+    path('computer_form_factors/del/<int:int_index>/', views.del_computer_form_factor, name='delelete_computer_form_factor'),
+    path('computer_form_factors/edit/', views.computer_form_factor_edit, name='computer_form_factor_edit'),
+
+    path('observ/', views.observations, name='observations'),
     path('observ/cat/del/<int:int_index>/', views.del_observation_category, name='observationCategoryDeletion'),
     path('observ/cat/edit/', views.observation_category_edit, name='observationCategoryEdit'),
     path('observ/cat/', views.observation_category, name='observationCategory'),

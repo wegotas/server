@@ -105,11 +105,13 @@ def aux_data2(request):
 
         print("GET aux_data")
         dict_dict = dict()
-        dict_dict["Categories"] = list(Categories.objects.all().values_list('category_name', flat=True))
-        dict_dict["Types"] = list(Types.objects.all().values_list('type_name', flat=True))
-        dict_dict["Testers"] = list(Testers.objects.all().values_list('tester_name', flat=True))
+        dict_dict["Categories"] = list(Categories.objects.values_list('category_name', flat=True))
+        dict_dict["Types"] = list(Types.objects.values_list('type_name', flat=True))
+        dict_dict["Testers"] = list(Testers.objects.values_list('tester_name', flat=True))
         # dict_dict['Batches'] = list(Batches.objects.all().values_list('batch_name', flat=True))
-        dict_dict['Received batches'] = list(Receivedbatches.objects.all().values_list('received_batch_name', flat=True))
+        dict_dict['Received batches'] = list(Receivedbatches.objects.values_list('received_batch_name', flat=True))
+        dict_dict['Form factors'] = list(ComputerFormFactors.objects.values_list('form_factor_name', flat=True))
+        dict_dict['Form factors'].insert(0, '')
         dict_dict['Observations'] = _get_formed_observations_dict()
         return JsonResponse(dict_dict)
 
@@ -143,7 +145,7 @@ def process_data2(request):
         datastring = unquote(query_string)
         data = json.loads(datastring)
         try:
-            csb = Computer_data_dict_builder(str(data["Serial"]).strip())
+            csb = ComputerDataDictBuilder(str(data["Serial"]).strip())
             return JsonResponse(csb.data_dict)
         except Exception as e:
             if str(e) == 'Computers matching query does not exist.':

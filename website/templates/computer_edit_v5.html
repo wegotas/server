@@ -71,6 +71,21 @@
                             </td>
                         </tr>
                         <tr>
+                            <th>Form Factor:</th>
+                            <td>
+                                <select name="form_factor">
+                                    {% for computer_form_factor in record.rc.computer_form_factors %}
+                                    <option
+                                            value="{{ computer_form_factor }}"
+                                            {% if computer_form_factor == record.form_factor %} selected="selected"{% endif %}
+                                    >
+                                        {{ computer_form_factor }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
                             <th>Manufacturer:</th>
                             <td>
                                 <input list="manufacturers" name="manufacturer_name" value="{{ record.computer.f_manufacturer.manufacturer_name }}">
@@ -165,7 +180,7 @@
                                 {% else %}
                                 <select name="received_batch_name">
                                     <option value="" selected disabled hidden>Choose received batch</option>
-                                    {% for batch in record.received_batches %}
+                                    {% for batch in record.rc.received_batches %}
                                     <option value="{{ batch }}">{{ batch }}</option>
                                     {% endfor %}
                                 </select>

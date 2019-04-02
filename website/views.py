@@ -243,7 +243,7 @@ def edit(request, int_index):
     rc = RecordChoices()
     if request.method == 'POST':
         print("This was POST request")
-        ecr = Edit_computer_record(request.POST.copy())
+        ecr = EditComputerRecord(request.POST.copy())
         # return HttpResponse("Success", request)
         return render(request, 'success.html')
 
@@ -552,6 +552,44 @@ def ord_assign(request):
         Computers.objects.select_for_update().filter(id_computer=indx).update(f_id_comp_ord=compord)
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
+
+
+@csrf_exempt
+def computer_form_factors(request):
+    print("Computer form factors")
+    if request.method == 'POST':
+        print("This was POST request")
+        save_computer_form_factor(request.POST.get("item_name"))
+    if request.method == 'GET':
+        print("This was GET request")
+    computer_form_factor_list = get_computer_form_factors()
+    return render(request, 'items.html', {'items': computer_form_factor_list})
+
+
+@csrf_exempt
+def del_computer_form_factor(request, int_index):
+    print("Delete computer_form_factor")
+    if request.method == 'POST':
+        print("This was POST request")
+        # delete_batch(int_index)
+        ComputerFormFactors.objects.get(id_computer_form_factor=int_index).delete()
+    if request.method == 'GET':
+        print("This was GET request")
+
+
+@csrf_exempt
+def computer_form_factor_edit(request):
+    print("computer_form_factor_edit")
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    data = JSONParser().parse(request)
+    computer_form_factor = ComputerFormFactors.objects.get(id_computer_form_factor=data["ItemId"])
+    computer_form_factor.form_factor_name = data["ItemName"]
+    computer_form_factor.save()
+    return HttpResponse(
+        "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
 @csrf_exempt
@@ -923,14 +961,14 @@ def new_record(request):
         if rta.validate():
             rta.save()
             return render(request, 'success.html')
-        return render(request, 'new_recordv5.html', {
+        return render(request, 'new_record.html', {
             "rc": rc,
             "error_message": rta.get_error_message(),
             "many_to_many_unique_values_dict": many_to_many_unique_values_dict
         })
     if request.method == 'GET':
         print("This was GET request")
-        return render(request, 'new_recordv5.html', {"rc": rc, "many_to_many_unique_values_dict": many_to_many_unique_values_dict})
+        return render(request, 'new_record.html', {"rc": rc, "many_to_many_unique_values_dict": many_to_many_unique_values_dict})
 
 
 @csrf_exempt

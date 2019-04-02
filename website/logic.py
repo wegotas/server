@@ -118,7 +118,7 @@ def get_hdds(computer_id):
     return hdd_list
 
 
-class Edit_computer_record:
+class EditComputerRecord:
 
     def __init__(self, data_dict):
         self.data_dict = data_dict
@@ -310,7 +310,6 @@ class QtySelect:
             self.state1000 = "selected"
 
 
-
 class AutoFiltersFromComputers:
     """
     This is a holder of unique values necessary for filtering operations website side.
@@ -330,6 +329,9 @@ class AutoFiltersFromComputers:
             .order_by('f_diagonal__diagonal_text')
         self.others = computers.values_list('other', flat=True).distinct().order_by('other')
         self.testers = computers.values_list('f_tester__tester_name', flat=True).distinct().order_by('f_tester__tester_name')
+        self.form_factors = computers.values_list(
+            'f_id_computer_form_factor__form_factor_name', flat=True
+        ).distinct().order_by('f_id_computer_form_factor__form_factor_name')
 
 
 class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
@@ -348,7 +350,7 @@ class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
 
 class TypCat:
     """
-    Represents types with categories in sumbenu for website's navigational menu generation.
+    Represents types with categories in submenu for website's navigational menu generation.
     """
 
     def __init__(self):
@@ -783,13 +785,26 @@ class Item:
         self.permanence = bool(permanence)
 
 
+def get_computer_form_factors():
+    computer_form_factor_list = []
+    for computer_form_factor in ComputerFormFactors.objects.all():
+        item = Item(computer_form_factor.id_computer_form_factor, computer_form_factor.form_factor_name)
+        computer_form_factor_list.append(item)
+    return computer_form_factor_list
+
+
+def save_computer_form_factor(name):
+    if name != '':
+        ComputerFormFactors.objects.get_or_create(form_factor_name=name)
+
+
 def get_received_batches_list():
-    recieved_batches = Receivedbatches.objects.all()
-    recieved_batchlist = []
-    for batch in recieved_batches:
+    received_batches = Receivedbatches.objects.all()
+    received_batchlist = []
+    for batch in received_batches:
         newItem = Item(batch.id_received_batch, batch.received_batch_name)
-        recieved_batchlist.append(newItem)
-    return recieved_batchlist
+        received_batchlist.append(newItem)
+    return received_batchlist
 
 
 def save_received_batch(name):
@@ -1249,6 +1264,9 @@ class RecordToAdd:
         diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data.get('diagonal_text'))[0]
         ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data.get('ram_size_text'))[0]
         option = CameraOptions.objects.get_or_create(option_name="Not tested")[0]
+        computer_form_factor = None
+        if self.data['form_factor']:
+            computer_form_factor = ComputerFormFactors.objects.get(form_factor_name=self.data.get('form_factor'))
         computer = Computers.objects.create(
             computer_serial=self.data.get('serial'),
             box_number=self.data.get('box_number'),
@@ -1263,6 +1281,7 @@ class RecordToAdd:
             f_diagonal=diagonal,
             f_ram_size=ramsize,
             f_camera=option,
+            f_id_computer_form_factor=computer_form_factor,
         )
         self._many_to_many_connection_save(computer)
 
@@ -1428,6 +1447,8 @@ class RecordChoices:
         self.cameras = CameraOptions.objects.values_list("option_name", flat=True)
         self.testers = Testers.objects.values_list("tester_name", flat=True)
         self.received_batches = Receivedbatches.objects.values_list("received_batch_name", flat=True)
+        self.computer_form_factors = list(ComputerFormFactors.objects.values_list("form_factor_name", flat=True))
+        self.computer_form_factors.insert(0, '')
 
         # 4th version computers only
         self.cpus = Cpus.objects.values_list("cpu_name", flat=True)
@@ -1448,7 +1469,7 @@ class AutoFilter:
     """
 
     keys = ('man-af', 'sr-af', 'scr-af', 'ram-af', 'gpu-af', 'mod-af', 'cpu-af', 'oth-af', 'cli-af', 'dos-af', 'pri-af',
-            'tes-af')
+            'tes-af', 'cff-af')
 
     def __init__(self, data_dict):
         """
@@ -1467,6 +1488,7 @@ class AutoFilter:
         :param computers: queryset of computers
         :return: filtered queryset of computers
         """
+        print(self.filter_dict)
         for key, value in self.filter_dict.items():
             if key == 'man-af':
                 computers = computers.filter(f_manufacturer__manufacturer_name__in=value)
@@ -1498,6 +1520,8 @@ class AutoFilter:
                 if None in value:
                     query |= Q(price__isnull=True)
                 computers = computers.filter(query)
+            elif key == 'cff-af':
+                computers = computers.filter(f_id_computer_form_factor__form_factor_name__in=value)
         return computers
 
 
@@ -2057,6 +2081,7 @@ class OrderToEdit:
         print("Processing CSV file")
     """
 
+
 def on_start():
     """
     This function is called from urls.py to ensure that it's run once.
@@ -2154,6 +2179,7 @@ class TxtAndLogHandler(PatternMatchingEventHandler):
         if not event.is_directory:
             self.process(event)
 
+
 '''
 class HddWriter:
 
@@ -2246,6 +2272,7 @@ class HddWriter:
         form_factor_to_return = FormFactor.objects.get_or_create(form_factor_name=form_factor)[0]
         return form_factor_to_return
 '''
+
 
 class LotHolder:
 
@@ -4288,51 +4315,21 @@ class Computer4th:
         self.batts = get_batteries(self.computer.id_computer)
         self.received_batches = list(Receivedbatches.objects.all().values_list('received_batch_name', flat=True))
         self.received_batch = None
-        if self.computer.f_id_received_batches != None:
+        if self.computer.f_id_received_batches:
             self.received_batch = self.computer.f_id_received_batches.received_batch_name
+        if self.computer.f_id_computer_form_factor:
+            self.form_factor = self.computer.f_id_computer_form_factor.form_factor_name
 
     def save_info(self, data_dict):
-
-        def _save_sold_computer():
-            print('saving sold computer')
-            client = Clients.objects.get_or_create(client_name=data_dict.pop('client_name')[0])[0]
-            sale = self.computer.f_sale
-            sale.f_id_client = client
-            sale.date_of_sale = data_dict.pop('date_of_sale')[0]
-            sale.save()
-            self.computer.f_type = type
-            self.computer.f_category = category
-            self.computer.f_manufacturer = manufacturer
-            self.computer.f_model = model
-            self.computer.f_cpu = cpu
-            self.computer.f_gpu = gpu
-            self.computer.f_ram_size = ram_size
-            self.computer.f_hdd_size = hdd_size
-            self.computer.f_diagonal = diagonal
-            self.computer.f_license = license
-            self.computer.f_camera = option
-            self.computer.cover = data_dict.pop('cover')[0]
-            self.computer.display = data_dict.pop('display')[0]
-            self.computer.bezel = data_dict.pop('bezel')[0]
-            self.computer.keyboard = data_dict.pop('keyboard')[0]
-            self.computer.mouse = data_dict.pop('mouse')[0]
-            self.computer.sound = data_dict.pop('sound')[0]
-            self.computer.cdrom = data_dict.pop('cdrom')[0]
-            self.computer.hdd_cover = data_dict.pop('hdd_cover')[0]
-            self.computer.ram_cover = data_dict.pop('ram_cover')[0]
-            self.computer.other = data_dict.pop('other')[0]
-            self.computer.f_tester = tester
-            self.computer.f_bios = bios
-            self.computer.price = data_dict.pop('price')[0]
-            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
-                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
-                self.computer.f_id_received_batches = received_batch
-            if data_dict['box_number']:
-                self.computer.box_number = data_dict.pop('box_number')[0]
-            self.computer.save()
-
-        def _save_ordered_computer():
-            print('saving ordered computer')
+        def _save_computer():
+            print('Saving computer')
+            if self.computer.f_sale:
+                client = Clients.objects.get_or_create(client_name=data_dict.pop('client_name')[0])[0]
+                sale = self.computer.f_sale
+                sale.f_id_client = client
+                sale.date_of_sale = data_dict.pop('date_of_sale')[0]
+                sale.save()
+                self.computer.price = data_dict.pop('price')[0]
             self.computer.f_type = type
             self.computer.f_category = category
             self.computer.f_manufacturer = manufacturer
@@ -4360,41 +4357,11 @@ class Computer4th:
                 received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
                 self.computer.f_id_received_batches = received_batch
             if data_dict['box_number']:
-                print("Passed box_number check")
                 self.computer.box_number = data_dict.pop('box_number')[0]
-            self.computer.save()
-
-        def _save_stored_computer():
-            print('saving stored computer')
-            self.computer.f_type = type
-            self.computer.f_category = category
-            self.computer.f_manufacturer = manufacturer
-            self.computer.f_model = model
-            self.computer.f_cpu = cpu
-            self.computer.f_gpu = gpu
-            self.computer.f_ram_size = ram_size
-            self.computer.f_hdd_size = hdd_size
-            self.computer.f_diagonal = diagonal
-            self.computer.f_license = license
-            self.computer.f_camera = option
-            self.computer.cover = data_dict.pop('cover')[0]
-            self.computer.display = data_dict.pop('display')[0]
-            self.computer.bezel = data_dict.pop('bezel')[0]
-            self.computer.keyboard = data_dict.pop('keyboard')[0]
-            self.computer.mouse = data_dict.pop('mouse')[0]
-            self.computer.sound = data_dict.pop('sound')[0]
-            self.computer.cdrom = data_dict.pop('cdrom')[0]
-            self.computer.hdd_cover = data_dict.pop('hdd_cover')[0]
-            self.computer.ram_cover = data_dict.pop('ram_cover')[0]
-            self.computer.other = data_dict.pop('other')[0]
-            self.computer.f_tester = tester
-            self.computer.f_bios = bios
-            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
-                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
-                self.computer.f_id_received_batches = received_batch
-            if data_dict['box_number']:
-                print("Passed box_number check")
-                self.computer.box_number = data_dict.pop('box_number')[0]
+            computer_form_factor = None
+            if data_dict['form_factor']:
+                computer_form_factor = ComputerFormFactors.objects.get(form_factor_name=data_dict.pop('form_factor')[0])
+            self.computer.f_id_computer_form_factor = computer_form_factor
             self.computer.save()
 
         type = Types.objects.get_or_create(type_name=data_dict.pop('type_name')[0])[0]
@@ -4412,13 +4379,7 @@ class Computer4th:
         option = CameraOptions.objects.get_or_create(option_name=data_dict.pop('option_name')[0])[0]
         tester = Testers.objects.get_or_create(tester_name=data_dict.pop('tester_name')[0])[0]
         bios = Bioses.objects.get_or_create(bios_text=data_dict.pop('bios_text')[0])[0]
-
-        if self.computer.f_sale:
-            _save_sold_computer()
-        elif self.computer.f_id_comp_ord:
-            _save_ordered_computer()
-        else:
-            _save_stored_computer()
+        _save_computer()
 
     def delete(self):
         def try_to_delete(object):
@@ -4520,41 +4481,24 @@ class Computer5th:
         self.processors = _get_processors()
         self.gpus = _get_gpus()
         self.observations = _get_observations()
-        self.received_batches = list(Receivedbatches.objects.all().values_list('received_batch_name', flat=True))
         self.received_batch = None
-        if self.computer.f_id_received_batches != None:
+        if self.computer.f_id_received_batches:
             self.received_batch = self.computer.f_id_received_batches.received_batch_name
+        if self.computer.f_id_computer_form_factor:
+            self.form_factor = self.computer.f_id_computer_form_factor.form_factor_name
 
     def save_info(self, data_dict):
-        def _save_sold_computer():
-            print('saving sold computer')
-            client = Clients.objects.get_or_create(client_name=data_dict.pop('client_name')[0])[0]
-            sale = self.computer.f_sale
-            sale.f_id_client = client
-            sale.date_of_sale = data_dict.pop('date_of_sale')[0]
-            sale.save()
-            self.computer.price = data_dict.pop('price')[0]
-            self.computer.f_type = type
-            self.computer.f_category = category
-            self.computer.f_manufacturer = manufacturer
-            self.computer.f_model = model
-            self.computer.f_ram_size = ram_size
-            self.computer.f_diagonal = diagonal
-            self.computer.f_license = license
-            self.computer.f_camera = option
-            self.computer.f_tester = tester
-            self.computer.f_diagonal = diagonal
-            self.computer.f_id_computer_resolutions = computer_resolutions
-            self.computer.other = data_dict.pop('other')[0]
-            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
-                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
-                self.computer.f_id_received_batches = received_batch
-            if data_dict['box_number']:
-                self.computer.box_number = data_dict.pop('box_number')[0]
-            self.computer.save()
+        print(data_dict)
 
-        def _save_ordered_computer():
-            print('saving ordered computer')
+        def _save_computer():
+            print('Saving computer')
+            if self.computer.f_sale:
+                client = Clients.objects.get_or_create(client_name=data_dict.pop('client_name')[0])[0]
+                sale = self.computer.f_sale
+                sale.f_id_client = client
+                sale.date_of_sale = data_dict.pop('date_of_sale')[0]
+                sale.save()
+                self.computer.price = data_dict.pop('price')[0]
             self.computer.f_type = type
             self.computer.f_category = category
             self.computer.f_manufacturer = manufacturer
@@ -4572,27 +4516,10 @@ class Computer5th:
                 self.computer.f_id_received_batches = received_batch
             if data_dict['box_number']:
                 self.computer.box_number = data_dict.pop('box_number')[0]
-            self.computer.save()
-
-        def _save_stored_computer():
-            print('saving stored computer')
-            self.computer.f_type = type
-            self.computer.f_category = category
-            self.computer.f_manufacturer = manufacturer
-            self.computer.f_model = model
-            self.computer.f_ram_size = ram_size
-            self.computer.f_diagonal = diagonal
-            self.computer.f_license = license
-            self.computer.f_camera = option
-            self.computer.f_tester = tester
-            self.computer.f_diagonal = diagonal
-            self.computer.f_id_computer_resolutions = computer_resolutions
-            self.computer.other = data_dict.pop('other')[0]
-            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
-                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
-                self.computer.f_id_received_batches = received_batch
-            if data_dict['box_number']:
-                self.computer.box_number = data_dict.pop('box_number')[0]
+            computer_form_factor = None
+            if data_dict['form_factor']:
+                computer_form_factor = ComputerFormFactors.objects.get(form_factor_name=data_dict.pop('form_factor')[0])
+            self.computer.f_id_computer_form_factor = computer_form_factor
             self.computer.save()
 
         def _save_many_to_many():
@@ -4784,13 +4711,8 @@ class Computer5th:
             f_id_resolution=resolution,
             f_id_resolution_category=resolution_category
         )[0]
+        _save_computer()
 
-        if self.computer.f_sale:
-            _save_sold_computer()
-        elif self.computer.f_id_comp_ord:
-            _save_ordered_computer()
-        else:
-            _save_stored_computer()
         _save_many_to_many()
 
     def delete(self):

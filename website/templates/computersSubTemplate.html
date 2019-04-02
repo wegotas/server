@@ -249,6 +249,30 @@
                         </div>
                     </div>
                 </th>
+                <th><font title="Form Factor">FF</font><button type="button" class="filter-button" onclick="autoFilterMenu('af-Cff')">&#8642;</button>
+                    <div id="af-Cff" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'cff-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'cff-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="cff-af">
+                            {% for afChoice in autoFilters.form_factors %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
                 <th>Tester<button type="button" class="filter-button" onclick="autoFilterMenu('af-Tester')">&#8642;</button>
                     <div id="af-Tester" class="autofilter">
                         <div class="af-top">
@@ -315,6 +339,7 @@
                 <td>{{ computer.f_ram_size.ram_size_text }}</td>
                 <td>{{ computer.get_gpu }}</td>
                 <td>{{ computer.f_diagonal.diagonal_text }}</td>
+                <td>{{ computer.f_id_computer_form_factor.form_factor_name }}</td>
                 <td>{{ computer.f_tester.tester_name }}</td>
                 <td>{{ computer.getOther2lines|linebreaksbr }}</td>
                 <td>
