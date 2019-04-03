@@ -70,6 +70,7 @@ class ComputerRecord:
             existing_computer.box_number = data['Others']['Box number']
             if "Received batch" in data["Log Information"] and existing_computer.f_id_received_batches is None:
                 existing_computer.f_id_received_batches = Receivedbatches.objects.get(received_batch_name=data["Log Information"]["Received batch"])
+            existing_computer.f_id_computer_form_factor = self.computer_form_factor
             if existing_computer.f_id_comp_ord:
                 if "Order" in data and "Status" in data["Order"]:
                     print('___start___')

@@ -237,7 +237,6 @@ def edit(request, int_index):
     if request.method == 'POST':
         print("This was POST request")
         ecr = EditComputerRecord(request.POST.copy())
-        # return HttpResponse("Success", request)
         return render(request, 'success.html')
 
     if request.method == 'GET':
