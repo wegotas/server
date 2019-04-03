@@ -4487,12 +4487,12 @@ class ComputerToEdit:
 
     def process_post(self, data_dict):
         print('Processing post request')
-        data_dict.pop('edit.x')
-        data_dict.pop('edit.y')
-        data_dict.pop('id_computer')
-        data_dict.pop('serial')
-        data_dict.pop('motherboard_serial')
-        data_dict.pop('date')
+        data_dict.pop('edit.x', None)
+        data_dict.pop('edit.y', None)
+        data_dict.pop('id_computer', None)
+        data_dict.pop('serial', None)
+        data_dict.pop('motherboard_serial', None)
+        data_dict.pop('date', None)
         if self._is5thVersion(self.computer):
             print('Computer is of 5th version')
             try:
