@@ -23,7 +23,6 @@ import tempfile
 import math
 import sys
 from abc import ABC
-import difflib
 
 
 class BatHolder:
@@ -273,10 +272,10 @@ class EditComputerRecord:
         )
         self.computer.save()
 
-
+'''
 def get_key_tupple(key):
     return tuple(key.split("_"))
-
+'''
 
 class Counter:
     count = 0
@@ -415,16 +414,6 @@ class CatHolder:
 
     def title(self):
         return "{0} ({1})".format(self.category_name, self.qty)
-
-
-def is_get_key_true(request, key):
-    if request.GET.get(key) is None:
-        return False
-    else:
-        if request.GET.get(key) == "True":
-            return True
-        else:
-            return False
 
 
 def get_qty(data_dict):
@@ -939,113 +928,6 @@ class ObservationToAdd:
             f_id_observation_subcategory=subcategory
         )
 
-'''
-class RecordToAdd:
-
-    def __init__(self, data_dict):
-        self.data = data_dict
-        print(data_dict)
-        self.error_list = []
-
-    def get_error_message(self):
-        """
-        :return: string of concatinated errors by a newline characters.
-        """
-        return "\r\n".join(self.error_list)
-
-    def save(self):
-        """
-        Saves computer record sent from website's querydict
-        :return: None is returned, allways
-        """
-        print("rta save start")
-        self._validate()
-        if len(self.error_list) == 0:
-            Computers.objects.create(
-                computer_serial=self.data.get("serial"),
-                f_type=Types.objects.get_or_create(type_name=self.data.get("type_name"))[0],
-                f_category=Categories.objects.get_or_create(category_name=self.data.get("category_name"))[0],
-                f_manufacturer=Manufacturers.objects.get_or_create(
-                    manufacturer_name=self.data.get("manufacturer_name")
-                )[0],
-                f_model=Models.objects.get_or_create(model_name=self.data.get("model_name"))[0],
-                f_cpu=Cpus.objects.get_or_create(cpu_name=self.data.get("cpu_name"))[0],
-                f_gpu=Gpus.objects.get_or_create(gpu_name=self.data.get("gpu_name"))[0],
-                f_ram_size=RamSizes.objects.get_or_create(ram_size_text=self.data.get("ram_size_text"))[0],
-                f_hdd_size=HddSizes.objects.get_or_create(hdd_sizes_name=self.data.get("hdd_sizes_name"))[0],
-                f_diagonal=Diagonals.objects.get_or_create(diagonal_text=self.data.get("diagonal_text"))[0],
-                f_license=Licenses.objects.get_or_create(license_name=self.data.get("license_name"))[0],
-                cover=self.data.get("cover"),
-                display=self.data.get("display"),
-                bezel=self.data.get("bezel"),
-                hdd_cover=self.data.get("hdd_cover"),
-                ram_cover=self.data.get("ram_cover"),
-                other=self.data.get("other"),
-                f_tester=Testers.objects.get_or_create(tester_name=self.data.get("tester_name"))[0],
-                date=timezone.now(),
-                f_id_received_batches=Receivedbatches.objects.get(
-                    received_batch_name=self.data.get("received_batch_name")
-                ),
-                box_number=self.data.get("box_number")
-            )
-            print("record_to_add save end")
-        else:
-            print("record_to_add save FAILED")
-
-    def isSaved(self):
-        """
-        Checks if there any errors in error_list.
-        if there are no errors, True returned,
-        else False is returned.
-        :return: True/False
-        """
-        return len(self.error_list) == 0
-
-    def _validate(self):
-        """"
-        Validates if all required fieldnames are present within provided queryset.
-        """
-        fieldnames = (
-            "serial",
-            "type_name",
-            "category_name",
-            "manufacturer_name",
-            "model_name",
-            "diagonal_text",
-            "license_name",
-            "cover",
-            "bezel",
-            "hdd_cover",
-            "ram_cover",
-            "other",
-            "tester_name",
-            "received_batch_name",
-            "box_number"
-        )
-
-        error_messages = (
-            "Serial was not set",
-            "Type was not set",
-            "Category was not set",
-            "Manufacturer was not set",
-            "Model was not set",
-            "Diagonal was not set",
-            "License was not set",
-            "Cover was not set",
-            "Bezel was not set",
-            "HDD cover was not set",
-            "RAM cover was not set",
-            "Other was not set",
-            "Tester was not set",
-            "Received batch was not set",
-            "Box number was not set"
-        )
-
-        for i in range(len(fieldnames)):
-            if self.data.get(fieldnames[i]) == "" or self.data.get(fieldnames[i]) is None:
-                self.error_list.append(error_messages[i])
-'''
-
 
 class RecordToAdd:
 
@@ -1344,6 +1226,7 @@ def normalize_query(query_string,
 
 
 def search(keyword, computers):
+    # TODO: Set searching fields to search by v5 fields as well.
     searchfields = (
         'computer_serial',
         'other',

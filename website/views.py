@@ -16,12 +16,6 @@ def index(request):
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
-    # isSold = getIsSold(request)
-    isSold = is_get_key_true(request, key='sold')
-    # isOrder = getIsOrder(request)
-    isOrder = is_get_key_true(request, key='orders')
-    # isChargers = getIsChargers(request)
-    isChargers = is_get_key_true(request, key='chargers')
     data_dict = request.GET.copy()
     qty = get_qty(data_dict)
     page = get_page(data_dict)
@@ -69,8 +63,8 @@ def index(request):
             }
         )
 
-    if isChargers:
-        # PRIDETI FILTRAVIMA
+    if request.GET.get('chargers') == "True":
+        #TODO: PRIDETI FILTRAVIMA
         cch = ChargerCategoriesHolder()
         cch.filter(request.GET.copy())
         return render(
@@ -113,7 +107,7 @@ def index(request):
             }
         )
 
-    elif isSold:
+    elif request.GET.get('sold') == "True":
         possible_categories = None
         qtySelect = QtySelect()
         qtySelect.setDefaultSelect(qty)
@@ -144,7 +138,7 @@ def index(request):
             }
         )
 
-    elif isOrder:
+    elif request.GET.get('orders') == "True":
         counter = Counter()
         orders = OrdersClass()
         orders.filter(data_dict)
@@ -196,7 +190,6 @@ def index(request):
             autoFilters = None
             possible_types = None
             po = PossibleOrders()
-        # removeKeyword(request)
         return render(
             request,
             'main.html',
