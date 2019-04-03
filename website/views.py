@@ -1047,7 +1047,6 @@ def new_order(request):
         no = NewOrder(request.POST.copy())
         no.save()
         if no.is_saved():
-            # return HttpResponse("Success", request)
             return render(request, 'success.html')
         else:
             template = loader.get_template('new_order.html')

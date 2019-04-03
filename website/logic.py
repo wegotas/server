@@ -272,10 +272,6 @@ class EditComputerRecord:
         )
         self.computer.save()
 
-'''
-def get_key_tupple(key):
-    return tuple(key.split("_"))
-'''
 
 class Counter:
     count = 0
