@@ -774,24 +774,6 @@ class Item:
         self.name = item_name
         self.permanence = bool(permanence)
 
-# TODO: check what this function is used for? and determine wether i should keep it or remove it.
-'''
-def get_all_observations_dict():
-    variables = Observations.objects.all()
-    observation_dict = dict()
-    for variable in variables:
-        cat_name = variable.f_id_observation_category.category_name
-        sub_cat_name = variable.f_id_observation_subcategory.subcategory_name
-        full_name = variable.full_name
-        shortcode = variable.shortcode
-
-        if not cat_name in observation_dict:
-            observation_dict[cat_name] = {}
-        if not sub_cat_name in observation_dict[cat_name]:
-            observation_dict[cat_name][sub_cat_name] = {}
-        observation_dict[cat_name][sub_cat_name][full_name] = shortcode
-    return observation_dict
-'''
 
 class ObservationMember:
 
