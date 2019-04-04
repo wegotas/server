@@ -801,37 +801,6 @@ function lot_content(index) {
   var contentWindow = window.open('content/'+index+'/', "", "width=1100,height=650");
 }
 
-function viewPDFfromHddEdit(index) {
-  URLtoWorkWith = location.href;
-  URLtoWorkWith = URLtoWorkWith.replace('/hdd_edit/', '/view_pdf/');
-  var pdfWindow = window.open(URLtoWorkWith, "", "width=700,height=800");
-}
-
-function deleteHddFromHddEdit(index) {
-	if (confirm('Do you really want to delete this hdd?')) {
-		var xhr = new XMLHttpRequest();
-		URLtoWorkWith = location.href;
-		URLtoWorkWith = URLtoWorkWith.replace('/hdd_edit/', '/hdd_delete/');
-		xhr.open('POST', URLtoWorkWith, true);
-		xhr.send();
-		xhr.onreadystatechange = function(e) {
-      if (xhr.readyState == 4) {
-        if (xhr.status == 200) {
-          parts = URLtoWorkWith.split('/');
-          parts.pop();
-          parts.pop();
-          parts.pop();
-          var infoWindow = window.open(parts.join('/') + '/success/',"", "width=620,height=340");
-          window.close();
-        }
-        if (xhr.status == 404) {
-          document.getElementsByTagName('body')[0].innerHTML = xhr.responseText;
-        }
-      }
-	}
-  }
-}
-
 function edit_charger(index, URLremovalToken) {
     URLtoWorkWith = location.href;
     parts = URLtoWorkWith.split('/');

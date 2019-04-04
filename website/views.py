@@ -1183,11 +1183,7 @@ def hdd_edit(request, int_index):
         return render(request, 'success.html')
     if request.method == 'GET':
         print('GET method')
-        return render(
-            request,
-            'hdd_edit.html',
-            {'hte': hte}
-        )
+        return render(request, 'hdd_edit.html', {'hte': hte})
 
 
 @csrf_exempt
@@ -1203,7 +1199,6 @@ def hdd_delete(request, int_index):
         else:
             print('Failed deletion')
             print(htd.message)
-            # return render('message': htd.message, status=404)
             return HttpResponse(htd.message, status=404)
     if request.method == 'GET':
         print('GET method')

@@ -2321,6 +2321,8 @@ class HddToEdit:
         self.form_factors = FormFactor.objects.values_list('form_factor_name', flat=True).distinct()\
             .order_by('form_factor_name')
 
+        self.computer_ids = Computerdrives.objects.filter(f_drive=self.hdd).values_list('f_id_computer__id_computer', flat=True)
+
     def process_edit(self, data_dict):
         '''
         Edits hdd's attributes based on provided data_dict
