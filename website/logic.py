@@ -614,6 +614,13 @@ class AbstractDataFileGenerator(ABC):
             return "N/A"
 
     @staticmethod
+    def atleast_one_desktop(indexes):
+        for index in indexes:
+            if Computers.objects.get(id_computer=index).f_type.type_name.lower() == 'desktop':
+                return True
+        return False
+
+    @staticmethod
     def _get_battery_time(int_index):
         """
         Not fully implemented method, should somehow account for several batteries in a computer.
@@ -667,6 +674,13 @@ class AbstractDataFileGenerator(ABC):
         except:
             return "N/A"
 
+    @staticmethod
+    def _get_computer_form_factor(computer):
+        try:
+            return computer.f_id_computer_form_factor.form_factor_name
+        except:
+            return ''
+
 
 class ExcelGenerator(AbstractDataFileGenerator):
 
@@ -674,12 +688,42 @@ class ExcelGenerator(AbstractDataFileGenerator):
         self.memfile = io.BytesIO()
         super().__init__()
 
-    def generate_file(self, indexes):
-        workbook = xlsxwriter.Workbook(self.memfile)
-        worksheet = workbook.add_worksheet()
-        bold_bordered = workbook.add_format({"bold": True, "border": 1})
-        bordered = workbook.add_format({"border": 1})
+    def generate_desktop_file(self, indexes, worksheet, bold_bordered, bordered):
+        print('generate_desktop_file')
+        worksheet.write("A1", "S/N", bold_bordered)
+        worksheet.write("B1", "Form factor", bold_bordered)
+        worksheet.write("C1", "Manufacturer", bold_bordered)
+        worksheet.write("D1", "Model", bold_bordered)
+        worksheet.write("E1", "CPU", bold_bordered)
+        worksheet.write("F1", "RAM", bold_bordered)
+        worksheet.write("G1", "GPU", bold_bordered)
+        worksheet.write("H1", "HDD", bold_bordered)
+        worksheet.write("I1", "Optical", bold_bordered)
+        worksheet.write("J1", "COA", bold_bordered)
+        worksheet.write("K1", "Comment", bold_bordered)
+        worksheet.write("L1", "Price", bold_bordered)
+        worksheet.write("M1", "Box no.", bold_bordered)
+        row = 1
+        col = 0
+        for int_index in indexes:
+            computer = Computers.objects.get(id_computer=int_index)
+            worksheet.write(row, col, self._get_serial(computer), bordered)
+            worksheet.write(row, col + 1, self._get_computer_form_factor(computer), bordered)
+            worksheet.write(row, col + 2, self._get_manufacturer(computer), bordered)
+            worksheet.write(row, col + 3, self._get_model(computer), bordered)
+            worksheet.write(row, col + 4, self._get_cpu_name(computer), bordered)
+            worksheet.write(row, col + 5, self._get_ram_size(computer), bordered)
+            worksheet.write(row, col + 6, self._get_gpu_name(computer), bordered)
+            worksheet.write(row, col + 7, self._get_hdd_size(computer), bordered)
+            worksheet.write(row, col + 8, self._get_cdrom(computer), bordered)
+            worksheet.write(row, col + 9, self._get_license(computer), bordered)
+            worksheet.write(row, col + 10, self._form_comment(computer), bordered)
+            worksheet.write(row, col + 11, '', bordered)
+            worksheet.write(row, col + 12, computer.box_number, bordered)
+            row += 1
 
+    def generate_laptop_file(self, indexes, worksheet, bold_bordered, bordered):
+        print('generate_laptop_file')
         worksheet.write("A1", "S/N", bold_bordered)
         worksheet.write("B1", "Manufacturer", bold_bordered)
         worksheet.write("C1", "Model", bold_bordered)
@@ -715,6 +759,18 @@ class ExcelGenerator(AbstractDataFileGenerator):
             worksheet.write(row, col + 13, '', bordered)
             worksheet.write(row, col + 14, computer.box_number, bordered)
             row += 1
+
+
+    def generate_file(self, indexes):
+        workbook = xlsxwriter.Workbook(self.memfile)
+        worksheet = workbook.add_worksheet()
+        bold_bordered = workbook.add_format({"bold": True, "border": 1})
+        bordered = workbook.add_format({"border": 1})
+
+        if self.atleast_one_desktop(indexes):
+            self.generate_desktop_file(indexes, worksheet, bold_bordered, bordered)
+        else:
+            self.generate_laptop_file(indexes, worksheet, bold_bordered, bordered)
         workbook.close()
         return self.memfile
 
@@ -724,11 +780,36 @@ class CsvGenerator(AbstractDataFileGenerator):
     def __init__(self):
         self.memfile = io.StringIO()
         super().__init__()
-        self.fieldnames = ["S/N", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Batteries', 'LCD', 'Optical',
+        self.laptop_fieldnames = ["S/N", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Batteries', 'LCD', 'Optical',
                            'COA', 'Cam', 'Comment', 'Price', 'Box no.']
+        self.desktop_fieldnames = ["S/N", "Form factor", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Optical',
+                                  'COA', 'Comment', 'Price', 'Box no.']
 
-    def generate_file(self, indexes):
-        writer = csv.DictWriter(self.memfile, fieldnames=self.fieldnames)
+    def generate_desktop_file(self, indexes):
+        print('generate_desktop_file')
+        writer = csv.DictWriter(self.memfile, fieldnames=self.desktop_fieldnames)
+        writer.writeheader()
+        for int_index in indexes:
+            computer = Computers.objects.get(id_computer=int_index)
+            writer.writerow({
+                "S/N": self._get_serial(computer),
+                "Form factor": self._get_computer_form_factor(computer),
+                'Manufacturer': self._get_manufacturer(computer),
+                'Model': self._get_model(computer),
+                'CPU': self._get_cpu_name(computer),
+                'RAM': self._get_ram_size(computer),
+                'GPU': self._get_gpu_name(computer),
+                'HDD': self._get_hdd_size(computer),
+                'Optical': self._get_cdrom(computer),
+                'COA': self._get_license(computer),
+                'Comment': self._form_comment(computer),
+                'Price': '',
+                'Box no.': computer.box_number,
+            })
+
+    def generate_laptop_file(self, indexes):
+        print('generate_laptop_file')
+        writer = csv.DictWriter(self.memfile, fieldnames=self.laptop_fieldnames)
         writer.writeheader()
         for int_index in indexes:
             computer = Computers.objects.get(id_computer=int_index)
@@ -749,6 +830,12 @@ class CsvGenerator(AbstractDataFileGenerator):
                 'Price': '',
                 'Box no.': computer.box_number,
             })
+
+    def generate_file(self, indexes):
+        if self.atleast_one_desktop(indexes):
+            self.generate_desktop_file(indexes)
+        else:
+            self.generate_laptop_file(indexes)
         return self.memfile
 
 
