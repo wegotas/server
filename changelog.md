@@ -2,6 +2,25 @@
 
 LT:
 
+**Prideti triju tipu mygtukai, kurie pades lengviau naviguoti kaip draivas susijes su kitais grupem/kompiuteriais**
+
+* 'Lot' mygtukas savije turi partijos pavadinima o ant jo paspaudus naujame lange issoks narsykles langas apie partija.
+* 'Order' mygtukas savije turi uzsakymo pavadinima o ant jo paspaudus naujame lange issoks narsykles langas apie uzsakyma.
+* 'Open computer' mygtuka paspaudus naujame lange issoks narsykles langas apie kompiuteri. Siu mygtuku gali buti keleta nes tas pats draivas gali buti naudojamas testuojant kelius kompiuterius.
+
+EN:
+
+**Added three types of buttons, which going to help navigating how drive is related to other groups/computers**
+
+* 'Lot' button has lot's name in itself and clicking on it will result in new browser window about lot.
+* 'Order' button has order's name in itself and clicking on it will result in new browser window about order.
+* 'Open computer' clicking on button will result in new browser window about computer. These button can be several because drive could been used while testing several computers.
+
+---
+2019-04-04
+
+LT:
+
 **Kategorijos rodymas kompiuterio paieskos lenteleje is uzsakymu**
 * Dabar rodo kategorijas paieskos rezultatu lentelej.
 * Prie to paties pastebeta ir istaisyta klaida kai paieskos grazina parduotus ar kitiem uzsakymam priklausancius kompiuterius.
