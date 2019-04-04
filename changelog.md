@@ -1,8 +1,27 @@
-TBA
+2019-04-04
 
 LT:
 
-** Pokyciai Django serveryje ir duombazes strukturoje: Pridetas formos faktoriaus funkcionalumas.
+**Pokyciai CSV/Excel eksportavime.**
+* Dabar CSV/Excel turi du eksportavimus:
+    * Eksportuoti nesiojamus kompiuterius su struktura: "S/N", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Batteries', 'LCD', 'Optical', 'COA', 'Cam', 'Comment', 'Price', 'Box no.'
+    * Eksportuoti stacionarius kompiuterius su struktura: "S/N", "Form factor", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Optical', 'COA', 'Comment', 'Price', 'Box no.'
+* Jei bent vienas kompiuteris is rinkinio yra stacionarus, eksportuojami visi kaip stacianarus, priesingu atveju visi eksportuojami kaip nesiojami.
+
+EN:
+
+**Changes to CSV/Excel exporting.**
+* Now CSV/Excel have two exportations:
+    * Exporting laptop computers with structure: "S/N", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Batteries', 'LCD', 'Optical', 'COA', 'Cam', 'Comment', 'Price', 'Box no.'
+    * Exporting desktop computers with structure: "S/N", "Form factor", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Optical', 'COA', 'Comment', 'Price', 'Box no.'
+* If at least one computer from collection is desktop, then  all are exported as desktop, otherwise all are exported as laptops.
+
+---
+2019-04-03
+
+LT:
+
+**Pokyciai Django serveryje ir duombazes strukturoje: Pridetas formos faktoriaus funkcionalumas.**
 
 * Duombaze laiko formos faktoriaus reiksme.
 * Form faktoriai sukuriami tinklalapyje kairiajame meniu.
@@ -16,7 +35,7 @@ Igyvendintas form faktoriu funkcionalumas.
 
 EN:
 
-** Changes in Django server and database structure: **
+**Changes in Django server and database structure:**
 
 * Database holds form factor's value.
 * Form factors are created in the website's left menu.
@@ -33,7 +52,7 @@ Implemented form factor functionality.
 
 LT:
 
-** Pokyciai Django serveryje: Pakeistas rankinis kompiuterio iraso pridejimas, kad pridejinetu 5v kompiuterio irasus vietoj 4v. **
+**Pokyciai Django serveryje: Pakeistas rankinis kompiuterio iraso pridejimas, kad pridejinetu 5v kompiuterio irasus vietoj 4v.**
 * Butini laukai:
     
     "pp" - reiskia yra papildomi pasirinkimai, sarasas kuris issiskleidzia paspaudus kairi peles mygtuka ant iskleidziamo lauko, arba dukart paspaudus ant tekstinio laukelio, rasant i tekstini laukeli yra siulomi papildomi pasirinkimai panasus i vedama. Sio funkcionalumo veikimas smarkiai priklauso nuo naudojamos narsykles ir jos versijos.
@@ -83,7 +102,7 @@ LT:
     
 EN:
 
-** Changes in Django server: Changed manual computer record adding, so that computer would be added as 5v insteand of 4v. **
+**Changes in Django server: Changed manual computer record adding, so that computer would be added as 5v insteand of 4v.**
 * Necessary fields:
     
     "pp" - aditional choices are available, list of possible values appear after left mouse click on listbox, or twice on textbox, writint in textbox also offers similar choices to the one which is being entered. This functionality is highly dependable on web browser used and it's version.
@@ -136,7 +155,7 @@ EN:
 
 LT:
 
-** Pokyciai Django serveryje: Pridetas funkcionalumas redaguoti daug su daug rysius 5versijos kompiuteriuose. **
+**Pokyciai Django serveryje: Pridetas funkcionalumas redaguoti daug su daug rysius 5versijos kompiuteriuose.**
 * Laikinos atminties leidzia keisti tik tipa. Seriala, dydi ir dazni neleis nes juos turi imti per klientine programa.
     Issaugojama paspaudus issaugojimo mygtuka.
 * Procesoriuose Gamintoja, Modeli, standartini dazni, maksimalu dazni, fizini ir logini branduoliu kieki leidzia redaguoti.
@@ -163,7 +182,7 @@ LT:
 
 EN
 
-** Changes in Django server: Added functionality to edit many to many relationships in 5th version computers. **
+**Changes in Django server: Added functionality to edit many to many relationships in 5th version computers.**
 * RAM allows changing only memory type. Serial, capacity, clock is not allowed to edit, because they should be entered through a client program.
     Saves when pressed saving button.
 * Processor Manufacturer, Model, Stock clock, Max clock, Core count and Thread count are allowed to be modified.
