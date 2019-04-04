@@ -1150,6 +1150,7 @@ def computer_search_table_from_order(request):
         )
         query = get_query_for_item_search_from_computer_edit(keyword, searchfields)
         computers = Computers.objects.filter(query)
+        computers = computers.filter(f_id_comp_ord__isnull=True, f_sale__isnull=True)
         return render(request, 'computer_search_from_order_table.html', {'computers': computers})
 
 

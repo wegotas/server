@@ -2,6 +2,21 @@
 
 LT:
 
+**Kategorijos rodymas kompiuterio paieskos lenteleje is uzsakymu**
+* Dabar rodo kategorijas paieskos rezultatu lentelej.
+* Prie to paties pastebeta ir istaisyta klaida kai paieskos grazina parduotus ar kitiem uzsakymam priklausancius kompiuterius.
+
+EN:
+
+**Showing categories in computer searching from orders**
+* Now category is visible in search result table.
+* In addition to that found and fixed a issue when search returns sold and belonging to other orders computers.
+
+---
+2019-04-04
+
+LT:
+
 **Pokyciai CSV/Excel eksportavime.**
 * Dabar CSV/Excel turi du eksportavimus:
     * Eksportuoti nesiojamus kompiuterius su struktura: "S/N", 'Manufacturer', 'Model', 'CPU', 'RAM', 'GPU', 'HDD', 'Batteries', 'LCD', 'Optical', 'COA', 'Cam', 'Comment', 'Price', 'Box no.'

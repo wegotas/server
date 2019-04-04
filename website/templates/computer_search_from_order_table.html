@@ -1,23 +1,10 @@
 {% if computers %}
 <table align="center" class="searchTable">
-    <!--
-    <thead class="center">
-        <tr class="center">
-            <th class="center">Serial:</th>
-            <th class="center">Manufacturer:</th>
-            <th class="center">Model:</th>
-            <th class="center">CPU:</th>
-            <th class="center">GPU:</th>
-            <th class="center">RAM:</th>
-            <th class="center">Other:</th>
-            <th class="center" colspan="2">Actions:</th>
-        </tr>
-    </thead>
-    -->
     <tbody id="tbody">
         {% for computer in computers %}
         <tr>
             <td>{{ computer.computer_serial }}</td>
+            <td>{{ computer.f_category.category_name }}</td>
             <td>{{ computer.f_manufacturer.manufacturer_name }}</td>
             <td>{{ computer.f_model.model_name }}</td>
             <td>{{ computer.f_cpu.cpu_name }}</td>
