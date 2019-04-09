@@ -9,11 +9,15 @@
 }
 
 .greyed {
-  background-color: LightGray;
+    background-color: LightGray;
+}
+
+.whited {
+    background-color: White;
 }
 
 .editor {
-  width: 48px;
+    width: 68px;
 }
 
 .deleter {
@@ -92,19 +96,41 @@
     width: 200px;
 }
 
-.red{
+.observation_edit_button_holder {
+    float:left;
+}
+
+.observation_delete_button_holder {
+    float:right;
+}
+
+.red {
     background-color:red;
 }
 
-.shortcode-length {
+.shortcode {
     width: 100px;
 }
 
-.full_name-length {
+.full_name {
     width: 300px;
 }
 
 .editable_field {
     padding-top: 4px;
     padding-bottom: 4px;
+}
+
+.actions {
+    width: 90px;
+}
+
+.table {
+    min-width: 1060px;
+}
+
+.column {
+    float:left;
+    overflow: hidden;
+    margin: 3px;
 }

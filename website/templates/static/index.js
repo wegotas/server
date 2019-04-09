@@ -680,7 +680,7 @@ function launchOrderWindow() {
 }
 
 function launchObserWindow() {
-    var observWindow = window.open('observ/', "", "width=400,height=600");
+    var observWindow = window.open('observ/', "", "width=960,height=600");
 }
 
 

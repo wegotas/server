@@ -1,3 +1,15 @@
+2019-04-09
+
+LT:
+
+**Tinklalapyje sutaisyta problema kai issidarko dizainas pastabu detaliu puslapyje**
+
+EN:
+
+**Fixed and issue when design gets distorted in observation details page**
+
+
+---
 2019-04-04
 
 LT:

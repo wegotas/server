@@ -1,109 +1,74 @@
 {% extends 'observations.html' %}
 
 {% block content %}
+<form method="post">
+    <table>
+        <tr>
+            <th>Catgories</th>
+            <th>Subcatgories</th>
+            <th>Shortcode</th>
+            <th>Full name</th>
+        </tr>
+        <tr>
+            <td>
+                <select name="cat_name" value="" class="widther">
+                    <option value="" selected disabled hidden>Choose category</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <select name="sub_name" value="" class="widther">
+                    <option value="" selected disabled hidden>Choose subcategory</option>
+                    {% for sub in subcategories %}
+                    <option value="{{ sub }}">{{ sub }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input type="text" class="shortcode" name="shortcode">
+            </td>
+            <td>
+                <input type="text" class="full_name" name="full_name">
+            </td>
+            <td>
+                <input type="submit" class="newNameAdder" value="+" />
+            </td>
+        </tr>
+    </table>
+</form>
+<div class="table">
+    <div class="column">
+        {% for category in observations %}
+            <div>
+                <button type="button" class="choice category widther" onclick="showSubcategories(this, '{{ category.css_selector }}')">{{ category.collection_name }}</button>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="column subcategories">
+        {% for category in observations %}
+            {% for subcategory in category %}
+                <div class="{{ category.css_selector }} hidden hideable widther subcategory">
+                    <button type="button" class="choice subcategory" onclick="showDetails(this, '{{ category.css_selector }}', '{{ subcategory.css_selector }}')">{{ subcategory.collection_name }}</button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <div class="column details hideable">
+        {% for category in observations %}
+        {% for subcategory in category %}
+        {% for member in subcategory %}
+        <div align="right" class="detail {{ category.css_selector }} {{ subcategory.css_selector }} hidden hideable">
+            <input type="text" class="editable_field greyed shortcode" value="{{ member.shortcode }}" id="shortcode{{ member.id }}" readonly="readonly"/>
+            <input type="text" class="editable_field greyed full_name" value="{{ member.full_name }}" id="fullname{{ member.id }}"  readonly="readonly"/>
+            <button class="editor" onclick="edit_detail(this, {{ member.id }})">Edit</button>
+            <button class="deleter" onclick="deleteItem({{ member.id }})">X</button>
+        </div>
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
+    </div>
+</div>
 
-<table style="width: 800px;">
-    <tr>
-        <th colspan="5">Details:</th>
-    </tr>
-    <tr>
-        <form method="post">
-            <tr>
-                <th>Catgories</th>
-                <th>Subcatgories</th>
-                <th>Shortcode</th>
-                <th>Full name</th>
-            </tr>
-            <tr>
-                <td class="widther">
-                    <select name="cat_name" value="" class="widther">
-                        <option value="" selected disabled hidden>Choose category</option>
-                        {% for cat in categories %}
-                        <option value="{{ cat }}">{{ cat }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-                <td class="widther">
-                    <select name="sub_name" value="" class="widther">
-                        <option value="" selected disabled hidden>Choose subcategory</option>
-                        {% for sub in subcategories %}
-                        <option value="{{ sub }}">{{ sub }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-                <td>
-                    <input type="text" name="shortcode" class="shortcode-length">
-                </td>
-                <td>
-                    <input type="text" class="full_name-length" name="full_name">
-                </td>
-                <td>
-                    <input type="submit" class="newNameAdder" value="+" />
-                </td>
-            </tr>
-        </form>
-    <tr>
-        <div class="error">{{ message }}</div>
-    </tr>
-    <tr>
-        <td valign="top">
-            {% for category in observations %}
-            <button type="button" class="choice category" onclick="revealSubcategories(this, '{{ category.css_selector }}')">{{ category.collection_name }}</button>
-            {% endfor %}
-        </td>
-        <td valign="top" class="subcategories">
-            {% for category in observations %}
-            <div class="{{ category.css_selector }} hidden hideable">
-                {% for subcategory in category %}
-                <button type="button" class="choice subcategory" onclick="revealShortcodes(this, '{{ category.css_selector }}', '{{ subcategory.css_selector }}')">{{ subcategory.collection_name }}</button>
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </td>
-        <td valign="top" class="details">
-            {% for category in observations %}
-            <div>
-                {% for subcategory in category %}
-                <div class="{{ category.css_selector }} {{ subcategory.css_selector }} hidden hideable">
-                    {% for member in subcategory %}
-                    <input type="text" class="editable_field greyed shortcode-length" value="{{ member.shortcode }}" id="shortcode{{ member.id }}" readonly=""/>
-                    {% endfor %}
-                </div>
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </td>
-        <td valign="top" class="details">
-            {% for category in observations %}
-            <div>
-                {% for subcategory in category %}
-                <div class="{{ category.css_selector }} {{ subcategory.css_selector }} hidden hideable">
-                    {% for member in subcategory %}
-                    <input type="text" class="editable_field greyed full_name-length" value="{{ member.full_name }}" id="fullname{{ member.id }}"  readonly=""/>
-                    {% endfor %}
-                </div>
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </td>
-        <td valign="top" class="actions">
-            {% for category in observations %}
-            <div>
-                {% for subcategory in category %}
-                <div class="{{ category.css_selector }} {{ subcategory.css_selector }} hidden hideable" style="width: 70px">
-                    {% for member in subcategory %}
-                    <div style="width:70%; float:left;">
-                        <button class="editor" onclick="edit_details(this, {{ member.id }}, shortcode{{ member.id }}, fullname{{ member.id }})">Edit</button>
-                    </div>
-                    <div style="width:30%; float:right;">
-                        <button class="deleter" onclick="deleteItem({{ member.id }})">X</button>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </td>
-    </tr>
-</table>
 {% endblock %}

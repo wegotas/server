@@ -901,33 +901,14 @@ def observations_details(request):
         ota = ObservationToAdd(request.POST)
         if ota.validated():
             ota.process()
-            return render(
-                request,
-                "observationsDetailsSubtemplate.html",
-                {
-                    "categories": Observationcategory.objects.all().values_list('category_name', flat=True),
-                    "subcategories": Observationsubcategory.objects.all().values_list('subcategory_name', flat=True),
-                    'observations': ObservationsCollection()
-                }
-            )
-        return render(
-            request,
-            "observationsDetailsSubtemplate.html",
-            {
-                'message': ota.message,
-                "categories": Observationcategory.objects.all().values_list('category_name', flat=True),
-                "subcategories": Observationsubcategory.objects.all().values_list('subcategory_name', flat=True),
-                'observations': ObservationsCollection()
-            }
-        )
     if request.method == 'GET':
         print("This was GET request")
     return render(
         request,
         "observationsDetailsSubtemplate.html",
         {
-            "categories": Observationcategory.objects.all().values_list('category_name', flat=True),
-            "subcategories": Observationsubcategory.objects.all().values_list('subcategory_name', flat=True),
+            "categories": Observationcategory.objects.values_list('category_name', flat=True),
+            "subcategories": Observationsubcategory.objects.values_list('subcategory_name', flat=True),
             'observations': ObservationsCollection()
         }
     )
