@@ -387,43 +387,44 @@
                 <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">Drives show/hide</button>
             </div>
             <div class="section-member hidden">
-                {% for member in record.drives %}
+                {% for drive in record.drives %}
                 <div class="table-holder">
+                    <button type="button" class="close_button" onclick="remove_drive_from_computer(this, {{ record.computer.id_computer }}, {{ drive.hdd_id }})">x</button>
                     <table class="table">
                         <tr>
-                            <td colspan="2"><button type="button" onclick="open_drive_edit({{ member.hdd_id }})">Edit drive</button></td>
+                            <td colspan="2"><button type="button" onclick="open_drive_edit({{ drive.hdd_id }})">Edit drive</button></td>
                         </tr>
                         <tr>
                             <th>Serial:</th>
-                            <td><input type="text" value="{{ member.hdd_serial }}" readonly></td>
+                            <td><input type="text" value="{{ drive.hdd_serial }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Health:</th>
-                            <td><input type="text" value="{{ member.health }}" readonly></td>
+                            <td><input type="text" value="{{ drive.health }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Days on:</th>
-                            <td><input type="text" value="{{ member.days_on }}" readonly></td>
+                            <td><input type="text" value="{{ drive.days_on }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Model:</th>
-                            <td><input type="text" value="{{ member.f_hdd_models.hdd_models_name }}" readonly></td>
+                            <td><input type="text" value="{{ drive.f_hdd_models.hdd_models_name }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Capacity:</th>
-                            <td><input type="text" value="{{ member.f_hdd_sizes.hdd_sizes_name }}" readonly></td>
+                            <td><input type="text" value="{{ drive.f_hdd_sizes.hdd_sizes_name }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Lock state:</th>
-                            <td><input type="text" value="{{ member.f_lock_state.lock_state_name }}" readonly></td>
+                            <td><input type="text" value="{{ drive.f_lock_state.lock_state_name }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Speed:</th>
-                            <td><input type="text" value="{{ member.f_speed.speed_name }}" readonly></td>
+                            <td><input type="text" value="{{ drive.f_speed.speed_name }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Form factor:</th>
-                            <td><input type="text" value="{{ member.f_form_factor.form_factor_name }}" readonly></td>
+                            <td><input type="text" value="{{ drive.f_form_factor.form_factor_name }}" readonly></td>
                         </tr>
                     </table>
                 </div>

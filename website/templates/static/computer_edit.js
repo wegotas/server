@@ -1,18 +1,14 @@
+function get_main_url() {
+    parts = location.href.split('/')
+    for (var i = 0; i<3; i++) {
+		parts.pop();
+	}
+	return parts.join('/');
+}
+
 function google_search(search_term) {
     var editChargerWindow = window.open('http://www.google.com/search?q='+search_term+'&tbm=isch', "", "width=700,height=620");
 }
-
-/*
-function print_qr() {
-    var xhr = new XMLHttpRequest();
-    if (confirm("Do you want to print in the office?")) {
-        xhr.open('POST', 'print_qr/Godex_DT4x/', true);
-    } else {
-        xhr.open('POST', 'print_qr/Godex_G500/', true);
-    }
-    xhr.send();
-}
-*/
 
 function print_qr_with_printer(printer) {
     var xhr = new XMLHttpRequest();
@@ -26,12 +22,7 @@ function toggle_visibility(button) {
 }
 
 function open_order(index) {
-    URLtoWorkWith = location.href;
-    parts = URLtoWorkWith.split('/')
-    for (var i =0; i<3; i++) {
-		parts.pop();
-	}
-    var editWindow = window.open(parts.join('/')+'/edit_order/'+index+'/', "", "width=1000,height=650");
+    var editWindow = window.open(get_main_url()+'/edit_order/'+index+'/', "", "width=1000,height=650");
 }
 
 function setInputFilter(textbox, inputFilter) {
@@ -85,25 +76,15 @@ function keyword_suitable_for_search(keyword) {
 window.onload = function() {load()}
 
 function open_drive_edit(index) {
-    URLtoWorkWith = location.href;
-    parts = URLtoWorkWith.split('/')
-    for (var i = 0; i<3; i++) {
-		parts.pop();
-	}
-	var driveEditWindow = window.open(parts.join('/')+'/hdd_edit/'+index+'/', "", "width=400,height=650");
+	var driveEditWindow = window.open(get_main_url()+'/hdd_edit/'+index+'/', "", "width=400,height=650");
 }
 
 function search_observation(keyword) {
     observation_result_toggler = document.getElementById("observation_result_toggler");
     observation_adder = document.getElementById("observation-adder");
-    parts = location.href.split('/');
-    parts.pop();
-    parts.pop();
-    parts.pop();
-    URLtoWorkWith = parts.join('/');
     var xhr = new XMLHttpRequest();
     computer_id = document.getElementById("computer_id").value
-    xhr.open('GET', URLtoWorkWith + '/observations_to_add/' + computer_id + '/' + urlify(keyword) + '/', true)
+    xhr.open('GET', get_main_url() + '/observations_to_add/' + computer_id + '/' + urlify(keyword) + '/', true)
     xhr.send();
     xhr.onreadystatechange = function(e) {
         if (xhr.readyState === 4) {
@@ -116,13 +97,8 @@ function search_observation(keyword) {
 
 function add_observation(button, observation_id) {
     computer_id = document.getElementById("computer_id").value;
-    parts = location.href.split('/');
-    parts.pop();
-    parts.pop();
-    parts.pop();
-    URLtoWorkWith = parts.join('/');
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', URLtoWorkWith + '/assign_observation_to_computer/' + observation_id + '/' + computer_id + '/');
+    xhr.open('POST', get_main_url() + '/assign_observation_to_computer/' + observation_id + '/' + computer_id + '/');
     xhr.send();
     holder_of_observations = document.getElementById("holder_of_observations");
     xhr.onreadystatechange = function(e) {
@@ -224,17 +200,26 @@ function urlify (url) {
     return urlToReturn;
 }
 
-function remove_observation_from_computer(button, computer_id, observation_id) {
-    console.log(button)
-    console.log("computer_id " + computer_id);
-    console.log("observation_id " + observation_id);
-    parts = location.href.split('/');
-    parts.pop();
-    parts.pop();
-    parts.pop();
-    URLtoWorkWith = parts.join('/');
+function remove_drive_from_computer(button, computer_id, drive_id) {
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', URLtoWorkWith + '/remove_observation_from_computer/' + observation_id + '/' + computer_id + '/');
+    xhr.open('POST', get_main_url() + '/remove_drive_from_computer/' + drive_id + '/' + computer_id + '/');
+    xhr.send();
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status == 200) {
+                table_holder = button.parentNode;
+                table_holder.parentNode.removeChild(table_holder);
+            }
+            else {
+                alert(xhr.responseText);
+            }
+        }
+    }
+}
+
+function remove_observation_from_computer(button, computer_id, observation_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', get_main_url() + '/remove_observation_from_computer/' + observation_id + '/' + computer_id + '/');
     xhr.send();
     xhr.onreadystatechange = function(e) {
         if (xhr.readyState === 4) {

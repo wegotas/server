@@ -334,6 +334,17 @@ def edit_by_serial(request, serial):
 
 
 @csrf_exempt
+def remove_drive_from_computer(request, drive_id, computer_id):
+    print('Drive id: {0}'.format(drive_id))
+    print('Computer id: {0}'.format(computer_id))
+    Computerdrives.objects.filter(
+        f_id_computer=Computers.objects.get(id_computer=computer_id),
+        f_drive=Drives.objects.get(hdd_id=drive_id)
+    ).delete()
+    return HttpResponse("Succesfully removed drive from computer")
+
+
+@csrf_exempt
 def observations_to_add(request, int_index, keyword):
     searchfields = (
         'full_name',

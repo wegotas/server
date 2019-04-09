@@ -2,6 +2,21 @@
 
 LT:
 
+**Pokyciai Django serveryje: Pridetas draivo pasalinimas is computer_editv5**
+
+* Salinimas vyksta paspaudus 'x' mygtuka virs draivo. Jei pasalina sekmingai, draivo html lentele pasalina is puslapio, priesingu atveju meta alert lentele su html klaidos kodu.
+
+EN:
+
+**Changes in Django server: Added drive removal from computer_editv5**
+
+* Removal initiates pressing 'x' button above drive. If removal is succesful, drives html table will be removed from page, otherwise alert table will be thrown with html error code.
+
+---
+2019-04-09
+
+LT:
+
 **Tinklalapyje sutaisyta problema kai issidarko dizainas pastabu detaliu puslapyje**
 
 EN:
