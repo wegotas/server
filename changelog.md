@@ -1,10 +1,31 @@
+2019-04-10
+
+LT:
+
+**Pokyciai Django serveryje: daug su daug rysio filtravimo palaikymo ispletimas.**
+
+* CPU ir GPU tinklalapio filtru pasirinkimuose pateikiami tiek daug su vieno, tiek daug su daug sarysiai. Sie pasirinkimai leidzia tvarkingai filtruoti pagal savo esybes.
+* Pakeista kaip Others filtruojama: 
+    * Komentaro nefiltruoja, del nauju eiluciu problemu.
+    * Vietoj komentaro, filtruose pateikiami pastabu pilni pavadinimu pasirinkimai. Sie pasirinkimai leidzia filtruoti pagal pastabu pavadinimus.
+
+EN:
+
+**Changes in Django server:**
+
+* CPU and GPU website filter choices are provided using both many-to-one and many-to-many connections. These choices allow filtering according to their entities.
+* Changes how filtering others work:
+    * Comment is no longer being filtered due to newline issues.
+    * Instead of comment, filter choices now contain observation names. These coices allow filtering according to observation names.
+
+---
 2019-04-09
 
 LT:
 
 **Pokyciai Django serveryje: Pridetas draivo pasalinimas is computer_editv5**
 
-* Salinimas vyksta paspaudus 'x' mygtuka virs draivo. Jei pasalina sekmingai, draivo html lentele pasalina is puslapio, priesingu atveju meta alert lentele su html klaidos kodu.
+* Salinimas vyksta paspaudus 'x' mygtuka virs draivo. Jei pasalina sekmingai, draivo html lentele pasalinama is puslapio, priesingu atveju meta alert lentele su html klaidos kodu.
 
 EN:
 

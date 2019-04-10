@@ -290,18 +290,18 @@ class QtySelect:
     state200 = ""
 
     def setDefaultSelect(self, qty):
-        self.qty=qty
-        if qty==10:
+        self.qty = qty
+        if qty == 10:
             self.state10 = "selected"
-        elif qty==20:
+        elif qty == 20:
             self.state20 = "selected"
-        elif qty==50:
+        elif qty == 50:
             self.state50 = "selected"
-        elif qty==100:
+        elif qty == 100:
             self.state100 = "selected"
-        elif qty==200:
+        elif qty == 200:
             self.state200 = "selected"
-        elif qty==1000:
+        elif qty == 1000:
             self.state1000 = "selected"
 
 
@@ -314,19 +314,59 @@ class AutoFiltersFromComputers:
         self.serials = computers.values_list('computer_serial', flat=True).distinct().order_by('computer_serial')
         self.manufacturers = computers.values_list('f_manufacturer__manufacturer_name', flat=True).distinct() \
             .order_by('f_manufacturer__manufacturer_name')
-        self.models = computers.values_list('f_model__model_name', flat=True).distinct() \
-            .order_by('f_model__model_name')
-        self.cpus = computers.values_list('f_cpu__cpu_name', flat=True).distinct().order_by('f_cpu__cpu_name')
-        self.rams = computers.values_list('f_ram_size__ram_size_text', flat=True).distinct() \
-            .order_by('f_ram_size__ram_size_text')
-        self.gpus = computers.values_list('f_gpu__gpu_name', flat=True).distinct().order_by('f_gpu__gpu_name')
-        self.screens = computers.values_list('f_diagonal__diagonal_text', flat=True).distinct() \
-            .order_by('f_diagonal__diagonal_text')
-        self.others = computers.values_list('other', flat=True).distinct().order_by('other')
-        self.testers = computers.values_list('f_tester__tester_name', flat=True).distinct().order_by('f_tester__tester_name')
-        self.form_factors = computers.values_list(
+        self.models = computers.values_list(
+            'f_model__model_name', flat=True
+        ).distinct().order_by('f_model__model_name')
+
+        self.cpus = self.get_cpus(computers)
+        self.rams = computers.values_list(
+            'f_ram_size__ram_size_text', flat=True
+        ).distinct().order_by('f_ram_size__ram_size_text')
+
+        self.gpus = self.get_gpus(computers)
+        self.screens = computers.values_list(
+            'f_diagonal__diagonal_text', flat=True
+        ).distinct().order_by('f_diagonal__diagonal_text')
+
+        self.others = self.get_others(computers)
+        self.testers = computers.values_list(
+            'f_tester__tester_name', flat=True
+        ).distinct().order_by('f_tester__tester_name')
+
+        self.form_factors = computers.exclude(
+            f_id_computer_form_factor=None
+        ).values_list(
             'f_id_computer_form_factor__form_factor_name', flat=True
         ).distinct().order_by('f_id_computer_form_factor__form_factor_name')
+
+    def get_others(self, computers):
+        observation_names = Observations.objects.filter(
+            id_observation__in=Computerobservations.objects.filter(
+                f_id_computer__in=computers
+            ).values_list('f_id_observation', flat=True).distinct().order_by('f_id_observation')
+        ).values_list('full_name', flat=True).distinct().order_by('full_name')
+        return observation_names
+
+    def get_cpus(self, computers):
+        cpus4v = computers.exclude(f_cpu=None).values_list('f_cpu__cpu_name', flat=True).distinct().order_by('f_cpu__cpu_name')
+        cpus5v = Computerprocessors.objects.filter(
+            f_id_computer__in=computers
+        ).values_list(
+            'f_id_processor__model_name', flat=True
+        ).distinct().order_by('f_id_processor__model_name')
+        return self.form_unique_value_list_of_two_value_querysets(cpus4v, cpus5v)
+
+    def get_gpus(self, computers):
+        gpus4v = computers.exclude(f_gpu__gpu_name='N/A').values_list('f_gpu__gpu_name', flat=True).distinct().order_by('f_gpu__gpu_name')
+        gpus5v = Computergpus.objects.filter(f_id_computer__in=computers).values_list('f_id_gpu__gpu_name', flat=True).distinct().order_by('f_id_gpu__gpu_name')
+        return self.form_unique_value_list_of_two_value_querysets(gpus4v, gpus5v)
+
+    def form_unique_value_list_of_two_value_querysets(self, queryset1, queryset2):
+        lst = list(queryset1)
+        for value in queryset2:
+            if value not in lst:
+                lst.append(value)
+        return lst
 
 
 class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
@@ -1276,13 +1316,29 @@ class AutoFilter:
             elif key == 'ram-af':
                 computers = computers.filter(f_ram_size__ram_size_text__in=value)
             elif key == 'gpu-af':
-                computers = computers.filter(f_gpu__gpu_name__in=value)
+                computers4v = computers.filter(f_gpu__gpu_name__in=value)
+                computers5v = computers.filter(
+                    id_computer__in=Computergpus.objects.filter(
+                        f_id_gpu__gpu_name__in=value
+                    ).values_list('f_id_computer', flat=True).order_by('f_id_computer')
+                )
+                computers = computers4v | computers5v
             elif key == 'mod-af':
                 computers = computers.filter(f_model__model_name__in=value)
             elif key == 'cpu-af':
-                computers = computers.filter(f_cpu__cpu_name__in=value)
+                computers4v = computers.filter(f_cpu__cpu_name__in=value)
+                computers5v = computers.filter(
+                    id_computer__in=Computerprocessors.objects.filter(
+                        f_id_processor__model_name__in=value
+                    ).values_list('f_id_computer', flat=True).order_by('f_id_computer')
+                )
+                computers = computers4v | computers5v
             elif key == 'oth-af':
-                computers = computers.filter(other__in=value)
+                computers = computers.filter(
+                    id_computer__in=Computerobservations.objects.filter(
+                        f_id_observation__full_name__in=value
+                    ).values_list('f_id_computer', flat=True)
+                )
             elif key == 'cli-af':
                 computers = computers.filter(f_sale__f_id_client__client_name__in=value)
             elif key == 'dos-af':
