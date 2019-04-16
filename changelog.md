@@ -1,14 +1,36 @@
+2019-04-16
+
+LT:
+
+**Pokyciai Django serveryje: Filtru pasirinkimai rodo draivu kieki su tuo pasirinkimu.**
+
+* Draivai rodo filtru pasirinkimuose to pasirinkimo kieki tarp draivu skliausteliuose (Serial, Model, Size, Lock state, Speed, Form factor, Health, Days on).
+    * Si savybe pritaikyta tiek visiem draivam, tiek hdd_order, tiek lot_content lentelese.
+* Visu draivu rodomoje lenteleje dabar mygtukai eina ne is virsaus zemyn, bet is kaires desinen isdestymo. Tai netaip isdarko perziuros lentele.
+* Pagrindiniame puslapyje aptvarkytos css klases ir kiek kitos klases priskirtos daliai html elementu. Rezultatas: pagrindine lentele nebenukrenta zemyn.
+
+EN:
+
+**Changes in Django server: Filter choices show drive quantity next to selection.**
+
+* Drives show filter choices show occurance quantity in parenthesis (Serial, Model, Size, Lock state, Speed, Form factor, Health, Days on).
+    * This property is applied to all drive viewing, hdd_order and lot_content tables.
+* All drive viewing table now has buttons position next to each other horizontally, rather than vertically. It does not distort table that much.
+* Main page has css classes tweaked and some classes were assigned to certain html elements. Result: main table no longer drops down.
+
+___
 2019-04-15
 
 LT:
 
-**Pokyciai Django serveryje: Filtrai dabar rodo kompiuteriu kieki savo specifiniuose filtru pasirinkimuose, ten kur tai yra prasminga**
+**Pokyciai Django serveryje: Filtrai dabar rodo kompiuteriu kieki savo specifiniuose filtru pasirinkimuose, ten kur tai yra prasminga.**
 
 * Kompiuteriu filtravimo pasirinkimuose skliausteliuose rodo to pasirinkimo pasikartojimo kieki (Manufacturer, Model, CPU, RAM, GPU, Screen, FF/form factor, Tester, Other/Observations).
     * Del cpu ir gpu si kieki rodo tik v5 kompu, del galimu duplikatiniu iskaiciavimo i bendra kieki isvengimo. Todel dalis siu skaiciu gali buti 0 kiekis jei jie yra 4versijos.
 * Nuspresta to netaikyti uzsakymuose nes visos ju savybes unikalios.
 
 EN:
+
 **Changes in django server: Filters now show quantity of computer in specific filter choices.**
 
 * Computers filtering choices in parenthesis show occurrence quantity (Manufacturer, Model, CPU, RAM, GPU, Screen, FF/form factor, Tester, Other/Observations).

@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 {% load staticfiles %}
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Main page</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">
-    <link rel="shortcut icon" type="image/png" href="{% static 'img/leaf.png' %}">
-    <script type="text/javascript" src="{% static 'index.js' %}"></script>
-</head>
-<body>
-    {% include 'searchSubTemplate.html' %}
-    <div class="blended_grid">
-        {% include 'navbarSubTemplate.html' %}
-        <div>
-            {% include 'leftMenuSubTemplate.html' %}
-            {% include 'tableSubTemplate.html' %}
+    <head>
+        <meta charset="UTF-8">
+        <title>Main page</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/leaf.png' %}">
+        <script type="text/javascript" src="{% static 'index.js' %}"></script>
+    </head>
+    <body>
+        {% include 'searchSubTemplate.html' %}
+        <div class="blended_grid">
+            {% include 'navbarSubTemplate.html' %}
+            <div class="nowrap">
+                {% include 'leftMenuSubTemplate.html' %}
+                <div class="inline-block">
+                    {% include 'tableSubTemplate.html' %}
+                </div>
+            </div>
         </div>
-    </div>
-<script type="text/javascript">
-(function(w, d, s, u) {
-	w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
-	var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
-	j.async = true; j.src = 'http://192.168.8.254:3000/packages/rocketchat_livechat/assets/rocketchat-livechat.min.js?_=201702160944';
-	h.parentNode.insertBefore(j, h);
-})(window, document, 'script', 'http://192.168.8.254:3000/livechat');
-</script>
-</body>
+    <script type="text/javascript">
+    (function(w, d, s, u) {
+        w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
+        var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
+        j.async = true; j.src = 'http://192.168.8.254:3000/packages/rocketchat_livechat/assets/rocketchat-livechat.min.js?_=201702160944';
+        h.parentNode.insertBefore(j, h);
+    })(window, document, 'script', 'http://192.168.8.254:3000/livechat');
+    </script>
+    </body>
 </html>

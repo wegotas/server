@@ -1220,7 +1220,6 @@ def view_pdf(request, int_index):
 
 @csrf_exempt
 def hdd_order_content(request, int_index):
-    print(int_index)
     print('hdd_order_edit')
     hoch = HddOrderContentHolder(int_index)
     if request.method == 'POST':
@@ -1238,7 +1237,6 @@ def hdd_order_content(request, int_index):
     if request.method == 'GET':
         print('GET method')
         hoch.filter(request.GET.copy())
-        print(hoch.hdd_order.f_order_status.is_shown)
         return render(
             request,
             'hdd_order_content.html',

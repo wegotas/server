@@ -356,7 +356,10 @@ class AutoFiltersFromComputers:
             yield FilterUnit(name=observation_name, qty=qty)
 
     def _many_to_one_getter(self, field_name):
-        names = self.computers.exclude(**{field_name: None}).values_list(field_name, flat=True).distinct().order_by(field_name)
+        names = self.computers.exclude(
+            **{field_name: None}
+        ).values_list(field_name, flat=True).distinct().order_by(field_name)
+
         for name in names:
             qty = self.computers.filter(**{field_name: name}).count()
             yield FilterUnit(name=name, qty=qty)
@@ -2194,18 +2197,50 @@ class HddAutoFilterOptions:
     """
 
     def __init__(self, hdds):
+        self.hdds = hdds
         self.serials = hdds.values_list('hdd_serial', flat=True).distinct().order_by('hdd_serial')
-        self.models = hdds.values_list('f_hdd_models__hdd_models_name', flat=True).distinct().order_by(
-            'f_hdd_models__hdd_models_name')
-        self.sizes = hdds.values_list('f_hdd_sizes__hdd_sizes_name', flat=True).distinct().order_by(
-            'f_hdd_sizes__hdd_sizes_name')
-        self.locks = hdds.values_list('f_lock_state__lock_state_name', flat=True).distinct().order_by(
-            'f_lock_state__lock_state_name')
-        self.speeds = hdds.values_list('f_speed__speed_name', flat=True).distinct().order_by('f_speed__speed_name')
-        self.forms = hdds.values_list('f_form_factor__form_factor_name', flat=True).distinct().order_by(
-            'f_form_factor__form_factor_name')
-        self.healths = hdds.values_list('health', flat=True).distinct().order_by('health')
-        self.days = hdds.values_list('days_on', flat=True).distinct().order_by('days_on')
+        
+    def models(self):
+        return self._many_to_one_getter('f_hdd_models__hdd_models_name')
+
+    def sizes(self):
+        return self._many_to_one_getter('f_hdd_sizes__hdd_sizes_name')
+
+    def locks(self):
+        return self._many_to_one_getter('f_lock_state__lock_state_name')
+
+    def speeds(self):
+        return self._many_to_one_getter('f_speed__speed_name')
+
+    def forms(self):
+        return self._many_to_one_getter('f_form_factor__form_factor_name')
+    
+    def healths(self):
+        return self._many_to_one_getter('health')
+    
+    def days(self):
+        return self._many_to_one_getter('days_on')
+
+    def _many_to_one_getter(self, field_name):
+        for name in self._get_names_queryset(field_name):
+            qty = self.hdds.filter(**{field_name: name}).count()
+            yield FilterUnit(name=name, qty=qty)
+
+    def _get_names_queryset(self, field_name):
+        '''
+        This method is to ensure that if fields passed are of int origins(field_names are hardcoded in method)
+        that theirs queryset would not be excluded from empty stings.
+        :param field_name: fieldname of which filter choices should be constructed.
+        :return: formed queryset
+        '''
+        int_fields = ['health', 'days_on']
+        if field_name in int_fields:
+            return self.hdds.exclude(
+                **{field_name: None}
+            ).values_list(field_name, flat=True).distinct().order_by(field_name)
+        return self.hdds.exclude(**{field_name: None}).exclude(
+            **{field_name: ''}
+        ).values_list(field_name, flat=True).distinct().order_by(field_name)
 
     def _append_unique_to_list(self, value, lst):
         if value not in lst:

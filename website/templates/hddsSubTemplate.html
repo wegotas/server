@@ -53,9 +53,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -78,9 +77,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -103,9 +101,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -128,9 +125,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -153,9 +149,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -178,9 +173,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -203,9 +197,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -231,7 +224,7 @@
                 <td>{{ hdd.days_on }} d.</td>
                 <td>{{ hdd.f_lot.lot_name }}</td>
                 <td>{{ hdd.f_hdd_order.order_name }}</td>
-                <td>
+                <td class="action_container">
                     <button type="button" class="img-button" onclick="editHdd({{ hdd.hdd_id }}, 1)">Edit</button>
                     <button type="button" class="img-button" onclick="deleteHddFromIndex({{ hdd.hdd_id }})">Delete</button>
                     <button type="button" class="img-button" onclick="viewPDFfromIndex({{ hdd.hdd_id }})" {% if hdd.tar_member_name is None %}
