@@ -334,6 +334,10 @@ background: transparent;
   display: inline;
 }
 
+.af-qty {
+  display: inline;
+}
+
 .af-checkbkox {
   display: inline;
 }

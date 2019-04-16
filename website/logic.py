@@ -305,68 +305,94 @@ class QtySelect:
             self.state1000 = "selected"
 
 
+class FilterUnit:
+
+    def __init__(self, name, qty):
+        self.name = name
+        self.qty = qty
+
+    def __str__(self):
+        return 'Name: {0}, Qty: {1}'.format(self.name, self.qty)
+
+
 class AutoFiltersFromComputers:
     """
     This is a holder of unique values necessary for filtering operations website side.
     """
 
     def __init__(self, computers):
+        self.computers = computers
         self.serials = computers.values_list('computer_serial', flat=True).distinct().order_by('computer_serial')
-        self.manufacturers = computers.values_list('f_manufacturer__manufacturer_name', flat=True).distinct() \
-            .order_by('f_manufacturer__manufacturer_name')
-        self.models = computers.values_list(
-            'f_model__model_name', flat=True
-        ).distinct().order_by('f_model__model_name')
 
-        self.cpus = self.get_cpus(computers)
-        self.rams = computers.values_list(
-            'f_ram_size__ram_size_text', flat=True
-        ).distinct().order_by('f_ram_size__ram_size_text')
+    def manufacturers(self):
+        return self._many_to_one_getter(field_name='f_manufacturer__manufacturer_name')
 
-        self.gpus = self.get_gpus(computers)
-        self.screens = computers.values_list(
-            'f_diagonal__diagonal_text', flat=True
-        ).distinct().order_by('f_diagonal__diagonal_text')
+    def models(self):
+        return self._many_to_one_getter(field_name='f_model__model_name')
 
-        self.others = self.get_others(computers)
-        self.testers = computers.values_list(
-            'f_tester__tester_name', flat=True
-        ).distinct().order_by('f_tester__tester_name')
+    def rams(self):
+        return self._many_to_one_getter(field_name='f_ram_size__ram_size_text')
 
-        self.form_factors = computers.exclude(
-            f_id_computer_form_factor=None
-        ).values_list(
-            'f_id_computer_form_factor__form_factor_name', flat=True
-        ).distinct().order_by('f_id_computer_form_factor__form_factor_name')
+    def screens(self):
+        return self._many_to_one_getter(field_name='f_diagonal__diagonal_text')
 
-    def get_others(self, computers):
+    def form_factors(self):
+        return self._many_to_one_getter(field_name='f_id_computer_form_factor__form_factor_name')
+
+    def testers(self):
+        return self._many_to_one_getter(field_name='f_tester__tester_name')
+
+    def others(self):
         observation_names = Observations.objects.filter(
             id_observation__in=Computerobservations.objects.filter(
-                f_id_computer__in=computers
+                f_id_computer__in=self.computers
             ).values_list('f_id_observation', flat=True).distinct().order_by('f_id_observation')
         ).values_list('full_name', flat=True).distinct().order_by('full_name')
-        return observation_names
+        for observation_name in observation_names:
+            qty = Computerobservations.objects.filter(
+                f_id_computer__in=self.computers,
+                f_id_observation__full_name=observation_name
+            ).count()
+            yield FilterUnit(name=observation_name, qty=qty)
 
-    def get_cpus(self, computers):
-        cpus4v = computers.exclude(f_cpu=None).values_list('f_cpu__cpu_name', flat=True).distinct().order_by('f_cpu__cpu_name')
-        cpus5v = Computerprocessors.objects.filter(
-            f_id_computer__in=computers
-        ).values_list(
-            'f_id_processor__model_name', flat=True
-        ).distinct().order_by('f_id_processor__model_name')
-        return self.form_unique_value_list_of_two_value_querysets(cpus4v, cpus5v)
+    def _many_to_one_getter(self, field_name):
+        names = self.computers.exclude(**{field_name: None}).values_list(field_name, flat=True).distinct().order_by(field_name)
+        for name in names:
+            qty = self.computers.filter(**{field_name: name}).count()
+            yield FilterUnit(name=name, qty=qty)
+    
+    def cpus(self):
+        return self._cpu_gpu_getter(
+            field_name_v4='f_cpu__cpu_name',
+            field_name_v5='f_id_processor__model_name',
+            model=Computerprocessors
+        )
 
-    def get_gpus(self, computers):
-        gpus4v = computers.exclude(f_gpu__gpu_name='N/A').values_list('f_gpu__gpu_name', flat=True).distinct().order_by('f_gpu__gpu_name')
-        gpus5v = Computergpus.objects.filter(f_id_computer__in=computers).values_list('f_id_gpu__gpu_name', flat=True).distinct().order_by('f_id_gpu__gpu_name')
-        return self.form_unique_value_list_of_two_value_querysets(gpus4v, gpus5v)
+    def gpus(self):
+        return self._cpu_gpu_getter(
+            field_name_v4='f_gpu__gpu_name',
+            field_name_v5='f_id_gpu__gpu_name',
+            model=Computergpus
+        )
 
-    def form_unique_value_list_of_two_value_querysets(self, queryset1, queryset2):
+    def _cpu_gpu_getter(self, field_name_v4, field_name_v5, model):
+        objects_v4 = self.computers.exclude(**{field_name_v4: 'N/A'}).exclude(**{field_name_v4: ''}).values_list(
+            field_name_v4, flat=True
+        ).distinct().order_by(field_name_v4)
+        objects_v5 = model.objects.exclude(**{field_name_v5: ''}).filter(
+            f_id_computer__in=self.computers
+        ).values_list(field_name_v5, flat=True).distinct().order_by(field_name_v5)
+        for name in self._form_unique_value_list_of_two_value_querysets(objects_v4, objects_v5):
+            qty = model.objects.filter(f_id_computer__in=self.computers, **{field_name_v5: name}).count()
+            yield FilterUnit(name=name, qty=qty)
+
+    def _form_unique_value_list_of_two_value_querysets(self, queryset1, queryset2):
         lst = list(queryset1)
         for value in queryset2:
             if value not in lst:
                 lst.append(value)
-        return lst
+        for value in lst:
+            yield value
 
 
 class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
@@ -375,12 +401,16 @@ class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
     """
 
     def __init__(self, computers):
-        self.prices = computers.values_list("price", flat=True).distinct().order_by('price')
-        self.dates = computers.values_list("f_sale__date_of_sale", flat=True).distinct() \
-            .order_by('f_sale__date_of_sale')
-        self.clients = computers.values_list("f_sale__f_id_client__client_name", flat=True).distinct() \
-            .order_by('f_sale__f_id_client__client_name')
         super(AutoFiltersFromSoldComputers, self).__init__(computers)
+        
+    def prices(self):
+        return self._many_to_one_getter(field_name='price')
+
+    def dates(self):
+        return self._many_to_one_getter(field_name='f_sale__date_of_sale')
+
+    def clients(self):
+        return self._many_to_one_getter(field_name='f_sale__f_id_client__client_name')
 
 
 class TypCat:
@@ -1561,6 +1591,7 @@ class OrdersClassAutoFilter:
     """
 
     def __init__(self, orders):
+        self.orders = orders
         self.names = []
         self.clients = []
         self.qtys = []
@@ -1580,7 +1611,7 @@ class OrdersClassAutoFilter:
         self.dates.sort()
         self.testers = self._remove_duplicates_and_sort(self.testers)
         self.statuses.sort()
-
+        
 
     def _remove_duplicates_and_sort(self, lst):
         # This line removes duplicates.
@@ -1599,7 +1630,6 @@ class OrdersClass:
         self.order_list = []
         for ord in Orders.objects.all():
             self.order_list.append(Order(ord))
-        self.autoFilters = OrdersClassAutoFilter(self.order_list)
 
     def filter(self, data_dict):
         """
@@ -1844,76 +1874,6 @@ class OrderToEdit:
                         is_ready_value=_get_status_index(value),
                         sale=sale
                     )
-
-    """
-    def process_uploaded_file(self, file):
-        print("in process_uploaded_file")
-        # print(file)
-        # print(type(file))
-        # print(magic.from_buffer(file.read(), mime=True))
-        mimetype = magic.from_buffer(file.read(), mime=True)
-        # print(mimetype.encode("unicode-escape"))
-        # print(type(mimetype))
-        file.seek(0)
-        if mimetype == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-            print("Excel")
-            self._process_excel_file(file)
-        elif mimetype == "text/plain":
-            print("CSV")
-            self._process_csv_file(file)
-        else:
-            print("Smth else")
-
-    def _process_excel_file(self, file):
-        print("Processing Excel file")
-        id_dict = {
-            "S/N": None,
-            "Manufacturer": None,
-            "Model": None,
-            "CPU": None,
-            "RAM": None,
-            "GPU": None,
-            "HDD": None,
-            "Batteries": None,
-            "LCD": None,
-            "Optical": None,
-            "COA": None,
-            "Cam": None,
-            "Box no.": None,
-            "Comment": None,
-            "Price": None
-        }
-        book = xlrd.open_workbook(file_contents=file.read())
-        first_sheet = book.sheet_by_index(0)
-        print(first_sheet)
-        print(first_sheet.row(0))
-        for index, cell in enumerate(first_sheet.row(0)):
-            # print(dir(cell))
-            # print("Type: {0}, Value: {1}".format(type(cell), cell))
-            # print("Value: {0}".format(cell.value))
-            print("Index: {0}, Value: {1}".format(index, cell.value))
-            id_dict[cell.value] = index
-        print(id_dict)
-        num_cols = first_sheet.ncols
-        for row_id in range(1, first_sheet.nrows):
-            print(first_sheet.cell(row_id, id_dict["S/N"]).value)
-            computers = Computers.objects.filter(computer_serial=first_sheet.cell(row_id, id_dict["S/N"]).value)
-            print(computers)
-            if computers.exists():
-                print("Exists")
-                comp_ord, created = CompOrd.objects.get_or_create(f_order_id_to_order=self.order, is_ready=0)
-                print(created)
-                computers.update(f_id_comp_ord=comp_ord)
-            '''
-            for col_id in range(0, num_cols):
-                cell = first_sheet.cell(row_id, col_id)
-                print("Row id: {0}, Column id: {1}, Cell: {2}".format(row_id, col_id, cell))
-            '''
-            print("=========================================")
-
-    def _process_csv_file(self, file):
-        print("Processing CSV file")
-    """
 
 
 def on_start():

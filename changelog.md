@@ -1,3 +1,21 @@
+2019-04-15
+
+LT:
+
+**Pokyciai Django serveryje: Filtrai dabar rodo kompiuteriu kieki savo specifiniuose filtru pasirinkimuose, ten kur tai yra prasminga**
+
+* Kompiuteriu filtravimo pasirinkimuose skliausteliuose rodo to pasirinkimo pasikartojimo kieki (Manufacturer, Model, CPU, RAM, GPU, Screen, FF/form factor, Tester, Other/Observations).
+    * Del cpu ir gpu si kieki rodo tik v5 kompu, del galimu duplikatiniu iskaiciavimo i bendra kieki isvengimo. Todel dalis siu skaiciu gali buti 0 kiekis jei jie yra 4versijos.
+* Nuspresta to netaikyti uzsakymuose nes visos ju savybes unikalios.
+
+EN:
+**Changes in django server: Filters now show quantity of computer in specific filter choices.**
+
+* Computers filtering choices in parenthesis show occurrence quantity (Manufacturer, Model, CPU, RAM, GPU, Screen, FF/form factor, Tester, Other/Observations).
+    * Regarding cpu and gpu this quantity is shown only of v5 computers, for avoidance of summing duplicate records into end quantity. Because of that some of these quantities can be shown as 0 if they are of 4th version.
+* It was decided to not apply these changes to the orders, because those attributes there are unique.
+
+___
 2019-04-10
 
 LT:
@@ -11,7 +29,7 @@ LT:
 
 EN:
 
-**Changes in Django server:**
+**Changes in Django server: many to many connection filtering functionality expansion.**
 
 * CPU and GPU website filter choices are provided using both many-to-one and many-to-many connections. These choices allow filtering according to their entities.
 * Changes how filtering others work:

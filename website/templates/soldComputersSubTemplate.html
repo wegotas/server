@@ -98,9 +98,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -122,9 +121,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -146,9 +144,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -170,9 +167,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -194,9 +190,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -218,9 +213,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -242,9 +236,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
@@ -266,9 +259,8 @@
                                 <div class="af-checkbkox">
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
-                                <div class="af-chkbxtitle">
-                                    {{ afChoice|date:"c" }}
-                                </div>
+                                <div class="af-chkbxtitle">{{ afChoice.name|date:"c" }}</div>
+                                <div class="af-qty">({{ afChoice.qty }})</div>
                             </div>
                             {% endfor %}
                         </div>
