@@ -128,7 +128,7 @@ background: transparent;
 }
 
 .block {
-  display: inline-block;
+  display: block;
 }
 
 .textbox {
@@ -469,7 +469,7 @@ background: transparent;
 }
 
 .textdiv {
-	float: left;
+	display: inline;
 	margin: 10px;
 }
 
