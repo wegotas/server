@@ -189,20 +189,24 @@ class AFManager {
     }
     else {
 	    var attributes = attributesString.split("&");
-	    for (var i = attributes.length -1; i > -1; i--) {
-	      for (var j = 0; j < this.possible_fieldnames.length; j++) {
-	      	if ( attributes[i].includes(this.possible_fieldnames[j])) {
-	            attributes.splice(i, 1);
-	        	break;
-	       	}
-	      }
+	    if (this.filter_list.length === 0){
+	        for (var i = attributes.length -1; i > -1; i--) {
+                for (var j = 0; j < this.possible_fieldnames.length; j++) {
+                    if ( attributes[i].includes(this.possible_fieldnames[j])) {
+                        attributes.splice(i, 1);
+                        break;
+                    }
+                }
+            }
 	    }
+
 	    /*This part removes empty strings from the array*/
 	    for (var i=attributes.length-1; i >= 0; i--) {
             if (attributes[i] === "") {
                 attributes.splice(i, 1);
             }
         }
+        console.log(attributes);
 	    return mainURL + "?"+ attributes.join("&")  + this.getAFURLaddon();
     }
   }
