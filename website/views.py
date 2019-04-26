@@ -19,7 +19,7 @@ def index(request):
     data_dict = request.GET.copy()
     qty = get_qty(data_dict)
     page = get_page(data_dict)
-    keyword = get_keyword(data_dict)
+    keyword = data_dict.get('keyword', None)
     autoFilters = AutoFilter(data_dict)
     typcat = TypCat()
     so = SearchOptions()
@@ -1091,6 +1091,7 @@ def edit_order(request, int_index):
         request
     )
 
+
 @csrf_exempt
 def delete_order(request, int_index):
     if request.method == 'POST':
@@ -1217,6 +1218,7 @@ def view_pdf(request, int_index):
                 {'message': "Failed to fetch pdf.\r\nMost likely cause is that pdf is nonexistant."},
                 status=404
             )
+
 
 @csrf_exempt
 def hdd_order_content(request, int_index):

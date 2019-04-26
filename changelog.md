@@ -1,8 +1,98 @@
+2019-04-26
+
+LT:
+
+**Pokyciai serveryje: Paieskos ispletimas.**
+
+* Isplestas lauku kiekis pagal kuriuos atliekama paieska:
+
+    * Seni(palikti):
+        * Kompiuterio serialas ('computer_serial')
+        * Kita ('other')
+        * Gamintojas ('f_manufacturer__manufacturer_name')
+        * Isstrizaine ('f_diagonal__diagonal_text')
+        * Laikinosios atminties bendra talpa ('f_ram_size__ram_size_text')
+        * Vaizdo plokstes pavadinimas 4v ('f_gpu__gpu_name')
+        * Modelio pavadinimas ('f_model__model_name')
+        * Procesoriaus pavadinimas 4v ('f_cpu__cpu_name')
+        * Kliento pavadinimas ('f_sale__f_id_client__client_name')
+        * Pardavimo data ('f_sale__date_of_sale')
+        * Kaina ('price')
+        
+	* Nauji(prideti):
+        * Vaizdo plokstes pavadinimas 5v ('computergpus__f_id_gpu__gpu_name')
+        * Vaizdo plokstes gamintojas 5v ('computergpus__f_id_gpu__f_id_manufacturer__manufacturer_name')
+        * Procesoriaus gamintojas 5v ('computerprocessors__f_id_processor__f_manufacturer__manufacturer_name')
+        * Procesoriaus modelis 5v ('computerprocessors__f_id_processor__model_name')
+        * Procesoriaus standartinis daznis 5v ('computerprocessors__f_id_processor__stock_clock')
+        * Procesoriaus auksciausias daznis 5v ('computerprocessors__f_id_processor__max_clock')
+        * Procesoriaus fiziniu branduoliu kiekis 5v ('computerprocessors__f_id_processor__cores')
+        * Procesoriaus loginiu branduoliu kiekis 5v ('computerprocessors__f_id_processor__threads')
+        * Kompiuterio dydzio faktorius ('f_id_computer_form_factor__form_factor_name')
+        * Gauta partija ('f_id_received_batches__received_batch_name')
+        * Draivo dydzio pavadinimas ('computerdrives__f_drive__f_hdd_sizes__hdd_sizes_name')
+        * Draivo greicio pavadinimas ('computerdrives__f_drive__f_speed__speed_name')
+        * Draivo sveikata ('computerdrives__f_drive__health')
+        * Ekrano kabelio tipas ('f_id_matrix__f_id_cable_type__cable_type_name')
+        * Testuotojo pavadinimas ('f_tester__tester_name')
+        * Rezoliucijos pavadinimas ('f_id_computer_resolutions__f_id_resolution__resolution_text')
+        * Rezoliucijos kategorijos pavadinimas ('f_id_computer_resolutions__f_id_resolution_category__resolution_category_name')
+        * Pastabos trumpasis kodas ('computerobservations__f_id_observation__shortcode')
+        * Pastabos kategorija ('computerobservations__f_id_observation__f_id_observation_category__category_name')
+        * Pastabos subkategorija ('computerobservations__f_id_observation__f_id_observation_subcategory__subcategory_name')
+	
+	* Atsisakyti:
+	    * 'computerobservations__f_id_observation__full_name' - atsisakyta atlikti paieska pagal si lauka nes paieska pagal ji prailgsta is 5s iki 3min. 40s. Tai yra netoleruojama paieskos trukme.
+
+EN:
+
+**Changes in server: Searches extended.**
+* Extended fields by which search is executed by:
+
+    * Old(kept):
+        * Computer's serial ('computer_serial')
+        * Other ('other')
+        * Manufacturer ('f_manufacturer__manufacturer_name')
+        * Diagonal ('f_diagonal__diagonal_text')
+        * Total RAM ('f_ram_size__ram_size_text')
+        * GPU name 4v ('f_gpu__gpu_name')
+        * Model name ('f_model__model_name')
+        * CPU name 4v ('f_cpu__cpu_name')
+        * Client's name ('f_sale__f_id_client__client_name')
+        * Date of sale ('f_sale__date_of_sale')
+        * Price ('price')
+        
+	* New(added):
+        * GPU name 5v ('computergpus__f_id_gpu__gpu_name')
+        * GPU name manufacturer 5v ('computergpus__f_id_gpu__f_id_manufacturer__manufacturer_name')
+        * Processor's manufacturer 5v ('computerprocessors__f_id_processor__f_manufacturer__manufacturer_name')
+        * Processor's model 5v ('computerprocessors__f_id_processor__model_name')
+        * Processor's stock clock 5v ('computerprocessors__f_id_processor__stock_clock')
+        * Processor's max clock 5v ('computerprocessors__f_id_processor__max_clock')
+        * Processor's physical core count 5v ('computerprocessors__f_id_processor__cores')
+        * Processor's logical core count 5v ('computerprocessors__f_id_processor__threads')
+        * Computer's form factor ('f_id_computer_form_factor__form_factor_name')
+        * Received batch ('f_id_received_batches__received_batch_name')
+        * Drive's size name ('computerdrives__f_drive__f_hdd_sizes__hdd_sizes_name')
+        * Drive's speed name ('computerdrives__f_drive__f_speed__speed_name')
+        * Drive's health ('computerdrives__f_drive__health')
+        * Screen cable type ('f_id_matrix__f_id_cable_type__cable_type_name')
+        * Tester's name ('f_tester__tester_name')
+        * Resolution name ('f_id_computer_resolutions__f_id_resolution__resolution_text')
+        * Resolution category name ('f_id_computer_resolutions__f_id_resolution_category__resolution_category_name')
+        * Observation short code ('computerobservations__f_id_observation__shortcode')
+        * Observation category ('computerobservations__f_id_observation__f_id_observation_category__category_name')
+        * Observation subcategory ('computerobservations__f_id_observation__f_id_observation_subcategory__subcategory_name')
+	
+	* Declined:
+	    * 'computerobservations__f_id_observation__full_name' - was rejected as a field to search by because search is prolonged from 5s to 3min. 40s. This is intolerable length for search.
+
+___
 2019-04-16
 
 LT:
 
-**Pokyciai Django serveryje: Filtru pasirinkimai rodo draivu kieki su tuo pasirinkimu.**
+**Pokyciai serveryje: Filtru pasirinkimai rodo draivu kieki su tuo pasirinkimu.**
 
 * Draivai rodo filtru pasirinkimuose to pasirinkimo kieki tarp draivu skliausteliuose (Serial, Model, Size, Lock state, Speed, Form factor, Health, Days on).
     * Si savybe pritaikyta tiek visiem draivam, tiek hdd_order, tiek lot_content lentelese.
@@ -11,7 +101,7 @@ LT:
 
 EN:
 
-**Changes in Django server: Filter choices show drive quantity next to selection.**
+**Changes in server: Filter choices show drive quantity next to selection.**
 
 * Drives show filter choices show occurance quantity in parenthesis (Serial, Model, Size, Lock state, Speed, Form factor, Health, Days on).
     * This property is applied to all drive viewing, hdd_order and lot_content tables.
@@ -23,7 +113,7 @@ ___
 
 LT:
 
-**Pokyciai Django serveryje: Filtrai dabar rodo kompiuteriu kieki savo specifiniuose filtru pasirinkimuose, ten kur tai yra prasminga.**
+**Pokyciai serveryje: Filtrai dabar rodo kompiuteriu kieki savo specifiniuose filtru pasirinkimuose, ten kur tai yra prasminga.**
 
 * Kompiuteriu filtravimo pasirinkimuose skliausteliuose rodo to pasirinkimo pasikartojimo kieki (Manufacturer, Model, CPU, RAM, GPU, Screen, FF/form factor, Tester, Other/Observations).
     * Del cpu ir gpu si kieki rodo tik v5 kompu, del galimu duplikatiniu iskaiciavimo i bendra kieki isvengimo. Todel dalis siu skaiciu gali buti 0 kiekis jei jie yra 4versijos.
@@ -31,7 +121,7 @@ LT:
 
 EN:
 
-**Changes in django server: Filters now show quantity of computer in specific filter choices.**
+**Changes in server: Filters now show quantity of computer in specific filter choices.**
 
 * Computers filtering choices in parenthesis show occurrence quantity (Manufacturer, Model, CPU, RAM, GPU, Screen, FF/form factor, Tester, Other/Observations).
     * Regarding cpu and gpu this quantity is shown only of v5 computers, for avoidance of summing duplicate records into end quantity. Because of that some of these quantities can be shown as 0 if they are of 4th version.
@@ -42,7 +132,7 @@ ___
 
 LT:
 
-**Pokyciai Django serveryje: daug su daug rysio filtravimo palaikymo ispletimas.**
+**Pokyciai serveryje: daug su daug rysio filtravimo palaikymo ispletimas.**
 
 * CPU ir GPU tinklalapio filtru pasirinkimuose pateikiami tiek daug su vieno, tiek daug su daug sarysiai. Sie pasirinkimai leidzia tvarkingai filtruoti pagal savo esybes.
 * Pakeista kaip Others filtruojama: 
@@ -51,7 +141,7 @@ LT:
 
 EN:
 
-**Changes in Django server: many to many connection filtering functionality expansion.**
+**Changes in server: many to many connection filtering functionality expansion.**
 
 * CPU and GPU website filter choices are provided using both many-to-one and many-to-many connections. These choices allow filtering according to their entities.
 * Changes how filtering others work:
@@ -63,13 +153,13 @@ EN:
 
 LT:
 
-**Pokyciai Django serveryje: Pridetas draivo pasalinimas is computer_editv5**
+**Pokyciai serveryje: Pridetas draivo pasalinimas is computer_editv5**
 
 * Salinimas vyksta paspaudus 'x' mygtuka virs draivo. Jei pasalina sekmingai, draivo html lentele pasalinama is puslapio, priesingu atveju meta alert lentele su html klaidos kodu.
 
 EN:
 
-**Changes in Django server: Added drive removal from computer_editv5**
+**Changes in server: Added drive removal from computer_editv5**
 
 * Removal initiates pressing 'x' button above drive. If removal is succesful, drives html table will be removed from page, otherwise alert table will be thrown with html error code.
 
@@ -143,7 +233,7 @@ EN:
 
 LT:
 
-**Pokyciai Django serveryje ir duombazes strukturoje: Pridetas formos faktoriaus funkcionalumas.**
+**Pokyciai serveryje ir duombazes strukturoje: Pridetas formos faktoriaus funkcionalumas.**
 
 * Duombaze laiko formos faktoriaus reiksme.
 * Form faktoriai sukuriami tinklalapyje kairiajame meniu.
@@ -157,7 +247,7 @@ Igyvendintas form faktoriu funkcionalumas.
 
 EN:
 
-**Changes in Django server and database structure:**
+**Changes in server and database structure:**
 
 * Database holds form factor's value.
 * Form factors are created in the website's left menu.
@@ -174,7 +264,7 @@ Implemented form factor functionality.
 
 LT:
 
-**Pokyciai Django serveryje: Pakeistas rankinis kompiuterio iraso pridejimas, kad pridejinetu 5v kompiuterio irasus vietoj 4v.**
+**Pokyciai serveryje: Pakeistas rankinis kompiuterio iraso pridejimas, kad pridejinetu 5v kompiuterio irasus vietoj 4v.**
 * Butini laukai:
     
     "pp" - reiskia yra papildomi pasirinkimai, sarasas kuris issiskleidzia paspaudus kairi peles mygtuka ant iskleidziamo lauko, arba dukart paspaudus ant tekstinio laukelio, rasant i tekstini laukeli yra siulomi papildomi pasirinkimai panasus i vedama. Sio funkcionalumo veikimas smarkiai priklauso nuo naudojamos narsykles ir jos versijos.
@@ -224,7 +314,7 @@ LT:
     
 EN:
 
-**Changes in Django server: Changed manual computer record adding, so that computer would be added as 5v insteand of 4v.**
+**Changes in server: Changed manual computer record adding, so that computer would be added as 5v insteand of 4v.**
 * Necessary fields:
     
     "pp" - aditional choices are available, list of possible values appear after left mouse click on listbox, or twice on textbox, writint in textbox also offers similar choices to the one which is being entered. This functionality is highly dependable on web browser used and it's version.
@@ -277,7 +367,7 @@ EN:
 
 LT:
 
-**Pokyciai Django serveryje: Pridetas funkcionalumas redaguoti daug su daug rysius 5versijos kompiuteriuose.**
+**Pokyciai serveryje: Pridetas funkcionalumas redaguoti daug su daug rysius 5versijos kompiuteriuose.**
 * Laikinos atminties leidzia keisti tik tipa. Seriala, dydi ir dazni neleis nes juos turi imti per klientine programa.
     Issaugojama paspaudus issaugojimo mygtuka.
 * Procesoriuose Gamintoja, Modeli, standartini dazni, maksimalu dazni, fizini ir logini branduoliu kieki leidzia redaguoti.
@@ -304,7 +394,7 @@ LT:
 
 EN
 
-**Changes in Django server: Added functionality to edit many to many relationships in 5th version computers.**
+**Changes in server: Added functionality to edit many to many relationships in 5th version computers.**
 * RAM allows changing only memory type. Serial, capacity, clock is not allowed to edit, because they should be entered through a client program.
     Saves when pressed saving button.
 * Processor Manufacturer, Model, Stock clock, Max clock, Core count and Thread count are allowed to be modified.

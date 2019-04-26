@@ -499,13 +499,6 @@ def get_page(data_dict):
         return int(data_dict.pop('page')[0])
 
 
-def get_keyword(data_dict):
-    if data_dict.get('keyword') is None or data_dict.get('keyword') == "":
-        return None
-    else:
-        return data_dict.pop('keyword')[0]
-
-
 class AbstractDataFileGenerator(ABC):
 
     # Parts of comments which should be removed out of comment, preserving the rest of the comment.
@@ -1398,7 +1391,6 @@ def normalize_query(query_string,
 
 
 def search(keyword, computers):
-    # TODO: Set searching fields to search by v5 fields as well.
     searchfields = (
         'computer_serial',
         'other',
@@ -1410,9 +1402,30 @@ def search(keyword, computers):
         'f_cpu__cpu_name',
         'f_sale__f_id_client__client_name',
         'f_sale__date_of_sale',
-        'price'
+        'price',
+        'computergpus__f_id_gpu__gpu_name',
+        'computergpus__f_id_gpu__f_id_manufacturer__manufacturer_name',
+        'computerprocessors__f_id_processor__f_manufacturer__manufacturer_name',
+        'computerprocessors__f_id_processor__model_name',
+        'computerprocessors__f_id_processor__stock_clock',
+        'computerprocessors__f_id_processor__max_clock',
+        'computerprocessors__f_id_processor__cores',
+        'computerprocessors__f_id_processor__threads',
+        'f_id_computer_form_factor__form_factor_name',
+        'f_id_received_batches__received_batch_name',
+        'computerdrives__f_drive__f_hdd_sizes__hdd_sizes_name',
+        'computerdrives__f_drive__f_speed__speed_name',
+        'computerdrives__f_drive__health',
+        'f_id_matrix__f_id_cable_type__cable_type_name',
+        'f_tester__tester_name',
+        'f_id_computer_resolutions__f_id_resolution__resolution_text',
+        'f_id_computer_resolutions__f_id_resolution_category__resolution_category_name',
+        'computerobservations__f_id_observation__shortcode',
+        # 'computerobservations__f_id_observation__full_name', # Takes to much of time to search by this field(increases 5s to 3min. 40s.)
+        'computerobservations__f_id_observation__f_id_observation_category__category_name',
+        'computerobservations__f_id_observation__f_id_observation_subcategory__subcategory_name',
     )
-    return computers.filter(get_query_for_item_search_from_computer_edit(keyword, searchfields))
+    return computers.filter(get_query_for_item_search_from_computer_edit(keyword, searchfields)).distinct()
 
 
 class ExecutorOfCatToSold:
