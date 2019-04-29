@@ -1,3 +1,16 @@
+2019-04-29
+
+LT:
+
+**Pokyciai serveryje: Globalioje paieskoje filtravimas pagal statusa.**
+* Dabar galima filtruoti globalios paieskos rezultatus pagal statusa.
+
+EN:
+
+**Changes in server: Global search filtering by status.**
+* Now it is possible to filter global search results according to status.
+
+___
 2019-04-26
 
 LT:

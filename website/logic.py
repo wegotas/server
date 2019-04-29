@@ -378,6 +378,19 @@ class AutoFiltersFromComputers:
             model=Computergpus
         )
 
+    def statuses(self):
+        status_filters = []
+        for computer in self.computers:
+            isAdded = False
+            computer_status = computer.get_status()
+            for filter in status_filters:
+                if filter.name == computer_status:
+                    filter.qty += 1
+                    isAdded = True
+            if not isAdded:
+                status_filters.append(FilterUnit(name=computer_status, qty=1))
+        return status_filters
+
     def _cpu_gpu_getter(self, field_name_v4, field_name_v5, model):
         objects_v4 = self.computers.exclude(**{field_name_v4: 'N/A'}).exclude(**{field_name_v4: ''}).values_list(
             field_name_v4, flat=True
@@ -1312,7 +1325,7 @@ class AutoFilter:
     """
 
     keys = ('man-af', 'sr-af', 'scr-af', 'ram-af', 'gpu-af', 'mod-af', 'cpu-af', 'oth-af', 'cli-af', 'dos-af', 'pri-af',
-            'tes-af', 'cff-af')
+            'tes-af', 'cff-af', 'sta-af')
 
     def __init__(self, data_dict):
         """
@@ -1381,6 +1394,16 @@ class AutoFilter:
                 computers = computers.filter(query)
             elif key == 'cff-af':
                 computers = computers.filter(f_id_computer_form_factor__form_factor_name__in=value)
+            elif key == 'sta-af':
+                statuses = ["Sold", 'Ordered', "No status"]
+                statusQueries = [Q(f_sale__isnull=False), Q(f_sale__isnull=True, f_id_comp_ord__isnull=False), Q(f_sale__isnull=True, f_id_comp_ord__isnull=True)]
+                query = None
+                for valuex in value:
+                    if query is None:
+                        query = statusQueries[statuses.index(valuex)]
+                    else:
+                        query |= statusQueries[statuses.index(valuex)]
+                computers = computers.filter(query)
         return computers
 
 
