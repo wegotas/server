@@ -2402,32 +2402,56 @@ class HddToEdit:
 
     def __init__(self, index):
         self.hdd = Drives.objects.get(hdd_id=index)
-        self.sizes = HddSizes.objects.values_list('hdd_sizes_name', flat=True).distinct().order_by('hdd_sizes_name')
-        self.states = LockState.objects.values_list('lock_state_name', flat=True).distinct().order_by('lock_state_name')
-        self.speeds = Speed.objects.values_list('speed_name', flat=True).distinct().order_by('speed_name')
-        self.form_factors = FormFactor.objects.values_list('form_factor_name', flat=True).distinct()\
-            .order_by('form_factor_name')
 
-        self.computer_ids = Computerdrives.objects.filter(f_drive=self.hdd).values_list('f_id_computer__id_computer', flat=True)
+    def sizes(self):
+        """
+        Method which returns hddsizes choices to html form.
+        :return: Collection of hddsizes.
+        """
+        return HddSizes.objects.values_list('hdd_sizes_name', flat=True).distinct().order_by('hdd_sizes_name')
+
+    def states(self):
+        """
+        Method which returns lock states choices to html form.
+        :return: Collection of lock states.
+        """
+        return LockState.objects.values_list('lock_state_name', flat=True).distinct().order_by('lock_state_name')
+
+    def speeds(self):
+        """
+        Method which returns speeds choices to html form.
+        :return: Collection of speeds.
+        """
+        return Speed.objects.values_list('speed_name', flat=True).distinct().order_by('speed_name')
+
+    def form_factors(self):
+        """
+        Method which returns form factors to html form.
+        :return: Collection of form factors.
+        """
+        return FormFactor.objects.values_list('form_factor_name', flat=True).distinct().order_by('form_factor_name')
+
+    def computer_ids(self):
+        """
+        Method which returns computer ids to html form.
+        These ids are used to form buttons which open responing computer_edit urls.
+        :return: Collection of computer ids.
+        """
+        return Computerdrives.objects.filter(f_drive=self.hdd).values_list('f_id_computer__id_computer', flat=True)
 
     def process_edit(self, data_dict):
         '''
         Edits hdd's attributes based on provided data_dict
         :param data_dict: Attributes passed from website.
         '''
-        model = HddModels.objects.get_or_create(hdd_models_name=data_dict.pop('model')[0])[0]
-        size = HddSizes.objects.get_or_create(hdd_sizes_name=data_dict.pop('size')[0])[0]
-        state = LockState.objects.get_or_create(lock_state_name=data_dict.pop('state')[0])[0]
-        speed = Speed.objects.get_or_create(speed_name=data_dict.pop('speed')[0])[0]
-        form_factor = FormFactor.objects.get_or_create(form_factor_name=data_dict.pop('form_factor')[0])[0]
         self.hdd.hdd_serial = data_dict.pop('serial')[0]
         self.hdd.health = data_dict.pop('health')[0]
         self.hdd.days_on = data_dict.pop('days')[0]
-        self.hdd.f_hdd_models = model
-        self.hdd.f_hdd_sizes = size
-        self.hdd.f_lock_state = state
-        self.hdd.f_speed = speed
-        self.hdd.f_form_factor = form_factor
+        self.hdd.f_hdd_models = HddModels.objects.get_or_create(hdd_models_name=data_dict.pop('model')[0])[0]
+        self.hdd.f_hdd_sizes = HddSizes.objects.get_or_create(hdd_sizes_name=data_dict.pop('size')[0])[0]
+        self.hdd.f_lock_state = LockState.objects.get_or_create(lock_state_name=data_dict.pop('state')[0])[0]
+        self.hdd.f_speed = Speed.objects.get_or_create(speed_name=data_dict.pop('speed')[0])[0]
+        self.hdd.f_form_factor = FormFactor.objects.get_or_create(form_factor_name=data_dict.pop('form_factor')[0])[0]
         self.hdd.save()
 
 
@@ -3423,10 +3447,8 @@ class ChargerSerialProcessor:
 
     def process(self):
         if self._is_category_existing():
-            print('Such charger category allready exists')
             self._proccess_existing_category_charger()
         else:
-            print('No such charger category  exist')
             self._proccess_new_category_charger()
 
     def _is_category_existing(self):
@@ -3445,7 +3467,6 @@ class ChargerSerialProcessor:
                 connector_type=self.connector_type
             )
         )
-        print('End of existing_charger')
 
     def _proccess_new_category_charger(self):
         Chargers.objects.get_or_create(
@@ -3456,7 +3477,6 @@ class ChargerSerialProcessor:
                 connector_type=self.connector_type
             )
         )
-        print('End of new_charger')
 
 
 class ChargerHolder:
@@ -4236,9 +4256,7 @@ class Computer4th:
         manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=data_dict.pop('manufacturer_name')[0])[0]
         model = Models.objects.get_or_create(model_name=data_dict.pop('model_name')[0])[0]
         cpu = Cpus.objects.get_or_create(cpu_name=data_dict.pop('cpu_name')[0])[0]
-        print('Start of problematic section')
         gpu = Gpus.objects.get_or_create(gpu_name=data_dict.pop('gpu_name')[0])[0]
-        print('End of problematic section')
         ram_size = RamSizes.objects.get_or_create(ram_size_text=data_dict.pop('ram_size_text')[0])[0]
         hdd_size = HddSizes.objects.get_or_create(hdd_sizes_name=data_dict.pop('hdd_sizes_name')[0])[0]
         diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict.pop('diagonal_text')[0])[0]
