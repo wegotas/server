@@ -229,7 +229,7 @@ def look(request, int_index):
             )
         )
 
-
+"""
 @csrf_exempt
 def edit(request, int_index):
     print("EDIT ")
@@ -258,7 +258,7 @@ def edit(request, int_index):
                 request
             )
         )
-
+"""
 
 @csrf_exempt
 def edit2(request, int_index):

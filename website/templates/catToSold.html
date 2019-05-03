@@ -2,6 +2,7 @@
 {% load staticfiles %}
 <html lang="en">
 <head>
+    <!-- todo: change 4v to 5v attributes -->
     <meta charset="UTF-8">
     <title>Computers being sold</title>
     <link rel="stylesheet" type="text/css" href="{% static 'catToSold.css' %}">
@@ -23,59 +24,26 @@
             <table class="mainTable">
                 <thead>
                     <tr>
-                        <th>
-                            Serial
-                        </th>
-                        <th>
-                            Manufacturer
-                        </th>
-                        <th>
-                            Model
-                        </th>
-                        <th>
-                            CPU
-                        </th>
-                        <th>
-                            GPU
-                        </th>
-                        <th>
-                            RAM
-                        </th>
-                        <th>
-                            Other
-                        </th>
-                        <th>
-                            Price
-                        </th>
+                        <th>Serial</th>
+                        <th>Manufacturer</th>
+                        <th>Model</th>
+                        <th>CPU</th>
+                        <th>GPU</th>
+                        <th>RAM</th>
+                        <th>Other</th>
+                        <th>Price</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for computer in computers %}
                     <tr>
-                        <td>
-                            {{ computer.computer_serial }}
-                        </td>
-                        <td>
-                            {{ computer.f_manufacturer.manufacturer_name }}
-                        </td>
-                        <td>
-                            {{ computer.f_model.model_name }}
-                        </td>
-                        <td>
-                            {{ computer.f_cpu.cpu_name }}
-                        </td>
-                        <td>
-                            {{ computer.f_gpu.gpu_name }}
-                        </td>
-                        <td>
-                            {{ computer.f_ram_size.ram_size_text }}
-                        </td>
-                        <td>
-                            {{ computer.other }}
-                        </td>
-                        <td>
-                            <input name="price_{{ computer.id_computer }}" type="text" class="priceField" placeholder="Price"/>
-                        </td>
+                        <td>{{ computer.computer_serial }}</td>
+                        <td>{{ computer.f_manufacturer.manufacturer_name }}</td</td>
+                        <td>{{ computer.f_cpu.cpu_name }}</td>
+                        <td>{{ computer.f_gpu.gpu_name }}</td>
+                        <td>{{ computer.f_ram_size.ram_size_text }}</td>
+                        <td>{{ computer.other }}</td>
+                        <td><input name="price_{{ computer.id_computer }}" type="text" class="priceField" placeholder="Price"/></td>
                     </tr>
                     {% endfor %}
                 </tbody>
