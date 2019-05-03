@@ -334,6 +334,21 @@ def edit_by_serial(request, serial):
 
 
 @csrf_exempt
+def remove_ramstick_from_computer(request, ramstick_id, computer_id):
+    print('ramstick id: {0}'.format(ramstick_id))
+    print('Computer id: {0}'.format(computer_id))
+    ramstick = Rams.objects.get(id_ram=ramstick_id)
+    RamToComp.objects.filter(
+        f_id_computer_ram_to_com=Computers.objects.get(id_computer=computer_id),
+        f_id_ram_ram_to_com=ramstick
+    ).delete()
+    try:
+        ramstick.delete()
+    except:
+        pass
+    return HttpResponse("Succesfully removed drive from computer")
+
+@csrf_exempt
 def remove_drive_from_computer(request, drive_id, computer_id):
     print('Drive id: {0}'.format(drive_id))
     print('Computer id: {0}'.format(computer_id))

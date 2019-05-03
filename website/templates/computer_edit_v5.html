@@ -356,24 +356,25 @@
                 <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">RAMs show/hide</button>
             </div>
             <div class="section-member hidden">
-                {% for member in record.rams %}
+                {% for ramstick in record.rams %}
                 <div class="table-holder">
+                    <button type="button" class="close_button" onclick="remove_ramstick_from_computer(this, {{ record.computer.id_computer }}, {{ ramstick.id_ram }})">x</button>
                     <table class="table">
                         <tr>
                             <th>Serial:</th>
-                            <td><input type="text" value="{{ member.ram_serial }}" readonly></td>
+                            <td><input type="text" value="{{ ramstick.ram_serial }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Capacity:</th>
-                            <td><input type="text" value="{{ member.capacity }}" readonly></td>
+                            <td><input type="text" value="{{ ramstick.capacity }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Clock:</th>
-                            <td><input type="text" value="{{ member.clock }}" readonly></td>
+                            <td><input type="text" value="{{ ramstick.clock }}" readonly></td>
                         </tr>
                         <tr>
                             <th>Type:</th>
-                            <td><input type="text" name="ram_type_{{ member.id_ram }}" value="{{ member.type }}"></td>
+                            <td><input type="text" name="ram_type_{{ ramstick.id_ram }}" value="{{ ramstick.type }}"></td>
                         </tr>
                     </table>
                 </div>

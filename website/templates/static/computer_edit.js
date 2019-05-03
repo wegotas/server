@@ -40,8 +40,7 @@ function setInputFilter(textbox, inputFilter) {
     });
 }
 
-function wait(ms)
-{
+function wait(ms) {
     var d = new Date();
     var d2 = null;
     do { d2 = new Date(); }
@@ -220,6 +219,24 @@ function remove_drive_from_computer(button, computer_id, drive_id) {
 function remove_observation_from_computer(button, computer_id, observation_id) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', get_main_url() + '/remove_observation_from_computer/' + observation_id + '/' + computer_id + '/');
+    xhr.send();
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status == 200) {
+                table_holder = button.parentNode;
+                table_holder.parentNode.removeChild(table_holder);
+            }
+            else {
+                alert(xhr.responseText);
+            }
+        }
+    }
+}
+
+
+function remove_ramstick_from_computer(button, computer_id, ramstick_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', get_main_url() + '/remove_ramstick_from_computer/' + ramstick_id  + '/' + computer_id + '/');
     xhr.send();
     xhr.onreadystatechange = function(e) {
         if (xhr.readyState === 4) {
