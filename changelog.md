@@ -1,3 +1,15 @@
+2019-05-03
+
+LT:
+
+**Pokytis serveryje: Ramu kaulu salinimas.**
+* Ramu kaulus dabar galima pasalinti paspaudus "x" mygtuka. Jei sis kaulas susietas tik su vienu komputeriu kaulas yra netik atskiriamas nuo kompiuterio, bet ir pats pasalinamas.
+
+EN:
+**Changes in server: Ramstick removal.**
+* Ramsticks now can be removed by pressing "x" button. If this stick is referenced only by one computer, then not only reference is removed but also stick is removed as well.
+
+___
 2019-04-29
 
 LT:

@@ -200,43 +200,21 @@ function urlify (url) {
 }
 
 function remove_drive_from_computer(button, computer_id, drive_id) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', get_main_url() + '/remove_drive_from_computer/' + drive_id + '/' + computer_id + '/');
-    xhr.send();
-    xhr.onreadystatechange = function(e) {
-        if (xhr.readyState === 4) {
-            if (xhr.status == 200) {
-                table_holder = button.parentNode;
-                table_holder.parentNode.removeChild(table_holder);
-            }
-            else {
-                alert(xhr.responseText);
-            }
-        }
-    }
+    remove_object_from_computer(button, computer_id, drive_id, 'remove_drive_from_computer')
 }
 
 function remove_observation_from_computer(button, computer_id, observation_id) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', get_main_url() + '/remove_observation_from_computer/' + observation_id + '/' + computer_id + '/');
-    xhr.send();
-    xhr.onreadystatechange = function(e) {
-        if (xhr.readyState === 4) {
-            if (xhr.status == 200) {
-                table_holder = button.parentNode;
-                table_holder.parentNode.removeChild(table_holder);
-            }
-            else {
-                alert(xhr.responseText);
-            }
-        }
-    }
+    remove_object_from_computer(button, computer_id, observation_id, 'remove_observation_from_computer')
 }
 
 
 function remove_ramstick_from_computer(button, computer_id, ramstick_id) {
+    remove_object_from_computer(button, computer_id, ramstick_id, 'remove_ramstick_from_computer')
+}
+
+function remove_object_from_computer(button, computer_id, object_id, url_part) {
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', get_main_url() + '/remove_ramstick_from_computer/' + ramstick_id  + '/' + computer_id + '/');
+    xhr.open('POST', get_main_url() + '/' + url_part + '/' + object_id + '/' + computer_id + '/');
     xhr.send();
     xhr.onreadystatechange = function(e) {
         if (xhr.readyState === 4) {
