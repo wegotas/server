@@ -1,3 +1,26 @@
+2019-05-07
+
+LT:
+
+**Pokytis serveryje: Tuscio ramo kaulo pridejimas.**
+* Galima prideti tuscia ramo kaula. Jis tures sias savybes:
+    * Serial - "Nonexistant"
+    * Capacity - "0"
+    * Clock - "0"
+    * Type - "N/A"
+* "Type" yra vienintelis atributas kuri galima keisti. Pagal poreiki kad galima butu pakeisti i DDR2, DDR3, DDR4.
+
+EN:
+
+**Changes in server: Empty ramstick adding.**
+* It is possible to add empty rasmtick. It is going to have these attributes:
+    * Serial - "Nonexistant"
+    * Capacity - "0"
+    * Clock - "0"
+    * Type - "N/A"
+* "Type" is the only attribute which is allowed to be edited. Depending on the need it can be changed to DDR2, DDR3, DDR4.
+
+___
 2019-05-03
 
 LT:

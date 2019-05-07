@@ -356,6 +356,9 @@
                 <button type="button" class="show-hide-button" onclick="toggle_visibility(this)">RAMs show/hide</button>
             </div>
             <div class="section-member hidden">
+                <div>
+                    <button type="button" onclick="AddNonExistantRamstick(this, {{ record.computer.id_computer }})">Add non-existant ramstick</button>
+                </div>
                 {% for ramstick in record.rams %}
                 <div class="table-holder">
                     <button type="button" class="close_button" onclick="remove_ramstick_from_computer(this, {{ record.computer.id_computer }}, {{ ramstick.id_ram }})">x</button>

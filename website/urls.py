@@ -17,6 +17,7 @@ urlpatterns = [
 
     path('ramsticks_to_add/<int:int_index>/<keyword>/', views.ramsticks_to_add, name='ramsticks_to_add'),
     path('get_ramstick/<int:ramstick_id>/', views.get_ramstick, name='get_ramstick'),
+    path('add_nonexistant_ramstick/<int:computer_id>/', views.add_nonexistant_ramstick, name='add_nonexistant_ramstick'),
 
     path('processors_to_add/<int:int_index>/<keyword>/', views.processors_to_add, name='processors_to_add'),
     path('get_processor/<int:processor_id>/', views.get_processor, name='get_processor'),

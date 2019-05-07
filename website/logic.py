@@ -4396,15 +4396,40 @@ class Computer5th:
                 return lst
 
             def _save_rams():
-                """
-                Updates new values to Rams.
-                If that Ram record is referenced somewhere else, those values change just as well.
-                """
-                for keyx, valuex in ram_dict.items():
-                    if "ram_type" in keyx:
-                        ram = Rams.objects.get(id_ram=keyx.split('_')[2])
-                        ram.type = valuex
-                        ram.save()
+                for ram_id in _get_unique_ids(ram_dict):
+                    ram = Rams.objects.get(id_ram=ram_id)
+                    count_of_rams_to_comp = RamToComp.objects.filter(f_id_ram_ram_to_com=ram).count()
+                    if not (ram.type == ram_dict['ram_type_'+str(ram_id)]):
+                        if count_of_rams_to_comp > 1:
+                            RamToComp.objects.get(
+                                f_id_computer_ram_to_com=self.computer,
+                                f_id_ram_ram_to_com=ram
+                            ).delete()
+                            ram.id_ram = None
+                            ram.type = ram_dict['ram_type_'+str(ram_id)]
+                            ram.save()
+                            RamToComp.objects.get_or_create(
+                                f_id_computer_ram_to_com=self.computer,
+                                f_id_ram_ram_to_com=ram
+                            )
+                        elif count_of_rams_to_comp == 1:
+                            try:
+                                existing_ram = Rams.objects.get(
+                                    ram_serial=ram.ram_serial,
+                                    capacity=ram.capacity,
+                                    clock=ram.clock,
+                                    type=ram_dict['ram_type_'+str(ram_id)]
+                                )
+                                existing_ram_to_comp = RamToComp.objects.get(
+                                    f_id_computer_ram_to_com=self.computer,
+                                    f_id_ram_ram_to_com=ram
+                                )
+                                existing_ram_to_comp.f_id_ram_ram_to_com = existing_ram
+                                existing_ram_to_comp.save()
+                                ram.delete()
+                            except Rams.DoesNotExist:
+                                ram.type = ram_dict['ram_type_'+str(ram_id)]
+                                ram.save()
 
             def _save_batteries():
                 """

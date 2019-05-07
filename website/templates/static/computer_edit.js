@@ -207,7 +207,6 @@ function remove_observation_from_computer(button, computer_id, observation_id) {
     remove_object_from_computer(button, computer_id, observation_id, 'remove_observation_from_computer')
 }
 
-
 function remove_ramstick_from_computer(button, computer_id, ramstick_id) {
     remove_object_from_computer(button, computer_id, ramstick_id, 'remove_ramstick_from_computer')
 }
@@ -221,6 +220,23 @@ function remove_object_from_computer(button, computer_id, object_id, url_part) {
             if (xhr.status == 200) {
                 table_holder = button.parentNode;
                 table_holder.parentNode.removeChild(table_holder);
+            }
+            else {
+                alert(xhr.responseText);
+            }
+        }
+    }
+}
+
+function AddNonExistantRamstick(button, computer_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', get_main_url() + '/add_nonexistant_ramstick/' + computer_id + '/');
+    xhr.send();
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status == 200) {
+                button.parentNode.parentNode.innerHTML += xhr.responseText;
+                console.log(xhr.responseText);
             }
             else {
                 alert(xhr.responseText);

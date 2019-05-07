@@ -1,0 +1,20 @@
+<div class="table-holder">
+    <table class="table">
+        <tr>
+            <th>Serial:</th>
+            <td><input type="text" value="{{ ramstick.ram_serial }}" readonly></td>
+        </tr>
+        <tr>
+            <th>Capacity:</th>
+            <td><input type="text" value="{{ ramstick.capacity }}" readonly></td>
+        </tr>
+        <tr>
+            <th>Clock:</th>
+            <td><input type="text" value="{{ ramstick.clock }}" readonly></td>
+        </tr>
+        <tr>
+            <th>Type:</th>
+            <td><input type="text" name="ram_type_{{ ramstick.id_ram }}" value="{{ ramstick.type }}"></td>
+        </tr>
+    </table>
+</div>

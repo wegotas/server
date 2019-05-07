@@ -422,6 +422,21 @@ def get_ramstick(request, ramstick_id):
 
 
 @csrf_exempt
+def add_nonexistant_ramstick(request, computer_id):
+    ram = Rams.objects.get_or_create(
+        ram_serial='Nonexistant',
+        capacity='0',
+        clock='0',
+        type='N/A',
+    )[0]
+    RamToComp.objects.get_or_create(
+        f_id_computer_ram_to_com=Computers.objects.get(id_computer=computer_id),
+        f_id_ram_ram_to_com=ram
+    )
+    return render(request, 'nonexistant_ramstick_template.html', {'ramstick': ram})
+
+
+@csrf_exempt
 def processors_to_add(request, int_index, keyword):
     searchfields = (
         'f_manufacturer__manufacturer_name',
