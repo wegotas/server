@@ -8,6 +8,8 @@ from django.shortcuts import render
 from rest_framework.parsers import JSONParser
 from website.forms import *
 import json
+import re
+from decimal import Decimal
 
 
 def index(request):
@@ -335,8 +337,23 @@ def edit_by_serial(request, serial):
 
 @csrf_exempt
 def remove_ramstick_from_computer(request, ramstick_id, computer_id):
-    print('ramstick id: {0}'.format(ramstick_id))
-    print('Computer id: {0}'.format(computer_id))
+    def get_number(value):
+        try:
+            return Decimal(re.findall("\d*[,.]?\d*", value)[0])
+        except TypeError:
+            return 0
+
+    def get_total_ram():
+        rams_sizes = Rams.objects.filter(
+            ramtocomp__f_id_computer_ram_to_com=Computers.objects.get(id_computer=computer_id)
+        ).values_list('capacity', flat=True)
+        if not rams_sizes:
+            return '0 GB'
+        summary = 0
+        for ram_size in rams_sizes:
+            summary += get_number(ram_size)
+        return str(summary) + ' GB'
+
     ramstick = Rams.objects.get(id_ram=ramstick_id)
     RamToComp.objects.filter(
         f_id_computer_ram_to_com=Computers.objects.get(id_computer=computer_id),
@@ -346,6 +363,10 @@ def remove_ramstick_from_computer(request, ramstick_id, computer_id):
         ramstick.delete()
     except:
         pass
+    computer = Computers.objects.get(id_computer=computer_id)
+    ramsize = RamSizes.objects.get_or_create(ram_size_text=get_total_ram())[0]
+    computer.f_ram_size = ramsize
+    computer.save()
     return HttpResponse("Succesfully removed drive from computer")
 
 @csrf_exempt
