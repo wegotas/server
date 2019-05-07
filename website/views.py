@@ -433,7 +433,7 @@ def add_nonexistant_ramstick(request, computer_id):
         f_id_computer_ram_to_com=Computers.objects.get(id_computer=computer_id),
         f_id_ram_ram_to_com=ram
     )
-    return render(request, 'nonexistant_ramstick_template.html', {'ramstick': ram})
+    return render(request, 'nonexistant_ramstick_template.html', {'id_computer': computer_id, 'ramstick': ram})
 
 
 @csrf_exempt
