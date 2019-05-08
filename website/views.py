@@ -66,7 +66,6 @@ def index(request):
         )
 
     if request.GET.get('chargers') == "True":
-        #TODO: PRIDETI FILTRAVIMA
         cch = ChargerCategoriesHolder()
         cch.filter(request.GET.copy())
         return render(
@@ -355,6 +354,7 @@ def remove_ramstick_from_computer(request, ramstick_id, computer_id):
         return str(summary) + ' GB'
 
     ramstick = Rams.objects.get(id_ram=ramstick_id)
+    ramstick_type = ramstick.type
     RamToComp.objects.filter(
         f_id_computer_ram_to_com=Computers.objects.get(id_computer=computer_id),
         f_id_ram_ram_to_com=ramstick
@@ -367,7 +367,21 @@ def remove_ramstick_from_computer(request, ramstick_id, computer_id):
     ramsize = RamSizes.objects.get_or_create(ram_size_text=get_total_ram())[0]
     computer.f_ram_size = ramsize
     computer.save()
-    return HttpResponse("Succesfully removed drive from computer")
+
+    if RamToComp.objects.filter(f_id_computer_ram_to_com=Computers.objects.get(id_computer=computer_id)).count() > 0:
+        return HttpResponse("")
+
+    ram = Rams.objects.get_or_create(
+        ram_serial='Nonexistant',
+        capacity='0',
+        clock='0',
+        type=ramstick_type,
+    )[0]
+    RamToComp.objects.get_or_create(
+        f_id_computer_ram_to_com=Computers.objects.get(id_computer=computer_id),
+        f_id_ram_ram_to_com=ram
+    )
+    return render(request, 'nonexistant_ramstick_template.html', {'id_computer': computer_id, 'ramstick': ram})
 
 @csrf_exempt
 def remove_drive_from_computer(request, drive_id, computer_id):
