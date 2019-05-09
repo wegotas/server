@@ -117,162 +117,6 @@ def get_hdds(computer_id):
     return hdd_list
 
 
-class EditComputerRecord:
-
-    def __init__(self, data_dict):
-        self.data_dict = data_dict
-        self.data_dict.pop("edit", "")
-        self.data_dict.pop("edit.x", "")
-        self.data_dict.pop("edit.y", "")
-
-        self.type = Types.objects.get_or_create(type_name=self.data_dict.pop("type_name", "")[0])[0]
-        self.category = Categories.objects.get_or_create(category_name=self.data_dict.pop("category_name", "")[0])[0]
-        self.tester = Testers.objects.get_or_create(tester_name=self.data_dict.pop("tester_name", "")[0])[0]
-        self.bios = Bioses.objects.get_or_create(bios_text=self.data_dict.pop("bios_text", "")[0])[0]
-        self.cpu = Cpus.objects.get_or_create(cpu_name=self.data_dict.pop("cpu_name", "")[0])[0]
-        self.camera_option = CameraOptions.objects.get_or_create(option_name=self.data_dict.pop("option_name", "")[0])[0]
-        self.diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data_dict.pop("diagonal_text", "")[0])[0]
-        self.gpu = Gpus.objects.get_or_create(gpu_name=self.data_dict.pop("gpu_name", "")[0])[0]
-        self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name=self.data_dict.pop("hdd_sizes_name", "")[0])[0]
-        self.license = Licenses.objects.get_or_create(license_name=self.data_dict.pop("license_name", "")[0])[0]
-        self.manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=self.data_dict.pop("manufacturer_name", "")[0])[0]
-        self.model = Models.objects.get_or_create(model_name=self.data_dict.pop("model_name", "")[0])[0]
-        self.motherboard_serial = self.data_dict.pop("motherboard_serial", "")[0]
-        self.ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data_dict.pop("ram_size_text", "")[0])[0]
-        self.computer = Computers.objects.get(id_computer=self.data_dict.pop("id_computer", "")[0])
-        if "client_name" in data_dict:
-            self.client = Clients.objects.get_or_create(client_name=self.data_dict.pop("client_name", "")[0])[0]
-            self.sale = Sales.objects.get_or_create(
-                date_of_sale=self.data_dict.pop("date_of_sale", "")[0],
-                f_id_client=self.client
-            )[0]
-            self._computer_sold_save()
-            self._process_ram_and_hdd_serials()
-            self._process_batteries()
-        else:
-            self._computer_save()
-
-    def _process_batteries(self):
-        bat_to_comps = BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer.id_computer)
-        bat_to_comps.delete()
-        while len(self.data_dict) > 2:
-            key = next(iter(self.data_dict))
-            dbindex = self.get_dbindex(key)
-            serial = self.data_dict.pop("bat_serial_" + dbindex)[0]
-            wear = self.data_dict.pop("bat_wear_" + dbindex)[0]
-            time = self.data_dict.pop("bat_time_" + dbindex)[0]
-            battery = Batteries.objects.get_or_create(
-                serial=serial,
-                wear_out=wear,
-                expected_time=time
-            )[0]
-            battery.save()
-            new_battocomp = BatToComp(
-                f_id_computer_bat_to_com=self.computer,
-                f_bat_bat_to_com=battery
-            )
-            new_battocomp.save()
-
-    def _process_ram_and_hdd_serials(self):
-        processed_key_list = []
-        for key, value in self.data_dict.items():
-            if "bat" in key:
-                continue
-            elif "ram" in key:
-                dbindex = self.get_dbindex(key)
-                ram = Rams.objects.get_or_create(ram_serial=value)[0]
-                old_ramtocomp = RamToComp.objects.get(id_ram_to_comp=dbindex)
-                new_ramtocomp = RamToComp(
-                    id_ram_to_comp=old_ramtocomp.id_ram_to_comp,
-                    f_id_computer_ram_to_com=self.computer,
-                    f_id_ram_ram_to_com=ram
-                )
-                new_ramtocomp.save()
-                processed_key_list.append(key)
-            elif "hdd" in key:
-                dbindex = self.get_dbindex(key)
-                hdd = Drives.objects.get_or_create(hdd_serial=value)[0]
-                old_hddtocomp = HddToComp.objects.get(id_hdd_to_comp=dbindex)
-                new_hddtocomp = HddToComp(
-                    id_hdd_to_comp=old_hddtocomp.id_hdd_to_comp,
-                    f_id_computer_hdd_to_com=self.computer,
-                    f_id_hdd_hdd_to_com=hdd
-                )
-                new_hddtocomp.save()
-                processed_key_list.append(key)
-        for key in processed_key_list:
-            self.data_dict.pop(key)
-
-    def get_dbindex(self, key):
-        return key.split("_")[2]
-
-    def _computer_save(self):
-        # self.computer.id_computer = self.data_dict.pop("id_computer", "")[0]
-        self.computer.computer_serial = self.data_dict.pop("serial", "")[0]
-        self.computer.f_type = self.type
-        self.computer.f_category = self.category
-        self.computer.f_manufacturer = self.manufacturer
-        self.computer.f_model = self.model
-        self.computer.f_cpu = self.cpu
-        self.computer.f_gpu = self.gpu
-        self.computer.f_ram_size = self.ramsize
-        self.computer.f_hdd_size = self.hddsize
-        self.computer.f_diagonal = self.diagonal
-        self.computer.f_license = self.license
-        self.computer.f_camera = self.camera_option
-        self.computer.cover = self.data_dict.pop("cover", "")[0]
-        self.computer.display = self.data_dict.pop("display", "")[0]
-        self.computer.bezel = self.data_dict.pop("bezel", "")[0]
-        self.computer.keyboard = self.data_dict.pop("keyboard", "")[0]
-        self.computer.mouse = self.data_dict.pop("mouse", "")[0]
-        self.computer.sound = self.data_dict.pop("sound", "")[0]
-        self.computer.cdrom = self.data_dict.pop("cdrom", "")[0]
-        self.computer.hdd_cover = self.data_dict.pop("hdd_cover", "")[0]
-        self.computer.ram_cover = self.data_dict.pop("ram_cover", "")[0]
-        self.computer.other = self.data_dict.pop("other", "")[0]
-        self.computer.f_tester = self.tester
-        self.computer.date = self.data_dict.pop("date", "")[0]
-        self.computer.f_bios = self.bios
-        self.computer.motherboard_serial = self.motherboard_serial
-        self.computer.save()
-        print('_computer_save')
-
-    def _computer_sold_save(self):
-        print(self.data_dict)
-        self.computer = Computers(
-            id_computer=self.computer.id_computer,
-            computer_serial=self.data_dict.pop("serial", "")[0],
-            f_type=self.type,
-            f_category=self.category,
-            f_manufacturer=self.manufacturer,
-            f_model=self.model,
-            f_cpu=self.cpu,
-            f_gpu=self.gpu,
-            f_ram_size=self.ramsize,
-            f_hdd_size=self.hddsize,
-            f_diagonal=self.diagonal,
-            f_license=self.license,
-            f_camera=self.camera_option,
-            cover=self.data_dict.pop("cover", "")[0],
-            display=self.data_dict.pop("display", "")[0],
-            bezel=self.data_dict.pop("bezel", "")[0],
-            keyboard=self.data_dict.pop("keyboard", "")[0],
-            mouse=self.data_dict.pop("mouse", "")[0],
-            sound=self.data_dict.pop("sound", "")[0],
-            cdrom=self.data_dict.pop("cdrom", "")[0],
-            hdd_cover=self.data_dict.pop("hdd_cover", "")[0],
-            ram_cover=self.data_dict.pop("ram_cover", "")[0],
-            other=self.data_dict.pop("other", "")[0],
-            f_tester=self.tester,
-            date=self.data_dict.pop("date", "")[0],
-            f_bios=self.bios,
-            f_sale=self.sale,
-            price=self.data_dict.pop("price", "")[0],
-            motherboard_serial=self.motherboard_serial
-        )
-        self.computer.save()
-
-
 class Counter:
     count = 0
 
@@ -839,7 +683,6 @@ class ExcelGenerator(AbstractDataFileGenerator):
             worksheet.write(row, col + 14, computer.box_number, bordered)
             row += 1
 
-
     def generate_file(self, indexes):
         workbook = xlsxwriter.Workbook(self.memfile)
         worksheet = workbook.add_worksheet()
@@ -1083,7 +926,7 @@ class ObservationToAdd:
         """
         category = Observationcategory.objects.get(category_name=self.cat_name)
         subcategory = Observationsubcategory.objects.get(subcategory_name=self.sub_name)
-        observation = Observations.objects.get_or_create(
+        Observations.objects.get_or_create(
             shortcode=self.shortcode,
             full_name=self.full_name,
             f_id_observation_category=category,
@@ -1108,18 +951,7 @@ class RecordToAdd:
         """
         Saves computer record sent using website's querydict
         """
-        type_of_computer = Types.objects.get_or_create(type_name=self.data.get('type_name'))[0]
-        category = Categories.objects.get_or_create(category_name=self.data.get('category_name'))[0]
-        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=self.data.get('manufacturer_name'))[0]
-        model = Models.objects.get_or_create(model_name=self.data.get('model_name'))[0]
-        tester = Testers.objects.get_or_create(tester_name=self.data.get('tester_name'))[0]
-        license_of_computer = Licenses.objects.get_or_create(license_name=self.data.get('license_name'))[0]
-        received_batch = Receivedbatches.objects.get_or_create(
-            received_batch_name=self.data.get('received_batch_name')
-        )[0]
-        diagonal = Diagonals.objects.get_or_create(diagonal_text=self.data.get('diagonal_text'))[0]
-        ramsize = RamSizes.objects.get_or_create(ram_size_text=self.data.get('ram_size_text'))[0]
-        option = CameraOptions.objects.get_or_create(option_name="Not tested")[0]
+        # If empty string is passed as form_factor in queryset it should be interpreted as None.
         computer_form_factor = None
         if self.data['form_factor']:
             computer_form_factor = ComputerFormFactors.objects.get(form_factor_name=self.data.get('form_factor'))
@@ -1127,16 +959,18 @@ class RecordToAdd:
             computer_serial=self.data.get('serial'),
             box_number=self.data.get('box_number'),
             other=self.data.get('other'),
-            f_type=type_of_computer,
-            f_category=category,
-            f_manufacturer=manufacturer,
-            f_model=model,
-            f_tester=tester,
-            f_license=license_of_computer,
-            f_id_received_batches=received_batch,
-            f_diagonal=diagonal,
-            f_ram_size=ramsize,
-            f_camera=option,
+            f_type=Types.objects.get_or_create(type_name=self.data.get('type_name'))[0],
+            f_category=Categories.objects.get_or_create(category_name=self.data.get('category_name'))[0],
+            f_manufacturer=Manufacturers.objects.get_or_create(manufacturer_name=self.data.get('manufacturer_name'))[0],
+            f_model=Models.objects.get_or_create(model_name=self.data.get('model_name'))[0],
+            f_tester=Testers.objects.get_or_create(tester_name=self.data.get('tester_name'))[0],
+            f_license=Licenses.objects.get_or_create(license_name=self.data.get('license_name'))[0],
+            f_id_received_batches=Receivedbatches.objects.get_or_create(
+                received_batch_name=self.data.get('received_batch_name')
+            )[0],
+            f_diagonal=Diagonals.objects.get_or_create(diagonal_text=self.data.get('diagonal_text'))[0],
+            f_ram_size=RamSizes.objects.get_or_create(ram_size_text=self.data.get('ram_size_text'))[0],
+            f_camera=CameraOptions.objects.get_or_create(option_name="Not tested")[0],
             f_id_computer_form_factor=computer_form_factor,
         )
         self._many_to_many_connection_save(computer)
@@ -2481,6 +2315,9 @@ class HddToDelete:
 
 
 class TarProcessor:
+    """
+    Older version of tar processor with predefined positions where which values are located.
+    """
 
     def __init__(self, inMemoryFile, filename=None):
         if filename is None:
@@ -2760,7 +2597,6 @@ class AlternativeTarProcessor:
                 self.process_file_with_valid_headers()
             else:
                 self.text_to_write.add(
-                    # string_to_add='All required fields in '+self.lot_name+' were not found:\r\n'+str(self.headers),
                     string_to_add='All required fields in {0} were not found:\r\n{1}'
                     .format(self.lot_name, self.headers),
                     should_write=True
@@ -2805,7 +2641,6 @@ class AlternativeTarProcessor:
             )
         else:
             self.text_to_write.add(
-                # string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| skipped. Health or Power on is not a proper digit.',
                 tring_to_add='SN: {0}| skipped. Health or Power on is not a proper digit.'
                 .format(line_array[self.file_header_indexes['Serial number']]),
                 should_write=True
@@ -2844,7 +2679,6 @@ class AlternativeTarProcessor:
                 tarmember=tarmember
             )
             self.text_to_write.add(
-                # string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| info updated. File updated.',
                 string_to_add='SN: {0}| info updated. File updated.'
                 .format(line_array[self.file_header_indexes['Serial number']]),
                 should_write=True
@@ -2852,7 +2686,6 @@ class AlternativeTarProcessor:
         else:
             self._update_existing_drive(line_array=line_array)
             self.text_to_write.add(
-                # string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| Record info updated. File info not changed.'
                 string_to_add='SN: {0}| Record info updated. File info not changed.'
                 .format(line_array[self.file_header_indexes['Serial number']])
             )
@@ -2870,7 +2703,6 @@ class AlternativeTarProcessor:
             self._save_new_drive(line_array, tarmember.name)
         else:
             self.text_to_write.add(
-                # string_to_add='SN: ' + line_array[self.file_header_indexes['Serial number']] + '| skipped. Not present in database. No file associated.',
                 string_to_add='SN: {0}| skipped. Not present in database. No file associated.'
                 .format(line_array[self.file_header_indexes['Serial number']]),
                 should_write=True
@@ -2902,7 +2734,6 @@ class AlternativeTarProcessor:
             tarmember_to_remove = self.get_tarmember_name(line_array)
             if tarmember_to_remove is not None:
                 new_tar.getmember(tarmember_to_remove)
-                # os.system('tar -vf ' + new_tarfile_loc + ' --delete "' + tarmember_to_remove + '"')
                 os.system('tar -vf {0} --delete "{1}"'.format(new_tarfile_loc, tarmember_to_remove))
         except:
             print('Tarfile opening or its deletion had failed')
@@ -2912,7 +2743,6 @@ class AlternativeTarProcessor:
         """
         :return: full path name wher tarfiles should be saved.
         """
-        # return os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
         return os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), '{0}.tar'.format(self.lot_name))
 
     def _get_line_array(self, line):
@@ -3077,6 +2907,9 @@ class AlternativeTarProcessor:
 
 
 class HddOrderProcessor:
+    """
+    Older version of Hdd Order Processor with predefined positions where which values are located.
+    """
 
     def __init__(self, txtObject):
         self.message = ''
@@ -3842,18 +3675,6 @@ class ChargerCategoryToEdit:
         return not (string == '' or string.lower() == 'none')
 
 
-class ChargerSerialEditor:
-
-    def __init__(self, data):
-        self.index = data['Index']
-        self.serial = data['Serial']
-
-    def process(self):
-        charger = Chargers.objects.get(charger_id=self.index)
-        charger.charger_serial = self.serial
-        charger.save()
-
-
 class ChargerSingleSerialPrinter:
 
     def __init__(self, data):
@@ -4346,38 +4167,6 @@ class Computer5th:
     def save_info(self, data_dict):
         print(data_dict)
 
-        def _save_computer():
-            print('Saving computer')
-            if self.computer.f_sale:
-                client = Clients.objects.get_or_create(client_name=data_dict.pop('client_name')[0])[0]
-                sale = self.computer.f_sale
-                sale.f_id_client = client
-                sale.date_of_sale = data_dict.pop('date_of_sale')[0]
-                sale.save()
-                self.computer.price = data_dict.pop('price')[0]
-            self.computer.f_type = type
-            self.computer.f_category = category
-            self.computer.f_manufacturer = manufacturer
-            self.computer.f_model = model
-            self.computer.f_ram_size = ram_size
-            self.computer.f_diagonal = diagonal
-            self.computer.f_license = license
-            self.computer.f_camera = option
-            self.computer.f_tester = tester
-            self.computer.f_diagonal = diagonal
-            self.computer.f_id_computer_resolutions = computer_resolutions
-            self.computer.other = data_dict.pop('other')[0]
-            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
-                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
-                self.computer.f_id_received_batches = received_batch
-            if data_dict['box_number']:
-                self.computer.box_number = data_dict.pop('box_number')[0]
-            computer_form_factor = None
-            if data_dict['form_factor']:
-                computer_form_factor = ComputerFormFactors.objects.get(form_factor_name=data_dict.pop('form_factor')[0])
-            self.computer.f_id_computer_form_factor = computer_form_factor
-            self.computer.save()
-
         def _save_many_to_many():
             """
             Function responsible of handling many to many relationship record updating in database.
@@ -4577,22 +4366,42 @@ class Computer5th:
             _save_processors()
             _save_gpus()
 
-        type = Types.objects.get_or_create(type_name=data_dict.pop('type_name')[0])[0]
-        category = Categories.objects.get_or_create(category_name=data_dict.pop('category_name')[0])[0]
-        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=data_dict.pop('manufacturer_name')[0])[0]
-        model = Models.objects.get_or_create(model_name=data_dict.pop('model_name')[0])[0]
-        ram_size = RamSizes.objects.get_or_create(ram_size_text=data_dict.pop('ram_size_text')[0])[0]
-        tester = Testers.objects.get_or_create(tester_name=data_dict.pop('tester_name')[0])[0]
-        license = Licenses.objects.get_or_create(license_name=data_dict.pop('license_name')[0])[0]
-        option = CameraOptions.objects.get_or_create(option_name=data_dict.pop('option_name')[0])[0]
-        diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict.pop('diagonal_text')[0])[0]
+        print('Saving computer')
+        if self.computer.f_sale:
+            client = Clients.objects.get_or_create(client_name=data_dict.pop('client_name')[0])[0]
+            sale = self.computer.f_sale
+            sale.f_id_client = client
+            sale.date_of_sale = data_dict.pop('date_of_sale')[0]
+            sale.save()
+            self.computer.price = data_dict.pop('price')[0]
+        self.computer.f_type = Types.objects.get_or_create(type_name=data_dict.pop('type_name')[0])[0]
+        self.computer.f_category = Categories.objects.get_or_create(category_name=data_dict.pop('category_name')[0])[0]
+        self.computer.f_manufacturer = Manufacturers.objects.get_or_create(
+            manufacturer_name=data_dict.pop('manufacturer_name')[0])[0]
+        self.computer.f_model = Models.objects.get_or_create(model_name=data_dict.pop('model_name')[0])[0]
+        self.computer.f_ram_size = RamSizes.objects.get_or_create(ram_size_text=data_dict.pop('ram_size_text')[0])[0]
+        self.computer.f_diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict.pop('diagonal_text')[0])[0]
+        self.computer.f_license = Licenses.objects.get_or_create(license_name=data_dict.pop('license_name')[0])[0]
+        self.computer.f_camera = CameraOptions.objects.get_or_create(option_name=data_dict.pop('option_name')[0])[0]
+        self.computer.f_tester = Testers.objects.get_or_create(tester_name=data_dict.pop('tester_name')[0])[0]
+
         resolution = Resolutions.objects.get_or_create(resolution_text=data_dict.pop('resolution_text')[0])[0]
-        resolution_category = Resolutioncategories.objects.get_or_create(resolution_category_name=data_dict.pop('resolution_category_text')[0])[0]
-        computer_resolutions = Computerresolutions.objects.get_or_create(
-            f_id_resolution=resolution,
-            f_id_resolution_category=resolution_category
-        )[0]
-        _save_computer()
+        resolution_category = Resolutioncategories.objects.get_or_create(
+            resolution_category_name=data_dict.pop('resolution_category_text')[0])[0]
+        self.computer.f_id_computer_resolutions = Computerresolutions.objects.get_or_create(
+            f_id_resolution=resolution, f_id_resolution_category=resolution_category)[0]
+
+        self.computer.other = data_dict.pop('other')[0]
+        if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
+            received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
+            self.computer.f_id_received_batches = received_batch
+        if data_dict['box_number']:
+            self.computer.box_number = data_dict.pop('box_number')[0]
+        computer_form_factor = None
+        if data_dict['form_factor']:
+            computer_form_factor = ComputerFormFactors.objects.get(form_factor_name=data_dict.pop('form_factor')[0])
+        self.computer.f_id_computer_form_factor = computer_form_factor
+        self.computer.save()
 
         _save_many_to_many()
 
