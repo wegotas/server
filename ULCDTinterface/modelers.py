@@ -241,8 +241,8 @@ class Computers(models.Model):
                 return ", ".join(comp_gpus.values_list("f_id_gpu__gpu_name", flat=True))
             else:
                 return ''
-        if self.f_gpu:
-            return self.f_gpu.gpu_name
+        # if self.f_gpu:
+            # return self.f_gpu.gpu_name
         return ''
 
     def get_other(self):
@@ -363,7 +363,7 @@ class Drives(models.Model):
     f_hdd_order = models.ForeignKey(HddOrder, models.DO_NOTHING, blank=True, null=True)
 
     def __str__(self):
-        return "hdd_serial:{0}, health:{1}, days_on:{2}, tar_member_name:{3}, f_lot:{4}, f_hdd_models:{5}, f_hdd_sizes:{6}, f_lock_state:{7}, f_speed:{8}, f_form_factor:{9}, f_hdd_order:{10}".format(self.hdd_serial, self.health, self.days_on, self.tar_member_name, self.f_lot, self.f_hdd_models, self.f_hdd_sizes, self.f_lock_state, self.f_speed, self.f_form_factor, self.f_hdd_order)
+        return "hdd_serial:{0}, health:{1}, days_on:{2}, tar_member_name:{3}, f_lot:{4}, f_hdd_models:{5}, f_lock_state:{6}, f_speed:{7}, f_form_factor:{8}, f_hdd_order:{9}".format(self.hdd_serial, self.health, self.days_on, self.tar_member_name, self.f_lot, self.f_hdd_models, self.f_lock_state, self.f_speed, self.f_form_factor, self.f_hdd_order)
 
     class Meta:
         managed = True

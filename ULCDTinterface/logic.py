@@ -44,7 +44,7 @@ class ComputerRecord:
             existing_computer.f_manufacturer = self.manufacturer
             existing_computer.f_model = self.model
             existing_computer.f_cpu = self.cpu
-            existing_computer.f_gpu = self.gpu
+            # existing_computer.f_gpu = self.gpu
             existing_computer.f_ram_size = self.ramsize
             existing_computer.f_diagonal = self.diagonal
             existing_computer.f_license = self.license
@@ -98,7 +98,7 @@ class ComputerRecord:
                 f_manufacturer=self.manufacturer,
                 f_model=self.model,
                 f_cpu=self.cpu,
-                f_gpu=self.gpu,
+                # f_gpu=self.gpu,
                 f_ram_size=self.ramsize,
                 f_diagonal=self.diagonal,
                 f_license=self.license,
@@ -308,7 +308,7 @@ class ComputerRecord:
         # print("before self.diagonal")
         self.diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict['Display']['Diagonal'])[0]
         # print("before self.gpu")
-        self.gpu = Gpus.objects.get_or_create(gpu_name='N/A')[0]
+        # self.gpu = Gpus.objects.get_or_create(gpu_name='N/A')[0]
         # print("before self.hddsize")
         self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name='N/A')
         # print("before self.license")

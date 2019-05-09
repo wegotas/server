@@ -160,6 +160,7 @@ class FilterUnit:
 
 
 class AutoFiltersFromComputers:
+    # todo: update class to remove 4v remains.
     """
     This is a holder of unique values necessary for filtering operations website side.
     """
@@ -511,7 +512,7 @@ class AbstractDataFileGenerator(ABC):
                         string = 'Intel HD'
                     lst.append(string)
                 return ', '.join(lst)
-            return computer.f_gpu.gpu_name
+            # return computer.f_gpu.gpu_name
         except:
             return "N/A"
 
@@ -1189,6 +1190,7 @@ class AutoFilter:
             elif key == 'ram-af':
                 computers = computers.filter(f_ram_size__ram_size_text__in=value)
             elif key == 'gpu-af':
+                '''
                 computers4v = computers.filter(f_gpu__gpu_name__in=value)
                 computers5v = computers.filter(
                     id_computer__in=Computergpus.objects.filter(
@@ -1196,6 +1198,12 @@ class AutoFilter:
                     ).values_list('f_id_computer', flat=True).order_by('f_id_computer')
                 )
                 computers = computers4v | computers5v
+                '''
+                computers = computers.filter(
+                    id_computer__in=Computergpus.objects.filter(
+                        f_id_gpu__gpu_name__in=value
+                    ).values_list('f_id_computer', flat=True).order_by('f_id_computer')
+                )
             elif key == 'mod-af':
                 computers = computers.filter(f_model__model_name__in=value)
             elif key == 'cpu-af':
@@ -1248,6 +1256,9 @@ def normalize_query(query_string,
 
 
 def search(keyword, computers):
+
+    # todo: update funtion to remove 4v remains.
+
     searchfields = (
         'computer_serial',
         'other',
@@ -4029,6 +4040,7 @@ class Computer4th:
             self.form_factor = self.computer.f_id_computer_form_factor.form_factor_name
 
     def save_info(self, data_dict):
+        # todo: simplify the code to avoid intermediary variables
         def _save_computer():
             print('Saving computer')
             if self.computer.f_sale:
@@ -4043,7 +4055,7 @@ class Computer4th:
             self.computer.f_manufacturer = manufacturer
             self.computer.f_model = model
             self.computer.f_cpu = cpu
-            self.computer.f_gpu = gpu
+            # self.computer.f_gpu = gpu
             self.computer.f_ram_size = ram_size
             self.computer.f_hdd_size = hdd_size
             self.computer.f_diagonal = diagonal
@@ -4077,7 +4089,7 @@ class Computer4th:
         manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=data_dict.pop('manufacturer_name')[0])[0]
         model = Models.objects.get_or_create(model_name=data_dict.pop('model_name')[0])[0]
         cpu = Cpus.objects.get_or_create(cpu_name=data_dict.pop('cpu_name')[0])[0]
-        gpu = Gpus.objects.get_or_create(gpu_name=data_dict.pop('gpu_name')[0])[0]
+        # gpu = Gpus.objects.get_or_create(gpu_name=data_dict.pop('gpu_name')[0])[0]
         ram_size = RamSizes.objects.get_or_create(ram_size_text=data_dict.pop('ram_size_text')[0])[0]
         hdd_size = HddSizes.objects.get_or_create(hdd_sizes_name=data_dict.pop('hdd_sizes_name')[0])[0]
         diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict.pop('diagonal_text')[0])[0]
