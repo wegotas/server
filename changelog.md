@@ -1,16 +1,3 @@
-2019-05-08
-
-LT:
-
-**Pokytis serveryje: Automatinis tuscio ramo kaulo pridejimas**
-* Jei pasalinamas paskutinis ramu kaulas, iterpiamas automatiskai tuscias su ankstesniu tipu.
-
-EN:
-
-**Changes in server: Automated adding of empty ramstick**
-* If last ramstick is removed, empty ramstick is added with previuos type.
-
-___
 2019-05-07
 
 LT:
