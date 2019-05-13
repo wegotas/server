@@ -35,15 +35,6 @@ class Batteries(models.Model):
         db_table = 'Batteries'
 
 
-class Cpus(models.Model):
-    id_cpu = models.AutoField(primary_key=True)
-    cpu_name = models.CharField(max_length=45)
-
-    class Meta:
-        managed = True
-        db_table = 'CPUs'
-
-
 class CameraOptions(models.Model):
     id_camera_options = models.AutoField(db_column='id_ camera_options', primary_key=True)  # Field renamed to remove unsuitable characters.
     option_name = models.CharField(max_length=20)
@@ -172,22 +163,10 @@ class Computers(models.Model):
     f_category = models.ForeignKey(Categories, models.DO_NOTHING, blank=True, null=True)
     f_manufacturer = models.ForeignKey('Manufacturers', models.DO_NOTHING, blank=True, null=True)
     f_model = models.ForeignKey('Models', models.DO_NOTHING, blank=True, null=True)
-    f_cpu = models.ForeignKey(Cpus, models.DO_NOTHING, blank=True, null=True)
-    f_gpu = models.ForeignKey('Gpus', models.DO_NOTHING, blank=True, null=True)
     f_ram_size = models.ForeignKey('RamSizes', models.DO_NOTHING, blank=True, null=True)
-    f_hdd_size = models.ForeignKey('HddSizes', models.DO_NOTHING, blank=True, null=True)
     f_diagonal = models.ForeignKey('Diagonals', models.DO_NOTHING, blank=True, null=True)
     f_license = models.ForeignKey('Licenses', models.DO_NOTHING, blank=True, null=True)
     f_camera = models.ForeignKey(CameraOptions, models.DO_NOTHING, blank=True, null=True)
-    cover = models.CharField(max_length=125, blank=True, null=True)
-    display = models.CharField(max_length=125, blank=True, null=True)
-    bezel = models.CharField(max_length=125, blank=True, null=True)
-    keyboard = models.CharField(max_length=125, blank=True, null=True)
-    mouse = models.CharField(max_length=125, blank=True, null=True)
-    sound = models.CharField(max_length=125, blank=True, null=True)
-    cdrom = models.CharField(max_length=125, blank=True, null=True)
-    hdd_cover = models.CharField(max_length=125, blank=True, null=True)
-    ram_cover = models.CharField(max_length=125, blank=True, null=True)
     other = models.CharField(max_length=300, blank=True, null=True)
     f_tester = models.ForeignKey('Testers', models.DO_NOTHING, blank=True, null=True)
     date = models.DateField()  # models.DateTimeField(blank=True, null=True)
@@ -226,46 +205,35 @@ class Computers(models.Model):
             return otherList[0]+'\n' + otherList[1]
         return self.get_other()
 
-    def is5th_version(self):
-        return self.f_id_computer_resolutions \
-               or self.f_id_matrix \
-               or Computerprocessors.objects.filter(f_id_computer=self).count() > 0 \
-               or Computergpus.objects.filter(f_id_computer=self).count() > 0 \
-               or Computerobservations.objects.filter(f_id_computer=self).count() > 0 \
-               or Computerdrives.objects.filter(f_id_computer=self).count() > 0
+    def get_cpu(self):
+        comp_cpus = Computerprocessors.objects.filter(f_id_computer=self)
+        if comp_cpus.count() > 0:
+            return ', '.join(comp_cpus.values_list("f_id_processor__model_name", flat=True))
+        return ''
 
     def get_gpu(self):
-        if self.is5th_version():
-            comp_gpus = Computergpus.objects.filter(f_id_computer=self)
-            if comp_gpus.count() > 0:
-                return ", ".join(comp_gpus.values_list("f_id_gpu__gpu_name", flat=True))
-            else:
-                return ''
-        # if self.f_gpu:
-            # return self.f_gpu.gpu_name
+        comp_gpus = Computergpus.objects.filter(f_id_computer=self)
+        if comp_gpus.count() > 0:
+            return ', '.join(comp_gpus.values_list("f_id_gpu__gpu_name", flat=True))
         return ''
 
     def get_other(self):
-        if self.is5th_version():
-            comp_observ = Computerobservations.objects.filter(f_id_computer=self)
-            return "\n".join(comp_observ.values_list("f_id_observation__full_name", flat=True)) + '\r\n' + self.other
-        return self.other
+        comp_observ = Computerobservations.objects.filter(f_id_computer=self)
+        return "\n".join(comp_observ.values_list("f_id_observation__full_name", flat=True)) + '\n' + self.other
 
     def get_status_color(self):
         if self.f_sale:
             return "red"
         elif self.f_id_comp_ord:
             return 'orange'
-        else:
-            return "green"
+        return "green"
 
     def get_status(self):
         if self.f_sale:
             return "Sold"
         elif self.f_id_comp_ord:
             return 'Ordered'
-        else:
-            return "No status"
+        return "No status"
 
 
 class Diagonals(models.Model):
@@ -328,15 +296,6 @@ class HddOrder(models.Model):
     class Meta:
         managed = True
         db_table = 'Hdd_order'
-
-
-class HddSerials(models.Model):
-    id_hdd = models.AutoField(primary_key=True)
-    hdd_serial = models.CharField(max_length=45)
-
-    class Meta:
-        managed = True
-        db_table = 'Hdd_serials'
 
 
 class HddSizes(models.Model):
@@ -646,15 +605,6 @@ class DjangoSession(models.Model):
         managed = True
         db_table = 'django_session'
 '''
-
-class HddToComp(models.Model):
-    id_hdd_to_comp = models.AutoField(primary_key=True)
-    f_id_computer_hdd_to_com = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer_hdd_to_com', blank=True, null=True)
-    f_id_hdd_hdd_to_com = models.ForeignKey(HddSerials, models.DO_NOTHING, db_column='f_id_hdd_hdd_to_com', blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'hdd_to_comp'
 
 
 class RamToComp(models.Model):

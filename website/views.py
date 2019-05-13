@@ -1,6 +1,4 @@
 from django.http import HttpResponse
-from ULCDTinterface.modelers import Computers, BatToComp
-from django.template import loader
 from website.logic import *
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
@@ -13,14 +11,13 @@ from decimal import Decimal
 
 
 def index(request):
-    print('index')
     if request.method == 'POST':
         print("This was POST request")
     if request.method == 'GET':
         print("This was GET request")
     data_dict = request.GET.copy()
-    qty = get_qty(data_dict)
-    page = get_page(data_dict)
+    qty = int(data_dict.get('qty', 10))
+    page = int(data_dict.get('page', 1))
     keyword = data_dict.get('keyword', None)
     autoFilters = AutoFilter(data_dict)
     typcat = TypCat()
@@ -29,54 +26,38 @@ def index(request):
     if 'lots' in request.GET:
         lh = LotsHolder()
         lh.filter(request.GET.copy())
-        return render(
-            request,
-            'main.html',
-            {
-                "typcat": typcat,
-                'lh': lh,
-                'so': so
-            }
-        )
+        return render(request, 'main.html', {
+            "typcat": typcat,
+            'lh': lh,
+            'so': so
+        })
 
     elif 'hdds' in request.GET:
         hh = HddHolder()
         hh.filter(request.GET.copy())
-        return render(
-            request,
-            'main.html',
-            {
-                "typcat": typcat,
-                'hh': hh,
-                'so': so
-            }
-        )
+        return render(request, 'main.html', {
+            "typcat": typcat,
+            'hh': hh,
+            'so': so
+        })
 
     elif 'hdd_orders' in request.GET:
         oh = HddOrdersHolder()
         oh.filter(request.GET.copy())
-        return render(
-            request,
-            'main.html',
-            {
-                "typcat": typcat,
-                'oh': oh,
-                'so': so
-            }
-        )
+        return render(request, 'main.html', {
+            "typcat": typcat,
+            'oh': oh,
+            'so': so
+        })
 
     if request.GET.get('chargers') == "True":
         cch = ChargerCategoriesHolder()
         cch.filter(request.GET.copy())
-        return render(
-            request,
-            'main.html',
-            {
-                'cch': cch,
-                "typcat": typcat,
-                'so': so
-            }
-        )
+        return render(request, 'main.html', {
+            'cch': cch,
+            "typcat": typcat,
+            'so': so
+        })
 
     if keyword:
         computers = Computers.objects.all()
@@ -92,21 +73,17 @@ def index(request):
         for query_member in category_queryset:
             possible_categories.append(query_member[0])
         po = PossibleOrders()
-        return render(
-            request,
-            'main.html',
-            {
-                'computers': computers,
-                "counter": counter,
-                "qtySelect": qtySelect,
-                "autoFilters": af,
-                "typcat": typcat,
-                "poscat": possible_categories,
-                "po": po,
-                'so': so,
-                "global": True
-            }
-        )
+        return render(request, 'main.html', {
+            'computers': computers,
+            "counter": counter,
+            "qtySelect": qtySelect,
+            "autoFilters": af,
+            "typcat": typcat,
+            "poscat": possible_categories,
+            "po": po,
+            'so': so,
+            "global": True
+        })
 
     elif request.GET.get('sold') == "True":
         possible_categories = None
@@ -125,34 +102,26 @@ def index(request):
         possible_categories = []
         for query_member in category_querySet:
             possible_categories.append(query_member[0])
-        return render(
-            request,
-            'main.html',
-            {
-                'computers': computers,
-                "counter": counter,
-                "qtySelect": qtySelect,
-                "autoFilters": af,
-                "typcat": typcat,
-                "poscat": possible_categories,
-                'so': so
-            }
-        )
+        return render(request, 'main.html', {
+            'computers': computers,
+            "counter": counter,
+            "qtySelect": qtySelect,
+            "autoFilters": af,
+            "typcat": typcat,
+            "poscat": possible_categories,
+            'so': so
+        })
 
     elif request.GET.get('orders') == "True":
         counter = Counter()
         orders = OrdersClass()
         orders.filter(data_dict)
-        return render(
-            request,
-            'main.html',
-            {
-                "counter": counter,
-                "typcat": typcat,
-                "orders": orders,
-                'so': so
-            }
-        )
+        return render(request, 'main.html', {
+            "counter": counter,
+            "typcat": typcat,
+            "orders": orders,
+            'so': so
+        })
 
     else:
         typ = data_dict.get('type')
@@ -191,56 +160,33 @@ def index(request):
             autoFilters = None
             possible_types = None
             po = PossibleOrders()
-        return render(
-            request,
-            'main.html',
-            {
-                'computers': computers,
-                "counter": counter,
-                "qtySelect": qtySelect,
-                "autoFilters": af,
-                "typcat": typcat,
-                "poscat": possible_categories,
-                "po": po,
-                'so': so
-            }
-        )
+        return render(request, 'main.html', {
+            'computers': computers,
+            "counter": counter,
+            "qtySelect": qtySelect,
+            "autoFilters": af,
+            "typcat": typcat,
+            "poscat": possible_categories,
+            "po": po,
+            'so': so
+        })
 
 
 @csrf_exempt
-def edit2(request, int_index):
+def edit(request, int_index):
     print("EDIT ")
     cte = ComputerToEdit(int_index=int_index)
     if request.method == 'POST':
         print("This was POST request")
         cte.process_post(request.POST.copy())
-        if cte.record.version == 4:
-            if cte.success():
-                return render(request, 'success.html')
-            else:
-                return render(
-                    request,
-                    'failure.html',
-                    {'message': cte.message},
-                    status=404
-                )
-        elif cte.record.version == 5:
-            if cte.success():
-                return render(request, 'success.html')
-            else:
-                return render(
-                    request,
-                    'failure.html',
-                    {'message': cte.message},
-                    status=404
-                )
+        if cte.success():
+            return render(request, 'success.html')
+        else:
+            return render(request, 'failure.html', {'message': cte.message}, status=404)
     if request.method == 'GET':
         print("This was GET request")
         cte.process_get()
-        if cte.record.version == 4:
-            return render(request, 'computer_edit_v4.html', {'record': cte.record})
-        elif cte.record.version == 5:
-            return render(request, 'computer_edit_v5.html', {'record': cte.record})
+        return render(request, 'computer_edit.html', {'record': cte.record})
 
 
 @csrf_exempt
@@ -251,33 +197,14 @@ def edit_by_serial(request, serial):
     if request.method == 'POST':
         print("This was POST request")
         cte.process_post(request.POST.copy())
-        if cte.record.version == 4:
-            if cte.success():
-                return render(request, 'success.html')
-            else:
-                return render(
-                    request,
-                    'failure.html',
-                    {'message': cte.message},
-                    status=404
-                )
-        elif cte.record.version == 5:
-            if cte.success():
-                return render(request, 'success.html')
-            else:
-                return render(
-                    request,
-                    'failure.html',
-                    {'message': cte.message},
-                    status=404
-                )
+        if cte.success():
+            return render(request, 'success.html')
+        else:
+            return render(request, 'failure.html', {'message': cte.message}, status=404)
     if request.method == 'GET':
         print("This was GET request")
         cte.process_get()
-        if cte.record.version == 4:
-            return render(request, 'computer_edit_v4.html', {'record': cte.record})
-        elif cte.record.version == 5:
-            return render(request, 'computer_edit_v5.html', {'record': cte.record})
+        return render(request, 'computer_edit.html', {'record': cte.record})
 
 
 @csrf_exempt
@@ -508,6 +435,7 @@ def mass_qr_print(request):
         print("This was GET request")
     cmsp = ComputerMultipleSerialPrinter(JSONParser().parse(request))
     cmsp.print()
+    return HttpResponse('Print job is sent')
 
 
 @csrf_exempt
@@ -518,6 +446,7 @@ def mass_qr_print_with_printer(request, printer):
         print("This was GET request")
     cmsp = ComputerMultipleSerialPrinter(JSONParser().parse(request), printer)
     cmsp.print()
+    return HttpResponse('Print job is sent')
 
 
 @csrf_exempt
@@ -887,9 +816,7 @@ def observations_details(request):
             ota.process()
     if request.method == 'GET':
         print("This was GET request")
-    return render(
-        request,
-        "observationsDetailsSubtemplate.html",
+    return render(request, "observationsDetailsSubtemplate.html",
         {
             "categories": Observationcategory.objects.values_list('category_name', flat=True),
             "subcategories": Observationsubcategory.objects.values_list('subcategory_name', flat=True),
@@ -976,25 +903,13 @@ def cat_to_sold(request):
             executor.write_to_database()
             return render(request, 'success.html')
         else:
-            template = loader.get_template('catToSold.html')
-            return HttpResponse(
-                template.render(
-                    {
-                        'computers': computers,
-                        "error_message": executor.get_error_message()
-                    }
-                ),
-                request
-            )
+            return render(request, 'catToSold.html', {
+                'computers': computers,
+                "error_message": executor.get_error_message()
+            })
     if request.method == 'GET':
         print("This was GET request")
-        template = loader.get_template('catToSold.html')
-        return HttpResponse(
-            template.render(
-                {'computers': computers}
-            ),
-            request
-        )
+        return render(request, 'catToSold.html', {'computers': computers})
 
 
 @csrf_exempt
@@ -1007,25 +922,13 @@ def new_order(request):
         if no.is_saved():
             return render(request, 'success.html')
         else:
-            template = loader.get_template('new_order.html')
-            return HttpResponse(
-                template.render(
-                    {
-                        "noc": noc,
-                        "error_message": no.get_error_message()
-                    }
-                ),
-                request
-            )
+            return render(request, 'new_order.html', {
+                "noc": noc,
+                "error_message": no.get_error_message()
+            })
     if request.method == 'GET':
         print("This was GET request")
-    template = loader.get_template('new_order.html')
-    return HttpResponse(
-        template.render(
-            {"noc": noc}
-        ),
-        request
-    )
+    return render(request, 'new_order.html', {"noc": noc})
 
 
 @csrf_exempt
@@ -1037,23 +940,13 @@ def edit_order(request, int_index):
         if ote.hasErrors():
             return render(request, 'success.html')
         else:
-            template = loader.get_template('order_edit.html')
-            return HttpResponse(
-                template.render(
-                    {
-                        "ote": ote,
-                        "error_message": ote.get_error_message()
-                    }
-                ),
-                request
-            )
+            return render(request, 'order_edit.html', {
+                "ote": ote,
+                "error_message": ote.get_error_message()
+            })
     if request.method == 'GET':
         print("This was GET request")
-    template = loader.get_template('order_edit.html')
-    return HttpResponse(
-        template.render({"ote": ote}),
-        request
-    )
+    return render(request, 'order_edit.html', {"ote": ote, })
 
 
 @csrf_exempt
@@ -1066,7 +959,7 @@ def delete_order(request, int_index):
             order.delete()
             return render(request, 'success.html')
         except Exception as e:
-            return HttpResponse(e, status=404)
+            return HttpResponse(str(e), status=404)
     if request.method == 'GET':
         print("This was GET request")
         return HttpResponse("You shouldn't be here", status=404)
@@ -1370,6 +1263,7 @@ def print_charger_serial(request, int_index):
         print('POST method')
         csp = ChargerSingleSerialPrinter(JSONParser().parse(request))
         csp.print()
+        return HttpResponse('Print job is sent')
     if request.method == 'GET':
         print('GET method')
 
@@ -1380,6 +1274,7 @@ def print_chargers_serials(request, int_index):
         print('POST method')
         cdsp = ChargerDualSerialPrinter(JSONParser().parse(request))
         cdsp.print()
+        return HttpResponse('Print job is sent')
     if request.method == 'GET':
         print('GET method')
 
@@ -1388,8 +1283,8 @@ def print_chargers_serials(request, int_index):
 def delete_charger(request, int_index):
     if request.method == 'POST':
         print('POST method')
-        ctd = ChargerToDelete(JSONParser().parse(request))
-        ctd.delete()
+        Chargers.objects.get(charger_id=JSONParser().parse(request)['Index']).delete()
+        return HttpResponse('Charger deleted')
     if request.method == 'GET':
         print('GET method')
 
@@ -1398,12 +1293,10 @@ def delete_charger(request, int_index):
 def delete_charger_category(request, int_index):
     if request.method == 'POST':
         print('POST method')
-        cctd = ChargerCategoryToDelete(int_index)
-        cctd.delete()
-        if cctd.success:
-            return render(request, 'success.html')
-        else:
-            return HttpResponse(cctd.message, status=404)
+        try:
+            ChargerCategories.objects.get(charger_category_id=int_index).delete()
+        except Exception as e:
+            return HttpResponse(str(e), status=404)
     if request.method == 'GET':
         print('GET method')
 
@@ -1413,8 +1306,8 @@ def print_computer_qr(request, int_index):
     print('print_computer_qr')
     if request.method == 'POST':
         print('POST method')
+        # Keep this comment
         # cssp = ComputerSingleSerialPrinter(JSONParser().parse(request))
-
         cssp = ComputerSingleSerialPrinter(int_index)
         cssp.print()
         return HttpResponse("Not implemented return", status=200)
@@ -1426,6 +1319,8 @@ def print_computer_qr_with_printer(request, int_index, printer):
     print('print_computer_qr')
     if request.method == 'POST':
         print('POST method')
+        # todo: Figure tout what to do with printing.
+        # Keep this comment
         """
         if printer == "Godex_DT4x":
             cssp = ComputerSingleSerialPrinter(int_index, printer)

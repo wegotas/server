@@ -3,7 +3,7 @@ from . import views
 from .logic import on_start
 
 urlpatterns = [
-    path('edit/<int:int_index>/', views.edit2, name='edit'),
+    path('edit/<int:int_index>/', views.edit, name='edit'),
     path('edit/<int:int_index>/print_qr/', views.print_computer_qr, name='print_computer_qr'),
     path('edit/<int:int_index>/print_qr/<slug:printer>/', views.print_computer_qr_with_printer, name='print_computer_qr_with_printer'),
     path('remove_ramstick_from_computer/<int:ramstick_id>/<int:computer_id>/', views.remove_ramstick_from_computer, name='remove_ramstick_from_computer'),

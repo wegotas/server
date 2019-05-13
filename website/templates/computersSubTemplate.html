@@ -326,7 +326,7 @@
                 <td id="serial">{{ computer.computer_serial }}</td>
                 <td>{{ computer.f_manufacturer.manufacturer_name }}</td>
                 <td>{{ computer.f_model.model_name }}</td>
-                <td>{{ computer.f_cpu.cpu_name }}</td>
+                <td>{{ computer.get_cpu }}</td>
                 <td>{{ computer.f_ram_size.ram_size_text }}</td>
                 <td>{{ computer.get_gpu }}</td>
                 <td>{{ computer.f_diagonal.diagonal_text }}</td>

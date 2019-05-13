@@ -25,98 +25,6 @@ import sys
 from abc import ABC
 
 
-class BatHolder:
-    def __init__(self, index=1, id=0, serial="N/A", wear="N/A", time="N/A"):
-        self.index = index
-        self.id = id
-        self.serial = serial
-        self.wear = wear
-        self.time = time
-
-
-def get_batteries(computer_id):
-    batteries = BatToComp.objects.filter(f_id_computer_bat_to_com=computer_id)
-    bat_list = []
-    if batteries:
-        i = 0
-        for battery in batteries.iterator():
-            i += 1
-            if battery.f_bat_bat_to_com.serial != "N/A" and battery.f_bat_bat_to_com.wear_out != "N/A" and battery.f_bat_bat_to_com.expected_time != "N/A":
-                bat = BatHolder(
-                    index=i,
-                    id=battery.id_bat_to_comp,
-                    serial=battery.f_bat_bat_to_com.serial,
-                    wear=battery.f_bat_bat_to_com.wear_out,
-                    time=battery.f_bat_bat_to_com.expected_time
-                )
-                bat_list.append(bat)
-        if len(bat_list) == 0:
-            bat = BatHolder()
-            bat_list.append(bat)
-    else:
-        print("Batteries asociated with this computer do not exist")
-    return bat_list
-
-
-class Ram_Hdd_holder():
-    def __init__(self, index=1, id=0, serial="N/A"):
-        self.index = index
-        self.id = id
-        self.serial = serial
-
-
-def get_rams(computer_id):
-    rams = RamToComp.objects.filter(f_id_computer_ram_to_com=computer_id)
-    ram_list = []
-    if rams:
-        i = 0
-        for ram in rams.iterator():
-            i += 1
-            if ram.f_id_ram_ram_to_com.ram_serial != "N/A":
-                ram = Ram_Hdd_holder(
-                    index=i,
-                    id=ram.id_ram_to_comp,
-                    serial=ram.f_id_ram_ram_to_com.ram_serial
-                )
-                ram_list.append(ram)
-        if len(ram_list) == 0:
-            first_ram = rams.first()
-            ram = Ram_Hdd_holder(
-                id=first_ram.id_ram_to_comp,
-                serial=first_ram.f_id_ram_ram_to_com.ram_serial
-            )
-            ram_list.append(ram)
-    else:
-        print("Rams asociated with this computer do not exist")
-    return ram_list
-
-
-def get_hdds(computer_id):
-    hdds = HddToComp.objects.filter(f_id_computer_hdd_to_com=computer_id)
-    hdd_list = []
-    if hdds:
-        i = 0
-        for hdd in hdds.iterator():
-            i += 1
-            if hdd.f_id_hdd_hdd_to_com.hdd_serial != "N/A":
-                hdd = Ram_Hdd_holder(
-                    index=i,
-                    id=hdd.id_hdd_to_comp,
-                    serial=hdd.f_id_hdd_hdd_to_com.hdd_serial
-                )
-                hdd_list.append(hdd)
-        if len(hdd_list) == 0:
-            first_hdd = hdds.first()
-            hdd = Ram_Hdd_holder(
-                id=first_hdd.id_hdd_to_comp,
-                serial=first_hdd.f_id_hdd_hdd_to_com.hdd_serial
-            )
-            hdd_list.append(hdd)
-    else:
-        print("Hdds asociated with this computer do not exist")
-    return hdd_list
-
-
 class Counter:
     count = 0
 
@@ -211,15 +119,13 @@ class AutoFiltersFromComputers:
     
     def cpus(self):
         return self._cpu_gpu_getter(
-            field_name_v4='f_cpu__cpu_name',
-            field_name_v5='f_id_processor__model_name',
+            field_name='f_id_processor__model_name',
             model=Computerprocessors
         )
 
     def gpus(self):
         return self._cpu_gpu_getter(
-            field_name_v4='f_gpu__gpu_name',
-            field_name_v5='f_id_gpu__gpu_name',
+            field_name='f_id_gpu__gpu_name',
             model=Computergpus
         )
 
@@ -236,24 +142,13 @@ class AutoFiltersFromComputers:
                 status_filters.append(FilterUnit(name=computer_status, qty=1))
         return status_filters
 
-    def _cpu_gpu_getter(self, field_name_v4, field_name_v5, model):
-        objects_v4 = self.computers.exclude(**{field_name_v4: 'N/A'}).exclude(**{field_name_v4: ''}).values_list(
-            field_name_v4, flat=True
-        ).distinct().order_by(field_name_v4)
-        objects_v5 = model.objects.exclude(**{field_name_v5: ''}).filter(
+    def _cpu_gpu_getter(self, field_name, model):
+        names = model.objects.exclude(**{field_name: ''}).filter(
             f_id_computer__in=self.computers
-        ).values_list(field_name_v5, flat=True).distinct().order_by(field_name_v5)
-        for name in self._form_unique_value_list_of_two_value_querysets(objects_v4, objects_v5):
-            qty = model.objects.filter(f_id_computer__in=self.computers, **{field_name_v5: name}).count()
+        ).values_list(field_name, flat=True).distinct().order_by(field_name)
+        for name in names:
+            qty = model.objects.filter(**{field_name: name, 'f_id_computer__in': self.computers}).count()
             yield FilterUnit(name=name, qty=qty)
-
-    def _form_unique_value_list_of_two_value_querysets(self, queryset1, queryset2):
-        lst = list(queryset1)
-        for value in queryset2:
-            if value not in lst:
-                lst.append(value)
-        for value in lst:
-            yield value
 
 
 class AutoFiltersFromSoldComputers(AutoFiltersFromComputers):
@@ -343,20 +238,6 @@ class CatHolder:
         return "{0} ({1})".format(self.category_name, self.qty)
 
 
-def get_qty(data_dict):
-    if data_dict.get('qty') is None:
-        return 10
-    else:
-        return int(data_dict.pop('qty')[0])
-
-
-def get_page(data_dict):
-    if data_dict.get('page') is None:
-        return 1
-    else:
-        return int(data_dict.pop('page')[0])
-
-
 class AbstractDataFileGenerator(ABC):
 
     # Parts of comments which should be removed out of comment, preserving the rest of the comment.
@@ -409,46 +290,22 @@ class AbstractDataFileGenerator(ABC):
         return ', '+title+': '+value
 
     def _form_comment(self, computer):
-        if computer.is5th_version():
-            return self._form_5th_comment(computer)
-        return self._form_4th_comment(computer)
-
-    def _form_4th_comment(self, computer):
-        """
-        This method is responsible of forming csv/excel file
-        computer's other column value of 4th version computer structure.
-
-        :param computer: computer model's object.
-        :return: fully formed comment string about a computer.
-        """
-        comment_to_return = self._get_processed_string(computer.other)
-        comment_to_return += self._form_comment_part(computer.cover, 'cover')
-        comment_to_return += self._form_comment_part(computer.display, 'display')
-        comment_to_return += self._form_comment_part(computer.bezel, 'bezel')
-        comment_to_return += self._form_comment_part(computer.keyboard, 'keyboard')
-        comment_to_return += self._form_comment_part(computer.mouse, 'mouse')
-        comment_to_return += self._form_comment_part(computer.sound, 'sound')
-        comment_to_return += self._form_comment_part(computer.cdrom, 'cdrom')
-        comment_to_return += self._form_comment_part(computer.hdd_cover, 'hdd_cover')
-        comment_to_return += self._form_comment_part(computer.ram_cover, 'ram_cover')
-        return comment_to_return.strip(' ,;')
-
-    def _form_5th_comment(self, computer):
         """
         This method is responsible of forming csv/excel file
         computer's other column value of 5th version computer structure.
 
         :param computer: computer model's object.
-        :return:  fully formed comment string about a computer.
+        :return: fully formed comment string about a computer.
         """
         commentToReturn = ''
         computer_observations = Computerobservations.objects.filter(f_id_computer=computer)
         categories = computer_observations.values_list('f_id_observation__f_id_observation_category', flat=True)
         categories = list(set(categories))
         for category_id in categories:
-            observations_of_category = computer_observations.filter(f_id_observation__f_id_observation_category=category_id)
+            observations_of_category = computer_observations.filter(
+                f_id_observation__f_id_observation_category=category_id)
             category_name = Observationcategory.objects.get(id_observation_category=category_id).category_name
-            string_to_add = category_name+": "
+            string_to_add = category_name + ": "
             for computer_observation in observations_of_category:
                 string_to_add += computer_observation.f_id_observation.full_name + ', '
             commentToReturn += string_to_add.strip(' ,;') + '; '
@@ -479,61 +336,50 @@ class AbstractDataFileGenerator(ABC):
     @staticmethod
     def _get_cpu_name(computer):
         try:
-            if computer.is5th_version():
-                computer_processors = Computerprocessors.objects.filter(f_id_computer=computer)
-                lst = []
-                for computer_processor in computer_processors:
-                    string = computer_processor.f_id_processor.f_manufacturer.manufacturer_name + ' ' + computer_processor.f_id_processor.model_name + ' ' + computer_processor.f_id_processor.stock_clock
-                    lst.append(string)
-                return ', '.join(lst).replace('Intel Intel', 'Intel').replace(' GHz', '')
-            return computer.f_cpu.cpu_name
+            lst = []
+            for computer_processor in Computerprocessors.objects.filter(f_id_computer=computer):
+                string = computer_processor.f_id_processor.f_manufacturer.manufacturer_name + ' ' + computer_processor.f_id_processor.model_name + ' ' + computer_processor.f_id_processor.stock_clock
+                lst.append(string)
+            return ', '.join(lst).replace('Intel Intel', 'Intel').replace(' GHz', '')
         except:
             return "N/A"
 
     @staticmethod
     def _get_ram_size(computer):
         try:
-            if computer.is5th_version():
-                ram_to_comp = RamToComp.objects.filter(f_id_computer_ram_to_com=computer)[0]
-                return computer.f_ram_size.ram_size_text + ' ' + ram_to_comp.f_id_ram_ram_to_com.type
-            return computer.f_ram_size.ram_size_text
+            ram_to_comp = RamToComp.objects.filter(f_id_computer_ram_to_com=computer)[0]
+            return computer.f_ram_size.ram_size_text + ' ' + ram_to_comp.f_id_ram_ram_to_com.type
         except:
             return "N/A"
 
     @staticmethod
     def _get_gpu_name(computer):
         try:
-            if computer.is5th_version():
-                computer_gpus = Computergpus.objects.filter(f_id_computer=computer)
-                lst = []
-                for computer_gpu in computer_gpus:
-                    string = computer_gpu.f_id_gpu.f_id_manufacturer.manufacturer_name + ' ' + computer_gpu.f_id_gpu.gpu_name
-                    if 'Intel HD' in string:
-                        string = 'Intel HD'
-                    lst.append(string)
-                return ', '.join(lst)
-            # return computer.f_gpu.gpu_name
+            lst = []
+            for computer_gpu in Computergpus.objects.filter(f_id_computer=computer):
+                string = computer_gpu.f_id_gpu.f_id_manufacturer.manufacturer_name + ' ' + computer_gpu.f_id_gpu.gpu_name
+                if 'Intel HD' in string:
+                    string = 'Intel HD'
+                lst.append(string)
+            return ', '.join(lst)
         except:
             return "N/A"
 
     @staticmethod
     def _get_hdd_size(computer):
         try:
-            if computer.is5th_version():
-                computer_drives = Computerdrives.objects.filter(f_id_computer=computer)
-                lst = []
-                for computer_drive in computer_drives:
-                    type = ''
-                    if computer_drive.f_drive.f_speed.speed_name.isdigit():
-                        type = 'HDD'
-                    else:
-                        type = computer_drive.f_drive.f_speed.speed_name
-                    string = type + ': ' + computer_drive.f_drive.f_hdd_sizes.hdd_sizes_name
-                    lst.append(string)
-                if len(lst) == 0:
-                    return 'N/A'
-                return ', '.join(lst)
-            return computer.f_hdd_size.hdd_sizes_name
+            lst = []
+            for computer_drive in Computerdrives.objects.filter(f_id_computer=computer):
+                type = ''
+                if computer_drive.f_drive.f_speed.speed_name.isdigit():
+                    type = 'HDD'
+                else:
+                    type = computer_drive.f_drive.f_speed.speed_name
+                string = type + ': ' + computer_drive.f_drive.f_hdd_sizes.hdd_sizes_name
+                lst.append(string)
+            if len(lst) == 0:
+                return 'N/A'
+            return ', '.join(lst)
         except:
             return "N/A"
 
@@ -1138,17 +984,11 @@ class RecordChoices:
         self.cameras = CameraOptions.objects.values_list("option_name", flat=True)
         self.testers = Testers.objects.values_list("tester_name", flat=True)
         self.received_batches = Receivedbatches.objects.values_list("received_batch_name", flat=True)
-        self.computer_form_factors = list(ComputerFormFactors.objects.values_list("form_factor_name", flat=True))
-        self.computer_form_factors.insert(0, '')
-
-        # 4th version computers only
-        self.cpus = Cpus.objects.values_list("cpu_name", flat=True)
-        self.gpus = Gpus.objects.values_list("gpu_name", flat=True)
-        self.hdds = HddSizes.objects.values_list("hdd_sizes_name", flat=True)
-
-        # 5th version computers only
         self.resolutions = Resolutions.objects.values_list('resolution_text', flat=True)
         self.resolution_categories = Resolutioncategories.objects.values_list('resolution_category_name', flat=True)
+
+        self.computer_form_factors = list(ComputerFormFactors.objects.values_list("form_factor_name", flat=True))
+        self.computer_form_factors.insert(0, '')
 
 
 class AutoFilter:
@@ -1190,15 +1030,6 @@ class AutoFilter:
             elif key == 'ram-af':
                 computers = computers.filter(f_ram_size__ram_size_text__in=value)
             elif key == 'gpu-af':
-                '''
-                computers4v = computers.filter(f_gpu__gpu_name__in=value)
-                computers5v = computers.filter(
-                    id_computer__in=Computergpus.objects.filter(
-                        f_id_gpu__gpu_name__in=value
-                    ).values_list('f_id_computer', flat=True).order_by('f_id_computer')
-                )
-                computers = computers4v | computers5v
-                '''
                 computers = computers.filter(
                     id_computer__in=Computergpus.objects.filter(
                         f_id_gpu__gpu_name__in=value
@@ -1207,13 +1038,11 @@ class AutoFilter:
             elif key == 'mod-af':
                 computers = computers.filter(f_model__model_name__in=value)
             elif key == 'cpu-af':
-                computers4v = computers.filter(f_cpu__cpu_name__in=value)
-                computers5v = computers.filter(
+                computers = computers.filter(
                     id_computer__in=Computerprocessors.objects.filter(
                         f_id_processor__model_name__in=value
                     ).values_list('f_id_computer', flat=True).order_by('f_id_computer')
                 )
-                computers = computers4v | computers5v
             elif key == 'oth-af':
                 computers = computers.filter(
                     id_computer__in=Computerobservations.objects.filter(
@@ -1265,9 +1094,7 @@ def search(keyword, computers):
         'f_manufacturer__manufacturer_name',
         'f_diagonal__diagonal_text',
         'f_ram_size__ram_size_text',
-        'f_gpu__gpu_name',
         'f_model__model_name',
-        'f_cpu__cpu_name',
         'f_sale__f_id_client__client_name',
         'f_sale__date_of_sale',
         'price',
@@ -3881,34 +3708,6 @@ class Qrgenerator:
         lpr.stdin.write(imgByteArr.getvalue())
 
 
-class ChargerToDelete:
-
-    def __init__(self, data):
-        self.charger = Chargers.objects.get(charger_id=data['Index'])
-
-    def delete(self):
-        self.charger.delete()
-
-
-class ChargerCategoryToDelete:
-
-    def __init__(self, int_index):
-        self.charger_category = ChargerCategories.objects.get(charger_category_id=int_index)
-        self.message = ''
-        self.success = False
-
-    def delete(self):
-        try:
-            self.charger_category.delete()
-            self.success = True
-        except ProtectedError as e:
-            self.success = False
-            self.message += 'Failed to delete category:\r\n' + str(e)
-        except IntegrityError as e:
-            self.success = False
-            self.message += 'Failed to delete category:\r\nMost probable cause is that category still has chargers in it\r\n' + str(e)
-
-
 class HddOrderContentCsv:
 
     def __init__(self, int_index):
@@ -4019,134 +3818,10 @@ class SearchOptions:
         self.options.append(statuses_selection)
 
 
-class Computer4th:
-
-    def __init__(self, computer):
-        print('this is Computer4th')
-        self.version = 4
-        self.computer = computer
-
-
-    def collect_info(self):
-        self.rc = RecordChoices()
-        self.rams = get_rams(self.computer.id_computer)
-        self.hdds = get_hdds(self.computer.id_computer)
-        self.batts = get_batteries(self.computer.id_computer)
-        self.received_batches = list(Receivedbatches.objects.all().values_list('received_batch_name', flat=True))
-        self.received_batch = None
-        if self.computer.f_id_received_batches:
-            self.received_batch = self.computer.f_id_received_batches.received_batch_name
-        if self.computer.f_id_computer_form_factor:
-            self.form_factor = self.computer.f_id_computer_form_factor.form_factor_name
-
-    def save_info(self, data_dict):
-        # todo: simplify the code to avoid intermediary variables
-        def _save_computer():
-            print('Saving computer')
-            if self.computer.f_sale:
-                client = Clients.objects.get_or_create(client_name=data_dict.pop('client_name')[0])[0]
-                sale = self.computer.f_sale
-                sale.f_id_client = client
-                sale.date_of_sale = data_dict.pop('date_of_sale')[0]
-                sale.save()
-                self.computer.price = data_dict.pop('price')[0]
-            self.computer.f_type = type
-            self.computer.f_category = category
-            self.computer.f_manufacturer = manufacturer
-            self.computer.f_model = model
-            self.computer.f_cpu = cpu
-            # self.computer.f_gpu = gpu
-            self.computer.f_ram_size = ram_size
-            self.computer.f_hdd_size = hdd_size
-            self.computer.f_diagonal = diagonal
-            self.computer.f_license = license
-            self.computer.f_camera = option
-            self.computer.cover = data_dict.pop('cover')[0]
-            self.computer.display = data_dict.pop('display')[0]
-            self.computer.bezel = data_dict.pop('bezel')[0]
-            self.computer.keyboard = data_dict.pop('keyboard')[0]
-            self.computer.mouse = data_dict.pop('mouse')[0]
-            self.computer.sound = data_dict.pop('sound')[0]
-            self.computer.cdrom = data_dict.pop('cdrom')[0]
-            self.computer.hdd_cover = data_dict.pop('hdd_cover')[0]
-            self.computer.ram_cover = data_dict.pop('ram_cover')[0]
-            self.computer.other = data_dict.pop('other')[0]
-            self.computer.f_tester = tester
-            self.computer.f_bios = bios
-            if "received_batch_name" in data_dict and self.computer.f_id_received_batches is None:
-                received_batch = Receivedbatches.objects.get(received_batch_name=data_dict["received_batch_name"])
-                self.computer.f_id_received_batches = received_batch
-            if data_dict['box_number']:
-                self.computer.box_number = data_dict.pop('box_number')[0]
-            computer_form_factor = None
-            if data_dict['form_factor']:
-                computer_form_factor = ComputerFormFactors.objects.get(form_factor_name=data_dict.pop('form_factor')[0])
-            self.computer.f_id_computer_form_factor = computer_form_factor
-            self.computer.save()
-
-        type = Types.objects.get_or_create(type_name=data_dict.pop('type_name')[0])[0]
-        category = Categories.objects.get_or_create(category_name=data_dict.pop('category_name')[0])[0]
-        manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=data_dict.pop('manufacturer_name')[0])[0]
-        model = Models.objects.get_or_create(model_name=data_dict.pop('model_name')[0])[0]
-        cpu = Cpus.objects.get_or_create(cpu_name=data_dict.pop('cpu_name')[0])[0]
-        # gpu = Gpus.objects.get_or_create(gpu_name=data_dict.pop('gpu_name')[0])[0]
-        ram_size = RamSizes.objects.get_or_create(ram_size_text=data_dict.pop('ram_size_text')[0])[0]
-        hdd_size = HddSizes.objects.get_or_create(hdd_sizes_name=data_dict.pop('hdd_sizes_name')[0])[0]
-        diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict.pop('diagonal_text')[0])[0]
-        license = Licenses.objects.get_or_create(license_name=data_dict.pop('license_name')[0])[0]
-        option = CameraOptions.objects.get_or_create(option_name=data_dict.pop('option_name')[0])[0]
-        tester = Testers.objects.get_or_create(tester_name=data_dict.pop('tester_name')[0])[0]
-        bios = Bioses.objects.get_or_create(bios_text=data_dict.pop('bios_text')[0])[0]
-        _save_computer()
-
-    def delete(self):
-        def try_to_delete(object):
-            try:
-                object.delete()
-            except:
-                pass
-            
-        print("This is 4th version's delete")
-        for bat_to_comp in BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer):
-            bat = bat_to_comp.f_bat_bat_to_com
-            try_to_delete(bat_to_comp)
-            try_to_delete(bat)
-
-        for hdd_to_comp in HddToComp.objects.filter(f_id_computer_hdd_to_com=self.computer):
-            hdd = hdd_to_comp.f_id_hdd_hdd_to_com
-            try_to_delete(hdd_to_comp)
-            try_to_delete(hdd)
-
-        for ram_to_comp in RamToComp.objects.filter(f_id_computer_ram_to_com=self.computer):
-            ram = ram_to_comp.f_id_ram_ram_to_com
-            try_to_delete(ram_to_comp)
-            try_to_delete(ram)
-
-        # gathering objects
-        comp_ord = self.computer.f_id_comp_ord
-        sale = self.computer.f_sale
-        diagonal = self.computer.f_diagonal
-        ramsize = self.computer.f_ram_size
-        hddsize = self.computer.f_hdd_size
-        cpu = self.computer.f_cpu
-        model = self.computer.f_model
-
-        # objects deletion
-        try_to_delete(self.computer)
-        try_to_delete(comp_ord)
-        try_to_delete(sale)
-        try_to_delete(diagonal)
-        try_to_delete(ramsize)
-        try_to_delete(hddsize)
-        try_to_delete(cpu)
-        try_to_delete(model)
-
-
 class Computer5th:
 
     def __init__(self, computer):
         print('this is Computer5th')
-        self.version = 5
         self.computer = computer
 
     def collect_info(self):
@@ -4504,52 +4179,22 @@ class ComputerToEdit:
         data_dict.pop('serial', None)
         data_dict.pop('motherboard_serial', None)
         data_dict.pop('date', None)
-        if self._is5thVersion(self.computer):
-            print('Computer is of 5th version')
-            try:
-                self.record = Computer5th(computer=self.computer)
-                self.record.save_info(data_dict)
-            except Exception as e:
-                ex_type, ex, tb = sys.exc_info()
-                self.message = str(e.with_traceback(tb))
-        else:
-            print('Computer is of 4th version')
-            try:
-                self.record = Computer4th(computer=self.computer)
-                self.record.save_info(data_dict)
-            except Exception as e:
-                ex_type, ex, tb = sys.exc_info()
-                self.message = str(e.with_traceback(tb))
+        try:
+            self.record = Computer5th(computer=self.computer)
+            self.record.save_info(data_dict)
+        except Exception as e:
+            ex_type, ex, tb = sys.exc_info()
+            self.message = str(e.with_traceback(tb))
         
     def process_get(self):
         print('Processing get request')
-        if self._is5thVersion(self.computer):
-            print('Computer is of 5th version')
-            self.record = Computer5th(computer=self.computer)
-            self.record.collect_info()
-        else:
-            print('Computer is of 4th version')
-            self.record = Computer4th(computer=self.computer)
-            self.record.collect_info()
+        self.record = Computer5th(computer=self.computer)
+        self.record.collect_info()
 
     def delete_record(self):
         print('Processing delete request')
-        if self._is5thVersion(self.computer):
-            print('Computer is of 5th version')
-            self.record = Computer5th(computer=self.computer)
-            self.record.delete()
-        else:
-            print('Computer is of 4th version')
-            self.record = Computer4th(computer=self.computer)
-            self.record.delete()
-
-    def _is5thVersion(self, computer):
-        return computer.f_id_computer_resolutions \
-                or computer.f_id_matrix \
-                or Computerprocessors.objects.filter(f_id_computer=computer).count() > 0 \
-                or Computergpus.objects.filter(f_id_computer=computer).count() > 0 \
-                or Computerobservations.objects.filter(f_id_computer=computer).count() > 0 \
-                or Computerdrives.objects.filter(f_id_computer=computer).count() > 0
+        self.record = Computer5th(computer=self.computer)
+        self.record.delete()
 
 
 def get_query_for_item_search_from_computer_edit(query_string, searchfields_tupple):
