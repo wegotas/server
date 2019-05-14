@@ -13,7 +13,6 @@ from urllib.parse import unquote
 
 @csrf_exempt
 def aux_data(request):
-    print("aux_data called")
     if request.method == "GET":
         def _get_formed_observations_dict():
             variables = Observations.objects.all()
@@ -45,7 +44,6 @@ def aux_data(request):
 
 @csrf_exempt
 def process_data(request):
-    print("proccess_data 2 called")
     if request.method == "POST":
         print("POST proccess_data2")
         data = JSONParser().parse(request)
@@ -108,7 +106,6 @@ def alternative_process_data(request):
         data['Form factors'].insert(0, '')
         data['Observations'] = _get_formed_observations_dict()
 
-    print("proccess_data 2 called")
     if request.method == "POST":
         print("POST proccess_data2")
         data = JSONParser().parse(request)
@@ -136,15 +133,6 @@ def alternative_process_data(request):
         try:
             csb = ComputerDataDictBuilder(str(data["Serial"]).strip())
             dict_dict = csb.data_dict
-            '''
-            dict_dict["Categories"] = list(Categories.objects.values_list('category_name', flat=True))
-            dict_dict["Types"] = list(Types.objects.values_list('type_name', flat=True))
-            dict_dict["Testers"] = list(Testers.objects.values_list('tester_name', flat=True))
-            dict_dict['Received batches'] = list(Receivedbatches.objects.values_list('received_batch_name', flat=True))
-            dict_dict['Form factors'] = list(ComputerFormFactors.objects.values_list('form_factor_name', flat=True))
-            dict_dict['Form factors'].insert(0, '')
-            dict_dict['Observations'] = _get_formed_observations_dict()
-            '''
             _add_aux_data(dict_dict)
             return JsonResponse(dict_dict)
         except Exception as e:
@@ -157,12 +145,12 @@ def alternative_process_data(request):
                 print("Something else")
                 return HttpResponse(str(e), status=404)
 
+
 @csrf_exempt
 def process_pictures(request, int_index):
     print(int_index)
     # print(request.FILES)
     variable = request.FILES
-
 
 
 def check_if_exists(request):

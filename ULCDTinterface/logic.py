@@ -1,4 +1,4 @@
-from ULCDTinterface.modelers import * # Computers, Bioses, Batteries, Cpus, CameraOptions, Categories, Computers, Clients, Sales, Diagonals, Gpus, HddSizes, Hdds, Licenses, Manufacturers, Models, RamSizes, Rams, Testers, Types, BatToComp, RamToComp, HddToComp
+from ULCDTinterface.modelers import *
 import datetime, decimal
 from django.utils import timezone
 
@@ -16,9 +16,7 @@ class ComputerRecord:
         try:
             self._one_to_many_connection_save(data_dict)
             self.computer = self._computer_save_and_get(data_dict)
-            print("self._computer_save_and_get(data_dict)")
             self._many_to_many_connection_save(data_dict)
-            print("_many_to_many_connection_save(data_dict)")
             self.message += "Success"
             self.success = True
         except decimal.InvalidOperation as e:
@@ -32,33 +30,18 @@ class ComputerRecord:
             self.success = False
 
     def _computer_save_and_get(self, data):
-        print('_computer_save_and_get')
         try:
             existing_computer = Computers.objects.get(computer_serial=data['System Info']['Serial Number'])
-            print('after existing computer')
             existing_computer.id_computer = existing_computer.id_computer
-            # existing_computer.computer_serial = data['SystemInfo']['Serial Number']
 
             existing_computer.f_type = self.type
             existing_computer.f_category = self.category
             existing_computer.f_manufacturer = self.manufacturer
             existing_computer.f_model = self.model
-            existing_computer.f_cpu = self.cpu
-            # existing_computer.f_gpu = self.gpu
             existing_computer.f_ram_size = self.ramsize
             existing_computer.f_diagonal = self.diagonal
             existing_computer.f_license = self.license
             existing_computer.f_camera = self.camera_option
-
-            existing_computer.cover = 'N/A'
-            existing_computer.display = 'N/A'
-            existing_computer.bezel = 'N/A'
-            existing_computer.keyboard = 'N/A'
-            existing_computer.mouse = 'N/A'
-            existing_computer.sound = 'N/A'
-            existing_computer.cdrom = 'N/A'
-            existing_computer.hdd_cover = 'N/A'
-            existing_computer.ram_cover = 'N/A'
 
             existing_computer.other = data["Observations"]["Add. comment"]
             existing_computer.f_tester = self.tester
@@ -73,9 +56,7 @@ class ComputerRecord:
             existing_computer.f_id_computer_form_factor = self.computer_form_factor
             if existing_computer.f_id_comp_ord:
                 if "Order" in data and "Status" in data["Order"]:
-                    print('___start___')
                     comp_ord = existing_computer.f_id_comp_ord
-                    print('___end___')
                     if data["Order"]["Status"] == "In-Preperation":
                         comp_ord.is_ready = 0
                     elif data["Order"]["Status"] == "Ready":
@@ -87,31 +68,18 @@ class ComputerRecord:
         except Computers.DoesNotExist:
             print("No computer with such serial, inserting a new record")
             received_batch = None
-            print('before batch')
             if "Received batch" in data["Log Information"]:
                 received_batch = Receivedbatches.objects.get(received_batch_name=data["Log Information"]["Received batch"])
-            print('after batch')
-            computer = Computers(
+            computer = Computers.objects.create(
                 computer_serial=data['System Info']['Serial Number'],
                 f_type=self.type,
                 f_category=self.category,
                 f_manufacturer=self.manufacturer,
                 f_model=self.model,
-                f_cpu=self.cpu,
-                # f_gpu=self.gpu,
                 f_ram_size=self.ramsize,
                 f_diagonal=self.diagonal,
                 f_license=self.license,
                 f_camera=self.camera_option,
-                cover='N/A',
-                display='N/A',
-                bezel='N/A',
-                keyboard='N/A',
-                mouse='N/A',
-                sound='N/A',
-                cdrom='N/A',
-                hdd_cover='N/A',
-                ram_cover='N/A',
                 other=data["Observations"]["Add. comment"],
                 f_tester=self.tester,
                 date=self.timenow,
@@ -123,7 +91,6 @@ class ComputerRecord:
                 box_number=data['Others']['Box number'],
                 f_id_computer_form_factor=self.computer_form_factor
             )
-            computer.save()
             self.message += "New record has been added\n"
             return computer
 
@@ -292,42 +259,22 @@ class ComputerRecord:
         print("End of many to many")
 
     def _one_to_many_connection_save(self, data_dict):
-        print("start of _one_to_many_connection_save")
-        # print("before self.category")
         self.category = Categories.objects.get(category_name=data_dict['Log Information']["Category"])
-        # print("before self.type")
         self.type = Types.objects.get_or_create(type_name=data_dict['System Info']["Type"])[0]
-        # print("before self.tester")
         self.tester = Testers.objects.get(tester_name=data_dict['Log Information']["Tester"])
-        # print("before self.bios")
         self.bios = Bioses.objects.get_or_create(bios_text=data_dict['System Info']["BIOS"])[0]
-        # print("before self.cpu")
-        self.cpu = Cpus.objects.get_or_create(cpu_name=data_dict['CPU']['1 Processor']['Model'])[0]
-        # print("before self.camera_option")
         self.camera_option = CameraOptions.objects.get_or_create(option_name=data_dict['Hardware']["Additional"]["Camera"])[0]
-        # print("before self.diagonal")
         self.diagonal = Diagonals.objects.get_or_create(diagonal_text=data_dict['Display']['Diagonal'])[0]
-        # print("before self.gpu")
-        # self.gpu = Gpus.objects.get_or_create(gpu_name='N/A')[0]
-        # print("before self.hddsize")
-        self.hddsize = HddSizes.objects.get_or_create(hdd_sizes_name='N/A')
-        # print("before self.license")
         self.license = Licenses.objects.get_or_create(license_name=data_dict['Others']["License"])[0]
-        # print("before self.manufacturer")
         self.manufacturer = Manufacturers.objects.get_or_create(
             manufacturer_name=data_dict['System Info']["Manufacturer"]
         )[0]
-        # print("before self.model")
         self.model = Models.objects.get_or_create(model_name=data_dict['System Info']['Model'])[0]
-        # print("before self.motherboard_serial")
         self.motherboard_serial = data_dict['System Info']["MB Serial"]
-        # print("before self.ramsize")
         self.ramsize = RamSizes.objects.get_or_create(ram_size_text=data_dict['RAM']['Total'])[0]
-        print("before self.computer_form_factor")
         self.computer_form_factor = None
         if "Form factor" in data_dict["System Info"] and data_dict["System Info"]["Form factor"]:
             self.computer_form_factor = ComputerFormFactors.objects.get(form_factor_name=data_dict["System Info"]["Form factor"])
-        print("before self.timenow")
         self.timenow = timezone.now()
 
         resolution = Resolutions.objects.get_or_create(resolution_text=data_dict["Display"]["Resolution"])[0]
@@ -339,14 +286,13 @@ class ComputerRecord:
 
         cable_type = Cabletypes.objects.get_or_create(cable_type_name=data_dict["Display"]["Cable Type"])[0]
         self.matrix = Matrixes.objects.get_or_create(f_id_cable_type=cable_type)[0]
-        print("end of _one_to_many_connection_save")
 
 
 class ComputerDataDictBuilder:
-    '''
+    """
     Moved logic out of view to the dedicated class.
     This class represents data which is sent back to client program of an existing computer record in the database which are not generated.
-    '''
+    """
 
     def __init__(self, serial):
         self.data_dict = {}
@@ -360,11 +306,8 @@ class ComputerDataDictBuilder:
         order_dict = dict()
         if computer.f_id_comp_ord:
             order_id = computer.f_id_comp_ord.f_order_id_to_order.id_order
-            ordtesses = OrdTes.objects.filter(f_order=order_id)
-            testers = []
-            for ordtes in ordtesses:
-                testers.append(ordtes.f_id_tester.tester_name)
-            order_dict['Testers'] = testers
+            order_dict['Testers'] = list(Testers.objects.filter(
+                ordtes__f_order=order_id).values_list('tester_name', flat=True))
             order_dict['Order name'] = computer.f_id_comp_ord.f_order_id_to_order.order_name
             order_dict['Current status'] = "In-Preperation" if computer.f_id_comp_ord.is_ready == 0 else "Ready"
             order_dict['Statuses'] = ["In-Preperation", "Ready"]
