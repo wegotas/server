@@ -1,3 +1,42 @@
+2019-05-15
+
+LT:
+
+**Pokyciai serveryje, duomenu bazeje: 4v palaikymo pasalinimas.**
+* Duomenu bazes pokyciai:
+    * Pasalinti 4v kompiuteriu irasai.
+    * bat_to_comp irasai ir rodikles i batteries irasus susijusias tik su 4v kompiuteriais istrinti.
+    * ram_to_comp irasai ir rodikles i RAMs irasus susijusius tik su 4v kompiuteriais istrinti.
+    * Pasalinti Hdd_sizes, GPUs, Manufacturers irasai kurie neturi rodykliu i juos.
+    * Pasalinta lenteles Cpus, hdd_to_comp, Hdd_serials.
+    * Is lenteles Computers pasalinti laukai: f_cpu_id, f_gpu_id, f_hdd_size_id, cover, display, bezel, keyboard, mouse, sound, cdrom, hdd_cover, ram_cover.
+* Serverio pokyciai:
+    * Is modelers:
+        * pasalinti modeliai: CPUs, hdd_to_comp, Hdd_serials
+        * is Computers pasalinti atributai: f_cpu_id, f_gpu_id, f_hdd_size_id, cover, display, bezel, keyboard, mouse, sound, cdrom, hdd_cover, ram_cover.
+    * Is views ir logic pasalinta saukimai 4v kompiuteriu modelius ir ju atributus. Vietoj to perrasytas kodas kad atliktu tuos pacius funkcionalumus be ju.
+    * Istrinti nenaudojami failai.
+    * Perrasyta dalis kodo norint supaprastinti, pagreitinti veikima ir sumazinti laikinosios atminties naudojima
+
+EN:
+
+**Changes in server, database: 4v support removal.**
+* Database changes:
+    * Removed 4v computer records.
+    * bat_to_comp records and references to batteries records related with deleted 4v computers.
+    * ram_to_comp records and references to RAMs records related with deleted 4v computers.
+    * Removed Hdd_sizes, GPUs, Manufacturers records which are not referenced by any other record.
+    * Removed tables Cpus, hdd_to_comp, Hdd_serials.
+    * From table Computers removed fields: f_cpu_id, f_gpu_id, f_hdd_size_id, cover, display, bezel, keyboard, mouse, sound, cdrom, hdd_cover, ram_cover.
+* Server changes:
+    * From modelers:
+        * removed models: CPUs, hdd_to_comp, Hdd_serials.
+        * From Computers removed attributes: f_cpu_id, f_gpu_id, f_hdd_size_id, cover, display, bezel, keyboard, mouse, sound, cdrom, hdd_cover, ram_cover.
+    * From views and logic removed call to 4v computer models and their attributes. Instead rewritten code to do the same functionality without them.
+    * Removed unused files.
+    * Rewrittent part of the code in order to simplify it, improve speed and lower ram usage.
+
+___
 2019-05-07
 
 LT:
