@@ -1,0 +1,1058 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b12dfcae-9b13-4cc6-9e92-f3612f8d0df9" name="Default Changelist" comment="Changes:&#10;* ULCDTinterface cleanup from 4v remains.">
+      <change beforePath="$PROJECT_DIR$/changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/changelog.md" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/website/logic.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret line="2781" column="8" selection-start-line="2781" selection-start-column="8" selection-end-line="2781" selection-end-column="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/website/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="438">
+              <caret line="1043" column="12" lean-forward="true" selection-start-line="1043" selection-start-column="12" selection-end-line="1043" selection-end-column="12" />
+              <folding>
+                <element signature="e#0#36#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/changelog.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="405">
+                <caret line="36" column="93" selection-start-line="36" selection-start-column="93" selection-end-line="36" selection-end-column="93" />
+              </first_editor>
+              <second_editor>
+                <markdownNavigatorState />
+              </second_editor>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ULCDTinterface/modelers.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <folding>
+                <element signature="n#!!doc" />
+                <element signature="e#588#748#0" />
+                <element signature="e#786#1494#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/website/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="480">
+              <caret line="34" selection-start-line="34" selection-end-line="34" />
+              <folding>
+                <element signature="e#0#28#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>new_record.html</find>
+      <find>observation_template.html</find>
+      <find>observations.html</find>
+      <find>observations_to_add.html</find>
+      <find>observationsCategorySubtemplate.html</find>
+      <find>observationsDetailsSubtemplate.html</find>
+      <find>observationsSubcategorySubtemplate.html</find>
+      <find>order_edit.html</find>
+      <find>orders.html</find>
+      <find>processor_template.html</find>
+      <find>processors_to_add.html</find>
+      <find>rams_to_add.html</find>
+      <find>ramstick_template.html</find>
+      <find>searchSubTemplate.html</find>
+      <find>soldComputersSubTemplate.html</find>
+      <find>status.html</find>
+      <find>success.html</find>
+      <find>tableSubTemplate.html</find>
+      <find>5v</find>
+      <find>\n</find>
+      <find>modelers2</find>
+      <find>f_hdd_size</find>
+      <find>modelers</find>
+      <find>loader.get_template('new_order.html')</find>
+      <find>new_order</find>
+      <find>NewOrder</find>
+      <find>open</find>
+      <find>hdd_size</find>
+      <find>cpu</find>
+      <find>Testers</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>managed = False</replace>
+      <replace>managed = True</replace>
+      <replace>class=&quot;widther&quot;</replace>
+      <replace>Item(</replace>
+      <replace>is_sent</replace>
+      <replace>print_qr_with_printer</replace>
+      <replace>heighter24</replace>
+      <replace>call_object_from_computer</replace>
+      <replace />
+    </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="UPDATE_TYPE" value="MERGE" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/website/templates/static/rams_to_add.html" />
+        <option value="$PROJECT_DIR$/website/templates/gpus_to_add.html" />
+        <option value="$PROJECT_DIR$/website/templates/rams_to_add.html" />
+        <option value="$PROJECT_DIR$/website/templates/processors_to_add.html" />
+        <option value="$PROJECT_DIR$/website/templates/new_recordv5.html" />
+        <option value="$PROJECT_DIR$/website/templates/ramstick_template.html" />
+        <option value="$PROJECT_DIR$/website/templates/gpu_template.html" />
+        <option value="$PROJECT_DIR$/website/templates/observation_template.html" />
+        <option value="$PROJECT_DIR$/website/templates/processor_template.html" />
+        <option value="$PROJECT_DIR$/website/templates/static/new_record.js" />
+        <option value="$PROJECT_DIR$/website/templates/static/style.css" />
+        <option value="$PROJECT_DIR$/website/templates/leftMenuSubTemplate.html" />
+        <option value="$PROJECT_DIR$/website/templates/computer_edit_v4.html" />
+        <option value="$PROJECT_DIR$/website/templates/new_record.html" />
+        <option value="$PROJECT_DIR$/ULCDTinterface/urls.py" />
+        <option value="$PROJECT_DIR$/website/templates/hdd_edit.html" />
+        <option value="$PROJECT_DIR$/website/templates/static/hdd_edit.js" />
+        <option value="$PROJECT_DIR$/website/templates/static/items.css" />
+        <option value="$PROJECT_DIR$/website/templates/observationsDetailsSubtemplate.html" />
+        <option value="$PROJECT_DIR$/website/templates/static/items.js" />
+        <option value="$PROJECT_DIR$/website/templates/computerOrdersSubTemplate.html" />
+        <option value="$PROJECT_DIR$/website/templates/hddsSubTemplate.html" />
+        <option value="$PROJECT_DIR$/website/templates/main.html" />
+        <option value="$PROJECT_DIR$/website/templates/static/order_edit.css" />
+        <option value="$PROJECT_DIR$/website/templates/lot_content.html" />
+        <option value="$PROJECT_DIR$/website/templates/hdd_order_content.html" />
+        <option value="$PROJECT_DIR$/website/templates/static/index.css" />
+        <option value="$PROJECT_DIR$/website/templates/static/index.js" />
+        <option value="$PROJECT_DIR$/analyser.py" />
+        <option value="$PROJECT_DIR$/website/templates/catToSold.html" />
+        <option value="$PROJECT_DIR$/website/templates/index.html" />
+        <option value="$PROJECT_DIR$/todolist" />
+        <option value="$PROJECT_DIR$/website/templates/nonexistant_ramstick_template.html" />
+        <option value="$PROJECT_DIR$/website/templates/computer_edit_v5.html" />
+        <option value="$PROJECT_DIR$/website/templates/static/computer_edit.js" />
+        <option value="$PROJECT_DIR$/website/urls.py" />
+        <option value="$PROJECT_DIR$/ULCDTinterface/modelers.py" />
+        <option value="$PROJECT_DIR$/website/templates/computersSubTemplate.html" />
+        <option value="$PROJECT_DIR$/website/templates/order_edit.html" />
+        <option value="$PROJECT_DIR$/website/templates/computersSearchedSubTemplate.html" />
+        <option value="$PROJECT_DIR$/website/templates/soldComputersSubTemplate.html" />
+        <option value="$PROJECT_DIR$/website/templates/computer_search_from_order_table.html" />
+        <option value="$PROJECT_DIR$/website/templates/computer_search_from_order_row.html" />
+        <option value="$PROJECT_DIR$/logs/observer.log" />
+        <option value="$PROJECT_DIR$/logs/failed.log" />
+        <option value="$PROJECT_DIR$/website/views.py" />
+        <option value="$PROJECT_DIR$/website/logic.py" />
+        <option value="$PROJECT_DIR$/ULCDTinterface/views.py" />
+        <option value="$PROJECT_DIR$/deleter.py" />
+        <option value="$PROJECT_DIR$/ULCDTinterface/logic.py" />
+        <option value="$PROJECT_DIR$/changelog.md" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="20" />
+    <option name="y" value="704" />
+    <option name="width" value="1232" />
+    <option name="height" value="688" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="server" type="b2602c69:ProjectViewProjectNode" />
+              <item name="server" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="server" type="b2602c69:ProjectViewProjectNode" />
+              <item name="server" type="462c0819:PsiDirectoryNode" />
+              <item name="logs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="server" type="b2602c69:ProjectViewProjectNode" />
+              <item name="server" type="462c0819:PsiDirectoryNode" />
+              <item name="ULCDTinterface" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="ToolWindowFind.ShowToolbar" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../tests" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/website/templates" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b12dfcae-9b13-4cc6-9e92-f3612f8d0df9" name="Default Changelist" comment="" />
+      <created>1542106267817</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1542106267817</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Changes:&#10;* changed the name of printer.">
+      <created>1551881141773</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1551881141773</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Changes:&#10;* Empty change.">
+      <created>1551881271025</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1551881271025</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Changes:&#10;* removed xlrd and magic">
+      <created>1551882853526</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1551882853526</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Changes:&#10;* Fixed an issue when production server could not print qr codes.">
+      <created>1551887487886</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1551887487886</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Changes:&#10;* Added modular window to a website qr printing. Replacing ok/cancel pop-up workaround.">
+      <created>1551961659490</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1551961659491</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Changes:&#10;* Added modular window for a website's qr printing for mass_qr prints with modular window.">
+      <created>1552032546015</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1552032546015</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Changes:&#10;* Added modular window for a website's qr printing in 4th version print.&#10;* Code cleanup. Removed some comented out code, which is no longer being used.">
+      <created>1552034383452</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1552034383452</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Changes:&#10;* Fixed an one qr per multiple serial printing on two rows issue.">
+      <created>1552035438649</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1552035438649</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Changes:&#10;* Added back missed &quot;&gt;&quot; in v5 computer_edit">
+      <created>1552035694904</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1552035694904</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Changes:&#10;* Added functionality to search, add and remove observations in computer_edit_v5.">
+      <created>1552552090852</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1552552090852</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Changes:&#10;* Added changelog.">
+      <created>1552568114158</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1552568114158</updated>
+    </task>
+    <task id="LOCAL-00045" summary="Changes:&#10;* Added newlines to changelog.">
+      <created>1552568484243</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1552568484243</updated>
+    </task>
+    <task id="LOCAL-00046" summary="Changes:&#10;* &quot;Box No.&quot; in Excel and CSV moved as the last column.">
+      <created>1552572287218</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1552572287218</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Changes:&#10; &#10;* Finished front end is working for ramsticks, processors and gpus templates.&#10;* Minor changes to ensure that data set on website would be sent to the server and clear distinction between new entities and existing ones.&#10;* Minor change to observation to template &quot;computer_search_from_order_row&quot; to contain box_number.&#10;* Rewritten code in views(website) and logic(website) to remove duplicating code in regards to searches. &#10;* And removed some old commented out irrelevant code from logic(website).">
+      <created>1553519049585</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1553519049585</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Changes:&#10;* Wrapped up version5 computer manual adding to a system.&#10;* Removed obsolete code.&#10;* Entities are created/retrieved and connections are properly created to save v5 computers.&#10;* Minor changes everywhere to improve compatibilities.">
+      <created>1553701928753</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1553701928753</updated>
+    </task>
+    <task id="LOCAL-00049" summary="Changes:&#10;* Added new table ComputerFormFactors and reference to it from Computers.&#10;* Added link on leftMenuSubTemplate as a placeholder for future ComputerFormFactors table managment.&#10;* Updated changelog.md with changes in new_record brief explanation.">
+      <created>1553779561666</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1553779561666</updated>
+    </task>
+    <task id="LOCAL-00050" summary="Changes:&#10;* Added new table ComputerFormFactors and reference to it from Computers.&#10;* Added link on leftMenuSubTemplate as a placeholder for future ComputerFormFactors table managment.&#10;* Updated changelog.md with changes in new_record brief explanation.&#10;&#10;* Implemented ComputerFormFactors functionality fully.&#10;* Updated changelog.md to reflect changes.&#10;* Places where ComputerFormFactors should be interacted with has been implemented:&#10;    * Client program interaction: get aux_data2, get/post data2.&#10;    * New record adding allows setting form factor. (empty string sets id to null/None)&#10;    * Editing record allows edditing record. (empty string sets id to null/None)&#10;    * Computer viewing table allows filtering by form factor.&#10;* Rewritten some code both in ULDCTinterface and website logic files to simplify the code.&#10;* More stuff, but all the rest are mere details.">
+      <created>1554203848469</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1554203848470</updated>
+    </task>
+    <task id="LOCAL-00051" summary="Changes:&#10;* Rewritten some function based views and functions in logic(website) to simplify code, make fewer function calls and shorten code length. Nothing serious though. &#10;&#10;TODO:&#10;* Complete simplification of Observer code.">
+      <created>1554216600161</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1554216600161</updated>
+    </task>
+    <task id="LOCAL-00052" summary="Changes:&#10;* Removed get_all_observations_dict. No use of this function were found.">
+      <created>1554273455562</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1554273455563</updated>
+    </task>
+    <task id="LOCAL-00053" summary="Changes:&#10;* Cleaned up some more code.">
+      <created>1554279925366</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1554279925366</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Changes:&#10;* Cleaned up some even more code.&#10;* Removed obsolete code.&#10;* Refractoring some other code.&#10;* Changing previous urls from &quot;aux_data2&quot;, &quot;data2&quot; to &quot;aux_data&quot;, &quot;data&quot;">
+      <created>1554281957479</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1554281957480</updated>
+    </task>
+    <task id="LOCAL-00055" summary="Changes:&#10;* Decided to leave &quot;aux_data2&quot;, &quot;data2&quot; with &quot;aux_data&quot;, &quot;data&quot; for now, just in case.">
+      <created>1554282178400</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1554282178401</updated>
+    </task>
+    <task id="LOCAL-00056" summary="Changes:&#10;* Fixed issue where updating computer record from client program doesn't update form_factor.">
+      <created>1554286842197</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1554286842197</updated>
+    </task>
+    <task id="LOCAL-00057" summary="Changes:&#10;* Added new alt_data(combination of data and aux_data) to interact with client program as per request.&#10;* logic(website) ComputerToEdit.process_post() altered pops, so it wouldn't crash when any of them are missing on the website.">
+      <created>1554299322296</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1554299322304</updated>
+    </task>
+    <task id="LOCAL-00058" summary="Changes:&#10;* Changed the way CSV/Excel files are exported.&#10;    * If at least one computer is desktop all computers are exported in a desktop structure.&#10;    * Otherwise all computers are exported in laptop structure.">
+      <created>1554364759600</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1554364759601</updated>
+    </task>
+    <task id="LOCAL-00059" summary="Changes:&#10;* Updated changelog.md to reflect changes to csv/excel generation.">
+      <created>1554368105257</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1554368105257</updated>
+    </task>
+    <task id="LOCAL-00060" summary="Changes:&#10;* Added showing of category in computer search from order.&#10;* Fixed an issue where computer search from order was returning sold computers and computers belonging to other orders.&#10;* Updated changelog regarding these changes.">
+      <created>1554369750222</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1554369750223</updated>
+    </task>
+    <task id="LOCAL-00061" summary="Changes:&#10;* Added three types of buttons in hdd_edit to open computers, lots and orders.&#10;* Split some javascript code to hdd_edit.js to avoid confusion.&#10;* Rewritten some javascript changing in some places hdd to drive.&#10;* Removed duplicate code to simplify reading.">
+      <created>1554387687368</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1554387687369</updated>
+    </task>
+    <task id="LOCAL-00062" summary="Changes:&#10;* Updated changelog.md regarding changes with new buttons in hdd_edit.">
+      <created>1554388517772</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1554388517772</updated>
+    </task>
+    <task id="LOCAL-00063" summary="Changes:&#10;* Fixed an issue distorted design in observation details page.&#10;* Changed html structure to limit distortions.&#10;* Changed css to accomodate changes in html.&#10;* Rewritten revealSubcategories to showSubcategories and revealShortcodes to showDetails in order to make them more compatible with different html and css. Also some changes to make code less repetitive.">
+      <created>1554795261904</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1554795261905</updated>
+    </task>
+    <task id="LOCAL-00064" summary="Changes:&#10;* Added drive removal functionality in computer_edit_v5.&#10;* Rewritten some code in computer_edit_v5.js to remove some of the code repetitiveness.&#10;* Updated changelog.md about the changes.">
+      <created>1554801586697</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1554801586697</updated>
+    </task>
+    <task id="LOCAL-00065" summary="Changes:&#10;* Extended website computer filtering of cpus/gpus to many_to_many relationships.&#10;* Changed website computer filtering using other, by removing comment filtering, instead it filters according to observations.&#10;* Updated changelog to reflect these changes.">
+      <created>1554905772676</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1554905772681</updated>
+    </task>
+    <task id="LOCAL-00066" summary="Changes:&#10;* Implemented quantity showing in parenthesis next to  computer filtering choices.&#10;* Updated changolog.md about these changes.">
+      <created>1555397279777</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1555397279778</updated>
+    </task>
+    <task id="LOCAL-00067" summary="Changes:&#10;* Implemented quantity showing in parenthesis next to  drives filtering choices.&#10;* buttons in all storages now positioned horizontally.&#10;* Main table in main page no longer drops down.&#10;* Updated changolog.md about these changes.">
+      <created>1555425621924</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1555425621924</updated>
+    </task>
+    <task id="LOCAL-00068" summary="Changes:&#10;* Fixed issue regarding lot_content and hdd_order table distortions when changing window sizes.">
+      <created>1555501912296</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1555501912300</updated>
+    </task>
+    <task id="LOCAL-00069" summary="Changes:&#10;* Extended search functionality with 5v fields.&#10;* Updated changelog.md with changes.">
+      <created>1556279573476</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1556279573478</updated>
+    </task>
+    <task id="LOCAL-00070" summary="Changes:&#10;* Implemented global search result filtering by status functionality.&#10;* Updated changelog.md with changes.">
+      <created>1556523732841</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1556523732842</updated>
+    </task>
+    <task id="LOCAL-00071" summary="Changes:&#10;* Rewritten some code of Computer5th in order to simplify the code and make it use less memory.">
+      <created>1556549126196</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1556549126196</updated>
+    </task>
+    <task id="LOCAL-00072" summary="Changes:&#10;* Rewritten some code of HddToEdit in order to simplify the code and make it use less memory.&#10;* Removed unnecessary print statements.">
+      <created>1556611673482</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1556611673484</updated>
+    </task>
+    <task id="LOCAL-00073" summary="Changes:&#10;* Partially done 4v removal progress.&#10;* Backing up in new branch because this process should later on be resumed.">
+      <created>1556868027489</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1556868027489</updated>
+    </task>
+    <task id="LOCAL-00074" summary="Changes:&#10;* Added ramstick removal from computer in the computer_edit functionality.">
+      <created>1556876944770</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1556876944772</updated>
+    </task>
+    <task id="LOCAL-00075" summary="Changes:&#10;* Updated changelog to about the changes.&#10;* Simplified remove_drive_from_computer, remove_observation_from_computer and remove_ramstick_from_computer by moving repeating code to remove_object_from_computer.">
+      <created>1556883974963</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1556883974964</updated>
+    </task>
+    <task id="LOCAL-00076" summary="Changes:&#10;* Added functionality to add empty ramstick.&#10;* Found and fixed bug related to saving changed ram type of ramstick.&#10;* Updated changelog.">
+      <created>1557220553081</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1557220553083</updated>
+    </task>
+    <task id="LOCAL-00077" summary="Changes:&#10;* Fixed bug where ramstick removal is not present when adding nonexistant ramstick.">
+      <created>1557222117132</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1557222117132</updated>
+    </task>
+    <task id="LOCAL-00078" summary="Changes:&#10;* Removing ramstick updates total_ram based on sum of remaining rams.">
+      <created>1557238848325</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1557238848325</updated>
+    </task>
+    <task id="LOCAL-00079" summary="Changes:&#10;* Automatic ramstick adding functionality.&#10;* Updated changelog.">
+      <created>1557317275684</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1557317275685</updated>
+    </task>
+    <task id="LOCAL-00080" summary="Changes:&#10;* Simplified some code, removed unnecessary classes and functions.">
+      <created>1557399855840</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1557399855842</updated>
+    </task>
+    <task id="LOCAL-00081" summary="Changes:&#10;* Trash cleaning of 4th version code and unecessary files.">
+      <created>1557749849928</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1557749849932</updated>
+    </task>
+    <task id="LOCAL-00082" summary="Changes:&#10;* ULCDTinterface cleanup from 4v remains.">
+      <created>1557827358280</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1557827358281</updated>
+    </task>
+    <option name="localTasksCounter" value="83" />
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="704" width="1920" height="1044" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13796735" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32900432" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4997367" weight="0.32900432" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32900432" />
+      <window_info anchor="bottom" id="Terminal" order="8" visible="true" weight="0.32900432" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5002633" side_tool="true" weight="0.32900432" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32936078" />
+      <window_info anchor="bottom" id="Messages" order="11" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Changes:&#10;* Updated changelog.md to reflect changes to csv/excel generation." />
+    <MESSAGE value="Changes:&#10;* Added showing of category in computer search from order.&#10;* Fixed an issue where computer search from order was returning sold computers and computers belonging to other orders.&#10;* Updated changelog regarding these changes." />
+    <MESSAGE value="Changes:&#10;* Added three types of buttons in hdd_edit to open computers, lots and orders.&#10;* Split some javascript code to hdd_edit.js to avoid confusion.&#10;* Rewritten some javascript changing in some places hdd to drive.&#10;* Removed duplicate code to simplify reading." />
+    <MESSAGE value="Changes:&#10;* Updated changelog.md regarding changes with new buttons in hdd_edit." />
+    <MESSAGE value="Changes:&#10;* Fixed an issue distorted design in observation details page.&#10;* Changed html structure to limit distortions.&#10;* Changed css to accomodate changes in html.&#10;* Rewritten revealSubcategories to showSubcategories and revealShortcodes to showDetails in order to make them more compatible with different html and css. Also some changes to make code less repetitive." />
+    <MESSAGE value="Changes:&#10;* Added drive removal functionality in computer_edit_v5.&#10;* Rewritten some code in computer_edit_v5.js to remove some of the code repetitiveness.&#10;* Updated changelog.md about the changes." />
+    <MESSAGE value="Changes:&#10;* Extended website computer filtering of cpus/gpus to many_to_many relationships.&#10;* Changed website computer filtering using other, by removing comment filtering, instead it filters according to observations.&#10;* Updated changelog to reflect these changes." />
+    <MESSAGE value="Changes:&#10;* Implemented quantity showing in parenthesis next to  computer filtering choices.&#10;* Updated changolog.md about these changes." />
+    <MESSAGE value="Changes:&#10;* Implemented quantity showing in parenthesis next to  drives filtering choices.&#10;* buttons in all storages now positioned horizontally.&#10;* Main table in main page no longer drops down.&#10;* Updated changolog.md about these changes." />
+    <MESSAGE value="Changes:&#10;* Fixed issue regarding lot_content and hdd_order table distortions when changing window sizes." />
+    <MESSAGE value="Changes:&#10;* Fixed issue which removes previous filters when filtering new filters." />
+    <MESSAGE value="Changes:&#10;* Extended search functionality with 5v fields.&#10;* Updated changelog.md with changes." />
+    <MESSAGE value="Changes:&#10;* Implemented global search result filtering by status functionality.&#10;* Updated changelog.md with changes." />
+    <MESSAGE value="Changes:&#10;* Rewritten some code of Computer5th in order to simplify the code and make it use less memory." />
+    <MESSAGE value="Changes:&#10;* Rewritten some code of HddToEdit in order to simplify the code and make it use less memory.&#10;* Removed unnecessary print statements." />
+    <MESSAGE value="Changes:&#10;* Partially done 4v removal progress.&#10;* Backing up in new branch because this process should later on be resumed." />
+    <MESSAGE value="Changes:&#10;* Added ramstick removal from computer in the computer_edit functionality." />
+    <MESSAGE value="Changes:&#10;* Updated changelog to about the changes.&#10;* Simplified remove_drive_from_computer, remove_observation_from_computer and remove_ramstick_from_computer by moving repeating code to remove_object_from_computer." />
+    <MESSAGE value="Changes:&#10;* Added functionality to add empty ramstick.&#10;* Found and fixed bug related to saving changed ram type of ramstick.&#10;* Updated changelog." />
+    <MESSAGE value="Changes:&#10;* Fixed bug where ramstick removal is not present when adding nonexistant ramstick." />
+    <MESSAGE value="Changes:&#10;* Removing ramstick updates total_ram based on sum of remaining rams." />
+    <MESSAGE value="Changes:&#10;* Automatic ramstick adding functionality.&#10;* Updated changelog." />
+    <MESSAGE value="Changes:&#10;* Simplified some code, removed unnecessary classes and functions." />
+    <MESSAGE value="Changes:&#10;* Trash cleaning of 4th version code and unecessary files." />
+    <MESSAGE value="Changes:&#10;* ULCDTinterface cleanup from 4v remains." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes:&#10;* ULCDTinterface cleanup from 4v remains." />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/website/templates/static/items.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="317">
+          <caret line="54" column="7" selection-start-line="54" selection-start-column="1" selection-end-line="54" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/hddsSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="25" lean-forward="true" selection-start-line="8" selection-start-column="25" selection-end-line="8" selection-end-column="25" />
+          <folding>
+            <element signature="n#th#1;n#tr#0;n#thead#0;n#table#0;n#div#1;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/lot_content.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="32" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/order_edit.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2415">
+          <caret line="161" column="45" selection-start-line="161" selection-start-column="45" selection-end-line="161" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/hdd_order_content.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="34" selection-start-line="15" selection-start-column="34" selection-end-line="15" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="182" column="33" selection-start-line="182" selection-start-column="33" selection-end-line="182" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/navbarSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="26" column="41" lean-forward="true" selection-start-line="26" selection-start-column="41" selection-end-line="26" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/main.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="12" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/chargersCategoriesSubtemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="44" selection-start-line="17" selection-start-column="44" selection-end-line="17" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/index.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="11" lean-forward="true" selection-start-line="15" selection-start-column="11" selection-end-line="15" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modelers2.py" />
+    <entry file="file://$PROJECT_DIR$/website/templates/catToSold.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="26" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analyser.py" />
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/platform-impl.jar!/resources/html5-schema/html5/common.rnc">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1905">
+          <caret line="127" column="18" selection-start-line="127" selection-start-column="18" selection-end-line="127" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/nonexistant_ramstick_template.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="12" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/observation_template.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/computer_edit.html" />
+    <entry file="file://$PROJECT_DIR$/website/templates/static/computer_edit.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="207" column="1" selection-start-line="207" selection-start-column="1" selection-end-line="207" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/new_record.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="131" column="37" selection-start-line="131" selection-start-column="37" selection-end-line="131" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/todolist" />
+    <entry file="file://$PROJECT_DIR$/website/templates/tableSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="53" selection-start-line="2" selection-start-column="53" selection-end-line="2" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/sold.html" />
+    <entry file="file://$PROJECT_DIR$/website/templates/order_edit.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="89">
+          <caret line="61" column="16" selection-start-line="61" selection-start-column="16" selection-end-line="61" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/soldComputersSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="282" column="35" selection-start-line="282" selection-start-column="28" selection-end-line="282" selection-end-column="35" />
+          <folding>
+            <element signature="n#div#0;n#!!top" />
+            <element signature="n#div#0;n#div#0;n#!!top" />
+            <element signature="n#div#1;n#div#0;n#!!top" />
+            <element signature="n#thead#0;n#table#0;n#div#1;n#!!top" />
+            <element signature="n#tr#0;n#thead#0;n#table#0;n#div#1;n#!!top" />
+            <element signature="n#th#0;n#tr#0;n#thead#0;n#table#0;n#div#1;n#!!top" />
+            <element signature="n#div#0;n#div#1;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/computersSearchedSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="323" column="64" selection-start-line="323" selection-start-column="64" selection-end-line="323" selection-end-column="64" />
+          <folding>
+            <element signature="n#div#0;n#!!top" />
+            <element signature="n#src#0;n#img#0;n#button#0;n#div#1;n#div#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#src#0;n#img#0;n#button#0;n#div#3;n#div#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#src#0;n#img#0;n#button#0;n#div#5;n#div#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#src#0;n#img#0;n#button#0;n#div#6;n#div#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#thead#0;n#table#0;n#div#1;n#!!top" />
+            <element signature="n#th#0;n#tr#0;n#thead#0;n#table#0;n#div#1;n#!!top" />
+            <element signature="n#div#0;n#div#1;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/computersSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="329" column="44" selection-start-line="329" selection-start-column="44" selection-end-line="329" selection-end-column="44" />
+          <folding>
+            <element signature="n#div#0;n#!!top" />
+            <element signature="n#src#0;n#img#0;n#button#0;n#div#3;n#div#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#tr#0;n#thead#0;n#table#0;n#div#1;n#!!top" />
+            <element signature="n#th#0;n#tr#0;n#thead#0;n#table#0;n#div#1;n#!!top" />
+            <element signature="n#div#0;n#div#1;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/computer_search_from_order_row.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="27" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/computer_search_from_order_table.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="35" selection-start-line="11" selection-start-column="35" selection-end-line="11" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/index.html" />
+    <entry file="file://$PROJECT_DIR$/website/templates/computer_edit_v4.html" />
+    <entry file="file://$PROJECT_DIR$/website/templates/computer_look2.html" />
+    <entry file="file://$PROJECT_DIR$/website/templates/computer_edit2.html" />
+    <entry file="file://$PROJECT_DIR$/logs/observer.log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logs/failed.log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/categorySearchOptionsSubtemplate.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/searchSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="9" selection-start-line="8" selection-start-column="9" selection-end-line="8" selection-end-column="9" />
+          <folding>
+            <element signature="e#509#4255#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/charger_nonexistant.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/noRecordsSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/orders.html" />
+    <entry file="file://$PROJECT_DIR$/website/templates/status.html" />
+    <entry file="file://$PROJECT_DIR$/website/form_classes.py" />
+    <entry file="file://$PROJECT_DIR$/server/modelers.py" />
+    <entry file="file://$PROJECT_DIR$/ULCDTinterface/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="153" selection-start-line="153" selection-end-line="153" />
+          <folding>
+            <element signature="e#621#2178#0" />
+            <element signature="e#2225#3627#0" />
+            <element signature="e#2298#2971#0" />
+            <element signature="e#3012#3627#0" />
+            <element signature="e#3686#7251#0" />
+            <element signature="e#3731#4409#0" />
+            <element signature="e#4448#5024#0" />
+            <element signature="e#5103#5777#0" />
+            <element signature="e#5818#7251#0" />
+            <element signature="e#7312#7384#0" />
+            <element signature="e#7422#7875#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ULCDTinterface/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="31" lean-forward="true" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deleter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="15" selection-start-line="9" selection-start-column="15" selection-end-line="9" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="34" selection-start-line="34" selection-end-line="34" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ULCDTinterface/modelers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="n#!!doc" />
+            <element signature="e#588#748#0" />
+            <element signature="e#786#1494#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ULCDTinterface/logic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="204" column="77" lean-forward="true" selection-start-line="204" selection-start-column="77" selection-end-line="204" selection-end-column="77" />
+          <folding>
+            <element signature="e#13223#15289#0" />
+            <element signature="e#15327#18300#0" />
+            <element signature="e#15877#16574#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/logic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="2781" column="8" selection-start-line="2781" selection-start-column="8" selection-end-line="2781" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="438">
+          <caret line="1043" column="12" lean-forward="true" selection-start-line="1043" selection-start-column="12" selection-end-line="1043" selection-end-column="12" />
+          <folding>
+            <element signature="e#0#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/changelog.md">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="37" selection-start-line="16" selection-start-column="37" selection-end-line="16" selection-end-column="37" />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="405">
+            <caret line="36" column="93" selection-start-line="36" selection-start-column="93" selection-end-line="36" selection-end-column="93" />
+          </first_editor>
+          <second_editor>
+            <markdownNavigatorState />
+          </second_editor>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
