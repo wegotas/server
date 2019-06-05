@@ -1,3 +1,53 @@
+2019-06-05
+
+LT:
+**Pokyciai serveryje, duomenu bazeje: Draivu funkcionalumo ispletimas bei apdorojimu pokyciai.**
+* Serveryje per 'hdd_edit' prideti papildomi laukai:
+    * Origin - saltinis kokiu budu buvo prideta, neredaguojamas.
+    * Date added - sugeneruota kai pridedama, neredaguojamas.
+    * Manufacturer - Gamintojas.
+    * Physical interface - Fizine jungtis.
+    * Description - aprasymas, kuri grazina 'Hard Disk Sentinel'.
+    * Type - tipas kaip ssd/hdd.
+    * Notes - aprasymo santrauka.
+    * Family - Draivo seima.
+    * Width - Draivo plotis.
+    * Height - Draivo aukstis.
+    * Length - Draivo ilgis.
+    * Weight - Draivo svoris.
+    * Power Spin - Kiek amperu reikia kad isisuktu hardas.
+    * Power Seek - Kiek reikia amperu kai ieskomas atminties blokas.
+    * Power Idle - Kiek sunaudoja amperu laukimo rezime.
+    * Power Standby - Kiek amperu sunaudoja miegojimo rezime.
+    * Total Writes - Kiek isviso duomenu buvo surasyta i draiva(ssd).
+* Pakeistas mechanizmas kaip issaugomi Tar partiju failai, bei tekstiniai uzsakymo failai.
+    * Jei kas is lauku neissisaugos bus grazintas pranesimas ar truksta kokiu duomenu per tinklalapi grazins dali duomenu pagal butinus laukus.
+    * Nebestebimas aplankas apdorojimui media del txt ir tar apdorojimui. Sis palaikymas pasalintas kad palengvinti priziurejima.
+
+EN:
+**Changes in server, database: Drives functionality expansion and processing changes.**
+* Server in 'hdd_edit' added additional fields:
+    * Origin - source origin by which drive was added, non-editable.
+    * Date added - generated when added, non-editable.
+    * Manufacturer - manufacturer of drive.
+    * Physical interface - physical connection's interface.
+    * Description - description which is returned by 'Hard Disk Sentinel'.
+    * Type - type as ssd/hdd.
+    * Notes - shortening of description.
+    * Family - drive's family.
+    * Width - drive's width.
+    * Height - drive's height.
+    * Length - drive's length.
+    * Weight - drive's weight.
+    * Power Spin - How many ampers are needed for hdd spin up.
+    * Power Seek - How many ampers are needed for seeking.
+    * Power Idle - How many ampers are needed for waiting regime.
+    * Power Standby - How many ampers are needed for sleeping regime.
+    * Total Writes - How much was written into drive(ssd).
+* Changed mechanism for saving tar and lot txt order's files.
+    * If any field can not be saved or some fieldname is missing page returns part of data is missing.
+    * Changes in media directory for txt and tar file processing. This support removed to ease up maintenance.
+___
 2019-05-15
 
 LT:
