@@ -4,12 +4,7 @@ from django.utils import timezone
 import re
 from django.db.models import Q, Count
 from django.conf import settings
-import time
-from watchdog.observers import Observer
-from watchdog.events import PatternMatchingEventHandler
-import logging
 import os
-from threading import Thread
 import tarfile
 import datetime
 import csv
@@ -17,12 +12,11 @@ import qrcode
 from PIL import Image, ImageDraw, ImageFont
 import subprocess
 import io
-from django.db.models import ProtectedError
-from django.db.utils import IntegrityError
 import tempfile
 import math
 import sys
 from abc import ABC
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
 class Counter:
@@ -68,7 +62,6 @@ class FilterUnit:
 
 
 class AutoFiltersFromComputers:
-    # todo: update class to remove 4v remains.
     """
     This is a holder of unique values necessary for filtering operations website side.
     """
@@ -1587,198 +1580,6 @@ class OrderToEdit:
                     )
 
 
-def on_start():
-    """
-    This function is called from urls.py to ensure that it's run once.
-    It is responsible for calling in seperate threads observers to monitor file creation.
-    """
-    print("on start")
-    tarThread = Thread(target=start_tar_observer)
-    txtThread = Thread(target=start_txt_observer)
-    txtThread.start()
-    tarThread.start()
-
-
-def start_tar_observer():
-    """
-    Starts observation of provided directory and uses TarAndLogHandler to log errors and process Tar files.
-    """
-    observer = Observer()
-    log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
-    logging.basicConfig(
-        filename=log_position,
-        level=logging.WARNING,
-        format="%(asctime)-15s %(threadName)s:%(message)s"
-    )
-    observer.schedule(
-        event_handler=TarAndLogHandler(),
-        path=os.path.join(os.path.join(settings.BASE_DIR, 'temp'))
-    )
-    logging.warning("Start of tar observer")
-    observer.start()
-    try:
-        while True:
-            time.sleep(10)
-    except KeyboardInterrupt:
-        logging.warning('Ending observer, due to keyboard interupt')
-        observer.stop()
-        logging.warning('Observer ended')
-    observer.join()
-
-
-class TarAndLogHandler(PatternMatchingEventHandler):
-    """
-    Class responsible for evaluating events with tar extension and logging them.
-    """
-    patterns = ['*.tar']
-
-    def process(self, event):
-        logging.warning(event.src_path)
-        logging.warning(event.event_type)
-        atp = AlternativeTarProcessor(
-            in_memory_file=event.src_path,
-            filename=os.path.basename(event.src_path).replace('.tar', '')
-        )
-        atp.process_data()
-        logging.warning('_________________________________________')
-
-    def on_created(self, event):
-        if not event.is_directory:
-            self.process(event)
-
-
-def start_txt_observer():
-    """
-    Starts observation of provided directory and uses TxtAndLogHandler to log errors and process txt files.
-    """
-    observer = Observer()
-    log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
-    logging.basicConfig(filename=log_position, level=logging.WARNING, format="%(asctime)-15s %(threadName)s:%(message)s")
-    observer.schedule(TxtAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
-    logging.warning("Start of txt observer")
-    observer.start()
-    try:
-        while True:
-            time.sleep(10)
-    except KeyboardInterrupt:
-        logging.warning('Ending observer, due to keyboard interupt')
-        observer.stop()
-        logging.warning('Observer ended')
-    observer.join()
-
-
-class TxtAndLogHandler(PatternMatchingEventHandler):
-    """
-    Class responsible for evaluating events with tar extension and logging them.
-    """
-    patterns = ['*.txt']
-
-    def process(self, event):
-        logging.warning(event.src_path)
-        logging.warning(event.event_type)
-        ahop = AlternativeHddOrderProcessor(txt_object=event.src_path)
-        ahop.process_data()
-        logging.warning('_________________________________________')
-
-    def on_created(self, event):
-        if not event.is_directory:
-            self.process(event)
-
-
-'''
-class HddWriter:
-
-    def __init__(self, file, filename):
-        self.file = file
-        self.filename = filename
-
-    def save(self):
-        self._save_and_set_lots()
-        lines_array = self._get_lines_array()
-        for line in lines_array:
-            line_array = line.split('@')
-
-            model = self._save_and_get_models(line_array[2])
-            size = self._save_and_get_size(line_array[3])
-            lock_state = self._save_and_get_lock_state(line_array[4])
-            speed = self._save_and_get_speed(line_array[5])
-            form_factor = self._save_and_get_form_factor(line_array[6])
-            self._save_hdd(line_array, model, size, lock_state, speed, form_factor)
-
-    def _save_hdd(self, line_array, model, size, lock_state, speed, form_factor):
-        if Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
-            logging.warning("Such hdd allready exists")
-            existing_hdd = Drives.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
-            logging.warning(existing_hdd)
-            hdd = Drives(
-                hdd_id=existing_hdd.hdd_id,
-                hdd_serial=line_array[1],
-                health=line_array[7].replace("%", ""),
-                days_on=line_array[8],
-                f_lot=self.lot,
-                f_hdd_models=model,
-                f_hdd_sizes=size,
-                f_lock_state=lock_state,
-                f_speed=speed,
-                f_form_factor=form_factor
-            )
-            hdd.save()
-        else:
-            hdd = Drives(
-                hdd_serial=line_array[1],
-                health=line_array[7].replace("%", ""),
-                days_on=line_array[8],
-                f_lot=self.lot,
-                f_hdd_models=model,
-                f_hdd_sizes=size,
-                f_lock_state=lock_state,
-                f_speed=speed,
-                f_form_factor=form_factor
-            )
-            hdd.save()
-
-    def _get_lines_array(self):
-        content = self.file.read()
-        try:
-            content = content.decode("utf-8")
-        except AttributeError:
-            pass
-        linesArray = content.split('\n')
-        del linesArray[-1]
-        return linesArray
-
-    def _save_and_set_lots(self):
-        try:
-            self.lot = Lots.objects.get(lot_name=self.filename)
-        except Lots.DoesNotExist:
-            self.lot = Lots(
-                lot_name=self.filename,
-                date_of_lot=timezone.now().today().date()
-            )
-            self.lot.save()
-
-    def _save_and_get_models(self, model):
-        model_to_return = HddModels.objects.get_or_create(hdd_models_name=model)[0]
-        return model_to_return
-
-    def _save_and_get_size(self, size):
-        size_to_return = HddSizes.objects.get_or_create(hdd_sizes_name=size)[0]
-        return size_to_return
-
-    def _save_and_get_lock_state(self, lock):
-        lock_to_return = LockState.objects.get_or_create(lock_state_name=lock)[0]
-        return lock_to_return
-
-    def _save_and_get_speed(self, speed):
-        speed_to_return = Speed.objects.get_or_create(speed_name=speed)[0]
-        return speed_to_return
-
-    def _save_and_get_form_factor(self, form_factor):
-        form_factor_to_return = FormFactor.objects.get_or_create(form_factor_name=form_factor)[0]
-        return form_factor_to_return
-'''
-
-
 class LotHolder:
 
     def __init__(self, lot_id, lot_name, date_of_lot, count):
@@ -2111,6 +1912,35 @@ class HddToEdit:
         """
         return Computerdrives.objects.filter(f_drive=self.hdd).values_list('f_id_computer__id_computer', flat=True)
 
+    def manufacturers(self):
+        """
+        Method which returns manufacturer names to html form.
+        :return: Collection of manufacturer names.
+        """
+        return Manufacturers.objects.values_list(
+            'manufacturer_name', flat=True).distinct().order_by('manufacturer_name')
+
+    def interfaces(self):
+        """
+        Method which returns interface names to html form.
+        :return: Collection of interface names.
+        """
+        return PhysicalInterfaces.objects.values_list('interface_name', flat=True).distinct().order_by('interface_name')
+
+    def types(self):
+        """
+        Method which returns type names to html form.
+        :return: Collection of type names.
+        """
+        return DriveTypes.objects.values_list('type_name', flat=True).distinct().order_by('type_name')
+
+    def families(self):
+        """
+        Method which returns family names to html form.
+        :return: Collection of family names.
+        """
+        return DriveFamily.objects.values_list('family_name', flat=True).distinct().order_by('family_name')
+
     def process_edit(self, data_dict):
         '''
         Edits hdd's attributes based on provided data_dict
@@ -2124,6 +1954,29 @@ class HddToEdit:
         self.hdd.f_lock_state = LockState.objects.get_or_create(lock_state_name=data_dict.pop('state')[0])[0]
         self.hdd.f_speed = Speed.objects.get_or_create(speed_name=data_dict.pop('speed')[0])[0]
         self.hdd.f_form_factor = FormFactor.objects.get_or_create(form_factor_name=data_dict.pop('form_factor')[0])[0]
+
+        self.hdd.f_manufacturer = Manufacturers.objects.get_or_create(
+            manufacturer_name=data_dict.pop('manufacturer_name')[0])[0]
+        self.hdd.f_interface = PhysicalInterfaces.objects.get_or_create(
+            interface_name=data_dict.pop('interface_name')[0])[0]
+        self.hdd.description = data_dict.pop('description')[0]
+        self.hdd.f_type = DriveTypes.objects.get_or_create(type_name=data_dict.pop('type_name')[0])[0]
+        self.hdd.f_note = DriveNotes.objects.get_or_create(note_text=data_dict.pop('notes')[0])[0]
+        self.hdd.f_family = DriveFamily.objects.get_or_create(family_name=data_dict.pop('family_name')[0])[0]
+        self.hdd.f_width = DriveWidth.objects.get_or_create(width_name=data_dict.pop('width_name')[0])[0]
+        self.hdd.f_height = DriveHeight.objects.get_or_create(height_name=data_dict.pop('height_name')[0])[0]
+        self.hdd.f_length = DriveLength.objects.get_or_create(length_name=data_dict.pop('length_name')[0])[0]
+        self.hdd.f_weight = DriveWeight.objects.get_or_create(weight_name=data_dict.pop('weight_name')[0])[0]
+        self.hdd.f_power_spin = DrivePowerSpin.objects.get_or_create(
+            power_spin_name=data_dict.pop('power_spin_name')[0])[0]
+        self.hdd.f_power_seek = DrivePowerSeek.objects.get_or_create(
+            power_seek_name=data_dict.pop('power_seek_name')[0])[0]
+        self.hdd.f_power_idle = DrivePowerIdle.objects.get_or_create(
+            power_idle_name=data_dict.pop('power_idle_name')[0])[0]
+        self.hdd.f_power_standby = DrivePowerStandby.objects.get_or_create(
+            power_standby_name=data_dict.pop('power_standby_name')[0])[0]
+        self.hdd.total_writes = data_dict.pop('total_writes')[0]
+
         self.hdd.save()
 
 
@@ -2152,219 +2005,6 @@ class HddToDelete:
             print('Failed deletion')
 
 
-class TarProcessor:
-    """
-    Older version of tar processor with predefined positions where which values are located.
-    """
-
-    def __init__(self, inMemoryFile, filename=None):
-        if filename is None:
-            self.lot_name = inMemoryFile._name.replace('.tar', '')
-            self.tar = tarfile.open(fileobj=inMemoryFile.file)
-            self.fileLoc = ''
-        else:
-            self.lot_name = filename.replace('.tar', '')
-            self.tar = tarfile.open(inMemoryFile)
-            self.fileLoc = filename
-
-    def process_data(self):
-        self._save_and_set_lots()
-        for member in self.tar.getmembers():
-            if '.txt' in member.name:
-                file = self.tar.extractfile(member)
-                with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
-                    textToWrite = '* importing lot ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *\r\n'
-                    isMissing = False
-                    new_tarfile_loc = os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
-                    with tarfile.open(new_tarfile_loc, 'a') as new_tar:
-                        for bline in file.readlines():
-                            try:
-                                line = bline.decode('utf-8')
-                                line_array = line.split('@')
-                                if self.isValid(line_array):
-                                    tarmember = self.get_tar_member_by_serial(line_array)
-                                    if self._hdd_exists(line_array):
-                                        if tarmember is not None:
-                                            isMissing = True
-                                            tarmember_to_remove = self.get_tarmember_name(line_array)
-                                            if tarmember_to_remove is not None:
-                                                tarmember_to_remove = self.get_tarmember_name(line_array)
-                                                try:
-                                                    new_tar.getmember(tarmember_to_remove)
-                                                    os.system('tar -vf '+new_tarfile_loc+' --delete "'+tarmember_to_remove+'"')
-                                                except:
-                                                    print('Tarfile opening or its deletion had failed')
-                                                    pass
-                                            filename = tarmember.name
-                                            file = self.tar.extractfile(tarmember)
-                                            new_tar.addfile(tarmember, file)
-                                            self._update_existing_hdd(line_array, filename)
-                                            textToWrite += 'SN: ' + line_array[1] + '| info updated. File updated.\r\n'
-                                        else:
-                                            self._update_existing_hdd_without_file(line_array)
-                                            isMissing = True
-                                            textToWrite += 'SN: ' + line_array[1] + '| Record info updated. File info not changed.\r\n'
-                                    else:
-                                        if tarmember is not None:
-                                            file = self.tar.extractfile(tarmember)
-                                            filename = tarmember.name
-                                            new_tar.addfile(tarmember, file)
-                                            self._save_new_hdd(line_array, filename)
-                                        else:
-                                            isMissing = True
-                                            textToWrite += 'SN: ' + line_array[1] + '| skipped. Not present in database. No file associated.\r\n'
-                                else:
-                                    textToWrite += 'SN: ' + line_array[1] + '| values which should be numbers, are not.\r\n'
-                            except Exception as e:
-                                isMissing = True
-                                textToWrite +='\r\n Error: ' + str(e)+' \r\n'
-                        textToWrite += '===============================================\r\n'
-                        if isMissing:
-                            logfile.write(textToWrite)
-        try:
-            if self.fileLoc != '':
-                os.remove(self.fileLoc)
-        except:
-            pass
-
-    def get_tarmember_name(self, line_array):
-        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-        hdd = Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
-        return hdd.tar_member_name
-
-    def get_tar_member_by_serial(self, line_array):
-        for member in self.tar.getmembers():
-            if '(S-N ' + line_array[1] + ')' in member.name:
-                return member
-        return None
-
-    def isValid(self, line_array):
-        if line_array[7].replace("%", "").strip().isdigit() and line_array[8].strip().isdigit():
-            return True
-        return False
-
-    def _update_existing_hdd_without_file(self, line_array):
-        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-        hdd = Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
-        size = self._save_and_get_size(line_array[3])
-        lock_state = self._save_and_get_lock_state(line_array[4])
-        speed = self._save_and_get_speed(line_array[5])
-        form_factor = self._save_and_get_form_factor(line_array[6])
-        hdd.f_hdd_sizes = size
-        hdd.f_lock_state = lock_state
-        hdd.f_speed = speed
-        hdd.f_form_factor = form_factor
-        hdd.health = line_array[7].replace("%", "")
-        hdd.days_on = line_array[8]
-        hdd.f_lot = self.lot
-        hdd.save()
-
-    def _update_existing_hdd(self, line_array, filename):
-        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-        hdd = Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
-        size = self._save_and_get_size(line_array[3])
-        lock_state = self._save_and_get_lock_state(line_array[4])
-        speed = self._save_and_get_speed(line_array[5])
-        form_factor = self._save_and_get_form_factor(line_array[6])
-        hdd.f_hdd_sizes = size
-        hdd.f_lock_state = lock_state
-        hdd.f_speed = speed
-        hdd.f_form_factor = form_factor
-        hdd.health = line_array[7].replace("%", "")
-        hdd.days_on = line_array[8]
-        hdd.tar_member_name = filename
-        hdd.f_lot = self.lot
-        hdd.save()
-
-    def _save_new_hdd(self, line_array, filename):
-        model = self._save_and_get_models(line_array[2])
-        size = self._save_and_get_size(line_array[3])
-        lock_state = self._save_and_get_lock_state(line_array[4])
-        speed = self._save_and_get_speed(line_array[5])
-        form_factor = self._save_and_get_form_factor(line_array[6])
-        hdd = Drives(
-            hdd_serial=line_array[1],
-            health=line_array[7].replace("%", ""),
-            days_on=line_array[8],
-            tar_member_name=filename,
-            f_lot=self.lot,
-            f_hdd_models=model,
-            f_hdd_sizes=size,
-            f_lock_state=lock_state,
-            f_speed=speed,
-            f_form_factor=form_factor
-        )
-        hdd.save()
-
-    def _hdd_exists(self, line_array):
-        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-        hdd = Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
-        return hdd.exists()
-
-    def _save_hdd(self, line_array, model, size, lock_state, speed, form_factor):
-        if Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
-            logging.warning("Such hdd allready exists")
-            existing_hdd = Drives.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
-            logging.warning(existing_hdd)
-            logging.warning(existing_hdd.__dict__)
-            hdd = Drives(
-                hdd_id=existing_hdd.hdd_id,
-                hdd_serial=line_array[1],
-                health=line_array[7].replace("%", ""),
-                days_on=line_array[8],
-                f_lot=self.lot,
-                f_hdd_models=model,
-                f_hdd_sizes=size,
-                f_lock_state=lock_state,
-                f_speed=speed,
-                f_form_factor=form_factor
-            )
-            hdd.save()
-        else:
-            hdd = Drives(
-                hdd_serial=line_array[1],
-                health=line_array[7].replace("%", ""),
-                days_on=line_array[8],
-                f_lot=self.lot,
-                f_hdd_models=model,
-                f_hdd_sizes=size,
-                f_lock_state=lock_state,
-                f_speed=speed,
-                f_form_factor=form_factor
-            )
-            hdd.save()
-
-    def _save_and_set_lots(self):
-        try:
-            self.lot = Lots.objects.get(lot_name=self.lot_name)
-        except Lots.DoesNotExist:
-            self.lot = Lots(
-                lot_name=self.lot_name,
-                date_of_lot=timezone.now().today().date()
-            )
-            self.lot.save()
-
-    def _save_and_get_models(self, model):
-        model_to_return = HddModels.objects.get_or_create(hdd_models_name=model)[0]
-        return model_to_return
-
-    def _save_and_get_size(self, size):
-        size_to_return = HddSizes.objects.get_or_create(hdd_sizes_name=size)[0]
-        return size_to_return
-
-    def _save_and_get_lock_state(self, lock):
-        lock_to_return = LockState.objects.get_or_create(lock_state_name=lock)[0]
-        return lock_to_return
-
-    def _save_and_get_speed(self, speed):
-        speed_to_return = Speed.objects.get_or_create(speed_name=speed)[0]
-        return speed_to_return
-
-    def _save_and_get_form_factor(self, form_factor):
-        form_factor_to_return = FormFactor.objects.get_or_create(form_factor_name=form_factor)[0]
-        return form_factor_to_return
-
-
 class WriteableMessage:
     """
     Class responsible of holding text inside and true/false value
@@ -2386,224 +2026,17 @@ class WriteableMessage:
             self.should_write = should_write
 
 
-class AlternativeTarProcessor:
+class TarProcessor:
     """
-    Class responsible of handling tar processing.
-    It is alternative version of TarProcessor.
-    File columns can change their positions, new ones could be added and this class still should be able to process it.
+    Class responsible for processing tar files with log of successfully deleted drives and their pdfs proving deletion.
     """
-    headers = ['Serial number', 'Health', 'Power_On', 'Model', 'Capacity', 'Lock', 'Speed', 'Size']
 
-    def __init__(self, in_memory_file, filename=None):
-        """
-        In case of upload through a website filename is not passed to __init__.
-        In case of file creation being caught by watchdog, filename is passed to __init__.
-        :param in_memory_file: memory file to be processed
-        :param filename: filename which is provided with the help of watchdog.
-        """
-        if filename is None:
-            # Lot name is assigned based on file's name.
-            self.lot_name = in_memory_file._name.replace('.tar', '')
-            self.tar = tarfile.open(fileobj=in_memory_file.file)
-            self.file_loc = ''
-        else:
-            self.lot_name = filename.replace('.tar', '')
-            self.tar = tarfile.open(in_memory_file)
-            self.file_loc = filename
-        self.txt_file = self.get_txt_file()
-        # firstline represents header of the custom txt file
-        self.firstline = self.get_first_line(self.txt_file)
+    def __init__(self, in_memory_tarfile):
+        self.lot_name = in_memory_tarfile._name.replace('.tar', '')
+        self.tar = tarfile.open(fileobj=in_memory_tarfile.file)
+        self.drive_text_file = DriveTextFileManager(self._get_txt_file())
         self.text_to_write = WriteableMessage()
-        self.lot = None
-        self.file_header_indexes = None
-
-    @property
-    def message(self):
-        """
-        Method called from view to return what failed to html response.
-        """
-        return self.text_to_write.text
-
-    def process_data(self):
-        """
-        Opens logfile failed.log to keep it in case self.text_to_write should be written into.
-        Initiation of whole data processing within the class.
-        """
-        with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
-            self.text_to_write.add('* importing lot ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *')
-            if self.is_header_valid(self.firstline):
-                self.process_file_with_valid_headers()
-            else:
-                self.text_to_write.add(
-                    string_to_add='All required fields in {0} were not found:\r\n{1}'
-                    .format(self.lot_name, self.headers),
-                    should_write=True
-                )
-                self.text_to_write.add('===============================================')
-            if self.text_to_write.should_write:
-                logfile.write(self.text_to_write.text)
-
-    def process_file_with_valid_headers(self):
         self.lot = self._save_and_get_lots()
-        self.file_header_indexes = self._get_file_header_indexes(self.firstline.split('@'))
-        new_tarfile_loc = self._get_new_tarfile_location()
-        with tarfile.open(new_tarfile_loc, 'a') as new_tar:
-            for line in self.txt_file.readlines():
-                self.try_processing_line(line=line, new_tar=new_tar, new_tarfile_loc=new_tarfile_loc)
-
-    def try_processing_line(self, line, new_tar, new_tarfile_loc):
-        """
-        :param line: line in a file representing one drive.
-        :param new_tar: tar created for this class.
-        :param new_tarfile_loc: Location where new_tar is located.
-        """
-        try:
-            self._process_line(line=line, new_tar=new_tar, new_tarfile_loc=new_tarfile_loc)
-        except Exception as e:
-            self.text_to_write.add(string_to_add='\r\n Error: {0} \r\n'.format(e), should_write=True)
-            
-    def _process_line(self, line, new_tar, new_tarfile_loc):
-        """
-        Processes one line of txt file representing drive.
-        :param line: line in a file representing one drive.
-        :param new_tar: tar created for this class.
-        :param new_tarfile_loc: Location where new_tar is located.
-        :return:
-        """
-        line_array = self._get_line_array(line)
-        if self.is_valid(line_array):
-            self._process_valid_line_array(
-                line_array=line_array,
-                new_tar=new_tar,
-                new_tarfile_loc=new_tarfile_loc
-            )
-        else:
-            self.text_to_write.add(
-                tring_to_add='SN: {0}| skipped. Health or Power on is not a proper digit.'
-                .format(line_array[self.file_header_indexes['Serial number']]),
-                should_write=True
-            )
-
-    def _process_valid_line_array(self, line_array, new_tar, new_tarfile_loc):
-        """
-        :param line_array: list of strings to process.
-        :param new_tar: tar created for this class.
-        :param new_tarfile_loc: Location where new_tar is located.
-        :return:
-        """
-        tarmember = self.get_tar_member_by_serial(line_array[self.file_header_indexes['Serial number']])
-        if self._drive_exists(line_array):
-            self._process_existing_hdd(
-                line_array=line_array,
-                new_tar=new_tar,
-                new_tarfile_loc=new_tarfile_loc,
-                tarmember=tarmember
-            )
-        else:
-            self._process_nonexistant_hdd(line_array=line_array, new_tar=new_tar, tarmember=tarmember)
-
-    def _process_existing_hdd(self, line_array, new_tar, new_tarfile_loc, tarmember):
-        """
-        :param line_array: list of strings to process.
-        :param new_tar: tar created for this class.
-        :param new_tarfile_loc: Location where new_tar is located.
-        :param tarmember: uploaded tar file's pdf member.
-        """
-        if tarmember:
-            self._process_tarmember_with_existing_hdd(
-                line_array=line_array,
-                new_tar=new_tar,
-                new_tarfile_loc=new_tarfile_loc,
-                tarmember=tarmember
-            )
-            self.text_to_write.add(
-                string_to_add='SN: {0}| info updated. File updated.'
-                .format(line_array[self.file_header_indexes['Serial number']]),
-                should_write=True
-            )
-        else:
-            self._update_existing_drive(line_array=line_array)
-            self.text_to_write.add(
-                string_to_add='SN: {0}| Record info updated. File info not changed.'
-                .format(line_array[self.file_header_indexes['Serial number']])
-            )
-
-    def _process_nonexistant_hdd(self, tarmember, new_tar, line_array):
-        """
-        Calls to save new drive if has associated tar member.
-        :param tarmember: uploaded tar file's pdf member.
-        :param new_tar: tar created for this class.
-        :param line_array: list of strings to process.
-        :return:
-        """
-        if tarmember:
-            new_tar.addfile(tarmember, self.tar.extractfile(tarmember))
-            self._save_new_drive(line_array, tarmember.name)
-        else:
-            self.text_to_write.add(
-                string_to_add='SN: {0}| skipped. Not present in database. No file associated.'
-                .format(line_array[self.file_header_indexes['Serial number']]),
-                should_write=True
-            )
-
-    def _process_tarmember_with_existing_hdd(self, line_array, new_tar, new_tarfile_loc, tarmember):
-        """
-        :param line_array: list of strings to process.
-        :param new_tar: tar created for this class.
-        :param new_tarfile_loc: Location where new_tar is located.
-        :param tarmember: uploaded tar file's pdf member.
-        """
-        self._try_to_remove_tarmember(
-            line_array=line_array,
-            new_tar=new_tar,
-            new_tarfile_loc=new_tarfile_loc
-        )
-        new_tar.addfile(tarmember, self.tar.extractfile(tarmember))
-        self._update_existing_drive(line_array, tarmember.name)
-
-    def _try_to_remove_tarmember(self, line_array, new_tar, new_tarfile_loc):
-        """
-        Removes tarmember out of new tar file, to avoid file duplications in new tar file.
-        :param line_array: list of strings to process.
-        :param new_tar: tar created for this class.
-        :param new_tarfile_loc: Location where new_tar is located.
-        """
-        try:
-            tarmember_to_remove = self.get_tarmember_name(line_array)
-            if tarmember_to_remove is not None:
-                new_tar.getmember(tarmember_to_remove)
-                os.system('tar -vf {0} --delete "{1}"'.format(new_tarfile_loc, tarmember_to_remove))
-        except:
-            print('Tarfile opening or its deletion had failed')
-            pass
-
-    def _get_new_tarfile_location(self):
-        """
-        :return: full path name wher tarfiles should be saved.
-        """
-        return os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), '{0}.tar'.format(self.lot_name))
-
-    def _get_line_array(self, line):
-        """
-        :param line: string to process.
-        :return: convert line to utf-8 if it's not, and returns it as line_array.
-        """
-        try:
-            return line.decode('utf-8').split('@')
-        except:
-            return line.split('@')
-
-    def get_tarmember_name(self, line_array):
-        """
-        Returns tarmember name based on line_array's serial number and model.
-        :param line_array: list of strings to process.
-        :return: name of tarmember
-        """
-        drive = Drives.objects.filter(
-            hdd_serial=line_array[self.file_header_indexes['Serial number']],
-            f_hdd_models=HddModels.objects.get(hdd_models_name=self.file_header_indexes['Model'])
-        )[0]
-        return drive.tar_member_name
 
     def _save_and_get_lots(self):
         """
@@ -2618,403 +2051,510 @@ class AlternativeTarProcessor:
                 date_of_lot=timezone.now().today().date()
             )
 
-    def get_txt_file(self):
+    def _get_txt_file(self):
         """
+        As per now, txt file to parse has string 'Succe' in it's name.
         :return: first found txt file in tar.
         """
         for member in self.tar.getmembers():
-            if '.txt' in member.name:
+            if 'Succe' in member.name:
                 return self.tar.extractfile(member)
 
-    def get_first_line(self, txt_object):
+    def process_data(self):
         """
-        :param txt_object: text file as an object
-        :return: first line of text file
+        Method which initiates processing of tarfile.
+        Creates new reference to a new file.
+        Iterates through drive_text_file.
+        if line in drive_text_file iteration is not valid updates message,
+        otherwise processes it by instantiating _process_valid_drive_line.
         """
-        return txt_object.readline().strip().decode('utf8')
+        with tarfile.open(self._get_new_tarfile_location(), 'a') as self.new_tar:
+            for drive_line in self.drive_text_file.get_drive_line_processors():
+                if drive_line.is_valid():
+                    self._process_valid_drive_line(drive_line=drive_line)
+                else:
+                    serial = drive_line.get_serial()
+                    health = drive_line.get_health()
+                    power_on = drive_line.get_power_on()
+                    self.text_to_write.add(
+                        string_to_add=f'SN: {serial} skipped. Health("{health}") or Power on("{power_on}") on are not digits.',
+                        should_write=True
+                    )
 
-    def is_header_valid(self, line):
+    def _get_new_tarfile_location(self):
         """
-        :param line: first_line, which should represent file's header row.
-        :return: True if all required headers from self.headers are present in line, returns True, else False.
+        :return: full path name where tarfiles should be saved.
         """
-        for header in self.headers:
-            if header not in line:
-                return False
-        return True
+        return os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), '{0}.tar'.format(self.lot_name))
 
-    def _get_file_header_indexes(self, file_headers):
+    def _process_valid_drive_line(self, drive_line):
         """
-        :param file_headers: Headers present in the file.
-        :return: Dictionary of header and index position's pair, of a required columns.
+        Processes valid drive line.
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
         """
-        file_header_indexes = dict()
-        for value in self.headers:
-            file_header_indexes[value] = file_headers.index(value)
-        return file_header_indexes
+        pdf = self._get_tar_member_by_serial(drive_line.get_serial())
+        if drive_line.is_existing_drive():
+            self._process_existing_drive(drive_line=drive_line, pdf=pdf)
+        else:
+            self._process_nonexistant_drive(drive_line=drive_line, pdf=pdf)
 
-    def is_valid(self, line_array):
-        """
-        :param line_array: list of strings to process.
-        :return: True if health is number, with possible percentage sign and Power_on is number, else False
-        """
-        return line_array[self.file_header_indexes['Health']].replace("%", "").strip().isdigit() \
-            and line_array[self.file_header_indexes['Power_On']].strip().isdigit()
-
-    def get_tar_member_by_serial(self, serial):
+    def _get_tar_member_by_serial(self, serial):
         """
         :param serial: Drive's serial to look for in Tar.
-        :return: tarfile if exists or None if doesn't.
+        :return: pdf if exists or None if does not.
         """
         for member in self.tar.getmembers():
             if '(S-N ' + serial + ')' in member.name:
                 return member
         return None
 
-    def _drive_exists(self, line_array):
+    @property
+    def message(self):
         """
-        :param line_array: list of strings to process.
-        :return: True/False, whether such drive with such serial and model exists or not.
+        Method returning what has failed.
         """
-        model = HddModels.objects.get_or_create(hdd_models_name=line_array[self.file_header_indexes['Model']])[0]
-        drive = Drives.objects.filter(
-            hdd_serial=line_array[self.file_header_indexes['Serial number']],
-            f_hdd_models=model
-        )
-        return drive.exists()
+        return self.text_to_write.text
 
-    def _save_new_drive(self, line_array, filename):
+    def _process_existing_drive(self, drive_line, pdf):
         """
-        :param line_array: list of strings to process.
+        Processes drive allready present in Drive table.
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
+        :param pdf: pdf extracted from tarfile.
+        """
+        if pdf:
+            self._process_existing_drive_with_pdf(
+                drive_line=drive_line,
+                pdf=pdf
+            )
+            self.text_to_write.add(
+                string_to_add=f'SN: {drive_line.get_serial()} info updated. File updated.',
+                should_write=True
+            )
+        else:
+            self._update_existing_drive(drive_line)
+            self.text_to_write.add(
+                string_to_add=f'SN: {drive_line.get_serial()} record info updated. File info not changed.'
+            )
+
+    def _process_nonexistant_drive(self, drive_line, pdf):
+        """
+        Processes drive not present in Drive table.
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
+        :param pdf: pdf extracted from tarfile.
+        """
+        if pdf:
+            self.new_tar.addfile(pdf, self.tar.extractfile(pdf))
+            self._save_new_drive(drive_line=drive_line, filename=pdf.name)
+        else:
+            self.text_to_write.add(
+                string_to_add=f'SN: {drive_line.get_serial()} skipped. Not present in database and no file associated.',
+                should_write=True
+            )
+
+    def _process_existing_drive_with_pdf(self, drive_line, pdf):
+        """
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
+        :param pdf: pdf extracted from tarfile.
+        """
+        self._try_to_remove_pdf(drive_line=drive_line)
+        self.new_tar.addfile(pdf, self.tar.extractfile(pdf))
+        self._update_existing_drive(drive_line, pdf.name)
+
+    def _try_to_remove_pdf(self, drive_line):
+        """
+        Removes pdf out of new tarfile, to avoid file duplications.
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
+        """
+        try:
+            pdf_to_remove = self._get_pdf_name(drive_line)
+            if pdf_to_remove is not None:
+                self.new_tar.getmember(pdf_to_remove)
+                os.system(f'tar -vf {self._get_new_tarfile_location()} --delete "{pdf_to_remove}"')
+        except:
+            print('Pdf opening or its deletion had failed')
+            pass
+
+    def _get_pdf_name(self, drive_line):
+        """
+        Returns pdf name based on drive_line's serial number and model.
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
+        :return: name of pdf.
+        """
+        drive = Drives.objects.filter(
+            hdd_serial=drive_line.get_serial(),
+            f_hdd_models=HddModels.objects.get(hdd_models_name=drive_line.get_model())
+        )[0]
+        return drive.tar_member_name
+
+    def _save_new_drive(self, drive_line, filename):
+        """
+        Saves new drive.
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
         :param filename: filename of tarred pdf file.
-        :return: None is returned always.
         """
         Drives.objects.create(
-            hdd_serial=line_array[self.file_header_indexes['Serial number']],
-            health=line_array[self.file_header_indexes['Health']].replace("%", ""),
-            days_on=line_array[self.file_header_indexes['Power_On']],
+            hdd_serial=drive_line.get_serial(),
+            health=drive_line.get_health(),
+            days_on=drive_line.get_power_on(),
             tar_member_name=filename,
             f_lot=self.lot,
             f_hdd_models=HddModels.objects.get_or_create(
-                hdd_models_name=line_array[self.file_header_indexes['Model']]
-            )[0],
+                hdd_models_name=drive_line.get_model())[0],
             f_hdd_sizes=HddSizes.objects.get_or_create(
-                hdd_sizes_name=line_array[self.file_header_indexes['Capacity']]
-            )[0],
+                hdd_sizes_name=drive_line.get_capacity())[0],
             f_lock_state=LockState.objects.get_or_create(
-                lock_state_name=line_array[self.file_header_indexes['Lock']]
-            )[0],
+                lock_state_name=drive_line.get_lock())[0],
             f_speed=Speed.objects.get_or_create(
-                speed_name=line_array[self.file_header_indexes['Speed']]
-            )[0],
+                speed_name=drive_line.get_speed())[0],
             f_form_factor=FormFactor.objects.get_or_create(
-                form_factor_name=line_array[self.file_header_indexes['Size']]
-            )[0]
+                form_factor_name=drive_line.get_form_factor())[0],
+
+            f_manufacturer=Manufacturers.objects.get_or_create(
+                manufacturer_name=drive_line.get_manufacturer())[0],
+            f_interface=PhysicalInterfaces.objects.get_or_create(
+                interface_name=drive_line.get_interface())[0],
+            description='',
+            f_type=DriveTypes.objects.get_or_create(type_name=drive_line.get_type())[0],
+            f_note=DriveNotes.objects.get_or_create(note_text=drive_line.get_notes())[0],
+            f_family=DriveFamily.objects.get_or_create(family_name=drive_line.get_family())[0],
+            f_width=DriveWidth.objects.get_or_create(width_name=drive_line.get_width())[0],
+            f_height=DriveHeight.objects.get_or_create(height_name=drive_line.get_height())[0],
+            f_length=DriveLength.objects.get_or_create(length_name=drive_line.get_length())[0],
+            f_weight=DriveWeight.objects.get_or_create(weight_name=drive_line.get_weight())[0],
+            f_power_spin=DrivePowerSpin.objects.get_or_create(
+                power_spin_name=drive_line.get_spinup())[0],
+            f_power_seek=DrivePowerSeek.objects.get_or_create(
+                power_seek_name=drive_line.get_power_seek())[0],
+            f_power_idle=DrivePowerIdle.objects.get_or_create(
+                power_idle_name=drive_line.get_power_idle())[0],
+            f_power_standby=DrivePowerStandby.objects.get_or_create(
+                power_standby_name=drive_line.get_power_stand_by())[0],
+            total_writes='',
+            f_origin=Origins.objects.get_or_create(origin_name=f'Added with tar {self.lot_name}')[0],
+            date_added=timezone.now(),
         )
 
-    def _update_existing_drive(self, line_array, filename=None):
+    def _update_existing_drive(self, drive_line, filename=None):
         """
-        :param line_array: list of strings to process.
-        :param filename: filename is passed only if drive has coresponding tarred pdf file to it.
-        :return: None is returned always.
+        Updates existing drive.
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
+        :param filename: filename is passed only if drive has corresponding tarred pdf file to it.
         """
         drive = Drives.objects.filter(
-            hdd_serial=line_array[self.file_header_indexes['Serial number']],
+            hdd_serial=drive_line.get_serial(),
             f_hdd_models=HddModels.objects.get_or_create(
-                hdd_models_name=line_array[self.file_header_indexes['Model']]
+                hdd_models_name=drive_line.get_model()
             )[0]
         )[0]
         drive.f_hdd_sizes = HddSizes.objects.get_or_create(
-            hdd_sizes_name=line_array[self.file_header_indexes['Capacity']]
+            hdd_sizes_name=drive_line.get_capacity()
         )[0]
         drive.f_lock_state = LockState.objects.get_or_create(
-            lock_state_name=line_array[self.file_header_indexes['Lock']]
+            lock_state_name=drive_line.get_lock()
         )[0]
         drive.f_speed = Speed.objects.get_or_create(
-            speed_name=line_array[self.file_header_indexes['Speed']]
+            speed_name=drive_line.get_speed()
         )[0]
         drive.f_form_factor = FormFactor.objects.get_or_create(
-            form_factor_name=line_array[self.file_header_indexes['Size']]
+            form_factor_name=drive_line.get_form_factor()
         )[0]
-        drive.health = line_array[self.file_header_indexes['Health']].replace("%", "")
-        drive.days_on = line_array[self.file_header_indexes['Power_On']]
+        drive.health = drive_line.get_health()
+        drive.days_on = drive_line.get_power_on()
         if filename:
             drive.tar_member_name = filename
         drive.f_lot = self.lot
+
+        drive.f_manufacturer = Manufacturers.objects.get_or_create(
+            manufacturer_name=drive_line.get_manufacturer())[0]
+        drive.f_interface = PhysicalInterfaces.objects.get_or_create(
+            interface_name=drive_line.get_interface())[0]
+        drive.description = ''
+        drive.f_type = DriveTypes.objects.get_or_create(type_name=drive_line.get_type())[0]
+        drive.f_note = DriveNotes.objects.get_or_create(note_text=drive_line.get_notes())[0]
+        drive.f_family = DriveFamily.objects.get_or_create(
+            family_name=drive_line.get_family())[0]
+        drive.f_width = DriveWidth.objects.get_or_create(width_name=drive_line.get_width())[0]
+        drive.f_height = DriveHeight.objects.get_or_create(
+            height_name=drive_line.get_height())[0]
+        drive.f_length = DriveLength.objects.get_or_create(
+            length_name=drive_line.get_length())[0]
+        drive.f_weight = DriveWeight.objects.get_or_create(
+            weight_name=drive_line.get_weight())[0]
+        drive.f_power_spin = DrivePowerSpin.objects.get_or_create(
+            power_spin_name=drive_line.get_spinup())[0]
+        drive.f_power_seek = DrivePowerSeek.objects.get_or_create(
+            power_seek_name=drive_line.get_power_seek())[0]
+        drive.f_power_idle = DrivePowerIdle.objects.get_or_create(
+            power_idle_name=drive_line.get_power_idle())[0]
+        drive.f_power_standby = DrivePowerStandby.objects.get_or_create(
+            power_standby_name=drive_line.get_power_stand_by())[0]
+        drive.total_writes = ''
         drive.save()
 
 
-class HddOrderProcessor:
+class DriveOrderProcessor:
     """
-    Older version of Hdd Order Processor with predefined positions where which values are located.
+    Class responsible for processing order txt files.
     """
-
-    def __init__(self, txtObject):
-        self.message = ''
-        if type(txtObject) is str:
-            filename = os.path.basename(txtObject)
-            txtObject = open(txtObject, "r")
-        else:
-            filename = txtObject._name
-        hddOrder = self.get_hdd_order(filename)
-        with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
-            isMissing = False
-            textToWrite = '* importing order ' + filename.replace('.txt', '') + ' || ' + str(datetime.date.today()) + ' *\r\n'
-            for line in txtObject.readlines():
-                try:
-                    line = line.decode('utf-8')
-                except:
-                    pass
-                line_array = line.split('@')
-                if self.isValid(line_array):
-                    model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-                    hdds = Drives.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
-                    if hdds.exists():
-                        if hdds[0].f_hdd_order is not None:
-                            isMissing = True
-                            textToWrite += 'SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_hdd_order.order_name
-                        hdds.update(f_hdd_order=hddOrder)
-                    else:
-                        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-                        size = HddSizes.objects.get_or_create(hdd_sizes_name=line_array[3])[0]
-                        lock_state = LockState.objects.get_or_create(lock_state_name=line_array[4])[0]
-                        speed = Speed.objects.get_or_create(speed_name=line_array[5])[0]
-                        form_factor = FormFactor.objects.get_or_create(form_factor_name=line_array[6])[0]
-                        hdd = Drives(
-                            hdd_serial=line_array[1],
-                            health=line_array[7].replace("%", ""),
-                            days_on=line_array[8],
-                            f_hdd_models=model,
-                            f_hdd_sizes=size,
-                            f_lock_state=lock_state,
-                            f_speed=speed,
-                            f_form_factor=form_factor,
-                            f_hdd_order=hddOrder
-                        )
-                        hdd.save()
-            textToWrite += '===============================================\r\n'
-            if isMissing:
-                logfile.write(textToWrite)
-                self.message = textToWrite
-
-    def isValid(self, line_array):
-        if line_array[7].replace("%", "").strip().isdigit() and line_array[8].strip().isdigit():
-            return True
-        return False
-
-    def get_hdd_order(self, txtFileName):
-        hddOrders = HddOrder.objects.filter(order_name=txtFileName.replace('.txt', ''))
-        if hddOrders.exists():
-            hdds = Drives.objects.filter(f_hdd_order=hddOrders[0].order_id)
-            hdds.update(f_hdd_order=None)
-            hddOrders[0].delete()
-        orderStatus = OrderStatus.objects.get(order_status_id=3)
-        hddOrder = HddOrder(
-            order_name=txtFileName.replace('.txt', ''),
-            date_of_order=timezone.now().today().date(),
-            f_order_status=orderStatus
-        )
-        hddOrder.save()
-        return hddOrder
-
-
-class AlternativeHddOrderProcessor:
-    """
-    Class responsible for processing order txt files,
-    either provided from website or as a file copied into temp directory.
-    """
-    headers = ['Serial number', 'Health', 'Power_On', 'Model', 'Capacity', 'Lock', 'Speed', 'Size']
 
     def __init__(self, txt_object):
-        if type(txt_object) is str:
-            self.filename = os.path.basename(txt_object)
-            self.txt_object = open(txt_object, "r")
-        else:
-            self.filename = txt_object._name
-            self.txt_object = txt_object
-        self.hddOrder = None
-        self.file_header_indexes = None
+        self.filename = txt_object._name
+        self.drive_text_file = DriveTextFileManager(txt_object)
         self.text_to_write = WriteableMessage()
+        self.hddOrder = self._get_drive_order()
 
     def process_data(self):
         """
-        Processes text file representing an order.
+        Method which initiates processing of csv order file.
+        Iterates through drive_text_file.
+        if line in drive_text_file iteration is not valid updates message,
+        otherwise processes it by instantiating _process_valid_drive_line.
         """
-        firstline = self._get_first_line(self.txt_object)
-        if self._is_header_valid(firstline):
-            self._process_file_with_valid_headers(firstline)
-        else:
-            self.text_to_write.text = 'All required fields in '+self.filename+' were not found:\r\n'+str(self.headers)+'\r\n'
-            self.text_to_write.should_write = True
+        for drive_line in self.drive_text_file.get_drive_line_processors():
+            if drive_line.is_valid():
+                self._process_valid_drive_line(drive_line=drive_line)
+                pass
+            else:
+                serial = drive_line.get_serial()
+                health = drive_line.get_health()
+                power_on = drive_line.get_power_on()
+                self.text_to_write.add(
+                    string_to_add=f'SN: {serial} skipped. Health("{health}") or Power on("{power_on}") on are not digits.',
+                    should_write=True
+                )
 
-    def _process_file_with_valid_headers(self, firstline):
+    def _process_valid_drive_line(self, drive_line):
         """
-        :param firstline: first line of text file.
+        Processes valid drive line.
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
         """
-        file_headers = firstline.split('@')
-        self.file_header_indexes = self._get_file_header_indexes(file_headers)
-        self.hddOrder = self._get_hdd_order(self.filename)
-        with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
-            self.text_to_write.add(
-                string_to_add='* importing order ' + self.filename.replace('.txt', '') + ' || ' + str(
-                    datetime.date.today()) + ' *'
-            )
-            for line in self.txt_object.readlines():
-                self._process_line(line)
-            self.text_to_write.add('===============================================')
-            if self.text_to_write.should_write:
-                logfile.write(self.text_to_write.text)
-            
-    def _process_line(self, line):
-        """
-        Processes line, if it's valid passes to _process_valid_line_array, else add's to logfile that line is not valid.
-        :param line: One line of text read from txt file.
-        """
-        line_array = self._get_line_array(line)
-        if self._is_valid(line_array):
-            self._process_valid_line_array(line_array)
+        if drive_line.is_existing_drive():
+            self._update_existing_drive(drive_line)
         else:
-            self.text_to_write.add(
-                string_to_add='Hdd with S/N: ' + line_array[self.file_header_indexes[
-                    'Serial number']] + ' most likely has incorrect health and days_on, because they were not found to be numbers.',
-                should_write=True
-            )
+            self._save_new_drive(drive_line)
 
-    def _process_valid_line_array(self, line_array):
+    def _update_existing_drive(self, drive_line):
         """
-        :param line_array: list of strings to process.
+        Updates drive's order to a new one.
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
         """
-        model = HddModels.objects.get_or_create(
-            hdd_models_name=line_array[self.file_header_indexes['Model']]
-        )[0]
-        hdds = Drives.objects.filter(
-            hdd_serial=line_array[self.file_header_indexes['Serial number']],
-            f_hdd_models=model
+        drives = Drives.objects.filter(
+            hdd_serial=drive_line.get_serial(),
+            f_hdd_models=HddModels.objects.get_or_create(
+                hdd_models_name=drive_line.get_model()
+            )[0]
         )
-        self._process_hdd(line_array, model, hdds)
-
-    def _process_hdd(self, line_array, model, hdds):
-        """
-        Calls _update_existing_hdd() or _save_new_drive() based whether there are any hdds in given queryset.
-        :param line_array: list of strings to process.
-        :param model: HddModel object.
-        :param hdds:queryset of hdds.
-        :return:
-        """
-        if hdds.exists():
-            self._update_existing_hdd(hdds)
-        else:
-            self._save_new_drive(line_array, model)
-
-    def _update_existing_hdd(self, hdds):
-        '''
-        Updates existing hdds with new order.
-        :param hdds: queryset of hdds.
-        '''
-        if hdds[0].f_hdd_order:
+        if drives[0].f_hdd_order:
             self.text_to_write.add(
-                string_to_add='SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_hdd_order.order_name,
+                string_to_add=f'SN: {drives[0].hdd_serial} had order asigned. '
+                f'Was assigned to order {drives[0].f_hdd_order.order_name}. '
+                f'New name is: {self.filename.replace(".txt", "")}',
                 should_write=True
             )
-        hdds.update(f_hdd_order=self.hddOrder)
+        drives.update(f_hdd_order=self.hddOrder)
+
+    def _save_new_drive(self, drive_line):
+        """
+        Saves new order's drive.
+        :param drive_line: DriveLineProcessor object representing csv file's line as drive.
+        """
+        Drives.objects.create(
+            hdd_serial=drive_line.get_serial(),
+            health=drive_line.get_health(),
+            days_on=drive_line.get_power_on(),
+            f_hdd_models=HddModels.objects.get_or_create(
+                hdd_models_name=drive_line.get_model())[0],
+            f_hdd_sizes=HddSizes.objects.get_or_create(
+                hdd_sizes_name=drive_line.get_capacity())[0],
+            f_lock_state=LockState.objects.get_or_create(
+                lock_state_name=drive_line.get_lock())[0],
+            f_speed=Speed.objects.get_or_create(
+                speed_name=drive_line.get_speed())[0],
+            f_form_factor=FormFactor.objects.get_or_create(
+                form_factor_name=drive_line.get_form_factor())[0],
+            f_hdd_order=self.hddOrder,
+
+            f_manufacturer=Manufacturers.objects.get_or_create(
+                manufacturer_name=drive_line.get_manufacturer())[0],
+            f_interface=PhysicalInterfaces.objects.get_or_create(
+                interface_name=drive_line.get_interface())[0],
+            description='',
+            f_type=DriveTypes.objects.get_or_create(type_name=drive_line.get_type())[0],
+            f_note=DriveNotes.objects.get_or_create(note_text=drive_line.get_notes())[0],
+            f_family=DriveFamily.objects.get_or_create(family_name=drive_line.get_family())[0],
+            f_width=DriveWidth.objects.get_or_create(width_name=drive_line.get_width())[0],
+            f_height=DriveHeight.objects.get_or_create(height_name=drive_line.get_height())[0],
+            f_length=DriveLength.objects.get_or_create(length_name=drive_line.get_length())[0],
+            f_weight=DriveWeight.objects.get_or_create(weight_name=drive_line.get_weight())[0],
+            f_power_spin=DrivePowerSpin.objects.get_or_create(
+                power_spin_name=drive_line.get_spinup())[0],
+            f_power_seek=DrivePowerSeek.objects.get_or_create(
+                power_seek_name=drive_line.get_power_seek())[0],
+            f_power_idle=DrivePowerIdle.objects.get_or_create(
+                power_idle_name=drive_line.get_power_idle())[0],
+            f_power_standby=DrivePowerStandby.objects.get_or_create(
+                power_standby_name=drive_line.get_power_stand_by())[0],
+            total_writes='',
+            f_origin=Origins.objects.get_or_create(origin_name=f'Added with hdd order {self.hddOrder.order_id}')[0],
+            date_added=timezone.now(),
+        )
 
     @property
     def message(self):
         """
-        Method called from view to return what failed to html response.
+        Method returning what has failed.
         """
         return self.text_to_write.text
 
-    def _save_new_drive(self, line_array, model):
+    def _get_drive_order(self):
         """
-        Saves order's new  drive.
-        :param line_array: list of strings to process.
-        :param model: HddModel object for a drive saving.
-        """
-        Drives.objects.create(
-            hdd_serial=line_array[self.file_header_indexes['Serial number']],
-            health=line_array[self.file_header_indexes['Health']].replace("%", ""),
-            days_on=line_array[self.file_header_indexes['Power_On']],
-            f_hdd_models=model,
-            f_hdd_sizes=HddSizes.objects.get_or_create(
-                hdd_sizes_name=line_array[self.file_header_indexes['Capacity']]
-            )[0],
-            f_lock_state=LockState.objects.get_or_create(
-                lock_state_name=line_array[self.file_header_indexes['Lock']]
-            )[0],
-            f_speed=Speed.objects.get_or_create(
-                speed_name=line_array[self.file_header_indexes['Speed']]
-            )[0],
-            f_form_factor=FormFactor.objects.get_or_create(
-                form_factor_name=line_array[self.file_header_indexes['Size']]
-            )[0],
-            f_hdd_order=self.hddOrder
-        )
-
-    def _get_line_array(self, line):
-        """
-        :param line: string to process.
-        :return: convert line to utf-8 if it's not, and returns it as line_array.
-        """
-        try:
-            return line.decode('utf-8').split('@')
-        except:
-            return line.split('@')
-
-    def _get_file_header_indexes(self, file_headers):
-        """
-        :param file_headers: Headers present in the file.
-        :return: Dictionary of header and index position's pair, of a required columns.
-        """
-        file_header_indexes = dict()
-        for value in self.headers:
-            file_header_indexes[value] = file_headers.index(value)
-        return file_header_indexes
-
-    def _get_first_line(self, txt_object):
-        """
-        :param txt_object: text file as an object
-        :return: first line of text file
-        """
-        try:
-            return txt_object.readline().strip().decode('utf8')
-        except:
-            return txt_object.readline().strip()
-
-    def _is_header_valid(self, line):
-        """
-        :param line: first_line, which should represent file's header row.
-        :return: True if all required headers from self.headers are present in line, returns True, else False.
-        """
-        for header in self.headers:
-            if header not in line:
-                return False
-        return True
-
-    def _is_valid(self, line_array):
-        """
-        :param line_array: list of strings to process.
-        :return: True if health is number, with possible percentage sign and Power_on is number, else False
-        """
-        return line_array[self.file_header_indexes['Health']].replace("%", "").strip().isdigit() \
-            and line_array[self.file_header_indexes['Power_On']].strip().isdigit()
-
-    def _get_hdd_order(self, txt_file_name):
-        """
-        Strips hdds out of existing order with same name, and deletes order with text file's name as an order's name.
+        Strips drives out of existing order with same name, and deletes order with text file's name as an order's name.
         :return: HddOrder's object which should have Prepared status and text file's name as an order's name.
         """
-        hdd_orders = HddOrder.objects.filter(order_name=txt_file_name.replace('.txt', ''))
+        hdd_orders = HddOrder.objects.filter(order_name=self.filename.replace('.txt', ''))
         if hdd_orders.exists():
             print('Such hdd orders exists')
             Drives.objects.filter(f_hdd_order=hdd_orders[0].order_id).update(f_hdd_order=None)
             hdd_orders[0].delete()
 
         return HddOrder.objects.create(
-            order_name=txt_file_name.replace('.txt', ''),
+            order_name=self.filename.replace('.txt', ''),
             date_of_order=timezone.now().today().date(),
             f_order_status=OrderStatus.objects.get(order_status_id=3)
         )
+
+
+class DriveTextFileManager:
+    """
+    Class responsible for processing txt file where first line consists of headers and other of data.
+    Data cells seperated by '@' sign.
+    """
+
+    necessary_fieldnames = ['Serial number', 'Manufacturer', 'Family', 'Model', 'Capacity', 'Lock', 'Type', 'RPM Speed',
+                            'FFactor', 'Health', 'Power On', 'Interface', 'Notes', 'Width', 'Height', 'Length',
+                            'Weight', 'Spinup', 'PowerSeek', 'PowerIdle', 'PowerStandby']
+
+    def __init__(self, csv_file):
+        if isinstance(csv_file, InMemoryUploadedFile) or isinstance(csv_file, tarfile.ExFileObject):
+            # InMemoryUploadedFile and ExFileObject keeps binary format file.
+            # To avoid issues regarding csv library, this is converted to UTF-8 textfile.
+            csv_file = (line.decode('utf8') for line in csv_file)
+        self.reader = csv.DictReader(csv_file, delimiter='@')
+        self._validate_fieldnames()
+
+    def get_drive_line_processors(self):
+        """
+        Yields line by line from self.reader as DriveLineProcessor objects.
+        """
+        for row in self.reader:
+            yield DriveLineProcessor(row)
+
+    def _has_needed_fieldnames(self):
+        """
+        :return: True/False depending if all necessary fieldnames are in self.reader.
+        """
+        return set(self.necessary_fieldnames).issubset(self.reader.fieldnames)
+
+    def _validate_fieldnames(self):
+        """
+        Validates if required fieldnames are present in self.reader. If not throws error.
+        """
+        if not self._has_needed_fieldnames():
+            lacking_fieldnames = list(set(self.necessary_fieldnames).difference(self.reader.fieldnames))
+            raise Warning(f'Lacking required fieldnames:\n{lacking_fieldnames}\n\n'
+                          f'Present fieldnames:\n{self.reader.fieldnames}\n\n'
+                          f'Required fieldnames:\n{self.necessary_fieldnames}')
+
+
+class DriveLineProcessor:
+    """
+    Class responsible for accepting line data and processing, end result is saving or updating model record.
+    """
+
+    def __init__(self, row):
+        self.row = row
+        self.message = ''
+
+    def __repr__(self):
+        return f'{self.row}'
+
+    def is_existing_drive(self):
+        """
+        Checks based on the object if such record exists or not.
+        :return: True/False. Drive exists or not.
+        """
+        model = HddModels.objects.get_or_create(hdd_models_name=self.get_model())[0]
+        drive = Drives.objects.filter(
+            hdd_serial=self.get_serial(),
+            f_hdd_models=model
+        )
+        return drive.exists()
+
+    def is_valid(self):
+        return self.get_health().isdigit() and self.get_power_on().isdigit()
+
+    def get_serial(self):
+        return self.row['Serial number']
+
+    def get_manufacturer(self):
+        return self.row['Manufacturer']
+
+    def get_family(self):
+        return self.row['Family']
+
+    def get_model(self):
+        return self.row['Model']
+
+    def get_capacity(self):
+        return self.row['Capacity']
+
+    def get_lock(self):
+        return self.row['Lock']
+
+    def get_type(self):
+        return self.row['Type']
+
+    def get_speed(self):
+        return self.row['RPM Speed']
+
+    def get_form_factor(self):
+        return self.row['FFactor']
+
+    def get_health(self):
+        return self.row['Health'].replace("%", "").strip()
+
+    def get_power_on(self):
+        return self.row['Power On'].strip()
+
+    def get_interface(self):
+        return self.row['Interface']
+
+    def get_notes(self):
+        return self.row['Notes']
+
+    def get_width(self):
+        return self.row['Width']
+
+    def get_height(self):
+        return self.row['Height']
+
+    def get_length(self):
+        return self.row['Length']
+
+    def get_weight(self):
+        return self.row['Weight']
+
+    def get_spinup(self):
+        return self.row['Spinup']
+
+    def get_power_seek(self):
+        return self.row['PowerSeek']
+
+    def get_power_idle(self):
+        return self.row['PowerIdle']
+
+    def get_power_stand_by(self):
+        return self.row['PowerStandby']
 
 
 class HddOrderHolder:

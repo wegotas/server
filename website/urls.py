@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .logic import on_start
 
 urlpatterns = [
     path('edit/<int:int_index>/', views.edit, name='edit'),
@@ -84,7 +83,6 @@ urlpatterns = [
     path('observ/details/edit/', views.edit_observations_details, name='edit_observations_details'),
     path('observ/details/', views.observations_details, name='observationsDetails'),
 
-
     path('cat_to_sold/', views.cat_to_sold, name='cat_to_sold'),
     path('hdd_edit/<int:int_index>/', views.hdd_edit, name='hdd_edit'),
     path('hdd_delete/<int:int_index>/', views.hdd_delete, name='hdd_delete'),
@@ -92,14 +90,12 @@ urlpatterns = [
     path('hdd_order_content/<int:int_index>/', views.hdd_order_content, name='hdd_order_content'),
     path('hdd_order_content/<int:int_index>/csv/', views.hdd_order_content_csv, name='hdd_order_content_csv'),
     path('hdd_delete_order/<int:int_index>/', views.hdd_delete_order, name='hdd_delete_order'),
-    path('new_hdd_order/', views.hdd_order, name='new_hdd_order'),
-    path('new_hdd_orderAlt/', views.hdd_orderAlt, name='new_hdd_orderAlt'),
-    path('tar/', views.tar, name='tar'),
-    path('tarAlt/', views.tarAlt, name='tarAlt'),
+
+    path('new_drive_order/', views.drive_order_view, name='drive_order_view'),
+
+    path('tar/', views.process_tar_view, name='tarView'),
+
     path('content/<int:int_index>/', views.lot_content, name='lot_content'),
     path('success/', views.success, name='success'),
-    # path('content/<int:int_index>/', views.lot_content, name='lot_content'),
     path('', views.index, name='index')
 ]
-
-on_start()

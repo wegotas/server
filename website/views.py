@@ -5,7 +5,6 @@ from django.core.paginator import Paginator
 from django.shortcuts import render
 from rest_framework.parsers import JSONParser
 from website.forms import *
-import json
 import re
 from decimal import Decimal
 
@@ -241,6 +240,7 @@ def remove_ramstick_from_computer(request, ramstick_id, computer_id):
     computer.f_ram_size = ramsize
     computer.save()
     return HttpResponse("Succesfully removed drive from computer")
+
 
 @csrf_exempt
 def remove_drive_from_computer(request, drive_id, computer_id):
@@ -1012,6 +1012,7 @@ def hdd_edit(request, int_index):
     hte = HddToEdit(int_index)
     if request.method == 'POST':
         print('POST method')
+        print(request.POST)
         hte.process_edit(request.POST.copy())
         return render(request, 'success.html')
     if request.method == 'GET':
@@ -1097,17 +1098,19 @@ def hdd_delete_order(request, int_index):
 
 
 @csrf_exempt
-def hdd_order(request):
+def drive_order_view(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            hop = HddOrderProcessor(request.FILES['document'])
-            if hop.message != '':
-                return render(request, 'failure.html', {'message': hop.message})
-            else:
+            try:
+                dop = DriveOrderProcessor(request.FILES['document'])
+                dop.process_data()
+                if dop.message != '':
+                    return render(request, 'partial_success.html', {'message': dop.message})
                 return render(request, 'success.html')
+            except Warning as warning:
+                return render(request, 'failure.html', {'message': str(warning)})
         else:
-            print("Invalid")
             return render(request, 'uploader.html', {'form': form})
     else:
         form = DocumentForm()
@@ -1115,46 +1118,18 @@ def hdd_order(request):
 
 
 @csrf_exempt
-def hdd_orderAlt(request):
+def process_tar_view(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            ahop = AlternativeHddOrderProcessor(request.FILES['document'])
-            ahop.process_data()
-            if ahop.message != '':
-                return render(request, 'failure.html', {'message': ahop.message})
-            else:
+            try:
+                tp = TarProcessor(request.FILES['document'])
+                tp.process_data()
+                if tp.message:
+                    return render(request, 'partial_success.html', {'message': tp.message})
                 return render(request, 'success.html')
-        else:
-            return render(request, 'uploader.html', {'form': form})
-    else:
-        form = DocumentForm()
-        return render(request, 'uploader.html', {'form': form})
-
-
-@csrf_exempt
-def tar(request):
-    if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            tp = TarProcessor(request.FILES['document'])
-            tp.process_data()
-            return render(request, 'success.html')
-        else:
-            return render(request, 'uploader.html', {'form': form})
-    else:
-        form = DocumentForm()
-        return render(request, 'uploader.html', {'form': form})
-
-
-@csrf_exempt
-def tarAlt(request):
-    if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            atp = AlternativeTarProcessor(request.FILES['document'])
-            atp.process_data()
-            return render(request, 'success.html')
+            except Warning as warning:
+                return render(request, 'failure.html', {'message': str(warning)})
         else:
             return render(request, 'uploader.html', {'form': form})
     else:

@@ -197,20 +197,46 @@ class ComputerRecord:
                                 health=drives_dict[str(id) + ' Drive']['Health'].replace("%", ""),
                                 days_on=drives_dict[str(id) + ' Drive']['Power On'],
                                 f_hdd_models=HddModels.objects.get_or_create(
-                                    hdd_models_name=drives_dict[str(id) + ' Drive']['Model']
-                                )[0],
+                                    hdd_models_name=drives_dict[str(id) + ' Drive']['Model'])[0],
                                 f_hdd_sizes=HddSizes.objects.get_or_create(
-                                    hdd_sizes_name=drives_dict[str(id) + ' Drive']['Capacity']
-                                )[0],
+                                    hdd_sizes_name=drives_dict[str(id) + ' Drive']['Capacity'])[0],
                                 f_lock_state=LockState.objects.get_or_create(
-                                    lock_state_name=drives_dict[str(id) + ' Drive']['Locked']
-                                )[0],
+                                    lock_state_name=drives_dict[str(id) + ' Drive']['Locked'])[0],
                                 f_speed=Speed.objects.get_or_create(
-                                    speed_name=drives_dict[str(id) + ' Drive']['Speed']
-                                )[0],
+                                    speed_name=drives_dict[str(id) + ' Drive']['Rotation Speed'])[0],
                                 f_form_factor=FormFactor.objects.get_or_create(
-                                    form_factor_name=drives_dict[str(id) + ' Drive']['Size']
-                                )[0]
+                                    form_factor_name=drives_dict[str(id) + ' Drive']['FFactor'])[0],
+                                f_manufacturer=Manufacturers.objects.get_or_create(
+                                    manufacturer_name=drives_dict[str(id) + ' Drive']['Manufacturer'])[0],
+                                f_interface=PhysicalInterfaces.objects.get_or_create(
+                                    interface_name=drives_dict[str(id) + ' Drive']['Interface'])[0],
+                                description=drives_dict[str(id) + ' Drive']['Description'],
+                                f_type=DriveTypes.objects.get_or_create(
+                                    type_name=drives_dict[str(id) + ' Drive']['Type'])[0],
+                                f_note=DriveNotes.objects.get_or_create(
+                                    note_text=drives_dict[str(id) + ' Drive']['Notes'])[0],
+                                f_family=DriveFamily.objects.get_or_create(
+                                    family_name=drives_dict[str(id) + ' Drive']['Family'])[0],
+                                f_width=DriveWidth.objects.get_or_create(
+                                    width_name=drives_dict[str(id) + ' Drive']['Width'])[0],
+                                f_height=DriveHeight.objects.get_or_create(
+                                    height_name=drives_dict[str(id) + ' Drive']['Height'])[0],
+                                f_length=DriveLength.objects.get_or_create(
+                                    length_name=drives_dict[str(id) + ' Drive']['Length'])[0],
+                                f_weight=DriveWeight.objects.get_or_create(
+                                    weight_name=drives_dict[str(id) + ' Drive']['Weight'])[0],
+                                f_power_spin=DrivePowerSpin.objects.get_or_create(
+                                    power_spin_name=drives_dict[str(id) + ' Drive']['Power Spin'])[0],
+                                f_power_seek=DrivePowerSeek.objects.get_or_create(
+                                    power_seek_name=drives_dict[str(id) + ' Drive']['Power Seek'])[0],
+                                f_power_idle=DrivePowerIdle.objects.get_or_create(
+                                    power_idle_name=drives_dict[str(id) + ' Drive']['Power Idle'])[0],
+                                f_power_standby=DrivePowerStandby.objects.get_or_create(
+                                    power_standby_name=drives_dict[str(id) + ' Drive']['Power Standby'])[0],
+                                total_writes=drives_dict[str(id) + ' Drive']['Total Writes'],
+                                f_origin=Origins.objects.get_or_create(
+                                    origin_name='Computer({0}) record adding.'.format(self.computer.id_computer))[0],
+                                date_added=timezone.now(),
                             )[0]
                             Computerdrives.objects.get_or_create(
                                 f_id_computer=self.computer,
@@ -253,10 +279,8 @@ class ComputerRecord:
 
         dicts_keyword_to_pass = ['Batteries', 'RAM', 'GPU', 'CPU', 'Drives', 'Observations']
 
-        print("Start of many to many")
         for method, keyword in zip(methods_to_call, dicts_keyword_to_pass):
             try_saving(method, keyword)
-        print("End of many to many")
 
     def _one_to_many_connection_save(self, data_dict):
         self.category = Categories.objects.get(category_name=data_dict['Log Information']["Category"])

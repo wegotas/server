@@ -38,9 +38,7 @@
                 <td>
                     <select name="size">
                         {% for size in hte.sizes %}
-                        <option
-                                value="{{ size }}"
-                                {% if size == hte.hdd.f_hdd_sizes.hdd_sizes_name %} selected="selected"{% endif %}
+                        <option {% if size == hte.hdd.f_hdd_sizes.hdd_sizes_name %} selected="selected"{% endif %}
                         >{{ size }}</option>
                         {% endfor %}
                     </select>
@@ -51,11 +49,8 @@
                 <td>
                     <select name="state">
                         {% for state in hte.states %}
-                        <option
-                                value="{{ state }}"
-                                {% if state == hte.hdd.f_lock_state.lock_state_name %} selected="selected"{% endif %}
-                        >{{ state }}
-                        </option>
+                        <option  {% if state == hte.hdd.f_lock_state.lock_state_name %} selected="selected"{% endif %}
+                        >{{ state }}</option>
                         {% endfor %}
                     </select>
                 </td>
@@ -65,11 +60,8 @@
                 <td>
                     <select name="speed">
                         {% for speed in hte.speeds %}
-                        <option
-                            value="{{ speed }}"
-                            {% if speed == hte.hdd.f_speed.speed_name %} selected="selected"{% endif %}
-                        >{{ speed }}
-                        </option>
+                        <option {% if speed == hte.hdd.f_speed.speed_name %} selected="selected"{% endif %}
+                        >{{ speed }}</option>
                         {% endfor %}
                     </select>
                 </td>
@@ -79,11 +71,8 @@
                 <td>
                     <select name="form_factor">
                         {% for form_factor in hte.form_factors %}
-                        <option
-                            value="{{ form_factor }}"
-                            {% if form_factor == hte.hdd.f_form_factor.form_factor_name %} selected="selected"{% endif %}
-                        >{{ form_factor }}
-                        </option>
+                        <option {% if form_factor == hte.hdd.f_form_factor.form_factor_name %} selected="selected"{% endif %}
+                        >{{ form_factor }} </option>
                         {% endfor %}
                     </select>
                 </td>
@@ -103,10 +92,132 @@
             <tr>
                 <td align="right">Date added:</td>
                 <td>
-                    <input value="{{ hte.hdd.f_lot.date_of_lot|date:'c' }}" disabled="disabled">
+                    <input value="{{ hte.hdd.date_added|date:'c' }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Origin:</td>
+                <td>
+                    <input value="{{ hte.hdd.f_origin.origin_name }}" disabled="disabled">
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Manufacturer:</td>
+                <td>
+                    <select name="manufacturer_name">
+                        {% for manufacturer_name in hte.manufacturers %}
+                        <option {% if manufacturer_name == hte.hdd.f_manufacturer.manufacturer_name %} selected="selected"{% endif %}
+                        >{{ manufacturer_name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Physical interface:</td>
+                <td>
+                    <select name="interface_name">
+                        {% for interface_name in hte.interfaces %}
+                        <option {% if interface_name == hte.hdd.f_interface.interface_name %} selected="selected"{% endif %}
+                        >{{ interface_name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Description:</td>
+                <td>
+                    <textarea name="description" rows="6" cols="28" style="resize: none;">{{ hte.hdd.description }}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Type:</td>
+                <td>
+                    <select name="type_name">
+                        {% for type_name in hte.types %}
+                        <option {% if type_name == hte.hdd.f_type.type_name %} selected="selected"{% endif %}
+                        >{{ type_name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Notes:</td>
+                <td>
+                    <textarea name="notes" rows="6" cols="28" style="resize: none;">{{ hte.hdd.f_note.note_text }}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Family:</td>
+                <td>
+                    <select name="family_name">
+                        {% for family_name in hte.families %}
+                        <option {% if family_name == hte.hdd.f_family.family_name %} selected="selected"{% endif %}
+                        >{{ family_name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Width:</td>
+                <td>
+                    <input name="width_name" value="{{ hte.hdd.f_width.width_name }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Height:</td>
+                <td>
+                    <input name="height_name" value="{{ hte.hdd.f_height.height_name }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Length:</td>
+                <td>
+                    <input name="length_name" value="{{ hte.hdd.f_length.length_name }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Weight:</td>
+                <td>
+                    <input name="weight_name" value="{{ hte.hdd.f_weight.weight_name }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Power Spin:</td>
+                <td>
+                    <input name="power_spin_name" value="{{ hte.hdd.f_power_spin.power_spin_name }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Power Seek:</td>
+                <td>
+                    <input name="power_seek_name" value="{{ hte.hdd.f_power_seek.power_seek_name }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Power Idle:</td>
+                <td>
+                    <input name="power_idle_name" value="{{ hte.hdd.f_power_idle.power_idle_name }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Power Standby:</td>
+                <td>
+                    <input name="power_standby_name" value="{{ hte.hdd.f_power_standby.power_standby_name }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Total Writes:</td>
+                <td>
+                    <input name="total_writes" value="{{ hte.hdd.total_writes }}">
                 </td>
             </tr>
             {% if hte.hdd.f_lot %}
+            <tr>
+                <td align="right">Date lot added:</td>
+                <td>
+                    <input value="{{ hte.hdd.f_lot.date_of_lot|date:'c' }}" disabled="disabled">
+                </td>
+            </tr>
             <tr>
                 <td align="right">Lot:</td>
                 <td>

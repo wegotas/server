@@ -307,6 +307,105 @@ class HddSizes(models.Model):
         db_table = 'Hdd_sizes'
 
 
+class DriveFamily(models.Model):
+    family_id = models.AutoField(primary_key=True)
+    family_name = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_family'
+
+
+class DriveHeight(models.Model):
+    height_id = models.AutoField(primary_key=True)
+    height_name = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_height'
+
+
+class DriveLength(models.Model):
+    length_id = models.AutoField(primary_key=True)
+    length_name = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_length'
+
+
+class DriveNotes(models.Model):
+    note_id = models.AutoField(primary_key=True)
+    note_text = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_notes'
+
+
+class DrivePowerIdle(models.Model):
+    power_idle_id = models.AutoField(primary_key=True)
+    power_idle_name = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_power_idle'
+
+
+class DrivePowerSeek(models.Model):
+    power_seek_id = models.AutoField(primary_key=True)
+    power_seek_name = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_power_seek'
+
+
+class DrivePowerSpin(models.Model):
+    power_spin_id = models.AutoField(primary_key=True)
+    power_spin_name = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_power_spin'
+
+
+class DrivePowerStandby(models.Model):
+    power_standby_id = models.AutoField(primary_key=True)
+    power_standby_name = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_power_standby'
+
+
+class DriveTypes(models.Model):
+    type_id = models.AutoField(primary_key=True)
+    type_name = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_types'
+
+
+class DriveWeight(models.Model):
+    weight_id = models.AutoField(primary_key=True)
+    weight_name = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_weight'
+
+
+class DriveWidth(models.Model):
+    width_id = models.AutoField(primary_key=True)
+    width_name = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Drive_width'
+
+
 class Drives(models.Model):
     hdd_id = models.AutoField(primary_key=True)
     hdd_serial = models.CharField(max_length=45, blank=True, null=True)
@@ -320,6 +419,24 @@ class Drives(models.Model):
     f_speed = models.ForeignKey('Speed', models.DO_NOTHING, blank=True, null=True)
     f_form_factor = models.ForeignKey(FormFactor, models.DO_NOTHING, blank=True, null=True)
     f_hdd_order = models.ForeignKey(HddOrder, models.DO_NOTHING, blank=True, null=True)
+    f_manufacturer = models.ForeignKey('Manufacturers', models.DO_NOTHING, db_column='f_manufacturer', blank=True,
+                                       null=True)
+    f_interface = models.ForeignKey('PhysicalInterfaces', models.DO_NOTHING, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    f_type = models.ForeignKey(DriveTypes, models.DO_NOTHING, blank=True, null=True)
+    f_note = models.ForeignKey(DriveNotes, models.DO_NOTHING, blank=True, null=True)
+    f_family = models.ForeignKey(DriveFamily, models.DO_NOTHING, blank=True, null=True)
+    f_width = models.ForeignKey(DriveWidth, models.DO_NOTHING, blank=True, null=True)
+    f_height = models.ForeignKey(DriveHeight, models.DO_NOTHING, blank=True, null=True)
+    f_length = models.ForeignKey(DriveLength, models.DO_NOTHING, blank=True, null=True)
+    f_weight = models.ForeignKey(DriveWeight, models.DO_NOTHING, blank=True, null=True)
+    f_power_spin = models.ForeignKey(DrivePowerSpin, models.DO_NOTHING, blank=True, null=True)
+    f_power_seek = models.ForeignKey(DrivePowerSeek, models.DO_NOTHING, blank=True, null=True)
+    f_power_idle = models.ForeignKey(DrivePowerIdle, models.DO_NOTHING, blank=True, null=True)
+    f_power_standby = models.ForeignKey(DrivePowerStandby, models.DO_NOTHING, blank=True, null=True)
+    total_writes = models.CharField(max_length=25, blank=True, null=True)
+    f_origin = models.ForeignKey('Origins', models.DO_NOTHING, blank=True, null=True)
+    date_added = models.DateField()
 
     def __str__(self):
         return "hdd_serial:{0}, health:{1}, days_on:{2}, tar_member_name:{3}, f_lot:{4}, f_hdd_models:{5}, f_lock_state:{6}, f_speed:{7}, f_form_factor:{8}, f_hdd_order:{9}".format(self.hdd_serial, self.health, self.days_on, self.tar_member_name, self.f_lot, self.f_hdd_models, self.f_lock_state, self.f_speed, self.f_form_factor, self.f_hdd_order)
@@ -327,6 +444,24 @@ class Drives(models.Model):
     class Meta:
         managed = True
         db_table = 'Drives'
+
+
+class Origins(models.Model):
+    origin_id = models.AutoField(primary_key=True)
+    origin_name = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Origins'
+
+
+class PhysicalInterfaces(models.Model):
+    interface_id = models.AutoField(primary_key=True)
+    interface_name = models.CharField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Physical_interfaces'
 
 
 class Licenses(models.Model):
