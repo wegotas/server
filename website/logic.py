@@ -2213,7 +2213,7 @@ class TarProcessor:
                 manufacturer_name=drive_line.get_manufacturer())[0],
             f_interface=PhysicalInterfaces.objects.get_or_create(
                 interface_name=drive_line.get_interface())[0],
-            description='',
+            description=drive_line.get_description(),
             f_type=DriveTypes.objects.get_or_create(type_name=drive_line.get_type())[0],
             f_note=DriveNotes.objects.get_or_create(note_text=drive_line.get_notes())[0],
             f_family=DriveFamily.objects.get_or_create(family_name=drive_line.get_family())[0],
@@ -2229,7 +2229,7 @@ class TarProcessor:
                 power_idle_name=drive_line.get_power_idle())[0],
             f_power_standby=DrivePowerStandby.objects.get_or_create(
                 power_standby_name=drive_line.get_power_stand_by())[0],
-            total_writes='',
+            total_writes=drive_line.get_total_writes(),
             f_origin=Origins.objects.get_or_create(origin_name=f'Added with tar {self.lot_name}')[0],
             date_added=timezone.now(),
         )
@@ -2268,7 +2268,7 @@ class TarProcessor:
             manufacturer_name=drive_line.get_manufacturer())[0]
         drive.f_interface = PhysicalInterfaces.objects.get_or_create(
             interface_name=drive_line.get_interface())[0]
-        drive.description = ''
+        drive.description = drive_line.get_description()
         drive.f_type = DriveTypes.objects.get_or_create(type_name=drive_line.get_type())[0]
         drive.f_note = DriveNotes.objects.get_or_create(note_text=drive_line.get_notes())[0]
         drive.f_family = DriveFamily.objects.get_or_create(
@@ -2288,7 +2288,7 @@ class TarProcessor:
             power_idle_name=drive_line.get_power_idle())[0]
         drive.f_power_standby = DrivePowerStandby.objects.get_or_create(
             power_standby_name=drive_line.get_power_stand_by())[0]
-        drive.total_writes = ''
+        drive.total_writes = drive_line.get_total_writes()
         drive.save()
 
 
@@ -2378,7 +2378,7 @@ class DriveOrderProcessor:
                 manufacturer_name=drive_line.get_manufacturer())[0],
             f_interface=PhysicalInterfaces.objects.get_or_create(
                 interface_name=drive_line.get_interface())[0],
-            description='',
+            description=drive_line.get_description(),
             f_type=DriveTypes.objects.get_or_create(type_name=drive_line.get_type())[0],
             f_note=DriveNotes.objects.get_or_create(note_text=drive_line.get_notes())[0],
             f_family=DriveFamily.objects.get_or_create(family_name=drive_line.get_family())[0],
@@ -2394,7 +2394,7 @@ class DriveOrderProcessor:
                 power_idle_name=drive_line.get_power_idle())[0],
             f_power_standby=DrivePowerStandby.objects.get_or_create(
                 power_standby_name=drive_line.get_power_stand_by())[0],
-            total_writes='',
+            total_writes=drive_line.get_total_writes(),
             f_origin=Origins.objects.get_or_create(origin_name=f'Added with hdd order {self.hddOrder.order_id}')[0],
             date_added=timezone.now(),
         )
@@ -2430,9 +2430,10 @@ class DriveTextFileManager:
     Data cells seperated by '@' sign.
     """
 
-    necessary_fieldnames = ['Serial number', 'Manufacturer', 'Family', 'Model', 'Capacity', 'Lock', 'Type', 'RPM Speed',
+    necessary_fieldnames = ['Serial', 'Manufacturer', 'Family', 'Model', 'Capacity', 'Locked', 'Type', 'Rotation Speed',
                             'FFactor', 'Health', 'Power On', 'Interface', 'Notes', 'Width', 'Height', 'Length',
-                            'Weight', 'Spinup', 'PowerSeek', 'PowerIdle', 'PowerStandby']
+                            'Weight', 'Power Spin', 'Power Seek', 'Power Idle', 'Power Standby', 'Total Writes',
+                            'Description']
 
     def __init__(self, csv_file):
         if isinstance(csv_file, InMemoryUploadedFile) or isinstance(csv_file, tarfile.ExFileObject):
@@ -2494,7 +2495,7 @@ class DriveLineProcessor:
         return self.get_health().isdigit() and self.get_power_on().isdigit()
 
     def get_serial(self):
-        return self.row['Serial number']
+        return self.row['Serial']
 
     def get_manufacturer(self):
         return self.row['Manufacturer']
@@ -2509,13 +2510,13 @@ class DriveLineProcessor:
         return self.row['Capacity']
 
     def get_lock(self):
-        return self.row['Lock']
+        return self.row['Locked']
 
     def get_type(self):
         return self.row['Type']
 
     def get_speed(self):
-        return self.row['RPM Speed']
+        return self.row['Rotation Speed']
 
     def get_form_factor(self):
         return self.row['FFactor']
@@ -2528,6 +2529,9 @@ class DriveLineProcessor:
 
     def get_interface(self):
         return self.row['Interface']
+
+    def get_description(self):
+        return self.row['Description']
 
     def get_notes(self):
         return self.row['Notes']
@@ -2545,16 +2549,19 @@ class DriveLineProcessor:
         return self.row['Weight']
 
     def get_spinup(self):
-        return self.row['Spinup']
+        return self.row['Power Spin']
 
     def get_power_seek(self):
-        return self.row['PowerSeek']
+        return self.row['Power Seek']
 
     def get_power_idle(self):
-        return self.row['PowerIdle']
+        return self.row['Power Idle']
 
     def get_power_stand_by(self):
-        return self.row['PowerStandby']
+        return self.row['Power Standby']
+
+    def get_total_writes(self):
+        return self.row['Total Writes']
 
 
 class HddOrderHolder:

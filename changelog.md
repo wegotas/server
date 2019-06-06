@@ -1,6 +1,7 @@
 2019-06-05
 
 LT:
+
 **Pokyciai serveryje, duomenu bazeje: Draivu funkcionalumo ispletimas bei apdorojimu pokyciai.**
 * Serveryje per 'hdd_edit' prideti papildomi laukai:
     * Origin - saltinis kokiu budu buvo prideta, neredaguojamas.
@@ -25,6 +26,7 @@ LT:
     * Nebestebimas aplankas apdorojimui media del txt ir tar apdorojimui. Sis palaikymas pasalintas kad palengvinti priziurejima.
 
 EN:
+
 **Changes in server, database: Drives functionality expansion and processing changes.**
 * Server in 'hdd_edit' added additional fields:
     * Origin - source origin by which drive was added, non-editable.
