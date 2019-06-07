@@ -1100,7 +1100,7 @@ def hdd_delete_order(request, int_index):
 @csrf_exempt
 def drive_order_view(request):
     if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
+        form = DriveOrderDocumentForm(request.POST, request.FILES)
         if form.is_valid():
             try:
                 dop = DriveOrderProcessor(request.FILES['document'])
@@ -1109,18 +1109,18 @@ def drive_order_view(request):
                     return render(request, 'partial_success.html', {'message': dop.message})
                 return render(request, 'success.html')
             except Warning as warning:
-                return render(request, 'failure.html', {'message': str(warning)})
+                return render(request, 'failure.html', {'message': f'{warning})'})
         else:
             return render(request, 'uploader.html', {'form': form})
     else:
-        form = DocumentForm()
+        form = DriveOrderDocumentForm()
         return render(request, 'uploader.html', {'form': form})
 
 
 @csrf_exempt
 def process_tar_view(request):
     if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
+        form = TarDocumentForm(request.POST, request.FILES)
         if form.is_valid():
             try:
                 tp = TarProcessor(request.FILES['document'])
@@ -1129,11 +1129,11 @@ def process_tar_view(request):
                     return render(request, 'partial_success.html', {'message': tp.message})
                 return render(request, 'success.html')
             except Warning as warning:
-                return render(request, 'failure.html', {'message': str(warning)})
+                return render(request, 'failure.html', {'message': f'{warning})'})
         else:
             return render(request, 'uploader.html', {'form': form})
     else:
-        form = DocumentForm()
+        form = TarDocumentForm()
         return render(request, 'uploader.html', {'form': form})
 
 
