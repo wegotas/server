@@ -1,3 +1,17 @@
+2019-06-07
+
+LT:
+
+**Pokyciai serveryje: Iterpta lots ir taru validacija.**
+* Tarai(Lots/partijos trintu draivu) siunciant is 'website/tar/' ar rinkmena yra pridetas ir ar tas rinkmena galimas atidaryti per taru apdorojimo iranki.
+* Csv/Text(Drive orders/Draivu uzsakymai) siunciant is 'website/new_drive_order/' ar rinkmena yra pridetas.
+
+EN:
+
+**Changes in server: Inserted lots and tars validation.**
+* Tars(Lots erased drives) sent from 'website/tar/' if file is attached and if that file can be opened with tar processing tool.
+* Csv/Text(Drive orders) sent from 'website/new_drive_order/' if file is attached.
+___
 2019-06-05
 
 LT:

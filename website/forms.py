@@ -3,10 +3,12 @@ import tarfile
 
 
 class TarDocumentForm(forms.Form):
+    """Responsible for validating Tar file upload."""
 
     document = forms.FileField()
 
     def clean_document(self):
+        """Checks if uploaded file can be handled by tarfile class."""
         document = self.files.get('document', None)
 
         try:
@@ -21,5 +23,6 @@ class TarDocumentForm(forms.Form):
 
 
 class DriveOrderDocumentForm(forms.Form):
+    """Responsible for validating file upload. Does not check if file is valid as csv or not."""
 
     document = forms.FileField()
