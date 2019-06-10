@@ -2,7 +2,18 @@
 
 LT:
 
-**Pokytis serveryje: Grazintas automatinis tuscio ramo kaulo pridejimas**
+**Pokytis serveryhe: Isplesta kompiuteriu paieska kad leistu ieskoti ir pagal baterijos modeli.**
+
+EN:
+
+**Change in server: expanded computer search to be able to search by battery model.**
+
+___
+2019-06-10
+
+LT:
+
+**Pokytciai serveryje: Grazintas automatinis tuscio ramo kaulo pridejimas**
 * Jei pasalinamas paskutinis ramu kaulas, iterpiamas automatiskai tuscias su ankstesniu tipu.
 * Funkcionalumas buvo pasalintas per klaida grazinant atgal projekta.
 * Funkcionalumas buvo igyvendintas anksciau 2019-05-08.

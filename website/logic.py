@@ -1112,6 +1112,7 @@ def search(keyword, computers):
         # 'computerobservations__f_id_observation__full_name', # Takes to much of time to search by this field(increases 5s to 3min. 40s.)
         'computerobservations__f_id_observation__f_id_observation_category__category_name',
         'computerobservations__f_id_observation__f_id_observation_subcategory__subcategory_name',
+        'battocomp__f_bat_bat_to_com__model',
     )
     return computers.filter(get_query_for_item_search_from_computer_edit(keyword, searchfields)).distinct()
 
@@ -3746,9 +3747,8 @@ class ComputerToEdit:
 
 def get_query_for_item_search_from_computer_edit(query_string, searchfields_tupple):
     """
-    Forms Q query to be used with filter() models method.
-    Used for creating search from order edit.
-    :param query_string: searchable string string collection in form of string.
+    Forms Q query object to be used with filter() models method.
+    :param query_string: searchable string collection seperated by spaces in form of string.
     :param searchfields_tupple: Fields by which search should be done.
     :return:
     """
