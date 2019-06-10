@@ -1,3 +1,20 @@
+2019-06-10
+
+LT:
+
+**Pokytis serveryje: Grazintas automatinis tuscio ramo kaulo pridejimas**
+* Jei pasalinamas paskutinis ramu kaulas, iterpiamas automatiskai tuscias su ankstesniu tipu.
+* Funkcionalumas buvo pasalintas per klaida grazinant atgal projekta.
+* Funkcionalumas buvo igyvendintas anksciau 2019-05-08.
+
+EN:
+
+**Changes in server: Returned automated adding of empty ramstick**
+* If last ramstick is removed, empty ramstick is added with previuos type.
+* Feature was removed by mistake by reverting project.
+* Feature was implemented previously on 2019-05-08.
+
+___
 2019-06-07
 
 LT:
