@@ -137,13 +137,13 @@
                     <div id="af-originals" class="autofilter">
                         <div class="af-top">
                             <div class="af-checkbkox">
-                                <input type="checkbox" onclick="afSelectAll(this, 'originals-af')">
+                                <input type="checkbox" onclick="afSelectAll(this, 'orig-af')">
                             </div>
                             <div class="af-textinput">
                                 <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'orig-af')">
                             </div>
                         </div>
-                        <div class="af-body" id="originals-af">
+                        <div class="af-body" id="orig-af">
                             {% for afChoice in cch.unique_originals %}
                             <div class="af-selection">
                                 <div class="af-checkbkox">

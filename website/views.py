@@ -51,7 +51,6 @@ def index(request):
         })
 
     if request.GET.get('chargers') == "True":
-        #TODO: PRIDETI FILTRAVIMA
         cch = ChargerCategoriesHolder()
         cch.filter(request.GET.copy())
         return render(request, 'main.html', {
