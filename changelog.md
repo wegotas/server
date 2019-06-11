@@ -13,7 +13,7 @@ ___
 
 LT:
 
-**Pokytciai serveryje: Grazintas automatinis tuscio ramo kaulo pridejimas**
+**Pokyciai serveryje: Grazintas automatinis tuscio ramo kaulo pridejimas**
 * Jei pasalinamas paskutinis ramu kaulas, iterpiamas automatiskai tuscias su ankstesniu tipu.
 * Funkcionalumas buvo pasalintas per klaida grazinant atgal projekta.
 * Funkcionalumas buvo igyvendintas anksciau 2019-05-08.
