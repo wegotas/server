@@ -1079,8 +1079,6 @@ def normalize_query(query_string,
 
 def search(keyword, computers):
 
-    # todo: update funtion to remove 4v remains.
-
     searchfields = (
         'computer_serial',
         'other',

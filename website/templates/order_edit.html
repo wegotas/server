@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 {% load staticfiles %}
-<!-- todo: change 4v to 5v attributes -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,11 +17,6 @@
     {% endif %}
     <div align="center" id="searchResults" class="hidden"></div>
     <form method="post" onsubmit="beforeSubmit()" enctype="multipart/form-data">
-        <!--
-        <div align="center">
-            <input type="file" name="csv_excel" title="Import CSV/Excel">
-        </div>
-        -->
         <div class="error">{{ error_message|linebreaks }}</div>
         <table>
             <tr>
