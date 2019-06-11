@@ -1342,6 +1342,7 @@ class OrdersClass:
         :param data_dict:
         :return:
         """
+
         keys = ('ord-af', 'clt-af', 'qty-af', 'dat-af', 'tes-af', 'sta-af')
         new_dict = {}
         if 'orders' in data_dict:
@@ -1349,6 +1350,7 @@ class OrdersClass:
         for key in keys:
             if key in data_dict:
                 new_dict[key] = data_dict.pop(key)
+
         for key, value in new_dict.items():
             if key == 'ord-af':
                 for order in self.order_list[:]:
@@ -1360,15 +1362,18 @@ class OrdersClass:
                         self.order_list.remove(order)
             elif key == 'qty-af':
                 for order in self.order_list[:]:
-                    if not str(order.count) in new_dict['qty-af']:
+                    if not str(order.count()) in new_dict['qty-af']:
                         self.order_list.remove(order)
             elif key == 'dat-af':
                 for order in self.order_list[:]:
                     if not str(order.date) in new_dict['dat-af']:
                         self.order_list.remove(order)
             elif key == 'tes-af':
+                print(f"Keys: {new_dict['tes-af']}")
                 for order in self.order_list[:]:
+                    print(f'Order testers: {order.testers}')
                     if not all(x in order.testers for x in new_dict['tes-af']):
+                        print('Removing')
                         self.order_list.remove(order)
             elif key == 'sta-af':
                 for order in self.order_list[:]:

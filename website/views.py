@@ -18,7 +18,8 @@ def index(request):
     qty = int(data_dict.get('qty', 10))
     page = int(data_dict.get('page', 1))
     keyword = data_dict.get('keyword', None)
-    autoFilters = AutoFilter(data_dict)
+    if not data_dict.get('orders', None):
+        autoFilters = AutoFilter(data_dict)
     typcat = TypCat()
     so = SearchOptions()
 

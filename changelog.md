@@ -2,7 +2,7 @@
 
 LT:
 
-**Pokytis serveryhe: Isplesta kompiuteriu paieska kad leistu ieskoti ir pagal baterijos modeli.**
+**Pokytis serveryje: Isplesta kompiuteriu paieska kad leistu ieskoti ir pagal baterijos modeli.**
 
 EN:
 
