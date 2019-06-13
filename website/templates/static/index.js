@@ -651,42 +651,13 @@ function applyAFs() {
   loadPage(urlify(newURL));
 }
 
-function launchCatWindow() {
-    var catWindow = window.open('cat/', "", "width=400,height=650");
-}
-
-function launchTypWindow() {
-    var typWindow = window.open('typ/', "", "width=400,height=650");
-}
-
-function launchTesterWindow() {
-    var testerWindow = window.open('test/', "", "width=400,height=650");
-}
-
-function launchReceivedBatchesWindow() {
-    var receivedBatchesWindow = window.open('received_batches/', "", "width=400,height=650");
-}
-
-function launchComputerFormFactorsWindow() {
-    var computerFormFactorsWindow = window.open('computer_form_factors/', "", "width=400,height=650");
-}
-
-function launchNewRecordWindow() {
-    var recordWindow = window.open('new_record/', "", "width=400,height=650");
-}
-
 function launchCatToSoldWindow() {
     var testerWindow = window.open('cat_to_sold/' + getCatSoldParams(), "", "width=920,height=600");
 }
 
-function launchOrderWindow() {
-    var orderWindow = window.open('new_order/', "", "width=400,height=600");
+function launchWindow(url, dimensions) {
+    var newWindow = window.open(url, "", dimensions);
 }
-
-function launchObserWindow() {
-    var observWindow = window.open('observ/', "", "width=960,height=600");
-}
-
 
 function getCatSoldParams() {
   stringArray = [];
@@ -696,58 +667,32 @@ function getCatSoldParams() {
   return "?" + stringArray.join('&');
 }
 
-function editHdd(index, URLremovalToken) {
-	URLtoWorkWith = location.href.slice(0, -1);
-	parts = URLtoWorkWith.split('/');
-	for (var i =0; i<URLremovalToken; i++) {
-		parts.pop();
-	}
-	var editHddWindow = window.open(parts.join('/') + '/hdd_edit/'+index+'/', "", "width=620,height=340");
+function editDrive(url) {
+	var editHddWindow = window.open(url, "", "width=620,height=340");
 }
 
-function deleteHddFromIndex(index) {
- if (confirm('Do you really want to delete this hdd?')) {
-    URLtoWorkWith = location.href;
-    parts = URLtoWorkWith.split('/');
-    parts.pop();
-    URLtoWorkWith = parts.join('/');
-    URLtoWorkWith = URLtoWorkWith + '/hdd_delete/' + index + '/';
+function deleteDrive(url) {
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', URLtoWorkWith);
+    xhr.open('POST', url);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
     xhr.onreadystatechange = function() {
-      if (xhr.readyState != 4) return;
-      if (xhr.status == 200) {
-        parts = URLtoWorkWith.split('/');
-        parts.pop();
-        parts.pop();
-        parts.pop();
-        var infoWindow = window.open(parts.join('/') + '/success/',"", "width=620,height=340");
-        setTimeout(location.reload(), 1000);
-      }
-      else if (xhr.status == 404) {
-        alert(xhr.responseText);
-      }
+        if (xhr.readyState != 4) return;
+        if (xhr.status == 200) {
+            var infoWindow = window.open('/website/success/',"", "width=620,height=340");
+            setTimeout(location.reload(), 1000);
+        }
+        else if (xhr.status == 404) {
+            alert(xhr.responseText);
+        }
     }
-  }
 }
 
-function viewPDFfromIndex(index) {
-  URLtoWorkWith = location.href;
-  parts = URLtoWorkWith.split('/');
-  parts.pop();
-  URLtoWorkWith = parts.join('/');
-  URLtoWorkWith = URLtoWorkWith + '/view_pdf/' + index + '/';
-  var pdfWindow = window.open(URLtoWorkWith, "", "width=700,height=800");
+function viewPdf(url) {
+    var pdfWindow = window.open(url, "", "width=700,height=800");
 }
-
-function hdd_order_content(index) {
-  var hddOrderContentWindow = window.open('hdd_order_content/'+index+'/', "", "width=1100,height=650");
-}
-
-function hdd_delete_order(index) {
-  var contentWindow = window.open('hdd_delete_order/'+index+'/', "", "width=1100,height=650");
+function drive_delete_order(url) {
+  var contentWindow = window.open(url, "", "width=1100,height=650");
   setTimeout(function(){ location.reload(); }, 1500);
 }
 
@@ -773,21 +718,6 @@ function importNewDriveOrder(URLremovalToken) {
         parts.pop();
     }
     var importOrderWindow = window.open(parts.join('/') + '/new_drive_order/', "", "width=380,height=100");
-}
-
-
-function importNewTar(URLremovalToken) {
-	URLtoWorkWith = location.href;
-	parts = URLtoWorkWith.split('/');
-	for (var i =0; i<URLremovalToken; i++) {
-		parts.pop();
-	}
-	var importTarWindow = window.open(parts.join('/') + '/tar/', "", "width=380,height=100");
-}
-
-
-function lot_content(index) {
-  var contentWindow = window.open('content/'+index+'/', "", "width=1100,height=650");
 }
 
 function edit_charger(index, URLremovalToken) {
@@ -849,4 +779,12 @@ function download_hdd_order_csv(index) {
 
 function process_option(checkbox) {
     searchoptions.process_option(checkbox);
+}
+
+function open_tar_order_import_window(url){
+    var new_window = window.open(url, "", "width=380,height=100");
+}
+
+function content(url) {
+  var contentWindow = window.open(url, "", "width=1100,height=650");
 }

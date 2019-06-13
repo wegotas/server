@@ -5,7 +5,7 @@
             {% if lh.lots %}
             <button type="button" class="button img-button" onclick="applyAFs()">Filter</button>
             {% endif %}
-            <button type="button" class="button img-button" onclick="importNewTar(1)">Import lot's tar</button>
+            <button type="button" class="button img-button" onclick="open_tar_order_import_window('{% url 'tar' %}')">Import lot's tar</button>
         </div>
     </div>
 </div>
@@ -102,7 +102,7 @@
                 <td>{{ lot.date_of_lot|date:"c" }}</td>
                 <td>{{ lot.count }}</td>
                 <td>
-                    <button type="button" onclick="lot_content({{ lot.lot_id }})">Content</button>
+                    <button type="button" onclick="content('{% url 'lot_content' lot.lot_id %}')">Content</button>
                 </td>
             </tr>
             {% endfor %}

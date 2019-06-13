@@ -5,7 +5,7 @@
             {% if oh.orders %}
             <button type="button" class="button img-button" onclick="applyAFs()">Filter</button>
             {% endif %}
-            <button type="button" class="button img-button" onclick="importNewDriveOrder(1)">Import drive order</button>
+            <button type="button" class="button img-button" onclick="open_tar_order_import_window('{% url 'drive_order' %}')">Import drive order</button>
         </div>
     </div>
 </div>
@@ -128,8 +128,8 @@
                 <td>{{ order.order_status_name }}</td>
                 <td>{{ order.count }}</td>
                 <td>
-                    <button type="button" onclick="hdd_order_content({{ order.order_id }})">Content</button>
-                    <button type="button" onclick="hdd_delete_order({{ order.order_id }})">Delete</button>
+                    <button type="button" onclick="content('{% url 'drive_order_content' order.order_id %}')">Content</button>
+                    <button type="button" onclick="drive_delete_order('{% url 'drive_delete_order' order.order_id %}')">Delete</button>
                 </td>
             </tr>
             {% endfor %}

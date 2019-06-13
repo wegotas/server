@@ -2603,7 +2603,7 @@ class HddOrdersHolderAutoFilter:
             lst.append(value)
 
 
-class HddOrdersHolder:
+class DriveOrdersHolder:
 
     def __init__(self):
         self.count = 0

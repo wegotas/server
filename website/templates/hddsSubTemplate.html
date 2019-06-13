@@ -225,9 +225,9 @@
                 <td>{{ hdd.f_lot.lot_name }}</td>
                 <td>{{ hdd.f_hdd_order.order_name }}</td>
                 <td class="action_container">
-                    <button type="button" class="img-button" onclick="editHdd({{ hdd.hdd_id }}, 1)">Edit</button>
-                    <button type="button" class="img-button" onclick="deleteHddFromIndex({{ hdd.hdd_id }})">Delete</button>
-                    <button type="button" class="img-button" onclick="viewPDFfromIndex({{ hdd.hdd_id }})" {% if hdd.tar_member_name is None %}
+                    <button type="button" class="img-button" onclick="editDrive('{% url 'hdd_edit' hdd.hdd_id %}')">Edit</button>
+                    <button type="button" class="img-button" onclick="deleteDrive('{% url 'hdd_delete' hdd.hdd_id %}')">Delete</button>
+                    <button type="button" class="img-button" onclick="viewPdf('{% url 'view_pdf' hdd.hdd_id %}')" {% if hdd.tar_member_name is None %}
                             disabled{% endif %}>Pdf
                     </button>
                 </td>

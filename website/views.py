@@ -22,7 +22,7 @@ def index(request):
         autoFilters = AutoFilter(data_dict)
     typcat = TypCat()
     so = SearchOptions()
-
+    '''
     if 'lots' in request.GET:
         lh = LotsHolder()
         lh.filter(request.GET.copy())
@@ -42,13 +42,14 @@ def index(request):
         })
 
     elif 'hdd_orders' in request.GET:
-        oh = HddOrdersHolder()
+        oh = DriveOrdersHolder()
         oh.filter(request.GET.copy())
         return render(request, 'main.html', {
             "typcat": typcat,
             'oh': oh,
             'so': so
-        })
+        }) 
+    '''
 
     if request.GET.get('chargers') == "True":
         cch = ChargerCategoriesHolder()
@@ -170,6 +171,38 @@ def index(request):
             "po": po,
             'so': so
         })
+
+
+@csrf_exempt
+def drives_view(request):
+    hh = HddHolder()
+    hh.filter(request.GET.copy())
+    return render(request, 'main.html', {
+        "typcat": TypCat(),
+        'hh': hh,
+        'so': SearchOptions()
+    })
+
+
+@csrf_exempt
+def lots_view(request):
+    lh = LotsHolder()
+    lh.filter(request.GET.copy())
+    return render(request, 'main.html', {
+        "typcat": TypCat(),
+        'lh': lh,
+        'so': SearchOptions()
+    })
+
+@csrf_exempt
+def drive_orders_view(request):
+    oh = DriveOrdersHolder()
+    oh.filter(request.GET.copy())
+    return render(request, 'main.html', {
+        "typcat": TypCat(),
+        'oh': oh,
+        'so': SearchOptions()
+    })
 
 
 @csrf_exempt
@@ -1068,7 +1101,7 @@ def view_pdf(request, int_index):
 
 
 @csrf_exempt
-def hdd_order_content(request, int_index):
+def drive_order_content(request, int_index):
     hoch = HddOrderContentHolder(int_index)
     if request.method == 'POST':
         print('POST method')
@@ -1084,7 +1117,7 @@ def hdd_order_content(request, int_index):
 
 
 @csrf_exempt
-def hdd_order_content_csv(request, int_index):
+def drive_order_content_csv(request, int_index):
     if request.method == 'POST':
         print('POST method')
     if request.method == 'GET':
@@ -1099,7 +1132,7 @@ def hdd_order_content_csv(request, int_index):
 
 
 @csrf_exempt
-def hdd_delete_order(request, int_index):
+def drive_delete_order(request, int_index):
     if request.method == 'POST':
         print('POST method')
     if request.method == 'GET':

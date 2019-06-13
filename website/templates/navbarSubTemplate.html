@@ -1,17 +1,5 @@
 {% block 'navbar' %}
 <div class="navbar">
-    <!--
-    {% for ct in cattyp.innerList %}
-    <div class="dropdown">
-        <button href="laptops/" class="dropbtn">{{ ct.type }}&#9660;</button>
-        <div class="dropdown-content">
-            {% for cat in ct.innerList %}
-            <a href="?type={{ ct.type }}&cat={{ cat }}&sold=False">{{ cat }}</a>
-            {% endfor %}
-        </div>
-    </div>
-    {% endfor %}
-    -->
     {% for type in typcat %}
     <div class="dropdown">
         <button href="laptops/" class="dropbtn">{{ type.type_name }}&#9660;</button>
@@ -28,9 +16,9 @@
     <div class="dropdown">
         <button href="" class="dropbtn">Data storage&#9660;</button>
         <div class="dropdown-content">
-            <a href="?hdds=True">All storages</a>
-            <a href="?lots=True">Storage lots</a>
-            <a href="?hdd_orders=True">Storage orders</a>
+            <a href="{% url 'drives' %}">All storages</a>
+            <a href="{% url 'lots' %}">Lots</a>
+            <a href="{% url 'drive_orders' %}">Orders</a>
         </div>
     </div>
 </div>

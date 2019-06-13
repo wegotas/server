@@ -87,15 +87,19 @@ urlpatterns = [
     path('hdd_edit/<int:int_index>/', views.hdd_edit, name='hdd_edit'),
     path('hdd_delete/<int:int_index>/', views.hdd_delete, name='hdd_delete'),
     path('view_pdf/<int:int_index>/', views.view_pdf, name='view_pdf'),
-    path('hdd_order_content/<int:int_index>/', views.hdd_order_content, name='hdd_order_content'),
-    path('hdd_order_content/<int:int_index>/csv/', views.hdd_order_content_csv, name='hdd_order_content_csv'),
-    path('hdd_delete_order/<int:int_index>/', views.hdd_delete_order, name='hdd_delete_order'),
+    path('hdd_order_content/<int:int_index>/', views.drive_order_content, name='drive_order_content'),
+    path('hdd_order_content/<int:int_index>/csv/', views.drive_order_content_csv, name='drive_order_content_csv'),
+    path('hdd_delete_order/<int:int_index>/', views.drive_delete_order, name='drive_delete_order'),
 
-    path('new_drive_order/', views.drive_order_view, name='drive_order_view'),
+    path('new_drive_order/', views.drive_order_view, name='drive_order'),
 
-    path('tar/', views.process_tar_view, name='tarView'),
+    path('tar/', views.process_tar_view, name='tar'),
 
     path('content/<int:int_index>/', views.lot_content, name='lot_content'),
     path('success/', views.success, name='success'),
-    path('', views.index, name='index')
+    path('', views.index, name='index'),
+
+    path('drives/', views.drives_view, name='drives'),
+    path('lots/', views.lots_view, name='lots'),
+    path('drive_orders/', views.drive_orders_view, name='drive_orders'),
 ]

@@ -2,14 +2,14 @@
 <div class="pageLeftTop">
     <div class="vertical-menu">
         <a class="active">Meniu:</a>
-        <a class="menu-choice" onclick="launchNewRecordWindow()">+record</a>
-        <a class="menu-choice" onclick="launchOrderWindow()">+order</a>
-        <a class="menu-choice" onclick="launchTesterWindow()">testers</a>
-        <a class="menu-choice" onclick="launchTypWindow()">types</a>
-        <a class="menu-choice" onclick="launchCatWindow()">categories</a>
-        <a class="menu-choice" onclick="launchReceivedBatchesWindow()">received batches</a>
-        <a class="menu-choice" onclick="launchComputerFormFactorsWindow()">form factors</a>
-        <a class="menu-choice" onclick="launchObserWindow()">observations</a>
+        <a class="menu-choice" onclick="launchWindow('{% url 'new_record' %}', 'width=400,height=650')">+computer</a>
+        <a class="menu-choice" onclick="launchWindow('{% url 'new_order' %}', 'width=400,height=600')">+order</a>
+        <a class="menu-choice" onclick="launchWindow('{% url 'types' %}', 'width=400,height=650')">types</a>
+        <a class="menu-choice" onclick="launchWindow('{% url 'categories' %}', 'width=400,height=650')">categories</a>
+        <a class="menu-choice" onclick="launchWindow('{% url 'testers' %}', 'width=400,height=650')">testers</a>
+        <a class="menu-choice" onclick="launchWindow('{% url 'batches' %}', 'width=400,height=650')">received batches</a>
+        <a class="menu-choice" onclick="launchWindow('{% url 'computer_form_factors' %}', 'width=400,height=650')">form factors</a>
+        <a class="menu-choice" onclick="launchWindow('{% url 'observations' %}', 'width=960,height=600')">observations</a>
     </div>
 </div>
 {% endblock %}
