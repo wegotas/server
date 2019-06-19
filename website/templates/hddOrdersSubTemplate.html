@@ -2,6 +2,19 @@
 <div class="menu2">
     <div id="filter" class="menu-div">
         <div class="item">
+            <div class="textbox">Qty:</div>
+            <div class="selector">
+                <select id="qty" class="c-select" onchange="handleSelect(this)">
+                    <option {{ oh.qtySelect.state10 }} value="&page=1&qty=10">10</option>
+                    <option {{ oh.qtySelect.state20 }} value="&page=1&qty=20">20</option>
+                    <option {{ oh.qtySelect.state50 }} value="&page=1&qty=50">50</option>
+                    <option {{ oh.qtySelect.state100 }} value="&page=1&qty=100">100</option>
+                    <option {{ oh.qtySelect.state200 }} value="&page=1&qty=200">200</option>
+                    <option {{ oh.qtySelect.state1000 }} value="&page=1&qty=1000">1000</option>
+                </select>
+            </div>
+        </div>
+        <div class="item">
             {% if oh.orders %}
             <button type="button" class="button img-button" onclick="applyAFs()">Filter</button>
             {% endif %}
@@ -122,7 +135,7 @@
             {% for order in oh.orders %}
             <tr class="row">
                 {{ oh.increment }}
-                <td>{{ oh.count }}</td>
+                <td>{{ oh.index }}</td>
                 <td>{{ order.order_name }}</td>
                 <td>{{ order.date_of_order|date:"c" }}</td>
                 <td>{{ order.order_status_name }}</td>
@@ -135,6 +148,19 @@
             {% endfor %}
         </tbody>
     </table>
+    <div class="pagination" align="center">
+        <span class="step-links">
+            {% if oh.orders.has_previous %}
+            <button value="&page=1&qty={{ oh.qtySelect.qty }}" onclick="handleSelect(this)">&laquo; first</button>
+            <button value="&page={{ oh.orders.previous_page_number }}&qty={{ oh.qtySelect.qty }}" onclick="handleSelect(this)">previous</button>
+            {% endif %}
+            <span class="current">Page {{ oh.orders.number }} of {{ oh.orders.paginator.num_pages }}.</span>
+            {% if oh.orders.has_next %}
+            <button value="&page={{ oh.orders.next_page_number }}&qty={{ oh.qtySelect.qty }}" onclick="handleSelect(this)">next</button>
+            <button value="&page={{ oh.orders.paginator.num_pages }}&qty={{ oh.qtySelect.qty }}" onclick="handleSelect(this)">last &raquo;</button>
+            {% endif %}
+        </span>
+    </div>
 </div>
 {% endif %}
 {% endblock %}

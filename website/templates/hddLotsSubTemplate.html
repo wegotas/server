@@ -2,6 +2,19 @@
 <div class="menu2">
     <div id="filter" class="menu-div">
         <div class="item">
+            <div class="textbox">Qty:</div>
+            <div class="selector">
+                <select id="qty" class="c-select" onchange="handleSelect(this)">
+                    <option {{ lh.qtySelect.state10 }} value="&page=1&qty=10">10</option>
+                    <option {{ lh.qtySelect.state20 }} value="&page=1&qty=20">20</option>
+                    <option {{ lh.qtySelect.state50 }} value="&page=1&qty=50">50</option>
+                    <option {{ lh.qtySelect.state100 }} value="&page=1&qty=100">100</option>
+                    <option {{ lh.qtySelect.state200 }} value="&page=1&qty=200">200</option>
+                    <option {{ lh.qtySelect.state1000 }} value="&page=1&qty=1000">1000</option>
+                </select>
+            </div>
+        </div>
+        <div class="item">
             {% if lh.lots %}
             <button type="button" class="button img-button" onclick="applyAFs()">Filter</button>
             {% endif %}
@@ -97,7 +110,7 @@
             {% for lot in lh.lots %}
             <tr class="row">
                 {{ lh.increment }}
-                <td>{{ lh.count }}</td>
+                <td>{{ lh.index }}</td>
                 <td>{{ lot.lot_name }}</td>
                 <td>{{ lot.date_of_lot|date:"c" }}</td>
                 <td>{{ lot.count }}</td>
@@ -108,6 +121,19 @@
             {% endfor %}
         </tbody>
     </table>
+    <div class="pagination" align="center">
+        <span class="step-links">
+            {% if lh.lots.has_previous %}
+            <button value="&page=1&qty={{ lh.qtySelect.qty }}" onclick="handleSelect(this)">&laquo; first</button>
+            <button value="&page={{ lh.lots.previous_page_number }}&qty={{ lh.qtySelect.qty }}" onclick="handleSelect(this)">previous</button>
+            {% endif %}
+            <span class="current">Page {{ lh.lots.number }} of {{ lh.lots.paginator.num_pages }}.</span>
+            {% if lh.lots.has_next %}
+            <button value="&page={{ lh.lots.next_page_number }}&qty={{ lh.qtySelect.qty }}" onclick="handleSelect(this)">next</button>
+            <button value="&page={{ lh.lots.paginator.num_pages }}&qty={{ lh.qtySelect.qty }}" onclick="handleSelect(this)">last &raquo;</button>
+            {% endif %}
+        </span>
+    </div>
 </div>
 {% endif %}
 {% endblock %}

@@ -5,16 +5,16 @@
         <button href="laptops/" class="dropbtn">{{ type.type_name }}&#9660;</button>
         <div class="dropdown-content">
             {% for cat in type %}
-            <a href="?type={{ type.type_name }}&cat={{ cat.category_name }}&sold=False">{{ cat.title }}</a>
+            <a href="{% url 'typcat' %}?type={{ type.type_name }}&cat={{ cat.category_name }}&sold=False">{{ cat.title }}</a>
             {% endfor %}
         </div>
     </div>
     {% endfor %}
-    <a href="?sold=True">Sold</a>
-    <a href="?orders=True">Orders</a>
-    <a href="?chargers=True">Chargers</a>
+    <a href="{% url 'sold' %}">Sold</a>
+    <a href="{% url 'orders' %}">Orders</a>
+    <a href="{% url 'chargers' %}">Chargers</a>
     <div class="dropdown">
-        <button href="" class="dropbtn">Data storage&#9660;</button>
+        <button class="dropbtn">Data storage&#9660;</button>
         <div class="dropdown-content">
             <a href="{% url 'drives' %}">All storages</a>
             <a href="{% url 'lots' %}">Lots</a>

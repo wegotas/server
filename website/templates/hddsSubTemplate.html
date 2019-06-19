@@ -2,6 +2,19 @@
 <div class="menu2">
     <div id="filter" class="menu-div">
         <div class="item">
+            <div class="textbox">Qty:</div>
+            <div class="selector">
+                <select id="qty" class="c-select" onchange="handleSelect(this)">
+                    <option {{ hh.qtySelect.state10 }} value="&page=1&qty=10">10</option>
+                    <option {{ hh.qtySelect.state20 }} value="&page=1&qty=20">20</option>
+                    <option {{ hh.qtySelect.state50 }} value="&page=1&qty=50">50</option>
+                    <option {{ hh.qtySelect.state100 }} value="&page=1&qty=100">100</option>
+                    <option {{ hh.qtySelect.state200 }} value="&page=1&qty=200">200</option>
+                    <option {{ hh.qtySelect.state1000 }} value="&page=1&qty=1000">1000</option>
+                </select>
+            </div>
+        </div>
+        <div class="item">
             <button type="button" class="button img-button" onclick="applyAFs()">Filter</button>
         </div>
     </div>
@@ -213,7 +226,7 @@
             {% for hdd in hh.hdds %}
             <tr class="row">
                 {{ hh.increment }}
-                <td>{{ hh.count }}</td>
+                <td>{{ hh.index }}</td>
                 <td id="serial">{{ hdd.hdd_serial }}</td>
                 <td>{{ hdd.f_hdd_models.hdd_models_name }}</td>
                 <td>{{ hdd.f_hdd_sizes.hdd_sizes_name }}</td>
@@ -235,5 +248,18 @@
             {% endfor %}
         </tbody>
     </table>
+    <div class="pagination" align="center">
+        <span class="step-links">
+            {% if hh.hdds.has_previous %}
+            <button value="&page=1&qty={{ hh.qtySelect.qty }}" onclick="handleSelect(this)">&laquo; first</button>
+            <button value="&page={{ hh.hdds.previous_page_number }}&qty={{ hh.qtySelect.qty }}" onclick="handleSelect(this)">previous</button>
+            {% endif %}
+            <span class="current">Page {{ hh.hdds.number }} of {{ hh.hdds.paginator.num_pages }}.</span>
+            {% if hh.hdds.has_next %}
+            <button value="&page={{ hh.hdds.next_page_number }}&qty={{ hh.qtySelect.qty }}" onclick="handleSelect(this)">next</button>
+            <button value="&page={{ hh.hdds.paginator.num_pages }}&qty={{ hh.qtySelect.qty }}" onclick="handleSelect(this)">last &raquo;</button>
+            {% endif %}
+        </span>
+    </div>
 </div>
 {% endblock %}

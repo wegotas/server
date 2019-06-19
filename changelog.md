@@ -1,3 +1,38 @@
+2019-07-19
+
+LT:
+
+**Pokytis serveryje: Pakeista nuorodu valdymo logika, isplestas puslapiavimas ir sugrazintas pardavimo funkcionalumas**
+* Pakeista nuorodu valdymo logika:
+    * Pasalinti is nuorodu atributai: 'sold', 'uzsakymu', 'chargers', 'hdds', 'lots' ir 'hdd_orders'.
+    * Vietoj ju prideti nuorodu skyriai: '/typcat/', '/sold/', '/orders/', '/chargers/', '/drives/', '/lots/', '/drive_orders/', '/search/'.
+* Puslapiavimas isplestas siose srityse:
+    * Parduotu kompiuteriu perziuroje ('/sold/').
+    * Uzsakymu perziuroje ('/orders/').
+    * Krovikliu kategoriju perziuroje ('/chargers/').
+    * Visu draivu perziuroje ('/drives/').
+    * Draivu partiju perziuroje ('/lots/').
+    * Draivu uzsakymu perziuroje ('/drive_orders/').
+    * Paieskos perziuroje ('/search/').
+* Pastebetos klaidos del negalejimo nustatyti kompiuteriu kaip parduotu istaisytos.
+
+EN:
+
+**Changes in server: Changed url managing logic, expanded pagination and returned selling functionality.**
+* Changed url managing logic:
+    * Removed from urls attributes: 'sold', 'uzsakymu', 'chargers', 'hdds', 'lots' ir 'hdd_orders'.
+    * Instead of them added sections: '/typcat/', '/sold/', '/orders/', '/chargers/', '/drives/', '/lots/', '/drive_orders/', '/search/'.
+* Pagination expanded in these sections:
+    * Sold computer viewing ('/sold/').
+    * Orders viewing ('/orders/').
+    * Charger categories viewing ('/chargers/').
+    * All drives viewing ('/drives/').
+    * Drives lots viewing ('/lots/').
+    * Drives orders viewing ('/drive_orders/').
+    * Search viewing ('/search/').
+* Found bug regarding not being able to set computer as sold, fixed.
+
+___
 2019-06-10
 
 LT:

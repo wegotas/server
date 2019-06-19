@@ -22,16 +22,15 @@ urlpatterns = [
     path('gpus_to_add/<int:int_index>/<keyword>/', views.gpus_to_add, name='gpus_to_add'),
     path('get_gpu/<int:gpu_id>/', views.get_gpu, name='get_gpu'),
 
-    path('delete_charger_cat/<int:int_index>/', views.delete_charger_category, name='edit'),
+    path('delete_charger_cat/<int:int_index>/', views.delete_charger_category, name='delete_charger_category'),
     path('by_serial/<slug:serial>/', views.edit_by_serial, name='edit_by_serial'),
     path('serial/<slug:serial>/', views.serial_processing, name='serial_processing'),
     path('serial/<slug:serial>/delete/', views.delete_charger_from_scan, name='delete_charger'),
-    path('edit_charger/<int:int_index>/edit/', views.edit_charger_serial, name='edit_charger'),
+    path('edit_charger/<int:int_index>/edit/', views.edit_charger_serial, name='edit_charger_edit'),
     path('edit_charger/<int:int_index>/print/', views.print_charger_serial, name='print_charger'),
     path('edit_charger/<int:int_index>/print_serials/', views.print_chargers_serials, name='print_chargers_serials'),
     path('edit_charger/<int:int_index>/delete/', views.delete_charger, name='delete_charger'),
     path('edit_charger/<int:int_index>/', views.edit_charger, name='edit_charger'),
-
 
     path('delete_order/<int:int_index>/', views.delete_order, name='delete_order'),
     path('edit_order/<int:int_index>/', views.edit_order, name='edit_order'),
@@ -102,4 +101,9 @@ urlpatterns = [
     path('drives/', views.drives_view, name='drives'),
     path('lots/', views.lots_view, name='lots'),
     path('drive_orders/', views.drive_orders_view, name='drive_orders'),
+    path('chargers/', views.chargers_view, name='chargers'),
+    path('orders/', views.orders_view, name='orders'),
+    path('sold/', views.sold_view, name='sold'),
+    path('typcat/', views.typcat_view, name='typcat'),
+    path('search/', views.search_view, name='search'),
 ]

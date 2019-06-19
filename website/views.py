@@ -10,173 +10,15 @@ from decimal import Decimal
 
 
 def index(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
-    data_dict = request.GET.copy()
-    qty = int(data_dict.get('qty', 10))
-    page = int(data_dict.get('page', 1))
-    keyword = data_dict.get('keyword', None)
-    if not data_dict.get('orders', None):
-        autoFilters = AutoFilter(data_dict)
-    typcat = TypCat()
-    so = SearchOptions()
-    '''
-    if 'lots' in request.GET:
-        lh = LotsHolder()
-        lh.filter(request.GET.copy())
-        return render(request, 'main.html', {
-            "typcat": typcat,
-            'lh': lh,
-            'so': so
-        })
-
-    elif 'hdds' in request.GET:
-        hh = HddHolder()
-        hh.filter(request.GET.copy())
-        return render(request, 'main.html', {
-            "typcat": typcat,
-            'hh': hh,
-            'so': so
-        })
-
-    elif 'hdd_orders' in request.GET:
-        oh = DriveOrdersHolder()
-        oh.filter(request.GET.copy())
-        return render(request, 'main.html', {
-            "typcat": typcat,
-            'oh': oh,
-            'so': so
-        }) 
-    '''
-
-    if request.GET.get('chargers') == "True":
-        cch = ChargerCategoriesHolder()
-        cch.filter(request.GET.copy())
-        return render(request, 'main.html', {
-            'cch': cch,
-            "typcat": typcat,
-            'so': so
-        })
-
-    if keyword:
-        computers = Computers.objects.all()
-        computers = search(keyword, computers)
-        for option in so.options:
-            computers = option.search(computers, data_dict.pop(option.tagname, ""))
-        computers = autoFilters.filter(computers)
-        counter = Counter()
-        qtySelect = QtySelect()
-        af = AutoFiltersFromComputers(computers)
-        category_queryset = Categories.objects.values_list('category_name')
-        possible_categories = []
-        for query_member in category_queryset:
-            possible_categories.append(query_member[0])
-        po = PossibleOrders()
-        return render(request, 'main.html', {
-            'computers': computers,
-            "counter": counter,
-            "qtySelect": qtySelect,
-            "autoFilters": af,
-            "typcat": typcat,
-            "poscat": possible_categories,
-            "po": po,
-            'so': so,
-            "global": True
-        })
-
-    elif request.GET.get('sold') == "True":
-        possible_categories = None
-        qtySelect = QtySelect()
-        qtySelect.setDefaultSelect(qty)
-        computers = Computers.objects.exclude(f_sale__isnull=True)
-        computers = autoFilters.filter(computers)
-        if keyword is not None:
-            computers = search(keyword, computers)
-        af = AutoFiltersFromSoldComputers(computers)
-        paginator = Paginator(computers, qty)
-        computers = paginator.get_page(page)
-        counter = Counter()
-        counter.count = qty * (page - 1)
-        category_querySet = Categories.objects.values_list('category_name')
-        possible_categories = []
-        for query_member in category_querySet:
-            possible_categories.append(query_member[0])
-        return render(request, 'main.html', {
-            'computers': computers,
-            "counter": counter,
-            "qtySelect": qtySelect,
-            "autoFilters": af,
-            "typcat": typcat,
-            "poscat": possible_categories,
-            'so': so
-        })
-
-    elif request.GET.get('orders') == "True":
-        counter = Counter()
-        orders = OrdersClass()
-        orders.filter(data_dict)
-        return render(request, 'main.html', {
-            "counter": counter,
-            "typcat": typcat,
-            "orders": orders,
-            'so': so
-        })
-
-    else:
-        typ = data_dict.get('type')
-        cat = data_dict.get('cat')
-        data_dict.pop("sold", None)
-        possible_categories = None
-        if cat or typ:
-            qtySelect = QtySelect()
-            qtySelect.setDefaultSelect(qty)
-            typeRecord = Types.objects.filter(type_name=typ)[:1].get()
-            catRecord = Categories.objects.filter(category_name=cat)[:1].get()
-            computers = Computers.objects.filter(
-                f_type=typeRecord.id_type,
-                f_category=catRecord.id_category,
-                f_sale=None
-            ).exclude(f_id_comp_ord__isnull=False)\
-                .exclude(f_sale__isnull=False)
-            computers = autoFilters.filter(computers)
-            if keyword is not None:
-                computers = search(keyword, computers)
-            af = AutoFiltersFromComputers(computers)
-            paginator = Paginator(computers, qty)
-            computers = paginator.get_page(page)
-            counter = Counter()
-            counter.count = qty * (page - 1)
-            category_querySet = Categories.objects.values_list('category_name')
-            possible_categories = []
-            for query_member in category_querySet:
-                possible_categories.append(query_member[0])
-            po = PossibleOrders()
-        else:
-            af = None
-            computers = None
-            counter = None
-            qtySelect = None
-            autoFilters = None
-            possible_types = None
-            po = PossibleOrders()
-        return render(request, 'main.html', {
-            'computers': computers,
-            "counter": counter,
-            "qtySelect": qtySelect,
-            "autoFilters": af,
-            "typcat": typcat,
-            "poscat": possible_categories,
-            "po": po,
-            'so': so
-        })
+    return render(request, 'main.html', {
+        "typcat": TypCat(),
+        'so': SearchOptions()
+    })
 
 
 @csrf_exempt
 def drives_view(request):
-    hh = HddHolder()
-    hh.filter(request.GET.copy())
+    hh = HddHolder(request.GET.copy())
     return render(request, 'main.html', {
         "typcat": TypCat(),
         'hh': hh,
@@ -186,8 +28,7 @@ def drives_view(request):
 
 @csrf_exempt
 def lots_view(request):
-    lh = LotsHolder()
-    lh.filter(request.GET.copy())
+    lh = LotsHolder(request.GET.copy())
     return render(request, 'main.html', {
         "typcat": TypCat(),
         'lh': lh,
@@ -196,12 +37,121 @@ def lots_view(request):
 
 @csrf_exempt
 def drive_orders_view(request):
-    oh = DriveOrdersHolder()
-    oh.filter(request.GET.copy())
+    oh = DriveOrdersHolder(request.GET.copy())
     return render(request, 'main.html', {
         "typcat": TypCat(),
         'oh': oh,
         'so': SearchOptions()
+    })
+
+
+@csrf_exempt
+def chargers_view(request):
+    cch = ChargerCategoriesHolder(request.GET.copy())
+    return render(request, 'main.html', {
+        'cch': cch,
+        "typcat": TypCat(),
+        'so': SearchOptions()
+    })
+
+
+@csrf_exempt
+def orders_view(request):
+    counter = Counter()
+    orders = OrdersClass(request.GET.copy())
+    return render(request, 'main.html', {
+        "counter": counter,
+        "typcat": TypCat(),
+        "orders": orders,
+        'so': SearchOptions()
+    })
+
+
+@csrf_exempt
+def sold_view(request):
+    qty = int(request.GET.get('qty', 10))
+    page = int(request.GET.get('page', 1))
+    autoFilters = AutoFilter(request.GET.copy())
+    qtySelect = QtySelect()
+    qtySelect.setDefaultSelect(qty)
+    computers = Computers.objects.exclude(f_sale__isnull=True)
+    computers = autoFilters.filter(computers)
+    af = AutoFiltersFromSoldComputers(computers)
+    paginator = Paginator(computers, qty)
+    computers = paginator.get_page(page)
+    counter = Counter()
+    counter.count = qty * (page - 1)
+    return render(request, 'main.html', {
+        'computers': computers,
+        "counter": counter,
+        "qtySelect": qtySelect,
+        "autoFilters": af,
+        "typcat": TypCat(),
+        "poscat": Categories.objects.values_list('category_name', flat=True),
+        'so': SearchOptions()
+    })
+
+
+@csrf_exempt
+def typcat_view(request):
+    data_dict = request.GET.copy()
+    qty = int(data_dict.get('qty', 10))
+    page = int(data_dict.get('page', 1))
+    autoFilters = AutoFilter(data_dict)
+    computers = Computers.objects.filter(
+        f_type=Types.objects.get(type_name=data_dict.get('type')),
+        f_category=Categories.objects.get(category_name=data_dict.get('cat')),
+        f_sale=None
+    ).exclude(f_id_comp_ord__isnull=False) \
+        .exclude(f_sale__isnull=False)
+    computers = autoFilters.filter(computers)
+    qtySelect = QtySelect()
+    qtySelect.setDefaultSelect(qty)
+    af = AutoFiltersFromComputers(computers)
+    paginator = Paginator(computers, qty)
+    computers = paginator.get_page(page)
+    counter = Counter()
+    counter.count = qty * (page - 1)
+    return render(request, 'main.html', {
+        'computers': computers,
+        "counter": counter,
+        "qtySelect": qtySelect,
+        "autoFilters": af,
+        "typcat": TypCat(),
+        "poscat": Categories.objects.values_list('category_name', flat=True),
+        "po": PossibleOrders(),
+        'so': SearchOptions()
+    })
+
+
+@csrf_exempt
+def search_view(request):
+    data_dict = request.GET.copy()
+    qty = int(request.GET.get('qty', 10))
+    page = int(request.GET.get('page', 1))
+    computers = Computers.objects.all()
+    computers = search(data_dict.get('keyword', None), computers)
+    so = SearchOptions()
+    for option in so.options:
+        computers = option.search(computers, data_dict.pop(option.tagname, ""))
+    autoFilters = AutoFilter(data_dict)
+    computers = autoFilters.filter(computers)
+    qtySelect = QtySelect()
+    qtySelect.setDefaultSelect(qty)
+    af = AutoFiltersFromComputers(computers)
+    paginator = Paginator(computers, qty)
+    computers = paginator.get_page(page)
+    counter = Counter()
+    counter.count = qty * (page - 1)
+    return render(request, 'main.html', {
+        'computers': computers,
+        "counter": counter,
+        "qtySelect": qtySelect,
+        "autoFilters": af,
+        "typcat": TypCat(),
+        "poscat": Categories.objects.values_list('category_name', flat=True),
+        'so': so,
+        "global": True
     })
 
 
@@ -1069,19 +1019,11 @@ def hdd_edit(request, int_index):
 
 @csrf_exempt
 def hdd_delete(request, int_index):
-    htd = HddToDelete(pk=int_index)
-    if request.method == 'POST':
-        print('POST method')
-        htd.delete()
-        if htd.success:
-            return render(request, 'success.html')
-        else:
-            print('Failed deletion')
-            print(htd.message)
-            return HttpResponse(htd.message, status=404)
-    if request.method == 'GET':
-        print('GET method')
-        return HttpResponse('<p>You should not be here.</p><p>What are you doing over here?</p>', status=404)
+    message = try_drive_delete_and_get_message(pk=int_index)
+    if message:
+        return HttpResponse(message, status=404)
+    else:
+        return render(request, 'success.html')
 
 
 def view_pdf(request, int_index):

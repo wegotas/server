@@ -6,7 +6,6 @@ from django.db.models import Q, Count
 from django.conf import settings
 import os
 import tarfile
-import datetime
 import csv
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
@@ -17,6 +16,73 @@ import math
 import sys
 from abc import ABC
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db.utils import IntegrityError
+from django.core.paginator import Paginator
+from datetime import datetime
+
+
+class TypCatComputersLogic:
+
+    def __init__(self, data_dict):
+        pass
+
+
+class SoldComputersLogic:
+
+    def __init__(self, data_dict):
+        pass
+
+
+class SearchComputersLogic:
+    """
+    Not finnished supposed to lower ammount of code in views.py search_view()
+    """
+
+    def __init__(self, data_dict):
+        self.qty = int(data_dict.get('qty', 10))
+        self.page = int(data_dict.get('page', 1))
+        computers = Computers.objects.all()
+        computers = search(data_dict.get('keyword', None), computers)
+        self.so = SearchOptions()
+        for option in self.so.options:
+            computers = option.search(computers, data_dict.get(option.tagname, ""))
+        autoFilters = AutoFilter(data_dict)
+        computers = autoFilters.filter(computers)
+        self.qtySelect = QtySelect()
+        self.qtySelect.setDefaultSelect(self.qty)
+        self.af = AutoFiltersFromComputers(computers)
+        paginator = Paginator(computers, self.qty)
+        self.computers = paginator.get_page(self.page)
+        # self.counter = Counter()
+        # self.counter.count = qty * (page - 1)
+        self.index = self.start_index = self.qty * (self.page - 1)
+
+    def isGlobal(self):
+        return True
+
+    def poscat(self):
+        return Categories.objects.values_list('category_name', flat=True)
+
+    def typcat(self):
+        return TypCat()
+
+    '''
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index >= self.qty * self.page:
+            self.index = self.qty * (self.page - 1)
+            raise StopIteration
+        else:
+            self.index += 1
+            # print(self.index - self.start_index)
+            print(type(self.computers))
+            # return self.computers[self.index - self.start_index]
+            # return next(self.computers)
+    '''
+    def get_computers(self):
+        return self.computers
 
 
 class Counter:
@@ -36,6 +102,30 @@ class QtySelect:
     state200 = ""
 
     def setDefaultSelect(self, qty):
+        self.qty = qty
+        if qty == 10:
+            self.state10 = "selected"
+        elif qty == 20:
+            self.state20 = "selected"
+        elif qty == 50:
+            self.state50 = "selected"
+        elif qty == 100:
+            self.state100 = "selected"
+        elif qty == 200:
+            self.state200 = "selected"
+        elif qty == 1000:
+            self.state1000 = "selected"
+
+
+class QtySelect2:
+    qty = 0
+    state10 = ""
+    state20 = ""
+    state50 = ""
+    state100 = ""
+    state200 = ""
+
+    def __init__(self, qty):
         self.qty = qty
         if qty == 10:
             self.state10 = "selected"
@@ -1111,6 +1201,8 @@ def search(keyword, computers):
         'computerobservations__f_id_observation__f_id_observation_category__category_name',
         'computerobservations__f_id_observation__f_id_observation_subcategory__subcategory_name',
         'battocomp__f_bat_bat_to_com__model',
+        'f_id_comp_ord__f_order_id_to_order__order_name',
+
     )
     return computers.filter(get_query_for_item_search_from_computer_edit(keyword, searchfields)).distinct()
 
@@ -1328,13 +1420,35 @@ class OrdersClassAutoFilter:
 
 
 class OrdersClass:
+    """
+    Class responsible for portraying available Orders in website.
+    """
 
-    def __init__(self):
+    def __init__(self, data_dict=None):
+        self.data_dict = data_dict
         self.order_list = []
         for ord in Orders.objects.all():
             self.order_list.append(Order(ord))
 
-    def filter(self, data_dict):
+        self.filter()
+        self.autoFilters = OrdersClassAutoFilter(self.order_list)
+
+        self.qty = int(data_dict.get('qty', 10))
+        self.page = int(data_dict.get('page', 1))
+        self.qtySelect = QtySelect2(self.qty)
+        paginator = Paginator(self.order_list, self.qty)
+        self.order_list = paginator.get_page(self.page)
+        self.index = self.qty * (self.page - 1)
+
+    def increment(self):
+        """
+        Increments index which is used for numbering orders in website.
+        :return: empty string, so that nothing would be rendered.
+        """
+        self.index += 1
+        return ''
+
+    def filter(self):
         """
         Filters Orders based on provided keys and values.
         :param data_dict:
@@ -1343,11 +1457,11 @@ class OrdersClass:
 
         keys = ('ord-af', 'clt-af', 'qty-af', 'dat-af', 'tes-af', 'sta-af')
         new_dict = {}
-        if 'orders' in data_dict:
-            data_dict.pop('orders')
+        if 'orders' in self.data_dict:
+            self.data_dict.pop('orders')
         for key in keys:
-            if key in data_dict:
-                new_dict[key] = data_dict.pop(key)
+            if key in self.data_dict:
+                new_dict[key] = self.data_dict.pop(key)
 
         for key, value in new_dict.items():
             if key == 'ord-af':
@@ -1377,7 +1491,6 @@ class OrdersClass:
                 for order in self.order_list[:]:
                     if not order.get_status() in new_dict['sta-af']:
                         self.order_list.remove(order)
-        self.autoFilters = OrdersClassAutoFilter(self.order_list)
 
 
 class PossibleOrders:
@@ -1617,13 +1730,27 @@ class LotsHolderAutoFilter:
 
 class LotsHolder:
 
-    def __init__(self):
-        self.count = 0
+    def __init__(self, data_dict):
+        self.data_dict = data_dict
         self.lots = self._get_lots()
+
+        self.filter()
         self.autoFilters = LotsHolderAutoFilter(self.lots)
 
+        self.qty = int(data_dict.get('qty', 10))
+        self.page = int(data_dict.get('page', 1))
+        self.qtySelect = QtySelect2(self.qty)
+
+        paginator = Paginator(self.lots, self.qty)
+        self.lots = paginator.get_page(self.page)
+        self.index = self.qty * (self.page - 1)
+
     def increment(self):
-        self.count += 1
+        """
+        Increments index which is used for numbering Charger Categories in website.
+        :return: empty string, so that nothing would be rendered.
+        """
+        self.index += 1
         return ''
 
     def _get_lots(self):
@@ -1639,14 +1766,14 @@ class LotsHolder:
             )
         return lots_to_return
 
-    def filter(self, data_dict):
+    def filter(self):
         keys = ('nam-af', 'day-af', 'cnt-af')
         new_dict = {}
-        if 'lots' in data_dict:
-            data_dict.pop('lots')
+        if 'lots' in self.data_dict:
+            self.data_dict.pop('lots')
         for key in keys:
-            if key in data_dict:
-                new_dict[key] = data_dict.pop(key)
+            if key in self.data_dict:
+                new_dict[key] = self.data_dict.pop(key)
         for key, value in new_dict.items():
             if key == 'nam-af':
                 for lot in self.lots[:]:
@@ -1664,24 +1791,37 @@ class LotsHolder:
 
 class HddHolder:
 
-    def __init__(self):
-        self.count = 0
+    def __init__(self, data_dict=None):
+        self.data_dict = data_dict
         self.hdds = Drives.objects.all()
-        self.autoFilters = HddAutoFilterOptions(self.hdds)
         self.changedKeys = []
 
+        self.filter()
+        self.autoFilters = HddAutoFilterOptions(self.hdds)
+
+        self.qty = int(data_dict.get('qty', 10))
+        self.page = int(data_dict.get('page', 1))
+        self.qtySelect = QtySelect2(self.qty)
+        paginator = Paginator(self.hdds, self.qty)
+        self.hdds = paginator.get_page(self.page)
+        self.index = self.qty * (self.page - 1)
+
     def increment(self):
-        self.count += 1
+        """
+        Increments index which is used for numbering Charger Categories in website.
+        :return: empty string, so that nothing would be rendered.
+        """
+        self.index += 1
         return ''
 
-    def filter(self, data_dict):
+    def filter(self):
         keys = ('ser-af', 'mod-af', 'siz-af', 'loc-af', 'spe-af', 'for-af', 'hp-af', 'day-af')
         new_dict = {}
-        if 'hdds' in data_dict:
-            data_dict.pop('hdds')
+        if 'hdds' in self.data_dict:
+            self.data_dict.pop('hdds')
         for key in keys:
-            if key in data_dict:
-                new_dict[key] = data_dict.pop(key)
+            if key in self.data_dict:
+                new_dict[key] = self.data_dict.pop(key)
         for key, value in new_dict.items():
             if key in keys:
                 self.changedKeys.append(key)
@@ -1701,7 +1841,6 @@ class HddHolder:
                     self.hdds = self.hdds.filter(health__in=new_dict[key])
                 elif key == 'day-af':
                     self.hdds = self.hdds.filter(days_on__in=new_dict[key])
-        self.autoFilters = HddAutoFilterOptions(self.hdds)
 
 
 class HddAutoFilterOptions:
@@ -1984,29 +2123,33 @@ class HddToEdit:
         self.hdd.save()
 
 
-class HddToDelete:
+def try_drive_delete_and_get_message(pk=None, serial=None):
+    """
+    Tries deleting drive record and it's pdf based on id or serial.
+    In case of failure returns string of an error.
+    :param pk: Id of drive,
+    :param serial: Serial of drive.
+    :return: string if deletion fails, None if everything is alright,
+    """
+    if pk:
+        drive = Drives.objects.filter(hdd_id=pk)[0]
+    if serial:
+        drive = Drives.objects.filter(hdd_serial=serial)[0]
 
-    def __init__(self, pk=None, serial=None):
-        if pk:
-            self.hdd = Drives.objects.filter(hdd_id=pk)[0]
-        if serial:
-            self.hdd = Drives.objects.filter(hdd_serial=serial)[0]
-        self.success = False
-        self.message = ''
-
-    def delete(self):
+    try:
         try:
-            try:
-                os.system('tar -vf ' + os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.hdd.f_lot.lot_name + '.tar') + ' --delete "' + self.hdd.tar_member_name + '"')
-            except:
-                pass
-            self.hdd.delete()
-            self.success = True
-            print('Succesful deletion')
-        except Exception as e:
-            self.success = False
-            self.message = 'Failure to delete record\r\n'+str(e)
-            print('Failed deletion')
+            os.system('tar -vf ' + os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'),
+                                                drive.f_lot.lot_name + '.tar') + ' --delete "' + drive.tar_member_name + '"')
+        except:
+            pass
+        drive.delete()
+        print('Succesful deletion')
+        return None
+    except IntegrityError:
+        return 'Drive is part of lot/order or computer.\r\nSolve this dependency first before drive deletion.'
+    except Exception as e:
+        print('Failed deletion')
+        return 'Failure to delete record\r\n' + str(e)
 
 
 class WriteableMessage:
@@ -2605,21 +2748,34 @@ class HddOrdersHolderAutoFilter:
 
 class DriveOrdersHolder:
 
-    def __init__(self):
-        self.count = 0
+    def __init__(self, data_dict=None):
+        self.data_dict = data_dict
         self.orders = self._get_orders()
+
+        self.filter()
         self.autoFilters = HddOrdersHolderAutoFilter(self.orders)
 
+        self.qty = int(data_dict.get('qty', 10))
+        self.page = int(data_dict.get('page', 1))
+        self.qtySelect = QtySelect2(self.qty)
+        paginator = Paginator(self.orders, self.qty)
+        self.orders = paginator.get_page(self.page)
+        self.index = self.qty * (self.page - 1)
+
     def increment(self):
-        self.count += 1
+        """
+        Increments index which is used for numbering Charger Categories in website.
+        :return: empty string, so that nothing would be rendered.
+        """
+        self.index += 1
         return ''
 
-    def filter(self, data_dict):
+    def filter(self):
         keys = ('hon-af', 'dat-af', 'cnt-af', 'ost-af')
         new_dict = {}
         for key in keys:
-            if key in data_dict:
-                new_dict[key] = data_dict.pop(key)
+            if key in self.data_dict:
+                new_dict[key] = self.data_dict.pop(key)
         for key, value in new_dict.items():
             if key == 'hon-af':
                 for order in self.orders[:]:
@@ -2637,7 +2793,6 @@ class DriveOrdersHolder:
                 for order in self.orders[:]:
                     if not str(order.order_status_name) in new_dict[key]:
                         self.orders.remove(order)
-        self.autoFilters = HddOrdersHolderAutoFilter(self.orders)
 
     def _get_orders(self):
         orders = []
@@ -2718,20 +2873,36 @@ class ChargerCategoryHolder:
 
 class ChargerCategoriesHolder:
 
-    def __init__(self):
-        self.count = 0
+    def __init__(self, data_dict=None):
+        self.data_dict = data_dict
         self.chargerCategories = []
         for cat in ChargerCategories.objects.all():
             self.chargerCategories.append(ChargerCategoryHolder(cat))
 
-    def filter(self, data_dict):
+        self.filter()
+        self.qty = int(data_dict.get('qty', 10))
+        self.page = int(data_dict.get('page', 1))
+        self.qtySelect = QtySelect2(self.qty)
+        paginator = Paginator(self.chargerCategories, self.qty)
+        self.chargerCategories = paginator.get_page(self.page)
+        self.index = self.qty * (self.page - 1)
+
+    def increment(self):
+        """
+        Increments index which is used for numbering Charger Categories in website.
+        :return: empty string, so that nothing would be rendered.
+        """
+        self.index += 1
+        return ''
+
+    def filter(self):
         keys = ('man-af', 'watts-af', 'dcmin-af', 'dcmax-af', 'count-af', 'orig-af', 'used-af')
         new_dict = {}
-        if 'chargers' in data_dict:
-            data_dict.pop('chargers')
+        if 'chargers' in self.data_dict:
+            self.data_dict.pop('chargers')
         for key in keys:
-            if key in data_dict:
-                new_dict[key] = data_dict.pop(key)
+            if key in self.data_dict:
+                new_dict[key] = self.data_dict.pop(key)
         for key, value in new_dict.items():
             if key == 'man-af':
                 for cat in self.chargerCategories[:]:
@@ -2761,10 +2932,6 @@ class ChargerCategoriesHolder:
                 for cat in self.chargerCategories[:]:
                     if not str(cat.chargerCategory.is_used()) in new_dict['used-af']:
                         self.chargerCategories.remove(cat)
-
-    def increment(self):
-        self.count += 1
-        return ''
 
     def unique_manufacturers(self):
         holder = []
@@ -3770,3 +3937,14 @@ def get_query_for_item_search_from_computer_edit(query_string, searchfields_tupp
         else:
             query = query & or_query
     return query
+
+
+class CustomTimer:
+
+    def __init__(self):
+        self.last_time = datetime.now()
+
+    def frame_time(self, title):
+        current_time = datetime.now()
+        print(f'title: {title}, current time: {current_time}, difference: {current_time - self.last_time}')
+        self.last_time = current_time

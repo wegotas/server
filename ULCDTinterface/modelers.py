@@ -245,16 +245,6 @@ class Diagonals(models.Model):
         db_table = 'Diagonals'
 
 
-class Document(models.Model):
-    document_id = models.AutoField(primary_key=True)
-    document = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['tar', 'txt'])])
-    uploaded_at = models.DateField(auto_now_add=True)
-
-    class Meta:
-        managed = True
-        db_table = 'Document'
-
-
 class FormFactor(models.Model):
     form_factor_id = models.AutoField(primary_key=True)
     form_factor_name = models.CharField(db_column='Form_factor_name', max_length=45)  # Field name made lowercase.

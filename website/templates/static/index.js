@@ -301,14 +301,14 @@ function edit(index) {
     var editWindow = window.open('edit/'+index+'/', "", "width=400,height=650");
 }
 
-function editOrder(index) {
-  var editWindow = window.open('edit_order/'+index+'/', "", "width=1000,height=650");
+function edit_computer(url) {
+    var editWindow = window.open(url, "", "width=400,height=650");
 }
 
-function deleteOrder(index) {
+function deleteOrder(url) {
     if (confirm("Do you really want to delete this order?")) {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'delete_order/' + index + '/', true);
+        xhr.open('POST', url, true);
         xhr.send();
         xhr.onreadystatechange = function(e) {
             if (xhr.readyState === 4) {
@@ -376,21 +376,25 @@ function filterKeywordChange(inputbox, workingDivId) {
 }
 
 function handleSelect(element) {
-  newURL = formationOfURL(element.value);
-  loadPage(newURL);
+    newURL = formationOfURL(element.value);
+    loadPage(newURL);
 }
 
 function formationOfURL(parameterString) {
-  href = location.href;
-  string = parameterString.substr(1);
-  stringList = string.split('&');
-  for (var i =0; i<stringList.length; i++) {
-    fieldName = stringList[i].split('=')[0];
-    regString = "&" + fieldName + "=[0-9]+"
-    pattern = new RegExp(regString, "g");
-    href = href.replace(pattern, "");
-  }
-  return href + parameterString;
+    href = location.href;
+    string = parameterString.substr(1);
+    stringList = string.split('&');
+    for (var i =0; i<stringList.length; i++) {
+        fieldName = stringList[i].split('=')[0];
+        regString = "&" + fieldName + "=[0-9]+"
+        pattern = new RegExp(regString, "g");
+        href = href.replace(pattern, "");
+    }
+    result = href + parameterString;
+    if (!href.includes('?')) {
+        result = result.replace('&', '?');
+    }
+    return result
 }
 
 function loadPage(newURL) {
@@ -409,7 +413,7 @@ function search_using_keyword() {
     searchAddon = searchoptions.getOptionsAddon();
     URLtoWorkWith = location.href.split('?')[0]
     href = remove_keyword();
-    location.href = URLtoWorkWith + '?keyword=' + urlify(searchKeyword) + urlify(searchAddon)
+    location.href = '/website/search/?keyword=' + urlify(searchKeyword) + urlify(searchAddon)
 }
 
 function search() {
@@ -442,11 +446,11 @@ function search() {
   }
 }
 
-function mass_delete() {
+function mass_delete(url) {
   if (confirm("Do you really want do delete these records?")) {
     var xhr = new XMLHttpRequest();
     indexArray = JSON.stringify(selected_records);
-    xhr.open('POST', 'mass_delete/', true);
+    xhr.open('POST', url, true);
     xhr.send(indexArray);
     xhr.onreadystatechange = function(e) {
       if (xhr.readyState === 4) {
@@ -456,11 +460,11 @@ function mass_delete() {
   }
 }
 
-function mass_excel() {
+function mass_excel(url) {
   var xhr = new XMLHttpRequest();
   var runAsync = true ;
   indexArray = JSON.stringify(selected_records);
-  xhr.open('POST', 'mass_excel/', true);
+  xhr.open('POST', url, true);
   xhr.responseType = "arraybuffer";
   xhr.send(indexArray);
   xhr.onreadystatechange = function(e) {
@@ -476,15 +480,15 @@ function mass_excel() {
       link.href = URL.createObjectURL( blob );
       link.download = 'excel.xlsx';
       link.click();
-      }
+    }
   }
 }
 
-function mass_csv() {
+function mass_csv(url) {
   var xhr = new XMLHttpRequest();
   var runAsync = true ;
   indexArray = JSON.stringify(selected_records);
-  xhr.open('POST', 'mass_csv/', true);
+  xhr.open('POST', url, true);
   xhr.responseType = "arraybuffer";
   xhr.send(indexArray);
   xhr.onreadystatechange = function(e) {
@@ -508,7 +512,7 @@ function mass_qr_print() {
     var xhr = new XMLHttpRequest();
     var runAsync = true ;
     indexArray = JSON.stringify(selected_records);
-    xhr.open('POST', 'mass_qr_print/', true);
+    xhr.open('POST', '/website/mass_qr_print/', true);
     /*
     * Incomplete, should be finished, to be able to choose from which printer to print.
     * And printing should be working properly, one row with dt4x, two rows with g500.
@@ -529,7 +533,7 @@ function mass_qr_print_with_printer(printer) {
     var xhr = new XMLHttpRequest();
     var runAsync = true ;
     indexArray = JSON.stringify(selected_records);
-    xhr.open('POST', 'mass_qr_print/' + printer + '/', true);
+    xhr.open('POST', '/website/mass_qr_print/' + printer + '/', true);
     /*
     * Incomplete, should be finished, to be able to choose from which printer to print.
     * And printing should be working properly, one row with dt4x, two rows with g500.
@@ -605,40 +609,36 @@ function modaljs(id, closeable) {
     parent.appendChild(godex_g500_printer_button);
 }
 
-function mass_catchange(element) {
-  if (confirm("Do you really want do move these records to another category?")) {
-    var xhr = new XMLHttpRequest();
-    var objectToSend = {};
-    objectToSend[element.value] = selected_records;
-    indexArray = JSON.stringify(objectToSend);
-    xhr.open('POST', 'cat_change/', true);
-    xhr.send(indexArray);
-    xhr.onreadystatechange = function(e) {
-      if (xhr.readyState === 4) {
-        location.reload();
-      }
+function mass_catchange(element, url) {
+    if (confirm("Do you really want do move these records to another category?")) {
+        var xhr = new XMLHttpRequest();
+        var objectToSend = {};
+        objectToSend[element.value] = selected_records;
+        indexArray = JSON.stringify(objectToSend);
+        xhr.open('POST', url, true);
+        xhr.send(indexArray);
+        xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+                location.reload();
+            }
+        }
     }
-  }
 }
 
-function ord_assign(element) {
-  if (confirm("Do you really want to assign these records to this order?")) {
-    var xhr = new XMLHttpRequest();
-    var objectToSend = {};
-    objectToSend[element.value] = selected_records;
-    indexArray = JSON.stringify(objectToSend);
-    xhr.open('POST', 'ord_assign/', true);
-    xhr.send(indexArray);
-    xhr.onreadystatechange = function(e) {
-      if (xhr.readyState === 4) {
-        location.reload();
-      }
+function ord_assign(element, url) {
+    if (confirm("Do you really want to assign these records to this order?")) {
+        var xhr = new XMLHttpRequest();
+        var objectToSend = {};
+        objectToSend[element.value] = selected_records;
+        indexArray = JSON.stringify(objectToSend);
+        xhr.open('POST', url, true);
+        xhr.send(indexArray);
+        xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+                location.reload();
+            }
+        }
     }
-  }
-}
-
-function mass_sold() {
-  launchCatToSoldWindow();
 }
 
 function urlify (url) {
@@ -649,10 +649,6 @@ function urlify (url) {
 function applyAFs() {
   newURL = afmanager.formNewUrlWithAFURLaddon(location.href);
   loadPage(urlify(newURL));
-}
-
-function launchCatToSoldWindow() {
-    var testerWindow = window.open('cat_to_sold/' + getCatSoldParams(), "", "width=920,height=600");
 }
 
 function launchWindow(url, dimensions) {
@@ -691,25 +687,25 @@ function deleteDrive(url) {
 function viewPdf(url) {
     var pdfWindow = window.open(url, "", "width=700,height=800");
 }
+
 function drive_delete_order(url) {
   var contentWindow = window.open(url, "", "width=1100,height=650");
   setTimeout(function(){ location.reload(); }, 1500);
 }
 
 function hddOrderOtherCheck(checkbox) {
-  statusSelection = document.getElementById('status_selection');
-  statusSelection.disabled = checkbox.checked;
-  otherSelection = document.getElementById('other_selection');
-  otherSelection.disabled = !(checkbox.checked)
+    statusSelection = document.getElementById('status_selection');
+    statusSelection.disabled = checkbox.checked;
+    otherSelection = document.getElementById('other_selection');
+    otherSelection.disabled = !(checkbox.checked);
 }
 
 function lockStatuses() {
-  checkbox = document.getElementById('other_checkbox');
-  if (checkbox) {
-    hddOrderOtherCheck(checkbox);
-  }
+    checkbox = document.getElementById('other_checkbox');
+    if (checkbox) {
+        hddOrderOtherCheck(checkbox);
+    }
 }
-
 
 function importNewDriveOrder(URLremovalToken) {
     URLtoWorkWith = location.href;
@@ -720,32 +716,20 @@ function importNewDriveOrder(URLremovalToken) {
     var importOrderWindow = window.open(parts.join('/') + '/new_drive_order/', "", "width=380,height=100");
 }
 
-function edit_charger(index, URLremovalToken) {
-    URLtoWorkWith = location.href;
-    parts = URLtoWorkWith.split('/');
-	for (var i =0; i<URLremovalToken; i++) {
-		parts.pop();
-	}
-    var editChargerWindow = window.open(parts.join('/') + '/edit_charger/'+index+'/', "", "width=700,height=620");
+function edit_charger(url) {
+    var editChargerWindow = window.open(url, "", "width=700,height=620");
 }
 
-function delete_charger(index, URLremovalToken) {
+function delete_charger(url) {
     if (confirm('Do you really want to delete this charger?')) {
-        URLtoWorkWith = location.href;
-        parts = URLtoWorkWith.split('/');
-        for (var i =0; i<URLremovalToken; i++) {
-            parts.pop();
-        }
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', parts.join('/') + '/delete_charger_cat/'+index+'/');
+        xhr.open('POST', url);
         xhr.setRequestHeader("Content-type", "application/json");
         xhr.send();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
-                    parts = URLtoWorkWith.split('/');
-                    parts.pop();
-                    var infoWindow = window.open(parts.join('/') + '/success/',"", "width=620,height=340");
+                    var infoWindow = window.open('/website/success/',"", "width=620,height=340");
                     setTimeout(location.reload(), 1000);
                 }
                 if (xhr.status == 404) {
@@ -786,5 +770,10 @@ function open_tar_order_import_window(url){
 }
 
 function content(url) {
-  var contentWindow = window.open(url, "", "width=1100,height=650");
+    var contentWindow = window.open(url, "", "width=1100,height=650");
+}
+
+
+function mass_sold(url) {
+    var testerWindow = window.open(url + getCatSoldParams(), "", "width=920,height=600");
 }
