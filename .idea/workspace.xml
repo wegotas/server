@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b12dfcae-9b13-4cc6-9e92-f3612f8d0df9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/website/templates/static/items.css" beforeDir="false" afterPath="$PROJECT_DIR$/website/templates/static/items.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/website/templates/static/items.js" beforeDir="false" afterPath="$PROJECT_DIR$/website/templates/static/items.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -51,15 +50,6 @@
               <folding>
                 <element signature="n#tr#0;n#thead#0;n#table#0;n#div#1;n#!!top" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/website/templates/static/items.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="869">
-              <caret line="135" column="1" lean-forward="true" selection-start-line="135" selection-start-column="1" selection-end-line="135" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -151,6 +141,15 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/website/templates/static/items.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-436">
+              <caret line="47" column="12" lean-forward="true" selection-start-line="47" selection-start-column="12" selection-end-line="47" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -226,7 +225,6 @@
         <option value="$PROJECT_DIR$/ULCDTinterface/urls.py" />
         <option value="$PROJECT_DIR$/website/templates/static/hdd_edit.js" />
         <option value="$PROJECT_DIR$/website/templates/observationsDetailsSubtemplate.html" />
-        <option value="$PROJECT_DIR$/website/templates/static/items.js" />
         <option value="$PROJECT_DIR$/website/templates/main.html" />
         <option value="$PROJECT_DIR$/website/templates/lot_content.html" />
         <option value="$PROJECT_DIR$/website/templates/hdd_order_content.html" />
@@ -271,6 +269,7 @@
         <option value="$PROJECT_DIR$/website/templates/static/index.js" />
         <option value="$PROJECT_DIR$/website/templates/static/index.css" />
         <option value="$PROJECT_DIR$/website/templates/static/items.css" />
+        <option value="$PROJECT_DIR$/website/templates/static/items.js" />
       </list>
     </option>
   </component>
@@ -353,13 +352,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1542106267817</updated>
-    </task>
-    <task id="LOCAL-00052" summary="Changes:&#10;* Removed get_all_observations_dict. No use of this function were found.">
-      <created>1554273455562</created>
-      <option name="number" value="00052" />
-      <option name="presentableId" value="LOCAL-00052" />
-      <option name="project" value="LOCAL" />
-      <updated>1554273455563</updated>
     </task>
     <task id="LOCAL-00053" summary="Changes:&#10;* Cleaned up some more code.">
       <created>1554279925366</created>
@@ -697,7 +689,14 @@
       <option name="project" value="LOCAL" />
       <updated>1561040093102</updated>
     </task>
-    <option name="localTasksCounter" value="101" />
+    <task id="LOCAL-00101" summary="Changes:&#10;* Slight items.css file cleanup.">
+      <created>1561040195701</created>
+      <option name="number" value="00101" />
+      <option name="presentableId" value="LOCAL-00101" />
+      <option name="project" value="LOCAL" />
+      <updated>1561040195701</updated>
+    </task>
+    <option name="localTasksCounter" value="102" />
     <servers />
   </component>
   <component name="TodoView">
@@ -784,7 +783,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Changes:&#10;* Fixed bug where ramstick removal is not present when adding nonexistant ramstick." />
     <MESSAGE value="Changes:&#10;* Removing ramstick updates total_ram based on sum of remaining rams." />
     <MESSAGE value="Changes:&#10;* Automatic ramstick adding functionality.&#10;* Updated changelog." />
     <MESSAGE value="Changes:&#10;* Simplified some code, removed unnecessary classes and functions." />
@@ -809,19 +807,10 @@
     <MESSAGE value="Changes:&#10;* Added excel/csv file generation functionality to orders.&#10;* Updated changelog.md." />
     <MESSAGE value="Changes:&#10;* Slight index.js file cleanup." />
     <MESSAGE value="Changes:&#10;* Slight index.css file cleanup." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes:&#10;* Slight index.css file cleanup." />
+    <MESSAGE value="Changes:&#10;* Slight items.css file cleanup." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes:&#10;* Slight items.css file cleanup." />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ULCDTinterface/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="31" lean-forward="true" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/deleter.py" />
     <entry file="file://$PROJECT_DIR$/analyser.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -1262,6 +1251,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="552" column="32" selection-start-line="552" selection-start-column="32" selection-end-line="552" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/items.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2025">
+          <caret line="135" column="1" lean-forward="true" selection-start-line="135" selection-start-column="1" selection-end-line="135" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/hddOrdersSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="47" lean-forward="true" selection-start-line="10" selection-start-column="47" selection-end-line="10" selection-end-column="47" />
+          <folding>
+            <element signature="n#tr#0;n#thead#0;n#table#0;n#div#1;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ULCDTinterface/modelers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1388">
@@ -1335,27 +1348,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/website/templates/static/index.js">
+    <entry file="file://$PROJECT_DIR$/website/templates/static/items.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="552" column="32" selection-start-line="552" selection-start-column="32" selection-end-line="552" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/website/templates/hddOrdersSubTemplate.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="47" lean-forward="true" selection-start-line="10" selection-start-column="47" selection-end-line="10" selection-end-column="47" />
-          <folding>
-            <element signature="n#tr#0;n#thead#0;n#table#0;n#div#1;n#!!top" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/website/templates/static/items.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="869">
-          <caret line="135" column="1" lean-forward="true" selection-start-line="135" selection-start-column="1" selection-end-line="135" selection-end-column="1" />
+        <state relative-caret-position="-436">
+          <caret line="47" column="12" lean-forward="true" selection-start-line="47" selection-start-column="12" selection-end-line="47" selection-end-column="12" />
         </state>
       </provider>
     </entry>
