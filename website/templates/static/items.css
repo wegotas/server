@@ -1,11 +1,11 @@
 .lefter {
-  float:left;
-  margin-bottom: 10px;
+    float:left;
+    margin-bottom: 10px;
 }
 
 .righter {
-  float:right;
-  margin-bottom: 10px;
+    float:right;
+    margin-bottom: 10px;
 }
 
 .greyed {
@@ -21,35 +21,35 @@
 }
 
 .deleter {
-  color: red;
+    color: red;
 }
 
 .newNameField {
-  border-radius: 3px 0px 0px 3px;
-  text-align: right;
-  margin-right: 5px;
+    border-radius: 3px 0px 0px 3px;
+    text-align: right;
+    margin-right: 5px;
 }
 
 .newNameField:hover {
-  border: 1px solid red;
+    border: 1px solid red;
 }
 
 .inputField {
-  border-radius: 3px;
-  text-align: right;
-  width: 140px;
+    border-radius: 3px;
+    text-align: right;
+    width: 140px;
 }
 
 .inputField:hover {
-  border: 1px solid red;
+    border: 1px solid red;
 }
 
 .newNameAdder {
-  border-radius: 0px 4px 4px 0px;
+    border-radius: 0px 4px 4px 0px;
 }
 
 .newNameAdder:hover {
-  outline: 1px solid red;
+    outline: 1px solid red;
 }
 
 .button {
@@ -57,12 +57,12 @@
 }
 
 .button:hover {
-  outline: 1px solid red;
+    outline: 1px solid red;
 }
 
 .error {
-  color: red;
-  text-align: center;
+    color: red;
+    text-align: center;
 }
 
 .abutton {
