@@ -1,3 +1,16 @@
+2019-07-20
+
+LT:
+
+**Pokytis serveryje: Pridetas uzsakymo excel/csv rinkmenos generacija.**
+* Uzsakymas turi excel/csv rinkmenos generavimo mygtukus. Rinkmena sugeneruojama is visu uzsakyme esanciu kompiuteriu. Generuoja tai pat kaip ir typcat rinkmenas.
+
+EN:
+
+**Changes in server: Added order's excel/csv file generation.**
+* Order has excel/csv file generation buttons. File is generated from all computers within an order. Generates same as typcat files.
+
+___
 2019-07-19
 
 LT:

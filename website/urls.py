@@ -37,6 +37,8 @@ urlpatterns = [
     path('strip_order/<int:int_index>/', views.strip_order, name='strip_order'),
     path('computer_search_table_from_order/', views.computer_search_table_from_order, name='computer_search_table_from_order'),
     path('edit_order/<int:order_id>/add_computer/', views.add_computer_to_order, name='add_computer_to_order'),
+    path('edit_order/<int:int_index>/excel/', views.order_excel, name='order_excel'),
+    path('edit_order/<int:int_index>/csv/', views.order_csv, name='order_csv'),
 
     path('mass_delete/', views.mass_delete, name='mass_delete'),
     path('mass_excel/', views.mass_excel, name='mass_excel'),

@@ -1005,6 +1005,40 @@ def add_computer_to_order(request, order_id):
 
 
 @csrf_exempt
+def order_excel(request, int_index):
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    indexes = Computers.objects.filter(
+        f_id_comp_ord__f_order_id_to_order=int_index).values_list('id_computer', flat=True)
+    generator = ExcelGenerator()
+    excel_file = generator.generate_file(indexes=indexes)
+    response = HttpResponse(content_type="application/ms-excel")
+    response.write(excel_file.getvalue())
+    response["Content-Disposition"] = "attachment; filename=computers.xlsx"
+    excel_file.close()
+    return response
+
+
+@csrf_exempt
+def order_csv(request, int_index):
+    if request.method == 'POST':
+        print("This was POST request")
+    if request.method == 'GET':
+        print("This was GET request")
+    indexes = Computers.objects.filter(
+        f_id_comp_ord__f_order_id_to_order=int_index).values_list('id_computer', flat=True)
+    generator = CsvGenerator()
+    csv_file = generator.generate_file(indexes=indexes)
+    response = HttpResponse(content_type="application/ms-excel")
+    response.write(csv_file.getvalue())
+    response["Content-Disposition"] = "attachment; filename=computers.csv"
+    csv_file.close()
+    return response
+
+
+@csrf_exempt
 def hdd_edit(request, int_index):
     hte = HddToEdit(int_index)
     if request.method == 'POST':

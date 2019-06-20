@@ -150,3 +150,34 @@ function add_to_order(button, computer_id) {
         }
     }
 }
+
+function download_excel(url) {
+    download_file(url, 'excel.xlsx');
+}
+
+function download_csv(url) {
+    download_file(url, 'data.csv');
+}
+
+
+function download_file(url, filename) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+    xhr.responseType = "arraybuffer";
+    xhr.send();
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            const link = document.createElement( 'a' );
+            link.style.display = 'none';
+            document.body.appendChild( link );
+
+            const blob = new Blob( [ xhr.response ], { type: '‘application/octet-binary' } );
+            const objectURL = URL.createObjectURL( blob );
+
+            link.href = objectURL;
+            link.href = URL.createObjectURL( blob );
+            link.download = filename;
+            link.click();
+        }
+    }
+}
