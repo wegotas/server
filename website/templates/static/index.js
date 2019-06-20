@@ -331,48 +331,48 @@ function autoFilterMenu(filterDivId){
 }
 
 function afFilter(checkbox, columnId) {
-  columns = document.getElementById(columnId);
+    columns = document.getElementById(columnId);
 }
 
 function afSelect(checkbox) {
-  parent = checkbox.parentElement;
-  grandparent = parent.parentElement;
-  child = grandparent.childNodes[3];
-  text = child.innerText;
-  grandgrandparent = grandparent.parentElement;
-  id = grandgrandparent.id;
-  if (checkbox.checked){
-      afmanager.add_filter(id, text);
-  } else {
-      afmanager.remove_filter(id, text);
-  }
+    parent = checkbox.parentElement;
+    grandparent = parent.parentElement;
+    child = grandparent.childNodes[3];
+    text = child.innerText;
+    grandgrandparent = grandparent.parentElement;
+    id = grandgrandparent.id;
+    if (checkbox.checked){
+        afmanager.add_filter(id, text);
+    } else {
+        afmanager.remove_filter(id, text);
+    }
 }
 
 function afSelectAll(checkbox ,filterDivId) {
-  filterDiv = document.getElementById(filterDivId);
-  filterCheckboxes = filterDiv.getElementsByTagName("input");
-  for (var i =0; i < filterCheckboxes.length; i++) {
-    style = filterCheckboxes[i].parentElement.parentElement.style.display
-    if (filterCheckboxes[i].checked != checkbox.checked && style !== "none")
-      filterCheckboxes[i].click();
-  }
+    filterDiv = document.getElementById(filterDivId);
+    filterCheckboxes = filterDiv.getElementsByTagName("input");
+    for (var i =0; i < filterCheckboxes.length; i++) {
+        style = filterCheckboxes[i].parentElement.parentElement.style.display
+        if (filterCheckboxes[i].checked != checkbox.checked && style !== "none")
+            filterCheckboxes[i].click();
+    }
 }
 
 function filterKeywordChange(inputbox, workingDivId) {
-  keyword = inputbox.value.toUpperCase();
-  workingDiv = document.getElementById(workingDivId);
-  selectionDivs = workingDiv.getElementsByClassName("af-selection");
-  for (var i =0; i<selectionDivs.length; i++) {
-    selectionDiv = selectionDivs[i];
-    divs = selectionDiv.childNodes;
-    chkbxTitleDiv = selectionDiv.childNodes[3];
-    chkbxTitle = chkbxTitleDiv.innerText.toUpperCase();
-    if (chkbxTitle.includes(keyword)) {
-      selectionDivs[i].style.display = "block";
-    } else {
-      selectionDivs[i].style.display = "none";
+    keyword = inputbox.value.toUpperCase();
+    workingDiv = document.getElementById(workingDivId);
+    selectionDivs = workingDiv.getElementsByClassName("af-selection");
+    for (var i =0; i<selectionDivs.length; i++) {
+        selectionDiv = selectionDivs[i];
+        divs = selectionDiv.childNodes;
+        chkbxTitleDiv = selectionDiv.childNodes[3];
+        chkbxTitle = chkbxTitleDiv.innerText.toUpperCase();
+        if (chkbxTitle.includes(keyword)) {
+            selectionDivs[i].style.display = "block";
+        } else {
+            selectionDivs[i].style.display = "none";
+        }
     }
-  }
 }
 
 function handleSelect(element) {
@@ -398,7 +398,7 @@ function formationOfURL(parameterString) {
 }
 
 function loadPage(newURL) {
-  window.location = newURL;
+    window.location = newURL;
 }
 
 function toggle_category_choices() {
@@ -417,95 +417,95 @@ function search_using_keyword() {
 }
 
 function search() {
-  var input, filter, table, trs, tr, td, i, j, found, indexes;
-  indexes = [2,3,4,5,6,7];
-  input = document.getElementById("search_input");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("contents-table");
-  trs = table.getElementsByTagName("tr");
-  for (i=0; i < trs.length; i++) {
-    found = false;
-    if (i==0)
-    {
-      continue;
+    var input, filter, table, trs, tr, td, i, j, found, indexes;
+    indexes = [2,3,4,5,6,7];
+    input = document.getElementById("search_input");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("contents-table");
+    trs = table.getElementsByTagName("tr");
+    for (i=0; i < trs.length; i++) {
+        found = false;
+        if (i==0)
+        {
+            continue;
+        }
+        for (j=0; j < indexes.length; j++) {
+            tr = trs[i];
+            tds = tr.getElementsByTagName("td");
+            td = tds[indexes[j]];
+            if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                found = true;
+            }
+        }
+        if (found) {
+            trs[i].style.display = "";
+        }
+        else {
+            trs[i].style.display = "none";
+        }
     }
-    for (j=0; j < indexes.length; j++) {
-      tr = trs[i];
-      tds = tr.getElementsByTagName("td");
-      td = tds[indexes[j]];
-      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-        found = true;
-      }
-    }
-    if (found) {
-      trs[i].style.display = "";
-    }
-    else {
-      trs[i].style.display = "none";
-    }
-  }
 }
 
 function mass_delete(url) {
-  if (confirm("Do you really want do delete these records?")) {
-    var xhr = new XMLHttpRequest();
-    indexArray = JSON.stringify(selected_records);
-    xhr.open('POST', url, true);
-    xhr.send(indexArray);
-    xhr.onreadystatechange = function(e) {
-      if (xhr.readyState === 4) {
-        location.reload();
-      }
+    if (confirm("Do you really want do delete these records?")) {
+        var xhr = new XMLHttpRequest();
+        indexArray = JSON.stringify(selected_records);
+        xhr.open('POST', url, true);
+        xhr.send(indexArray);
+        xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+                location.reload();
+            }
+        }
     }
-  }
 }
 
 function mass_excel(url) {
-  var xhr = new XMLHttpRequest();
-  var runAsync = true ;
-  indexArray = JSON.stringify(selected_records);
-  xhr.open('POST', url, true);
-  xhr.responseType = "arraybuffer";
-  xhr.send(indexArray);
-  xhr.onreadystatechange = function(e) {
-    if (xhr.readyState === 4) {
-      const link = document.createElement( 'a' );
-      link.style.display = 'none';
-      document.body.appendChild( link );
+    var xhr = new XMLHttpRequest();
+    var runAsync = true ;
+    indexArray = JSON.stringify(selected_records);
+    xhr.open('POST', url, true);
+    xhr.responseType = "arraybuffer";
+    xhr.send(indexArray);
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            const link = document.createElement( 'a' );
+            link.style.display = 'none';
+            document.body.appendChild( link );
 
-      const blob = new Blob( [ xhr.response ], { type: '‘application/octet-binary' } );
-      const objectURL = URL.createObjectURL( blob );
+            const blob = new Blob( [ xhr.response ], { type: '‘application/octet-binary' } );
+            const objectURL = URL.createObjectURL( blob );
 
-      link.href = objectURL;
-      link.href = URL.createObjectURL( blob );
-      link.download = 'excel.xlsx';
-      link.click();
+            link.href = objectURL;
+            link.href = URL.createObjectURL( blob );
+            link.download = 'excel.xlsx';
+            link.click();
+        }
     }
-  }
 }
 
 function mass_csv(url) {
-  var xhr = new XMLHttpRequest();
-  var runAsync = true ;
-  indexArray = JSON.stringify(selected_records);
-  xhr.open('POST', url, true);
-  xhr.responseType = "arraybuffer";
-  xhr.send(indexArray);
-  xhr.onreadystatechange = function(e) {
-    if (xhr.readyState === 4) {
-      const link = document.createElement( 'a' );
-      link.style.display = 'none';
-      document.body.appendChild( link );
+    var xhr = new XMLHttpRequest();
+    var runAsync = true ;
+    indexArray = JSON.stringify(selected_records);
+    xhr.open('POST', url, true);
+    xhr.responseType = "arraybuffer";
+    xhr.send(indexArray);
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            const link = document.createElement( 'a' );
+            link.style.display = 'none';
+            document.body.appendChild( link );
 
-      const blob = new Blob( [ xhr.response ], { type: '‘application/octet-binary' } );
-      const objectURL = URL.createObjectURL( blob );
+            const blob = new Blob( [ xhr.response ], { type: '‘application/octet-binary' } );
+            const objectURL = URL.createObjectURL( blob );
 
-      link.href = objectURL;
-      link.href = URL.createObjectURL( blob );
-      link.download = 'data.csv';
-      link.click();
-      }
-  }
+            link.href = objectURL;
+            link.href = URL.createObjectURL( blob );
+            link.download = 'data.csv';
+            link.click();
+        }
+    }
 }
 
 function mass_qr_print() {
@@ -559,26 +559,13 @@ function modaljs(id, closeable) {
     bg.className = "modal-js-overlay";
     close.className = "modal-js-close";
 
-    var godex_dt4x_printer_button = document.createElement("button");
-    godex_dt4x_printer_button.innerHTML = "Print in office (Godex_DT4x)";
-    godex_dt4x_printer_button.type = "button";
-    godex_dt4x_printer_button.display = "block";
-
-    var godex_g500_printer_button = document.createElement("button");
-    godex_g500_printer_button.innerHTML = "Print in warehouse (Godex_G500)";
-    godex_g500_printer_button.type = "button";
-    godex_g500_printer_button.display = "block";
+    godex_dt4x_printer_button = create_printer_button("Print in office (Godex_DT4x)");
+    godex_g500_printer_button = create_printer_button("Print in warehouse (Godex_G500)");
 
     if (closeable) {
         close.innerHTML = "x";
         close.addEventListener('click', function () {
-            var overlay = body.querySelector(".modal-js-overlay");
-            var closebtn = parent.querySelector(".modal-js-close");
-            body.removeChild(overlay);
-            parent.classList.toggle('on');
-            parent.removeChild(closebtn);
-            parent.removeChild(godex_dt4x_printer_button);
-            parent.removeChild(godex_g500_printer_button);
+            modaljs_window_cleanup(body, parent, godex_dt4x_printer_button, godex_g500_printer_button);
         });
         parent.appendChild(close);
     }
@@ -586,27 +573,33 @@ function modaljs(id, closeable) {
 
     godex_dt4x_printer_button.addEventListener('click', function () {
         mass_qr_print_with_printer("Godex_DT4x");
-        var overlay = body.querySelector(".modal-js-overlay");
-        var closebtn = parent.querySelector(".modal-js-close");
-        body.removeChild(overlay);
-        parent.classList.toggle('on');
-        parent.removeChild(closebtn);
-        parent.removeChild(godex_dt4x_printer_button);
-        parent.removeChild(godex_g500_printer_button);
+        modaljs_window_cleanup(body, parent, godex_dt4x_printer_button, godex_g500_printer_button);
     });
     parent.appendChild(godex_dt4x_printer_button);
 
     godex_g500_printer_button.addEventListener('click', function () {
         mass_qr_print_with_printer("Godex_G500");
-        var overlay = body.querySelector(".modal-js-overlay");
-        var closebtn = parent.querySelector(".modal-js-close");
-        body.removeChild(overlay);
-        parent.classList.toggle('on');
-        parent.removeChild(closebtn);
-        parent.removeChild(godex_dt4x_printer_button);
-        parent.removeChild(godex_g500_printer_button);
+        modaljs_window_cleanup(body, parent, godex_dt4x_printer_button, godex_g500_printer_button);
     });
     parent.appendChild(godex_g500_printer_button);
+}
+
+function create_printer_button(title) {
+    var button = document.createElement("button");
+    button.innerHTML = title;
+    button.type = "button";
+    button.display = "block";
+    return button
+}
+
+function modaljs_window_cleanup(body, parent, godex_dt4x_printer_button, godex_g500_printer_button) {
+    var overlay = body.querySelector(".modal-js-overlay");
+    var closebtn = parent.querySelector(".modal-js-close");
+    body.removeChild(overlay);
+    parent.classList.toggle('on');
+    parent.removeChild(closebtn);
+    parent.removeChild(godex_dt4x_printer_button);
+    parent.removeChild(godex_g500_printer_button);
 }
 
 function mass_catchange(element, url) {
@@ -647,8 +640,8 @@ function urlify (url) {
 }
 
 function applyAFs() {
-  newURL = afmanager.formNewUrlWithAFURLaddon(location.href);
-  loadPage(urlify(newURL));
+    newURL = afmanager.formNewUrlWithAFURLaddon(location.href);
+    loadPage(urlify(newURL));
 }
 
 function launchWindow(url, dimensions) {
@@ -656,11 +649,11 @@ function launchWindow(url, dimensions) {
 }
 
 function getCatSoldParams() {
-  stringArray = [];
-  for (var i = 0; i<selected_records.length; i++) {
-    stringArray.push("id="+selected_records[i]);
-  }
-  return "?" + stringArray.join('&');
+    stringArray = [];
+    for (var i = 0; i<selected_records.length; i++) {
+        stringArray.push("id="+selected_records[i]);
+    }
+    return "?" + stringArray.join('&');
 }
 
 function editDrive(url) {
@@ -689,8 +682,8 @@ function viewPdf(url) {
 }
 
 function drive_delete_order(url) {
-  var contentWindow = window.open(url, "", "width=1100,height=650");
-  setTimeout(function(){ location.reload(); }, 1500);
+    var contentWindow = window.open(url, "", "width=1100,height=650");
+    setTimeout(function(){ location.reload(); }, 1500);
 }
 
 function hddOrderOtherCheck(checkbox) {
@@ -705,15 +698,6 @@ function lockStatuses() {
     if (checkbox) {
         hddOrderOtherCheck(checkbox);
     }
-}
-
-function importNewDriveOrder(URLremovalToken) {
-    URLtoWorkWith = location.href;
-    parts = URLtoWorkWith.split('/');
-    for (var i =0; i<URLremovalToken; i++) {
-        parts.pop();
-    }
-    var importOrderWindow = window.open(parts.join('/') + '/new_drive_order/', "", "width=380,height=100");
 }
 
 function edit_charger(url) {
@@ -772,7 +756,6 @@ function open_tar_order_import_window(url){
 function content(url) {
     var contentWindow = window.open(url, "", "width=1100,height=650");
 }
-
 
 function mass_sold(url) {
     var testerWindow = window.open(url + getCatSoldParams(), "", "width=920,height=600");
