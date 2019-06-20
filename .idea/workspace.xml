@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b12dfcae-9b13-4cc6-9e92-f3612f8d0df9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/website/templates/static/items.js" beforeDir="false" afterPath="$PROJECT_DIR$/website/templates/static/items.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/website/templates/static/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/website/templates/static/style.css" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -142,10 +143,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/website/templates/static/items.js">
+        <entry file="file://$PROJECT_DIR$/website/templates/static/style.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-436">
-              <caret line="47" column="12" lean-forward="true" selection-start-line="47" selection-start-column="12" selection-end-line="47" selection-end-column="12" />
+            <state relative-caret-position="869">
+              <caret line="335" column="1" lean-forward="true" selection-start-line="335" selection-start-column="1" selection-end-line="335" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -219,8 +220,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/website/templates/static/style.css" />
-        <option value="$PROJECT_DIR$/website/templates/computer_edit_v4.html" />
         <option value="$PROJECT_DIR$/website/templates/new_record.html" />
         <option value="$PROJECT_DIR$/ULCDTinterface/urls.py" />
         <option value="$PROJECT_DIR$/website/templates/static/hdd_edit.js" />
@@ -260,7 +259,6 @@
         <option value="$PROJECT_DIR$/website/templates/chargersCategoriesSubtemplate.html" />
         <option value="$PROJECT_DIR$/ULCDTinterface/modelers.py" />
         <option value="$PROJECT_DIR$/website/logic.py" />
-        <option value="$PROJECT_DIR$/website/templates/static/order_edit.css" />
         <option value="$PROJECT_DIR$/website/urls.py" />
         <option value="$PROJECT_DIR$/website/views.py" />
         <option value="$PROJECT_DIR$/website/templates/order_edit.html" />
@@ -270,6 +268,9 @@
         <option value="$PROJECT_DIR$/website/templates/static/index.css" />
         <option value="$PROJECT_DIR$/website/templates/static/items.css" />
         <option value="$PROJECT_DIR$/website/templates/static/items.js" />
+        <option value="$PROJECT_DIR$/website/templates/static/new_record.js" />
+        <option value="$PROJECT_DIR$/website/templates/static/order_edit.css" />
+        <option value="$PROJECT_DIR$/website/templates/static/style.css" />
       </list>
     </option>
   </component>
@@ -352,27 +353,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1542106267817</updated>
-    </task>
-    <task id="LOCAL-00053" summary="Changes:&#10;* Cleaned up some more code.">
-      <created>1554279925366</created>
-      <option name="number" value="00053" />
-      <option name="presentableId" value="LOCAL-00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1554279925366</updated>
-    </task>
-    <task id="LOCAL-00054" summary="Changes:&#10;* Cleaned up some even more code.&#10;* Removed obsolete code.&#10;* Refractoring some other code.&#10;* Changing previous urls from &quot;aux_data2&quot;, &quot;data2&quot; to &quot;aux_data&quot;, &quot;data&quot;">
-      <created>1554281957479</created>
-      <option name="number" value="00054" />
-      <option name="presentableId" value="LOCAL-00054" />
-      <option name="project" value="LOCAL" />
-      <updated>1554281957480</updated>
-    </task>
-    <task id="LOCAL-00055" summary="Changes:&#10;* Decided to leave &quot;aux_data2&quot;, &quot;data2&quot; with &quot;aux_data&quot;, &quot;data&quot; for now, just in case.">
-      <created>1554282178400</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1554282178401</updated>
     </task>
     <task id="LOCAL-00056" summary="Changes:&#10;* Fixed issue where updating computer record from client program doesn't update form_factor.">
       <created>1554286842197</created>
@@ -696,7 +676,28 @@
       <option name="project" value="LOCAL" />
       <updated>1561040195701</updated>
     </task>
-    <option name="localTasksCounter" value="102" />
+    <task id="LOCAL-00102" summary="Changes:&#10;* Slight items.js file cleanup.">
+      <created>1561040353013</created>
+      <option name="number" value="00102" />
+      <option name="presentableId" value="LOCAL-00102" />
+      <option name="project" value="LOCAL" />
+      <updated>1561040353013</updated>
+    </task>
+    <task id="LOCAL-00103" summary="Changes:&#10;* Slight new_record.js file cleanup.">
+      <created>1561040550476</created>
+      <option name="number" value="00103" />
+      <option name="presentableId" value="LOCAL-00103" />
+      <option name="project" value="LOCAL" />
+      <updated>1561040550477</updated>
+    </task>
+    <task id="LOCAL-00104" summary="Changes:&#10;* Slight order_edit.css file cleanup.">
+      <created>1561040601398</created>
+      <option name="number" value="00104" />
+      <option name="presentableId" value="LOCAL-00104" />
+      <option name="project" value="LOCAL" />
+      <updated>1561040601398</updated>
+    </task>
+    <option name="localTasksCounter" value="105" />
     <servers />
   </component>
   <component name="TodoView">
@@ -710,7 +711,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="704" width="1920" height="1044" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.10215903" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -783,10 +783,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Changes:&#10;* Removing ramstick updates total_ram based on sum of remaining rams." />
-    <MESSAGE value="Changes:&#10;* Automatic ramstick adding functionality.&#10;* Updated changelog." />
-    <MESSAGE value="Changes:&#10;* Simplified some code, removed unnecessary classes and functions." />
-    <MESSAGE value="Changes:&#10;* Trash cleaning of 4th version code and unecessary files." />
     <MESSAGE value="Changes:&#10;* ULCDTinterface cleanup from 4v remains." />
     <MESSAGE value="Changes:&#10;* Updated changelog.md regarding cleanup." />
     <MESSAGE value="Changes:&#10;* rewritten 'ComputerRecord' class's '_save_drives()' method to fit changed data sent via json.&#10;* Added 'DriveFamily', 'DriveHeight', 'DriveLength', 'DriveNotes', 'DrivePowerIdle', 'DrivePowerSeek', 'DrivePowerSpin', 'DrivePowerStandby', 'DriveTypes', 'DriveWeight', 'DriveWidth' models.&#10;* Changes to 'hdd_edit.html' (view/edit) to reflect changed Drive's model structural changes.&#10;* Rewritten some code in 'hddLotsSubTemplate.html', 'hddOrdersSubTemplate.html' and index.js to remove unecessary code.&#10;* Added new file 'partial_success.html' which is used when part of work is done, the problematic parts are skipped and user is informed what went wrong and with what.&#10;* Changes to logic.py:&#10;    * Removed unused dependencies. Added new 'django.core.files.uploadedfile.InMemoryUploadedFile' which is used for object identification in 'DriveTextFileManager' class object's initiation.&#10;    * Update 'LotHolder' class to reflect changed Drive's model structural changes.&#10;    * Removed 'TarProcessor', 'AlternativeTarProcessor', 'HddOrderProcessor', 'AlternativeHddOrderProcessor'.&#10;    * Added new classes 'TarProcessor', 'DriveOrderProcessor', 'DriveTextFileManager', 'DriveLineProcessor' to replace removed classes functionality.&#10;* changes to views.py and urls.py to better handle exceptions and call changed classes." />
@@ -808,59 +804,13 @@
     <MESSAGE value="Changes:&#10;* Slight index.js file cleanup." />
     <MESSAGE value="Changes:&#10;* Slight index.css file cleanup." />
     <MESSAGE value="Changes:&#10;* Slight items.css file cleanup." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes:&#10;* Slight items.css file cleanup." />
+    <MESSAGE value="Changes:&#10;* Slight items.js file cleanup." />
+    <MESSAGE value="Changes:&#10;* Slight new_record.js file cleanup." />
+    <MESSAGE value="Changes:&#10;* Slight order_edit.css file cleanup." />
+    <MESSAGE value="Changes:&#10;* Slight style.css file cleanup." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes:&#10;* Slight style.css file cleanup." />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/deleter.py" />
-    <entry file="file://$PROJECT_DIR$/analyser.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="34" lean-forward="true" selection-start-line="5" selection-start-column="34" selection-end-line="5" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/website/templates/hdd_edit.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
-          <folding>
-            <element signature="n#div#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#0;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#1;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#2;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#td#1;n#tr#2;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#3;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#4;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#5;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#6;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#7;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#8;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#9;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#10;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#11;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#12;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#style#0;n#textarea#0;n#td#1;n#tr#12;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#tr#13;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#14;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#style#0;n#textarea#0;n#td#1;n#tr#14;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#tr#15;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#16;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#17;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#18;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#19;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#20;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#21;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#22;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#23;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#24;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#25;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#26;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#27;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#tr#28;n#table#0;n#form#0;n#body#0;n#html#0;n#!!top" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ULCDTinterface/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
@@ -1186,20 +1136,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/website/templates/static/order_edit.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="869">
-          <caret line="204" column="1" selection-start-line="204" selection-start-column="1" selection-end-line="204" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/website/templates/static/order_edit.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="464">
-          <caret line="81" column="41" lean-forward="true" selection-start-line="81" selection-start-column="41" selection-end-line="81" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/website/logic.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="592">
@@ -1224,13 +1160,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="307">
           <caret line="39" column="6" lean-forward="true" selection-start-line="39" selection-start-column="6" selection-end-line="39" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/website/templates/tableSubTemplate.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="36" selection-start-line="16" selection-start-column="16" selection-end-line="16" selection-end-column="36" />
         </state>
       </provider>
     </entry>
@@ -1272,6 +1201,30 @@
           <folding>
             <element signature="n#tr#0;n#thead#0;n#table#0;n#div#1;n#!!top" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/jquery.min.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/new_record.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1290">
+          <caret line="86" column="20" selection-start-line="86" selection-start-column="20" selection-end-line="86" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/items.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-436">
+          <caret line="47" column="12" lean-forward="true" selection-start-line="47" selection-start-column="12" selection-end-line="47" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/order_edit.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="794">
+          <caret line="203" column="4" selection-start-line="203" selection-start-column="4" selection-end-line="203" selection-end-column="4" />
         </state>
       </provider>
     </entry>
@@ -1348,10 +1301,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/website/templates/static/items.js">
+    <entry file="file://$PROJECT_DIR$/website/templates/static/order_edit.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-436">
-          <caret line="47" column="12" lean-forward="true" selection-start-line="47" selection-start-column="12" selection-end-line="47" selection-end-column="12" />
+        <state relative-caret-position="-721">
+          <caret line="81" column="41" lean-forward="true" selection-start-line="81" selection-start-column="41" selection-end-line="81" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#5734#0" />
+            <element signature="e#0#5734#0" />
+            <element signature="e#0#5734#0" />
+            <element signature="e#0#5734#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/tableSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="36" selection-start-line="16" selection-start-column="16" selection-end-line="16" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/static/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="869">
+          <caret line="335" column="1" lean-forward="true" selection-start-line="335" selection-start-column="1" selection-end-line="335" selection-end-column="1" />
         </state>
       </provider>
     </entry>

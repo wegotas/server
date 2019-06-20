@@ -103,8 +103,8 @@ body {
 }
           
 .main-table tbody th[scope="row"] {
-  background-color: #1d96b2;
-  color: white;
+    background-color: #1d96b2;
+    color: white;
 }
 
 .main-table tbody th[scope="row"] {
