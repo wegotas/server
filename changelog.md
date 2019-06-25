@@ -1,3 +1,25 @@
+2019-07-25
+
+LT:
+
+**Pokytis serveryje: Igyvendintas bateriju salinimas per 'computer_edit' funkcionalumas.**
+
+EN:
+
+**Changes in server: Implemented battery removal through 'computer_edit' functionality.**
+
+___
+2019-07-25
+
+LT:
+
+**Pokytis serveryje: Sutvarkyta nereikalingo atributo pasilikimo nuorodoje 'page' problema.**
+
+EN:
+
+**Changes in server: Fixed useless attributes staying in url 'page' issue.**
+
+___
 2019-07-20
 
 LT:
