@@ -282,6 +282,21 @@ def remove_observation_from_computer(request, observation_id, computer_id):
     ).delete()
     return HttpResponse("Succesfully removed observation from computer")
 
+@csrf_exempt
+def remove_battery_from_computer(request, battery_id, computer_id):
+    print('remove_battery_from_computer')
+    '''
+    Computerobservations.objects.filter(
+        f_id_computer=Computers.objects.get(id_computer=computer_id),
+        f_id_observation=Observations.objects.get(id_observation=observation_id)
+    ).delete()
+    '''
+    BatToComp.objects.filter(
+        f_id_computer_bat_to_com=Computers.objects.get(id_computer=computer_id),
+        f_bat_bat_to_com=Batteries.objects.get(id_battery=battery_id)
+    ).delete()
+    return HttpResponse("Succesfully removed battery from computer")
+
 
 @csrf_exempt
 def get_observation(request, observation_id):

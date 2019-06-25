@@ -11,6 +11,7 @@ urlpatterns = [
     path('assign_observation_to_computer/<int:observation_id>/<int:computer_id>/', views.assign_observation_to_computer, name='assign_observation_to_computer'),
     path('remove_observation_from_computer/<int:observation_id>/<int:computer_id>/', views.remove_observation_from_computer, name='remove_observation_from_computer'),
     path('get_observation/<int:observation_id>/', views.get_observation, name='get_observation'),
+    path('remove_battery_from_computer/<int:battery_id>/<int:computer_id>/', views.remove_battery_from_computer, name='remove_battery_from_computer'),
 
     path('ramsticks_to_add/<int:int_index>/<keyword>/', views.ramsticks_to_add, name='ramsticks_to_add'),
     path('get_ramstick/<int:ramstick_id>/', views.get_ramstick, name='get_ramstick'),

@@ -207,6 +207,10 @@ function remove_observation_from_computer(button, computer_id, observation_id) {
     remove_object_from_computer(button, computer_id, observation_id, 'remove_observation_from_computer')
 }
 
+function remove_battery_from_computer(button, computer_id, battery_id) {
+    remove_object_from_computer(button, computer_id, battery_id, 'remove_battery_from_computer')
+}
+
 function remove_ramstick_from_computer(button, computer_id, ramstick_id) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', get_main_url() + '/remove_ramstick_from_computer/' + ramstick_id + '/' + computer_id + '/');

@@ -442,6 +442,7 @@
             <div class="section-member hidden">
                 {% for member in record.batteries %}
                 <div class="table-holder">
+                    <button type="button" class="close_button" onclick="remove_battery_from_computer(this, {{ record.computer.id_computer }}, {{ member.id_battery }})">x</button>
                     <table class="table">
                         <tr>
                             <th>Serial:</th>
