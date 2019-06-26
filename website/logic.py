@@ -24,11 +24,16 @@ from datetime import datetime
 class TypCatComputersLogic:
 
     def __init__(self, data_dict):
+        """
+        Not finnished supposed to lower ammount of code in views.py typcat_view()
+        """
         pass
 
 
 class SoldComputersLogic:
-
+    """"
+    Not finnished supposed to lower ammount of code in views.py sold_view()
+    """
     def __init__(self, data_dict):
         pass
 
@@ -39,8 +44,8 @@ class SearchComputersLogic:
     """
 
     def __init__(self, data_dict):
-        self.qty = int(data_dict.get('qty', 10))
-        self.page = int(data_dict.get('page', 1))
+        qty = int(data_dict.get('qty', 10))
+        page = int(data_dict.get('page', 1))
         computers = Computers.objects.all()
         computers = search(data_dict.get('keyword', None), computers)
         self.so = SearchOptions()
@@ -48,14 +53,13 @@ class SearchComputersLogic:
             computers = option.search(computers, data_dict.get(option.tagname, ""))
         autoFilters = AutoFilter(data_dict)
         computers = autoFilters.filter(computers)
-        self.qtySelect = QtySelect()
-        self.qtySelect.setDefaultSelect(self.qty)
+        self.qtySelect = QtySelect(qty)
         self.af = AutoFiltersFromComputers(computers)
-        paginator = Paginator(computers, self.qty)
-        self.computers = paginator.get_page(self.page)
+        paginator = Paginator(computers, qty)
+        self.computers = paginator.get_page(page)
         # self.counter = Counter()
         # self.counter.count = qty * (page - 1)
-        self.index = self.start_index = self.qty * (self.page - 1)
+        self.index = qty * (page - 1)
 
     def isGlobal(self):
         return True
@@ -66,23 +70,10 @@ class SearchComputersLogic:
     def typcat(self):
         return TypCat()
 
-    '''
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.index >= self.qty * self.page:
-            self.index = self.qty * (self.page - 1)
-            raise StopIteration
-        else:
+    def iterate(self):
+        for computer in self.computers:
+            yield computer
             self.index += 1
-            # print(self.index - self.start_index)
-            print(type(self.computers))
-            # return self.computers[self.index - self.start_index]
-            # return next(self.computers)
-    '''
-    def get_computers(self):
-        return self.computers
 
 
 class Counter:
@@ -94,30 +85,6 @@ class Counter:
 
 
 class QtySelect:
-    qty = 0
-    state10 = ""
-    state20 = ""
-    state50 = ""
-    state100 = ""
-    state200 = ""
-
-    def setDefaultSelect(self, qty):
-        self.qty = qty
-        if qty == 10:
-            self.state10 = "selected"
-        elif qty == 20:
-            self.state20 = "selected"
-        elif qty == 50:
-            self.state50 = "selected"
-        elif qty == 100:
-            self.state100 = "selected"
-        elif qty == 200:
-            self.state200 = "selected"
-        elif qty == 1000:
-            self.state1000 = "selected"
-
-
-class QtySelect2:
     qty = 0
     state10 = ""
     state20 = ""
@@ -542,7 +509,6 @@ class ExcelGenerator(AbstractDataFileGenerator):
         super().__init__()
 
     def generate_desktop_file(self, indexes, worksheet, bold_bordered, bordered):
-        print('generate_desktop_file')
         worksheet.write("A1", "S/N", bold_bordered)
         worksheet.write("B1", "Form factor", bold_bordered)
         worksheet.write("C1", "Manufacturer", bold_bordered)
@@ -576,7 +542,6 @@ class ExcelGenerator(AbstractDataFileGenerator):
             row += 1
 
     def generate_laptop_file(self, indexes, worksheet, bold_bordered, bordered):
-        print('generate_laptop_file')
         worksheet.write("A1", "S/N", bold_bordered)
         worksheet.write("B1", "Manufacturer", bold_bordered)
         worksheet.write("C1", "Model", bold_bordered)
@@ -638,7 +603,6 @@ class CsvGenerator(AbstractDataFileGenerator):
                                   'COA', 'Comment', 'Price', 'Box no.']
 
     def generate_desktop_file(self, indexes):
-        print('generate_desktop_file')
         writer = csv.DictWriter(self.memfile, fieldnames=self.desktop_fieldnames)
         writer.writeheader()
         for int_index in indexes:
@@ -660,7 +624,6 @@ class CsvGenerator(AbstractDataFileGenerator):
             })
 
     def generate_laptop_file(self, indexes):
-        print('generate_laptop_file')
         writer = csv.DictWriter(self.memfile, fieldnames=self.laptop_fieldnames)
         writer.writeheader()
         for int_index in indexes:
@@ -817,7 +780,6 @@ class ObservationsCollection:
 class ObservationToAdd:
 
     def __init__(self, data_dict):
-        print('in ObservationToAdd')
         self.message = ''
         self.cat_name = self.try_extract(data_dict, 'cat_name')
         self.sub_name = self.try_extract(data_dict, 'sub_name')
@@ -868,7 +830,6 @@ class RecordToAdd:
 
     def __init__(self, data_dict):
         self.data = data_dict
-        print(data_dict)
         self.error_list = []
 
     def get_error_message(self):
@@ -1102,7 +1063,6 @@ class AutoFilter:
         :param computers: queryset of computers
         :return: filtered queryset of computers
         """
-        print(self.filter_dict)
         for key, value in self.filter_dict.items():
             if key == 'man-af':
                 computers = computers.filter(f_manufacturer__manufacturer_name__in=value)
@@ -1280,7 +1240,6 @@ class NewOrder:
         self.error_list = []
 
     def save(self):
-        print("New order save start")
         self._validate()
         if len(self.error_list) == 0:
             order = self._save_and_get_order()
@@ -1292,7 +1251,6 @@ class NewOrder:
                     f_id_tester=tester
                 )
                 ord_tes.save()
-            print("New order save end")
         else:
             print("New order creation has FAILED")
 
@@ -1433,12 +1391,12 @@ class OrdersClass:
         self.filter()
         self.autoFilters = OrdersClassAutoFilter(self.order_list)
 
-        self.qty = int(data_dict.get('qty', 10))
-        self.page = int(data_dict.get('page', 1))
-        self.qtySelect = QtySelect2(self.qty)
-        paginator = Paginator(self.order_list, self.qty)
-        self.order_list = paginator.get_page(self.page)
-        self.index = self.qty * (self.page - 1)
+        qty = int(data_dict.get('qty', 10))
+        page = int(data_dict.get('page', 1))
+        self.qtySelect = QtySelect(qty)
+        paginator = Paginator(self.order_list, qty)
+        self.order_list = paginator.get_page(page)
+        self.index = qty * (page - 1)
 
     def increment(self):
         """
@@ -1737,13 +1695,13 @@ class LotsHolder:
         self.filter()
         self.autoFilters = LotsHolderAutoFilter(self.lots)
 
-        self.qty = int(data_dict.get('qty', 10))
-        self.page = int(data_dict.get('page', 1))
-        self.qtySelect = QtySelect2(self.qty)
+        qty = int(data_dict.get('qty', 10))
+        page = int(data_dict.get('page', 1))
+        self.qtySelect = QtySelect(qty)
 
-        paginator = Paginator(self.lots, self.qty)
-        self.lots = paginator.get_page(self.page)
-        self.index = self.qty * (self.page - 1)
+        paginator = Paginator(self.lots, qty)
+        self.lots = paginator.get_page(page)
+        self.index = qty * (page - 1)
 
     def increment(self):
         """
@@ -1799,12 +1757,12 @@ class HddHolder:
         self.filter()
         self.autoFilters = HddAutoFilterOptions(self.hdds)
 
-        self.qty = int(data_dict.get('qty', 10))
-        self.page = int(data_dict.get('page', 1))
-        self.qtySelect = QtySelect2(self.qty)
-        paginator = Paginator(self.hdds, self.qty)
-        self.hdds = paginator.get_page(self.page)
-        self.index = self.qty * (self.page - 1)
+        qty = int(data_dict.get('qty', 10))
+        page = int(data_dict.get('page', 1))
+        self.qtySelect = QtySelect(qty)
+        paginator = Paginator(self.hdds, qty)
+        self.hdds = paginator.get_page(page)
+        self.index = qty * (page - 1)
 
     def increment(self):
         """
@@ -2143,12 +2101,10 @@ def try_drive_delete_and_get_message(pk=None, serial=None):
         except:
             pass
         drive.delete()
-        print('Succesful deletion')
         return None
     except IntegrityError:
         return 'Drive is part of lot/order or computer.\r\nSolve this dependency first before drive deletion.'
     except Exception as e:
-        print('Failed deletion')
         return 'Failure to delete record\r\n' + str(e)
 
 
@@ -2560,7 +2516,6 @@ class DriveOrderProcessor:
         """
         hdd_orders = HddOrder.objects.filter(order_name=self.filename.replace('.txt', ''))
         if hdd_orders.exists():
-            print('Such hdd orders exists')
             Drives.objects.filter(f_hdd_order=hdd_orders[0].order_id).update(f_hdd_order=None)
             hdd_orders[0].delete()
 
@@ -2755,12 +2710,12 @@ class DriveOrdersHolder:
         self.filter()
         self.autoFilters = HddOrdersHolderAutoFilter(self.orders)
 
-        self.qty = int(data_dict.get('qty', 10))
-        self.page = int(data_dict.get('page', 1))
-        self.qtySelect = QtySelect2(self.qty)
-        paginator = Paginator(self.orders, self.qty)
-        self.orders = paginator.get_page(self.page)
-        self.index = self.qty * (self.page - 1)
+        qty = int(data_dict.get('qty', 10))
+        page = int(data_dict.get('page', 1))
+        self.qtySelect = QtySelect(qty)
+        paginator = Paginator(self.orders, qty)
+        self.orders = paginator.get_page(page)
+        self.index = qty * (page - 1)
 
     def increment(self):
         """
@@ -2880,12 +2835,12 @@ class ChargerCategoriesHolder:
             self.chargerCategories.append(ChargerCategoryHolder(cat))
 
         self.filter()
-        self.qty = int(data_dict.get('qty', 10))
-        self.page = int(data_dict.get('page', 1))
-        self.qtySelect = QtySelect2(self.qty)
-        paginator = Paginator(self.chargerCategories, self.qty)
-        self.chargerCategories = paginator.get_page(self.page)
-        self.index = self.qty * (self.page - 1)
+        qty = int(data_dict.get('qty', 10))
+        page = int(data_dict.get('page', 1))
+        self.qtySelect = QtySelect(qty)
+        paginator = Paginator(self.chargerCategories, qty)
+        self.chargerCategories = paginator.get_page(page)
+        self.index = qty * (page - 1)
 
     def increment(self):
         """
@@ -3025,14 +2980,9 @@ class ChargerCategoryToEdit:
                 self._run_method_on_lists(fields, values, method, data_dict)
 
             if self.isValidData:
-                print('Charger edit data passed is valid')
-                print(self.message)
                 self._save(rsv=required_string_values, rbv=required_boolean_values,
                            riv=required_integer_values, rdv=required_decimal_values,
                            oiv=optional_integer_values, odv=optional_decimal_values)
-            else:
-                print('Charger edit data passed is wrong')
-                print(self.message)
 
         except Exception as e:
             self.isValidData = False
@@ -3059,7 +3009,6 @@ class ChargerCategoryToEdit:
         :param oiv: optional_integer_values.
         :param odv: optional_decimal_values.
         """
-        print('Starting saving process')
         manufacturer = Manufacturers.objects.get_or_create(manufacturer_name=rsv[0])[0]
         self.chargerCategory.f_manufacturer = manufacturer
         self.chargerCategory.watts = riv[1]
@@ -3078,7 +3027,6 @@ class ChargerCategoryToEdit:
         self.chargerCategory.used_status = rbv[1]
         self.chargerCategory.connector_type = rsv[1]
         self.chargerCategory.save()
-        print('Finished saving process')
 
     def _get_optional_decimal_field_value(self, data_dict, field_name):
         """
@@ -3300,8 +3248,6 @@ class ComputerSingleSerialPrinter:
 class ComputerMultipleSerialPrinter:
 
     def __init__(self, data, printer=None):
-        print("Printer: {0}".format(printer))
-        print("Indexes: {0}".format(data))
         self.final_serials = []
         self.printer = printer
         for member in data:
@@ -3332,7 +3278,6 @@ class Qrgenerator:
         self.serials = serials
 
     def print_as_pairs(self):
-        print("Printing as pairs")
         for index in range(self._get_pair_cycles()):
             serial_pair = self._get_serial_pair(index)
             image = self._formImagePair(serial_pair[0], serial_pair[1])
@@ -3359,8 +3304,6 @@ class Qrgenerator:
         return first, second
 
     def print_as_singular(self):
-        print('print_as_singular')
-        print(self.serials)
         for serial in self.serials:
             # image = self._formImagePair(serial, None)
             image = self._fromSerialToImage(serial)
@@ -3539,7 +3482,6 @@ class SearchOptions:
 class Computer5th:
 
     def __init__(self, computer):
-        print('this is Computer5th')
         self.computer = computer
 
     def collect_info(self):
@@ -3570,8 +3512,6 @@ class Computer5th:
         return Observations.objects.filter(computerobservations__f_id_computer=self.computer)
 
     def save_info(self, data_dict):
-        print(data_dict)
-
         def _save_many_to_many():
             """
             Function responsible of handling many to many relationship record updating in database.
@@ -3771,7 +3711,6 @@ class Computer5th:
             _save_processors()
             _save_gpus()
 
-        print('Saving computer')
         if self.computer.f_sale:
             client = Clients.objects.get_or_create(client_name=data_dict.pop('client_name')[0])[0]
             sale = self.computer.f_sale
@@ -3818,7 +3757,6 @@ class Computer5th:
             except:
                 pass
 
-        print("This is 5th version's delete")
         for bat_to_comp in BatToComp.objects.filter(f_id_computer_bat_to_com=self.computer):
             bat = bat_to_comp.f_bat_bat_to_com
             try_to_delete(bat_to_comp)
@@ -3877,7 +3815,6 @@ class Computer5th:
 class ComputerToEdit:
 
     def __init__(self, int_index=None, serial=None):
-        print('ComputerToEdit constructor')
         if int_index:
             self.computer = Computers.objects.get(id_computer=int_index)
         elif serial:
@@ -3890,7 +3827,6 @@ class ComputerToEdit:
         return self.message == ''
 
     def process_post(self, data_dict):
-        print('Processing post request')
         data_dict.pop('edit.x', None)
         data_dict.pop('edit.y', None)
         data_dict.pop('id_computer', None)
@@ -3905,12 +3841,10 @@ class ComputerToEdit:
             self.message = str(e.with_traceback(tb))
         
     def process_get(self):
-        print('Processing get request')
         self.record = Computer5th(computer=self.computer)
         self.record.collect_info()
 
     def delete_record(self):
-        print('Processing delete request')
         self.record = Computer5th(computer=self.computer)
         self.record.delete()
 

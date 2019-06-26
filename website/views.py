@@ -9,6 +9,7 @@ import re
 from decimal import Decimal
 
 
+@csrf_exempt
 def index(request):
     return render(request, 'main.html', {
         "typcat": TypCat(),
@@ -72,8 +73,7 @@ def sold_view(request):
     qty = int(request.GET.get('qty', 10))
     page = int(request.GET.get('page', 1))
     autoFilters = AutoFilter(request.GET.copy())
-    qtySelect = QtySelect()
-    qtySelect.setDefaultSelect(qty)
+    qtySelect = QtySelect(qty)
     computers = Computers.objects.exclude(f_sale__isnull=True)
     computers = autoFilters.filter(computers)
     af = AutoFiltersFromSoldComputers(computers)
@@ -105,8 +105,7 @@ def typcat_view(request):
     ).exclude(f_id_comp_ord__isnull=False) \
         .exclude(f_sale__isnull=False)
     computers = autoFilters.filter(computers)
-    qtySelect = QtySelect()
-    qtySelect.setDefaultSelect(qty)
+    qtySelect = QtySelect(qty)
     af = AutoFiltersFromComputers(computers)
     paginator = Paginator(computers, qty)
     computers = paginator.get_page(page)
@@ -136,8 +135,7 @@ def search_view(request):
         computers = option.search(computers, data_dict.pop(option.tagname, ""))
     autoFilters = AutoFilter(data_dict)
     computers = autoFilters.filter(computers)
-    qtySelect = QtySelect()
-    qtySelect.setDefaultSelect(qty)
+    qtySelect = QtySelect(qty)
     af = AutoFiltersFromComputers(computers)
     paginator = Paginator(computers, qty)
     computers = paginator.get_page(page)
@@ -157,35 +155,28 @@ def search_view(request):
 
 @csrf_exempt
 def edit(request, int_index):
-    print("EDIT ")
     cte = ComputerToEdit(int_index=int_index)
     if request.method == 'POST':
-        print("This was POST request")
         cte.process_post(request.POST.copy())
         if cte.success():
             return render(request, 'success.html')
         else:
             return render(request, 'failure.html', {'message': cte.message}, status=404)
     if request.method == 'GET':
-        print("This was GET request")
         cte.process_get()
         return render(request, 'computer_edit.html', {'record': cte.record})
 
 
 @csrf_exempt
 def edit_by_serial(request, serial):
-    print("EDIT ")
-    print(serial)
     cte = ComputerToEdit(serial=serial)
     if request.method == 'POST':
-        print("This was POST request")
         cte.process_post(request.POST.copy())
         if cte.success():
             return render(request, 'success.html')
         else:
             return render(request, 'failure.html', {'message': cte.message}, status=404)
     if request.method == 'GET':
-        print("This was GET request")
         cte.process_get()
         return render(request, 'computer_edit.html', {'record': cte.record})
 
@@ -284,13 +275,6 @@ def remove_observation_from_computer(request, observation_id, computer_id):
 
 @csrf_exempt
 def remove_battery_from_computer(request, battery_id, computer_id):
-    print('remove_battery_from_computer')
-    '''
-    Computerobservations.objects.filter(
-        f_id_computer=Computers.objects.get(id_computer=computer_id),
-        f_id_observation=Observations.objects.get(id_observation=observation_id)
-    ).delete()
-    '''
     BatToComp.objects.filter(
         f_id_computer_bat_to_com=Computers.objects.get(id_computer=computer_id),
         f_bat_bat_to_com=Batteries.objects.get(id_battery=battery_id)
@@ -381,10 +365,6 @@ def get_gpu(request, gpu_id):
 
 @csrf_exempt
 def mass_delete(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     for record_index in data:
         cte = ComputerToEdit(int_index=record_index)
@@ -395,10 +375,6 @@ def mass_delete(request):
 
 @csrf_exempt
 def mass_excel(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     generator = ExcelGenerator()
     excel_file = generator.generate_file(indexes=data)
@@ -411,10 +387,6 @@ def mass_excel(request):
 
 @csrf_exempt
 def mass_csv(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     generator = CsvGenerator()
     csv_file = generator.generate_file(indexes=data)
@@ -427,10 +399,6 @@ def mass_csv(request):
 
 @csrf_exempt
 def mass_qr_print(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     cmsp = ComputerMultipleSerialPrinter(JSONParser().parse(request))
     cmsp.print()
     return HttpResponse('Print job is sent')
@@ -438,10 +406,6 @@ def mass_qr_print(request):
 
 @csrf_exempt
 def mass_qr_print_with_printer(request, printer):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     cmsp = ComputerMultipleSerialPrinter(JSONParser().parse(request), printer)
     cmsp.print()
     return HttpResponse('Print job is sent')
@@ -449,10 +413,6 @@ def mass_qr_print_with_printer(request, printer):
 
 @csrf_exempt
 def cat_change(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     category_name = next(iter(data))
     indexes = data[category_name]
@@ -472,10 +432,6 @@ def ord_assign(request):
     :param request: request initiated by javascript client side.
     :return: Nonsensical http response. Since this response should not be processed and only status code is reacted to.
     """
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     order_name = next(iter(data))
     order = Orders.objects.get(order_name=order_name)
@@ -496,32 +452,26 @@ def computer_form_factors(request):
         return computer_form_factor_list
 
     if request.method == 'POST':
-        print("This was POST request")
         name = request.POST.get("item_name")
         if name != '':
             ComputerFormFactors.objects.get_or_create(form_factor_name=name)
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return render(request, 'items.html', {'items': get_computer_form_factors()})
 
 
 @csrf_exempt
 def del_computer_form_factor(request, int_index):
     if request.method == 'POST':
-        print("This was POST request")
         ComputerFormFactors.objects.get(id_computer_form_factor=int_index).delete()
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def computer_form_factor_edit(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     computer_form_factor = ComputerFormFactors.objects.get(id_computer_form_factor=data["ItemId"])
     computer_form_factor.form_factor_name = data["ItemName"]
@@ -540,32 +490,26 @@ def receivedbatches(request):
         return received_batchlist
 
     if request.method == 'POST':
-        print("This was POST request")
         name = request.POST.get("item_name")
         if name != "":
             Receivedbatches.objects.get_or_create(received_batch_name=name)
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return render(request, 'items.html', {'items': get_received_batches_list()})
 
 
 @csrf_exempt
 def delreceivedBatch(request, int_index):
     if request.method == 'POST':
-        print("This was POST request")
         Receivedbatches.objects.get(id_received_batch=int_index).delete()
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def recieved_batch_edit(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     received_batch = Receivedbatches.objects.get(id_received_batch=data["ItemId"])
     received_batch.received_batch_name = data["ItemName"]
@@ -584,35 +528,28 @@ def categories(request):
         return catlist
 
     if request.method == 'POST':
-        print("This was POST request")
         name = request.POST.get("item_name")
         if name != "":
             Categories.objects.get_or_create(category_name=name)
-        print("Finished")
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return render(request, 'items.html', {'items': get_categories_list()})
 
 
 @csrf_exempt
 def delCat(request, int_index):
     if request.method == 'POST':
-        print("This was POST request")
         cat = Categories.objects.get(id_category=int_index)
         if cat.permanent != 1:
             cat.delete()
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def cat_edit(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     cat = Categories.objects.get(id_category=data["ItemId"])
     if cat.permanent != 1:
@@ -632,32 +569,26 @@ def types(request):
         return typeslist
 
     if request.method == 'POST':
-        print("This was POST request")
         name = request.POST.get("item_name")
         if name != "":
             Types.objects.get_or_create(type_name=name)
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return render(request, 'items.html', {'items': get_types_list()})
 
 
 @csrf_exempt
 def delTyp(request, int_index):
     if request.method == 'POST':
-        print("This was POST request")
         Types.objects.get(id_type=int_index).delete()
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def typ_edit(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     typ = Types.objects.get(id_type=data["ItemId"])
     typ.type_name = data["ItemName"]
@@ -676,32 +607,26 @@ def testers(request):
         return testerslist
 
     if request.method == 'POST':
-        print("This was POST request")
         name = request.POST.get("item_name")
         if name != "":
             Testers.objects.get_or_create(tester_name=name)
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return render(request, 'items.html', {'items': get_testers_list()})
 
 
 @csrf_exempt
 def delTes(request, int_index):
     if request.method == 'POST':
-        print("This was POST request")
         Testers.objects.get(id_tester=int_index).delete()
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def tes_edit(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     tes = Testers.objects.get(id_tester=data["ItemId"])
     tes.tester_name = data["ItemName"]
@@ -713,9 +638,8 @@ def tes_edit(request):
 @csrf_exempt
 def observations(request):
     if request.method == 'POST':
-        print("This was POST request")
+        pass
     if request.method == 'GET':
-        print("This was GET request")
         return render(request, "observations.html")
 
 
@@ -728,32 +652,26 @@ def observation_category(request):
         return lst
 
     if request.method == 'POST':
-        print("This was POST request")
         name = request.POST.get("item_name")
         if name != "":
             Observationcategory.objects.get_or_create(category_name=name)
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return render(request, "observationsCategorySubtemplate.html", {'items': get_observation_category_list()})
 
 
 @csrf_exempt
 def del_observation_category(request, int_index):
     if request.method == 'POST':
-        print("This was POST request")
         Observationcategory.objects.get(id_observation_category=int_index).delete()
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return HttpResponse(
         "If you see this message that means after changes post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def observation_category_edit(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     item = Observationcategory.objects.get(id_observation_category=data["ItemId"])
     item.category_name = data["ItemName"]
@@ -771,32 +689,26 @@ def observation_subcategory(request):
         return lst
 
     if request.method == 'POST':
-        print("This was POST request")
         name = request.POST.get("item_name")
         if name != "":
             Observationsubcategory.objects.get_or_create(subcategory_name=name)
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return render(request, "observationsSubcategorySubtemplate.html", {'items': get_observation_subcategory_list()})
 
 
 @csrf_exempt
 def del_observation_subcategory(request, int_index):
     if request.method == 'POST':
-        print("This was POST request")
         Observationsubcategory.objects.get(id_observation_subcategory=int_index).delete()
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return HttpResponse(
         "If you see this message that means after deletion post update on JS side page reload has failed")
 
 
 @csrf_exempt
 def observation_subcategory_edit(request):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     data = JSONParser().parse(request)
     item = Observationsubcategory.objects.get(id_observation_subcategory=data["ItemId"])
     item.subcategory_name = data["ItemName"]
@@ -808,12 +720,11 @@ def observation_subcategory_edit(request):
 @csrf_exempt
 def observations_details(request):
     if request.method == 'POST':
-        print("This was POST request")
         ota = ObservationToAdd(request.POST)
         if ota.validated():
             ota.process()
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return render(request, "observationsDetailsSubtemplate.html",
         {
             "categories": Observationcategory.objects.values_list('category_name', flat=True),
@@ -876,7 +787,6 @@ def new_record(request):
     }
 
     if request.method == 'POST':
-        print("This was POST request")
         rta = RecordToAdd(request.POST.copy())
         if rta.validate():
             rta.save()
@@ -887,7 +797,6 @@ def new_record(request):
             "many_to_many_unique_values_dict": many_to_many_unique_values_dict
         })
     if request.method == 'GET':
-        print("This was GET request")
         return render(request, 'new_record.html', {"rc": rc, "many_to_many_unique_values_dict": many_to_many_unique_values_dict})
 
 
@@ -895,7 +804,6 @@ def new_record(request):
 def cat_to_sold(request):
     computers = Computers.objects.filter(id_computer__in=request.GET.copy().pop('id'))
     if request.method == 'POST':
-        print("This was POST request")
         executor = ExecutorOfCatToSold(request.POST.copy())
         if executor.validated:
             executor.write_to_database()
@@ -906,7 +814,6 @@ def cat_to_sold(request):
                 "error_message": executor.get_error_message()
             })
     if request.method == 'GET':
-        print("This was GET request")
         return render(request, 'catToSold.html', {'computers': computers})
 
 
@@ -914,7 +821,6 @@ def cat_to_sold(request):
 def new_order(request):
     noc = NewOrderChoices()
     if request.method == 'POST':
-        print("This was POST request")
         no = NewOrder(request.POST.copy())
         no.save()
         if no.is_saved():
@@ -925,7 +831,7 @@ def new_order(request):
                 "error_message": no.get_error_message()
             })
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return render(request, 'new_order.html', {"noc": noc})
 
 
@@ -933,7 +839,6 @@ def new_order(request):
 def edit_order(request, int_index):
     ote = OrderToEdit(int_index)
     if request.method == 'POST':
-        print("This was POST request")
         ote.set_new_data(request.POST.copy())
         if ote.hasErrors():
             return render(request, 'success.html')
@@ -943,14 +848,13 @@ def edit_order(request, int_index):
                 "error_message": ote.get_error_message()
             })
     if request.method == 'GET':
-        print("This was GET request")
+        pass
     return render(request, 'order_edit.html', {"ote": ote, })
 
 
 @csrf_exempt
 def delete_order(request, int_index):
     if request.method == 'POST':
-        print("This was POST request")
         try:
             order = Orders.objects.get(id_order=int_index)
             OrdTes.objects.filter(f_order=order).delete()
@@ -959,7 +863,6 @@ def delete_order(request, int_index):
         except Exception as e:
             return HttpResponse(str(e), status=404)
     if request.method == 'GET':
-        print("This was GET request")
         return HttpResponse("You shouldn't be here", status=404)
 
 
@@ -973,21 +876,17 @@ def strip_order(request, int_index):
         compord.delete()
 
     if request.method == 'POST':
-        print("This was POST request")
         _strip_order_of_computer()
         return HttpResponse(status=200)
     if request.method == 'GET':
-        print("This was GET request")
         return HttpResponse('This should not be returned', status=404)
 
 
 @csrf_exempt
 def computer_search_table_from_order(request):
     if request.method == 'POST':
-        print("This was POST request")
         return HttpResponse("Disallowed action", status=404)
     if request.method == 'GET':
-        print("This was GET request")
         keyword = request.GET['keyword']
         searchfields = (
             'computer_serial',
@@ -1003,7 +902,6 @@ def computer_search_table_from_order(request):
 @csrf_exempt
 def add_computer_to_order(request, order_id):
     if request.method == 'POST':
-        print("This was POST request")
         try:
             order = Orders.objects.get(id_order=order_id)
             comp_ord = CompOrd.objects.create(is_ready=0, f_order_id_to_order=order)
@@ -1015,16 +913,11 @@ def add_computer_to_order(request, order_id):
         except Exception as e:
             return HttpResponse(e, status=404)
     if request.method == 'GET':
-        print("This was GET request")
         return HttpResponse('Get request not Implemented', status=404)
 
 
 @csrf_exempt
 def order_excel(request, int_index):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     indexes = Computers.objects.filter(
         f_id_comp_ord__f_order_id_to_order=int_index).values_list('id_computer', flat=True)
     generator = ExcelGenerator()
@@ -1038,10 +931,6 @@ def order_excel(request, int_index):
 
 @csrf_exempt
 def order_csv(request, int_index):
-    if request.method == 'POST':
-        print("This was POST request")
-    if request.method == 'GET':
-        print("This was GET request")
     indexes = Computers.objects.filter(
         f_id_comp_ord__f_order_id_to_order=int_index).values_list('id_computer', flat=True)
     generator = CsvGenerator()
@@ -1057,12 +946,9 @@ def order_csv(request, int_index):
 def hdd_edit(request, int_index):
     hte = HddToEdit(int_index)
     if request.method == 'POST':
-        print('POST method')
-        print(request.POST)
         hte.process_edit(request.POST.copy())
         return render(request, 'success.html')
     if request.method == 'GET':
-        print('GET method')
         return render(request, 'hdd_edit.html', {'hte': hte})
 
 
@@ -1077,9 +963,8 @@ def hdd_delete(request, int_index):
 
 def view_pdf(request, int_index):
     if request.method == 'POST':
-        print('POST request')
+        pass
     elif request.method == 'GET':
-        print('GET request')
         try:
             hdd = Drives.objects.get(hdd_id=int_index)
             tf = tarfile.open(os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), hdd.f_lot.lot_name + '.tar'))
@@ -1095,14 +980,12 @@ def view_pdf(request, int_index):
 def drive_order_content(request, int_index):
     hoch = HddOrderContentHolder(int_index)
     if request.method == 'POST':
-        print('POST method')
         try:
             hoch.edit(request.POST.copy())
             return render(request, 'success.html')
         except Exception as e:
             return render(request, 'failure.html', {'message': str(e)}, status=404)
     if request.method == 'GET':
-        print('GET method')
         hoch.filter(request.GET.copy())
         return render(request, 'hdd_order_content.html', {'hoch': hoch})
 
@@ -1110,9 +993,8 @@ def drive_order_content(request, int_index):
 @csrf_exempt
 def drive_order_content_csv(request, int_index):
     if request.method == 'POST':
-        print('POST method')
+        pass
     if request.method == 'GET':
-        print('GET method')
         hocc = HddOrderContentCsv(int_index)
         csv_file = hocc.createCsvFile()
         response = HttpResponse(content_type="application/ms-excel")
@@ -1125,9 +1007,8 @@ def drive_order_content_csv(request, int_index):
 @csrf_exempt
 def drive_delete_order(request, int_index):
     if request.method == 'POST':
-        print('POST method')
+        pass
     if request.method == 'GET':
-        print('GET method')
         hod = HddOrderToDelete(int_index)
         hod.delete()
         if hod.success:
@@ -1178,9 +1059,8 @@ def process_tar_view(request):
 @csrf_exempt
 def lot_content(request, int_index):
     if request.method == 'POST':
-        print('POST method')
+        pass
     if request.method == 'GET':
-        print('GET method')
         lch = LotContentHolder(int_index)
         lch.filter(request.GET.copy())
         return render(request, 'lot_content.html', {'lch': lch})
@@ -1189,9 +1069,8 @@ def lot_content(request, int_index):
 @csrf_exempt
 def success(request):
     if request.method == 'POST':
-        print('POST method')
+        pass
     if request.method == 'GET':
-        print('GET method')
         return render(request, 'success.html')
 
 
@@ -1199,32 +1078,26 @@ def success(request):
 def serial_processing(request, serial):
     csp = ChargerSerialProcessor(serial)
     if request.method == 'POST':
-        print('POST method')
         csp.process()
         if csp.message == '':
             return render(request, 'success.html')
         else:
             return render(request, 'failure.html', {'message': csp.message})
     if request.method == 'GET':
-        print('GET method')
         # csp.proccess()
         if csp.serial_exists():
-            print('Such serial exists')
             ch = ChargerHolder(serial=serial)
             return render(request, 'charger_view.html', {'ch': ch})
         else:
-            print('Such serial is non-existant')
             return render(request, 'charger_nonexistant.html')
 
 
 @csrf_exempt
 def delete_charger_from_scan(request, serial):
     if request.method == 'POST':
-        print('POST method')
         Chargers.objects.get(charger_serial=serial.split('_')[2]).delete()
         return HttpResponse('POST request finished', status=200)
     if request.method == 'GET':
-        print('GET method')
         return HttpResponse('Get request not Implemented', status=404)
 
 
@@ -1232,92 +1105,81 @@ def delete_charger_from_scan(request, serial):
 def edit_charger(request, int_index):
     ccte = ChargerCategoryToEdit(int_index)
     if request.method == 'POST':
-        print('POST method')
         ccte.process(request.POST.copy())
         if ccte.isValidData:
             return render(request, 'success.html')
         else:
              return render(request, 'failure.html', {'message': ccte.message})
     if request.method == 'GET':
-        print('GET method')
         return render(request, 'charger_edit.html', {'ccte': ccte})
 
 
 @csrf_exempt
 def edit_charger_serial(request, int_index):
     if request.method == 'POST':
-        print('POST method')
         data = JSONParser().parse(request)
         charger = Chargers.objects.get(charger_id=data['Index'])
         charger.charger_serial = data['Serial']
         charger.save()
         return render(request, 'success.html')
     if request.method == 'GET':
-        print('GET method')
+        pass
 
 
 @csrf_exempt
 def print_charger_serial(request, int_index):
     if request.method == 'POST':
-        print('POST method')
         csp = ChargerSingleSerialPrinter(JSONParser().parse(request))
         csp.print()
         return HttpResponse('Print job is sent')
     if request.method == 'GET':
-        print('GET method')
+        pass
 
 
 @csrf_exempt
 def print_chargers_serials(request, int_index):
     if request.method == 'POST':
-        print('POST method')
         cdsp = ChargerDualSerialPrinter(JSONParser().parse(request))
         cdsp.print()
         return HttpResponse('Print job is sent')
     if request.method == 'GET':
-        print('GET method')
+        pass
 
 
 @csrf_exempt
 def delete_charger(request, int_index):
     if request.method == 'POST':
-        print('POST method')
         Chargers.objects.get(charger_id=JSONParser().parse(request)['Index']).delete()
         return HttpResponse('Charger deleted')
     if request.method == 'GET':
-        print('GET method')
+        pass
 
 
 @csrf_exempt
 def delete_charger_category(request, int_index):
     if request.method == 'POST':
-        print('POST method')
         try:
             ChargerCategories.objects.get(charger_category_id=int_index).delete()
         except Exception as e:
             return HttpResponse(str(e), status=404)
     if request.method == 'GET':
-        print('GET method')
+        pass
 
 
 @csrf_exempt
 def print_computer_qr(request, int_index):
-    print('print_computer_qr')
     if request.method == 'POST':
-        print('POST method')
         # Keep this comment
         # cssp = ComputerSingleSerialPrinter(JSONParser().parse(request))
         cssp = ComputerSingleSerialPrinter(int_index)
         cssp.print()
         return HttpResponse("Not implemented return", status=200)
     if request.method == 'GET':
-        print('GET method')
+        pass
 
 @csrf_exempt
 def print_computer_qr_with_printer(request, int_index, printer):
-    print('print_computer_qr')
     if request.method == 'POST':
-        print('POST method')
         # todo: Figure tout what to do with printing.
         # Keep this comment
         """
@@ -1332,4 +1194,4 @@ def print_computer_qr_with_printer(request, int_index, printer):
         cssp.print()
         return HttpResponse("Not implemented return", status=200)
     if request.method == 'GET':
-        print('GET method')
+        pass
