@@ -98,6 +98,7 @@
                         </div>
                     </div>
                 </th>
+                <th>Height</th>
                 <th>Lock state{% if 'loc-af' in lch.changedKeys %}*{% endif %}
                     <button type="button" onclick="autoFilterMenu('af-Lock')">
                         <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC">
@@ -236,6 +237,7 @@
                 <td>{{ hdd.hdd_serial }}</td>
                 <td>{{ hdd.f_hdd_models.hdd_models_name }}</td>
                 <td>{{ hdd.f_hdd_sizes.hdd_sizes_name }}</td>
+                <td>{{ hdd.f_height.height_name }}</td>
                 <td>{{ hdd.f_lock_state.lock_state_name }}</td>
                 <td>{{ hdd.f_speed.speed_name }}</td>
                 <td>{{ hdd.f_form_factor.form_factor_name }}</td>

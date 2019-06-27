@@ -97,6 +97,7 @@
                         </div>
                     </div>
                 </th>
+                <th>Height</th>
                 <th>Lock state{% if 'loc-af' in hh.changedKeys %}*{% endif %}<button type="button" class="filter-button" onclick="autoFilterMenu('af-Lock')">&#8642;</button>
                     <div id="af-Lock" class="autofilter">
                         <div class="af-top">
@@ -230,6 +231,7 @@
                 <td id="serial">{{ hdd.hdd_serial }}</td>
                 <td>{{ hdd.f_hdd_models.hdd_models_name }}</td>
                 <td>{{ hdd.f_hdd_sizes.hdd_sizes_name }}</td>
+                <td>{{ hdd.f_height.height_name }}</td>
                 <td>{{ hdd.f_lock_state.lock_state_name }}</td>
                 <td>{{ hdd.f_speed.speed_name }}</td>
                 <td>{{ hdd.f_form_factor.form_factor_name }}</td>

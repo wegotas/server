@@ -1,3 +1,22 @@
+2019-07-27
+
+LT:
+
+**Pokytis serveryje: Draivo aukscio pateikiamas daugiau kur.**
+
+Priezastis: Aukstis yra svarbus atributas zinoti keiciant kietaji diska, Ne visi kietuju disku dydziai telpa i visas kompiuteriu dezes. Del sios priezasties sis atributas yra pateikiama daugiau vietu, kur tai yra prasminga.
+
+* Aukstis papildomai pateikiamas siose vietose: 'computer_edit' prie draivu informacijos,'All storages', 'hdd_order_content', 'lot_content'.
+
+EN:
+
+**Change in server: Drive height is shown in more places.**
+
+Reason: Height is important attribute to know when changing hdd. Not all hdd sizes fit all computer cases. For this reason this attribute is show in more places, where it makes sense.
+
+* Height additionally is shown in: 'computer_edit' in drive information section,'All storages', 'hdd_order_content', 'lot_content'.
+
+___
 2019-07-25
 
 LT:

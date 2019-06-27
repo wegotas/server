@@ -125,6 +125,7 @@ def typcat_view(request):
 
 @csrf_exempt
 def search_view(request):
+    '''
     data_dict = request.GET.copy()
     qty = int(request.GET.get('qty', 10))
     page = int(request.GET.get('page', 1))
@@ -141,6 +142,19 @@ def search_view(request):
     computers = paginator.get_page(page)
     counter = Counter()
     counter.count = qty * (page - 1)
+    '''
+
+    scl = SearchComputersLogic(request.GET.copy())
+
+    print('STARTING')
+
+    for computer in scl.iterate():
+        print(scl.index)
+        print(computer)
+
+    print('ENDING')
+
+    '''
     return render(request, 'main.html', {
         'computers': computers,
         "counter": counter,
@@ -149,6 +163,17 @@ def search_view(request):
         "typcat": TypCat(),
         "poscat": Categories.objects.values_list('category_name', flat=True),
         'so': so,
+        "global": True
+    })
+    '''
+    return render(request, 'main.html', {
+        'computers': None,
+        "counter": None,
+        "qtySelect": None,
+        "autoFilters": None,
+        "typcat": TypCat(),
+        "poscat": Categories.objects.values_list('category_name', flat=True),
+        'so': None,
         "global": True
     })
 
