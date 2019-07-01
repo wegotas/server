@@ -10,8 +10,8 @@
         </div>
     </div>
     {% endfor %}
-    <a href="{% url 'sold' %}">Sold</a>
     <a href="{% url 'orders' %}">Orders</a>
+    <a href="{% url 'sold' %}">Sold</a>
     <a href="{% url 'chargers' %}">Chargers</a>
     <div class="dropdown">
         <button class="dropbtn">Data storage&#9660;</button>
@@ -21,5 +21,6 @@
             <a href="{% url 'drive_orders' %}">Orders</a>
         </div>
     </div>
+    <a href="{% url 'export' %}">Export</a>
 </div>
 {% endblock %}

@@ -1,3 +1,16 @@
+2019-08-01
+
+LT:
+
+**Pokytis serveryje: Eksportavimo skiltis prideta.**
+* Pridetas kompiuteriu pagal statusa csv/excel eksportavimas.
+
+EN:
+
+**Change in server: Export section added.**
+* Added computer csv/excel export based on status.
+
+___
 2019-07-27
 
 LT:

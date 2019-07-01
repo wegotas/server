@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.views.generic import TemplateView
+
 
 urlpatterns = [
     path('edit/<int:int_index>/', views.edit, name='edit'),
@@ -109,4 +111,6 @@ urlpatterns = [
     path('sold/', views.sold_view, name='sold'),
     path('typcat/', views.typcat_view, name='typcat'),
     path('search/', views.search_view, name='search'),
+    path('export/', views.export_view, name='export')
+    # path('export/', TemplateView.as_view(template_name="exports.html"), name='export')
 ]

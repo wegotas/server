@@ -36,6 +36,7 @@ def lots_view(request):
         'so': SearchOptions()
     })
 
+
 @csrf_exempt
 def drive_orders_view(request):
     oh = DriveOrdersHolder(request.GET.copy())
@@ -125,7 +126,7 @@ def typcat_view(request):
 
 @csrf_exempt
 def search_view(request):
-    '''
+
     data_dict = request.GET.copy()
     qty = int(request.GET.get('qty', 10))
     page = int(request.GET.get('page', 1))
@@ -175,6 +176,53 @@ def search_view(request):
         "poscat": Categories.objects.values_list('category_name', flat=True),
         'so': None,
         "global": True
+    })
+    '''
+
+
+@csrf_exempt
+def export_view(request):
+    if request.method == 'POST':
+        form = ExportComputersForm(request.POST)
+        if form.is_valid():
+
+            query = None
+            if form.cleaned_data['ordered']:
+                query = Q(f_sale__isnull=True, f_id_comp_ord__isnull=False)
+            if form.cleaned_data['sold']:
+                if not query:
+                    query = Q(f_sale__isnull=False)
+                else:
+                    query = query | Q(f_sale__isnull=False)
+            if form.cleaned_data['no_status']:
+                if not query:
+                    query = Q(f_id_comp_ord__isnull=True, f_sale__isnull=True)
+                else:
+                    query = query | Q(f_id_comp_ord__isnull=True, f_sale__isnull=True)
+
+            serials = Computers.objects.filter(query).values_list('id_computer', flat=True)
+
+            generator = None
+
+            response = HttpResponse(content_type="application/ms-excel")
+            if form.cleaned_data['file_type'] == 'EXCEL':
+                generator = ExcelGenerator()
+                response["Content-Disposition"] = "attachment; filename=computers.xlsx"
+            if form.cleaned_data['file_type'] == 'CSV':
+                generator = CsvGenerator()
+                response["Content-Disposition"] = "attachment; filename=computers.csv"
+
+            file = generator.generate_file(indexes=serials)
+            response.write(file.getvalue())
+            file.close()
+            return response
+
+    if request.method == 'GET':
+        form = ExportComputersForm()
+    return render(request, 'exports.html', {
+        "typcat": TypCat(),
+        "form": form,
+        'so': SearchOptions()
     })
 
 
