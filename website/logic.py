@@ -40,7 +40,7 @@ class SoldComputersLogic:
 
 class SearchComputersLogic:
     """
-    Not finnished supposed to lower ammount of code in views.py search_view()
+    Logic class responsible for processing search query and provide attributes for searched_computers.html rendering.
     """
 
     def __init__(self, data_dict):
@@ -50,30 +50,22 @@ class SearchComputersLogic:
         computers = search(data_dict.get('keyword', None), computers)
         self.so = SearchOptions()
         for option in self.so.options:
-            computers = option.search(computers, data_dict.get(option.tagname, ""))
+            computers = option.search(computers, data_dict.getlist(option.tagname, ""))
         autoFilters = AutoFilter(data_dict)
         computers = autoFilters.filter(computers)
         self.qtySelect = QtySelect(qty)
         self.af = AutoFiltersFromComputers(computers)
         paginator = Paginator(computers, qty)
         self.computers = paginator.get_page(page)
-        # self.counter = Counter()
-        # self.counter.count = qty * (page - 1)
         self.index = qty * (page - 1)
 
-    def isGlobal(self):
-        return True
-
-    def poscat(self):
-        return Categories.objects.values_list('category_name', flat=True)
-
-    def typcat(self):
-        return TypCat()
-
-    def iterate(self):
-        for computer in self.computers:
-            yield computer
-            self.index += 1
+    def get_index_and_increment(self):
+        """
+        Increments index and returns it.
+        :return: index number.
+        """
+        self.index += 1
+        return self.index
 
 
 class Counter:

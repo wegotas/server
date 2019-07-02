@@ -126,58 +126,18 @@ def typcat_view(request):
 
 @csrf_exempt
 def search_view(request):
-
-    data_dict = request.GET.copy()
-    qty = int(request.GET.get('qty', 10))
-    page = int(request.GET.get('page', 1))
-    computers = Computers.objects.all()
-    computers = search(data_dict.get('keyword', None), computers)
-    so = SearchOptions()
-    for option in so.options:
-        computers = option.search(computers, data_dict.pop(option.tagname, ""))
-    autoFilters = AutoFilter(data_dict)
-    computers = autoFilters.filter(computers)
-    qtySelect = QtySelect(qty)
-    af = AutoFiltersFromComputers(computers)
-    paginator = Paginator(computers, qty)
-    computers = paginator.get_page(page)
-    counter = Counter()
-    counter.count = qty * (page - 1)
-    '''
-
+    """
+    View responsible for handling computers search requests and rendering searched_computers.html.
+    :param request: request data to be handled.
+    :return: rendered searched_computers.html page as response.
+    """
     scl = SearchComputersLogic(request.GET.copy())
-
-    print('STARTING')
-
-    for computer in scl.iterate():
-        print(scl.index)
-        print(computer)
-
-    print('ENDING')
-
-    '''
-    return render(request, 'main.html', {
-        'computers': computers,
-        "counter": counter,
-        "qtySelect": qtySelect,
-        "autoFilters": af,
+    return render(request, 'searched_computers.html', {
         "typcat": TypCat(),
         "poscat": Categories.objects.values_list('category_name', flat=True),
-        'so': so,
-        "global": True
+        'so': scl.so,
+        'computers_logic': scl
     })
-    '''
-    return render(request, 'main.html', {
-        'computers': None,
-        "counter": None,
-        "qtySelect": None,
-        "autoFilters": None,
-        "typcat": TypCat(),
-        "poscat": Categories.objects.values_list('category_name', flat=True),
-        'so': None,
-        "global": True
-    })
-    '''
 
 
 @csrf_exempt
