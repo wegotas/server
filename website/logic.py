@@ -23,18 +23,36 @@ from datetime import datetime
 
 class SoldComputersLogic:
     """"
-    Not finnished supposed to lower ammount of code in views.py sold_view()
+    Logic class responsible for handling sold computers from website.
     """
+
     def __init__(self, data_dict):
-        pass
+        qty = int(data_dict.get('qty', 10))
+        page = int(data_dict.get('page', 1))
+        autoFilters = AutoFilter(data_dict.copy())
+        self.qtySelect = QtySelect(qty)
+        computers = Computers.objects.exclude(f_sale__isnull=True)
+        computers = autoFilters.filter(computers)
+        self.af = AutoFiltersFromSoldComputers(computers)
+        paginator = Paginator(computers, qty)
+        self.computers = paginator.get_page(page)
+        self.index = qty * (page - 1)
+
+    def get_index_and_increment(self):
+        """
+        Increments index and returns it.
+        :return: index number.
+        """
+        self.index += 1
+        return self.index
 
 
 class TypCatComputersLogic:
+    """
+    Logic class responsible for handling typcat computers from website.
+    """
 
     def __init__(self, data_dict):
-        """
-        Logic class responsible for providing typcat computers and provide attributes for typ_cat_computers.html rendering.
-        """
         qty = int(data_dict.get('qty', 10))
         page = int(data_dict.get('page', 1))
         autoFilters = AutoFilter(data_dict)
@@ -62,7 +80,7 @@ class TypCatComputersLogic:
 
 class SearchComputersLogic:
     """
-    Logic class responsible for processing search query and provide attributes for searched_computers.html rendering.
+    Logic class responsible for processing search query from website.
     """
 
     def __init__(self, data_dict):

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b12dfcae-9b13-4cc6-9e92-f3612f8d0df9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/website/templates/typ_cat_computers.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/website/templates/sold_computers.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/website/logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/website/logic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/website/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/website/views.py" afterDir="false" />
@@ -20,14 +20,13 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/website/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="472">
-                  <caret line="100" column="39" selection-start-line="100" selection-start-column="39" selection-end-line="100" selection-end-column="39" />
+                <state relative-caret-position="450">
+                  <caret line="72" column="13" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="13" />
                   <folding>
                     <element signature="e#349#451#0" />
                     <element signature="e#497#656#0" />
                     <element signature="e#700#860#0" />
                     <element signature="e#912#1079#0" />
-                    <element signature="e#1127#1303#0" />
                     <element signature="e#3835#5492#0" />
                     <element signature="e#5542#5977#0" />
                     <element signature="e#6034#6463#0" />
@@ -115,8 +114,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/website/templates/typ_cat_computers.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="570">
-                  <caret line="101" column="26" lean-forward="true" selection-start-line="101" selection-start-column="26" selection-end-line="101" selection-end-column="26" />
+                <state relative-caret-position="593">
+                  <caret line="287" column="88" selection-start-line="287" selection-start-column="88" selection-end-line="287" selection-end-column="88" />
                   <folding>
                     <element signature="n#style#0;n#option#0;n#select#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
                     <element signature="n#src#0;n#img#0;n#button#0;n#div#1;n#div#1;n#div#0;n#!!top" expanded="true" />
@@ -124,8 +123,35 @@
                     <element signature="n#src#0;n#img#0;n#button#0;n#div#3;n#div#1;n#div#0;n#!!top" expanded="true" />
                     <element signature="n#src#0;n#img#0;n#button#0;n#div#5;n#div#1;n#div#0;n#!!top" expanded="true" />
                     <element signature="n#src#0;n#img#0;n#button#0;n#div#6;n#div#1;n#div#0;n#!!top" expanded="true" />
+                    <element signature="n#tbody#0;n#table#0;n#div#1;n#!!top" />
                     <element signature="n#src#0;n#img#0;n#button#0;n#td#12;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#!!top" expanded="true" />
+                    <element signature="n#div#0;n#div#1;n#!!top" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/website/templates/sold_computers.html">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="600">
+                  <caret line="219" column="34" lean-forward="true" selection-start-line="219" selection-start-column="34" selection-end-line="219" selection-end-column="34" />
+                  <folding>
+                    <element signature="n#div#0;n#!!top" />
+                    <element signature="n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
+                    <element signature="n#div#1;n#div#0;n#!!top" />
+                    <element signature="n#tr#0;n#tbody#0;n#table#0;n#div#1;n#!!top" />
+                    <element signature="n#div#0;n#div#1;n#!!top" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/website/templates/tableSubTemplate.html">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="90">
+                  <caret line="6" column="50" selection-start-line="6" selection-start-column="50" selection-end-line="6" selection-end-column="50" />
                 </state>
               </provider>
             </entry>
@@ -133,10 +159,10 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/website/logic.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="225">
-                  <caret line="68" column="41" selection-start-line="68" selection-start-column="41" selection-end-line="68" selection-end-column="41" />
+                <state relative-caret-position="292">
+                  <caret line="1416" column="8" selection-start-line="1416" selection-start-column="8" selection-end-line="1416" selection-end-column="8" />
                   <folding>
-                    <element signature="e#750#886#0" />
+                    <element signature="e#565#1358#0" />
                   </folding>
                 </state>
               </provider>
@@ -233,8 +259,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/website/logic.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="225">
-                  <caret line="35" column="39" lean-forward="true" selection-start-line="35" selection-start-column="39" selection-end-line="35" selection-end-column="39" />
+                <state relative-caret-position="555">
+                  <caret line="57" column="37" selection-start-line="57" selection-start-column="37" selection-end-line="57" selection-end-column="37" />
                   <folding>
                     <element signature="e#1854#1931#0" />
                     <element signature="e#1955#2480#0" />
@@ -378,7 +404,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/website/templates/index.html" />
         <option value="$PROJECT_DIR$/todolist" />
         <option value="$PROJECT_DIR$/website/templates/nonexistant_ramstick_template.html" />
         <option value="$PROJECT_DIR$/website/templates/computer_edit_v5.html" />
@@ -427,6 +452,7 @@
         <option value="$PROJECT_DIR$/website/templates/computersSearchedSubTemplate2.html" />
         <option value="$PROJECT_DIR$/website/templates/searched_computers.html" />
         <option value="$PROJECT_DIR$/website/templates/typ_cat_computers.html" />
+        <option value="$PROJECT_DIR$/website/templates/sold_computers.html" />
         <option value="$PROJECT_DIR$/website/logic.py" />
         <option value="$PROJECT_DIR$/website/views.py" />
       </list>
@@ -509,13 +535,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1542106267817</updated>
-    </task>
-    <task id="LOCAL-00064" summary="Changes:&#10;* Added drive removal functionality in computer_edit_v5.&#10;* Rewritten some code in computer_edit_v5.js to remove some of the code repetitiveness.&#10;* Updated changelog.md about the changes.">
-      <created>1554801586697</created>
-      <option name="number" value="00064" />
-      <option name="presentableId" value="LOCAL-00064" />
-      <option name="project" value="LOCAL" />
-      <updated>1554801586697</updated>
     </task>
     <task id="LOCAL-00065" summary="Changes:&#10;* Extended website computer filtering of cpus/gpus to many_to_many relationships.&#10;* Changed website computer filtering using other, by removing comment filtering, instead it filters according to observations.&#10;* Updated changelog to reflect these changes.">
       <created>1554905772676</created>
@@ -853,7 +872,14 @@
       <option name="project" value="LOCAL" />
       <updated>1562051182653</updated>
     </task>
-    <option name="localTasksCounter" value="113" />
+    <task id="LOCAL-00113" summary="Changes:&#10;* Rewritten typcat_view and TypCatComputersLogic classes.">
+      <created>1562060356406</created>
+      <option name="number" value="00113" />
+      <option name="presentableId" value="LOCAL-00113" />
+      <option name="project" value="LOCAL" />
+      <updated>1562060356406</updated>
+    </task>
+    <option name="localTasksCounter" value="114" />
     <servers />
   </component>
   <component name="TodoView">
@@ -940,7 +966,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Changes:&#10;* returned automatic ramstick adding feature which was lost due to revert on 2019-05-13." />
     <MESSAGE value="Changes:&#10;* Added additional field to search computers by battery model." />
     <MESSAGE value="Changes:&#10;* expanded ability to search by battery model." />
     <MESSAGE value="Changes:&#10;* fixed minor bug. Id was not set right for an element and because of that select/unselect all was not working properly for that &lt;div&gt;." />
@@ -965,16 +990,10 @@
     <MESSAGE value="Changes:&#10;* Expanded where drive height is shown.&#10;* Updated changelog.md" />
     <MESSAGE value="Changes:&#10;* Computer csv/excel export functionality added. &#10;* Updated changelog.md" />
     <MESSAGE value="Changes:&#10;* Minor adjustments and added codestrings to search_view and SearchComputersLogic." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes:&#10;* Minor adjustments and added codestrings to search_view and SearchComputersLogic." />
+    <MESSAGE value="Changes:&#10;* Rewritten typcat_view and TypCatComputersLogic classes." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes:&#10;* Rewritten typcat_view and TypCatComputersLogic classes." />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///usr/lib/python3.7/tarfile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2677">
-          <caret line="278" column="6" selection-start-line="278" selection-start-column="6" selection-end-line="278" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/lib/python3.7/csv.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="419">
@@ -1042,17 +1061,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/website/models.py">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/website/templates/soldComputersSubTemplate.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1035">
-          <caret line="294" column="58" selection-start-line="294" selection-start-column="58" selection-end-line="294" selection-end-column="58" />
-          <folding>
-            <element signature="n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
-            <element signature="n#thead#0;n#table#0;n#div#1;n#!!top" />
-          </folding>
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/website/templates/chargersCategoriesSubtemplate.html">
       <provider selected="true" editor-type-id="text-editor">
@@ -1470,13 +1478,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/website/templates/tableSubTemplate.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="33" lean-forward="true" selection-start-line="4" selection-start-column="33" selection-end-line="4" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/website/templates/computersSubTemplate.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="788">
@@ -1512,10 +1513,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/soldComputersSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="179">
+          <caret line="32" column="14" lean-forward="true" selection-end-line="299" selection-end-column="14" />
+          <folding>
+            <element signature="n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
+            <element signature="n#thead#0;n#table#0;n#div#1;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/website/templates/typ_cat_computers.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="101" column="26" lean-forward="true" selection-start-line="101" selection-start-column="26" selection-end-line="101" selection-end-column="26" />
+        <state relative-caret-position="593">
+          <caret line="287" column="88" selection-start-line="287" selection-start-column="88" selection-end-line="287" selection-end-column="88" />
           <folding>
             <element signature="n#style#0;n#option#0;n#select#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
             <element signature="n#src#0;n#img#0;n#button#0;n#div#1;n#div#1;n#div#0;n#!!top" expanded="true" />
@@ -1523,31 +1535,53 @@
             <element signature="n#src#0;n#img#0;n#button#0;n#div#3;n#div#1;n#div#0;n#!!top" expanded="true" />
             <element signature="n#src#0;n#img#0;n#button#0;n#div#5;n#div#1;n#div#0;n#!!top" expanded="true" />
             <element signature="n#src#0;n#img#0;n#button#0;n#div#6;n#div#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#tbody#0;n#table#0;n#div#1;n#!!top" />
             <element signature="n#src#0;n#img#0;n#button#0;n#td#12;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#div#0;n#div#1;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/tableSubTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="50" selection-start-line="6" selection-start-column="50" selection-end-line="6" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/website/templates/sold_computers.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="600">
+          <caret line="219" column="34" lean-forward="true" selection-start-line="219" selection-start-column="34" selection-end-line="219" selection-end-column="34" />
+          <folding>
+            <element signature="n#div#0;n#!!top" />
+            <element signature="n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
+            <element signature="n#div#1;n#div#0;n#!!top" />
+            <element signature="n#tr#0;n#tbody#0;n#table#0;n#div#1;n#!!top" />
+            <element signature="n#div#0;n#div#1;n#!!top" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/website/logic.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="68" column="41" selection-start-line="68" selection-start-column="41" selection-end-line="68" selection-end-column="41" />
+        <state relative-caret-position="292">
+          <caret line="1416" column="8" selection-start-line="1416" selection-start-column="8" selection-end-line="1416" selection-end-column="8" />
           <folding>
-            <element signature="e#750#886#0" />
+            <element signature="e#565#1358#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/website/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="472">
-          <caret line="100" column="39" selection-start-line="100" selection-start-column="39" selection-end-line="100" selection-end-column="39" />
+        <state relative-caret-position="450">
+          <caret line="72" column="13" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="13" />
           <folding>
             <element signature="e#349#451#0" />
             <element signature="e#497#656#0" />
             <element signature="e#700#860#0" />
             <element signature="e#912#1079#0" />
-            <element signature="e#1127#1303#0" />
             <element signature="e#3835#5492#0" />
             <element signature="e#5542#5977#0" />
             <element signature="e#6034#6463#0" />

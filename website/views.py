@@ -71,25 +71,17 @@ def orders_view(request):
 
 @csrf_exempt
 def sold_view(request):
-    qty = int(request.GET.get('qty', 10))
-    page = int(request.GET.get('page', 1))
-    autoFilters = AutoFilter(request.GET.copy())
-    qtySelect = QtySelect(qty)
-    computers = Computers.objects.exclude(f_sale__isnull=True)
-    computers = autoFilters.filter(computers)
-    af = AutoFiltersFromSoldComputers(computers)
-    paginator = Paginator(computers, qty)
-    computers = paginator.get_page(page)
-    counter = Counter()
-    counter.count = qty * (page - 1)
-    return render(request, 'main.html', {
-        'computers': computers,
-        "counter": counter,
-        "qtySelect": qtySelect,
-        "autoFilters": af,
+    """
+    View responsible for handling sold computers requests and rendering sold_computers.html.
+    :param request: request data to be handled.
+    :return: rendered sold_computers.html page as response.
+    """
+    scl = SoldComputersLogic(request.GET.copy())
+    return render(request, 'sold_computers.html', {
         "typcat": TypCat(),
         "poscat": Categories.objects.values_list('category_name', flat=True),
-        'so': SearchOptions()
+        'so': SearchOptions(),
+        'computers_logic': scl
     })
 
 
