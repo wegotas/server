@@ -29,8 +29,13 @@ def drives_view(request):
 
 @csrf_exempt
 def lots_view(request):
+    """
+    View responsible for handling drive lots requests and rendering lots.html.
+    :param request: request data to be handled.
+    :return: rendered lots.html page as response.
+    """
     lh = LotsHolder(request.GET.copy())
-    return render(request, 'main.html', {
+    return render(request, 'lots.html', {
         "typcat": TypCat(),
         'lh': lh,
         'so': SearchOptions()
@@ -49,8 +54,13 @@ def drive_orders_view(request):
 
 @csrf_exempt
 def chargers_view(request):
+    """
+    View responsible for handling charger categories requests and rendering charger_categories.html.
+    :param request: request data to be handled.
+    :return: rendered charger_categories.html page as response.
+    """
     cch = ChargerCategoriesHolder(request.GET.copy())
-    return render(request, 'main.html', {
+    return render(request, 'charger_categories.html', {
         'cch': cch,
         "typcat": TypCat(),
         'so': SearchOptions()
