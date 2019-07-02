@@ -44,8 +44,13 @@ def lots_view(request):
 
 @csrf_exempt
 def drive_orders_view(request):
+    """
+    View responsible for handling drive orders requests and rendering drive_orders.html.
+    :param request: request data to be handled.
+    :return: rendered drive_orders.html page as response.
+    """
     oh = DriveOrdersHolder(request.GET.copy())
-    return render(request, 'main.html', {
+    return render(request, 'drive_orders.html', {
         "typcat": TypCat(),
         'oh': oh,
         'so': SearchOptions()
