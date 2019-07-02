@@ -19,8 +19,13 @@ def index(request):
 
 @csrf_exempt
 def drives_view(request):
+    """
+    View responsible for handling drives requests and rendering drives.html.
+    :param request: request data to be handled.
+    :return: rendered drives.html page as response.
+    """
     hh = HddHolder(request.GET.copy())
-    return render(request, 'main.html', {
+    return render(request, 'drives.html', {
         "typcat": TypCat(),
         'hh': hh,
         'so': SearchOptions()
