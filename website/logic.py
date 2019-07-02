@@ -21,21 +21,43 @@ from django.core.paginator import Paginator
 from datetime import datetime
 
 
-class TypCatComputersLogic:
-
-    def __init__(self, data_dict):
-        """
-        Not finnished supposed to lower ammount of code in views.py typcat_view()
-        """
-        pass
-
-
 class SoldComputersLogic:
     """"
     Not finnished supposed to lower ammount of code in views.py sold_view()
     """
     def __init__(self, data_dict):
         pass
+
+
+class TypCatComputersLogic:
+
+    def __init__(self, data_dict):
+        """
+        Logic class responsible for providing typcat computers and provide attributes for typ_cat_computers.html rendering.
+        """
+        qty = int(data_dict.get('qty', 10))
+        page = int(data_dict.get('page', 1))
+        autoFilters = AutoFilter(data_dict)
+        computers = Computers.objects.filter(
+            f_type=Types.objects.get(type_name=data_dict.get('type')),
+            f_category=Categories.objects.get(category_name=data_dict.get('cat')),
+            f_sale=None
+        ).exclude(f_id_comp_ord__isnull=False) \
+            .exclude(f_sale__isnull=False)
+        computers = autoFilters.filter(computers)
+        self.qtySelect = QtySelect(qty)
+        self.af = AutoFiltersFromComputers(computers)
+        paginator = Paginator(computers, qty)
+        self.computers = paginator.get_page(page)
+        self.index = qty * (page - 1)
+
+    def get_index_and_increment(self):
+        """
+        Increments index and returns it.
+        :return: index number.
+        """
+        self.index += 1
+        return self.index
 
 
 class SearchComputersLogic:

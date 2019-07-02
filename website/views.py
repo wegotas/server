@@ -95,32 +95,18 @@ def sold_view(request):
 
 @csrf_exempt
 def typcat_view(request):
-    data_dict = request.GET.copy()
-    qty = int(data_dict.get('qty', 10))
-    page = int(data_dict.get('page', 1))
-    autoFilters = AutoFilter(data_dict)
-    computers = Computers.objects.filter(
-        f_type=Types.objects.get(type_name=data_dict.get('type')),
-        f_category=Categories.objects.get(category_name=data_dict.get('cat')),
-        f_sale=None
-    ).exclude(f_id_comp_ord__isnull=False) \
-        .exclude(f_sale__isnull=False)
-    computers = autoFilters.filter(computers)
-    qtySelect = QtySelect(qty)
-    af = AutoFiltersFromComputers(computers)
-    paginator = Paginator(computers, qty)
-    computers = paginator.get_page(page)
-    counter = Counter()
-    counter.count = qty * (page - 1)
-    return render(request, 'main.html', {
-        'computers': computers,
-        "counter": counter,
-        "qtySelect": qtySelect,
-        "autoFilters": af,
+    """
+    View responsible for handling type categories computers requests and rendering typ_cat_computers.html.
+    :param request: request data to be handled.
+    :return: rendered typ_cat_computers.html page as response.
+    """
+    tccl = TypCatComputersLogic(request.GET.copy())
+    return render(request, 'typ_cat_computers.html', {
         "typcat": TypCat(),
         "poscat": Categories.objects.values_list('category_name', flat=True),
         "po": PossibleOrders(),
-        'so': SearchOptions()
+        'so': SearchOptions(),
+        'computers_logic': tccl
     })
 
 
