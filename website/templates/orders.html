@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}Orders{% endblock %}
+
+{% block content %}
+<div class="menu2"  >
+    <div class="menu-div">
+        <div class="item">
+            <div class="textbox">Qty:</div>
+            <div class="selector">
+                <select id="qty" class="c-select" onchange="handleSelect(this)">
+                    <option {{ orders.qtySelect.state10 }} value="&page=1&qty=10">10</option>
+                    <option {{ orders.qtySelect.state20 }} value="&page=1&qty=20">20</option>
+                    <option {{ orders.qtySelect.state50 }} value="&page=1&qty=50">50</option>
+                    <option {{ orders.qtySelect.state100 }} value="&page=1&qty=100">100</option>
+                    <option {{ orders.qtySelect.state200 }} value="&page=1&qty=200">200</option>
+                    <option {{ orders.qtySelect.state1000 }} value="&page=1&qty=1000">1000</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="filter" class="menu-div">
+        <div class="item">
+            <button type="button" class="button img-button" onclick="applyAFs()">
+                Filter
+            </button>
+        </div>
+    </div>
+</div>
+<div class="pageContent">
+    <table class="main-table" id="contents-table">
+        <thead>
+            <tr class="header-row">
+                <th>Nr.</th>
+                <th>Order name<button type="button" class="filter-button" onclick="autoFilterMenu('af-Order')">&#8642;</button>
+                    <div id="af-Order" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'ord-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'ord-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="ord-af">
+                            {% for afChoice in orders.autoFilters.names %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Client<button type="button" class="filter-button" onclick="autoFilterMenu('af-Client')">&#8642;</button>
+                    <div id="af-Client" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'clt-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'clt-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="clt-af">
+                            {% for afChoice in orders.autoFilters.clients %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Qty<button type="button" class="filter-button" onclick="autoFilterMenu('af-qty')">&#8642;</button>
+                    <div id="af-qty" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'qty-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'qty-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="qty-af">
+                            {% for afChoice in orders.autoFilters.qtys %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Date<button type="button" class="filter-button" onclick="autoFilterMenu('af-dat')">&#8642;</button>
+                    <div id="af-dat" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'dat-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'dat-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="dat-af">
+                            {% for afChoice in orders.autoFilters.dates %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice|date:"c" }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Testers<button type="button" class="filter-button" onclick="autoFilterMenu('af-tes')">&#8642;</button>
+                    <div id="af-tes" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'tes-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'tes-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="tes-af">
+                            {% for afChoice in orders.autoFilters.testers %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Status<button type="button" class="filter-button" onclick="autoFilterMenu('af-sta')">&#8642;</button>
+                    <div id="af-sta" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'sta-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'sta-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="sta-af">
+                            {% for afChoice in orders.autoFilters.statuses %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th id="last-th" colspan="2">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="records">
+            {% for order in orders.order_list %}
+            <tr class="row">
+                {{ orders.increment }}
+                <td>{{ orders.index }}</td>
+                <td>{{ order.name }}</td>
+                <td>{{ order.client }}</td>
+                <td>{{ order.count }}</td>
+                <td>{{ order.date|date:"c" }}</td>
+                <td>{{ order.get_testers }}</td>
+                <td>{{ order.get_status }}</td>
+                <td>
+                    <button class="img-button" onclick="content('{% url 'edit_order' order.id %}')">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAQdJREFUSIm91bEyxUAUgOEvRoOSjuK+AR6DAqP2Koa5Y0bhoZQ8hFFRuKOgoYxCdiY3d7PZu7mcmVMkOef/d5OchH+Kc8xQZ+Z1p7/CFN94xEVXMAYOE7x26uYkY1Z+ii3s4L5V+9AnyI0KN03PMw6x0ZJ8jRG04SE/cYBtvOCqVBCDh3zCJva6TbmCFDzkUawxR5ADv+xrHhKUwKtcQSn8LkdQCr/tsvoEE4sTOnTPpzFWTHAiPqFDDzS62NjJMKH75ic0+bYsK6jx0UjChKbgRYL2hO4OwIsFNY4z4Aus9URhlbiWHWurgKQitoPcT3ZWhB28rxLaxKx9cGa5//JQvvkd1L+PH2BA2fdp74CqAAAAAElFTkSuQmCC" />
+                    </button>
+                </td>
+                <td>
+                    {% if not order.count %}
+                    <button class="img-button" onclick="deleteOrder('{% url 'delete_order' order.id %}')">
+                        <img src="data:image/x-icon;base64,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">
+                    </button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination" align="center">
+        <span class="step-links">
+        {% if orders.order_list.has_previous %}
+        <button value="&page=1&qty={{ orders.qtySelect.qty }}" onclick="handleSelect(this)">&laquo; first</button>
+        <button value="&page={{ orders.order_list.previous_page_number }}&qty={{ orders.qtySelect.qty }}" onclick="handleSelect(this)">previous</button>
+        {% endif %}
+        <span class="current">Page {{ orders.order_list.number }} of {{ orders.order_list.paginator.num_pages }}.</span>
+        {% if orders.order_list.has_next %}
+        <button value="&page={{ orders.order_list.next_page_number }}&qty={{ orders.qtySelect.qty }}" onclick="handleSelect(this)">next</button>
+        <button value="&page={{ orders.order_list.paginator.num_pages }}&qty={{ orders.qtySelect.qty }}" onclick="handleSelect(this)">last &raquo;</button>
+        {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}

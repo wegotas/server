@@ -59,10 +59,13 @@ def chargers_view(request):
 
 @csrf_exempt
 def orders_view(request):
-    counter = Counter()
+    """
+    View responsible for handling orders requests and rendering orders.html.
+    :param request: request data to be handled.
+    :return: rendered orders.html page as response.
+    """
     orders = OrdersClass(request.GET.copy())
-    return render(request, 'main.html', {
-        "counter": counter,
+    return render(request, 'orders.html', {
         "typcat": TypCat(),
         "orders": orders,
         'so': SearchOptions()
