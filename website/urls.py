@@ -101,7 +101,7 @@ urlpatterns = [
 
     path('content/<int:int_index>/', views.lot_content, name='lot_content'),
     path('success/', views.success, name='success'),
-    path('', views.index, name='index'),
+    path('', views.index_view, name='index'),
 
     path('drives/', views.drives_view, name='drives'),
     path('lots/', views.lots_view, name='lots'),

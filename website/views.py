@@ -10,8 +10,12 @@ from decimal import Decimal
 
 
 @csrf_exempt
-def index(request):
-    return render(request, 'main.html', {
+def index_view(request):
+    """
+    View which renders start.html as starting page.
+    :return: rendered start.html page as response.
+    """
+    return render(request, 'start.html', {
         "typcat": TypCat(),
         'so': SearchOptions()
     })
