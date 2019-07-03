@@ -21,99 +21,81 @@ from django.core.paginator import Paginator
 from datetime import datetime
 
 
-class SoldComputersLogic:
+class PaginatedClass:
+    """
+    Class to be inherited by class showing list of items in paginated way.
+    """
+
+    def __init__(self, data_dict):
+        self.data_dict = data_dict
+        self.qty = int(self.data_dict.get('qty', 10))
+        self.page = int(self.data_dict.get('page', 1))
+        self.index = self.qty * (self.page - 1)
+
+    def get_index_and_increment(self):
+        """
+        Increments index and returns it.
+        :return: index number.
+        """
+        self.index += 1
+        return self.index
+
+
+class SoldComputersLogic(PaginatedClass):
     """"
     Logic class responsible for handling sold computers from website.
     """
 
     def __init__(self, data_dict):
-        qty = int(data_dict.get('qty', 10))
-        page = int(data_dict.get('page', 1))
-        autoFilters = AutoFilter(data_dict.copy())
-        self.qtySelect = QtySelect(qty)
+        super(SoldComputersLogic, self).__init__(data_dict)
+        autoFilters = AutoFilter(self.data_dict.copy())
+        self.qtySelect = QtySelect(self.qty)
         computers = Computers.objects.exclude(f_sale__isnull=True)
         computers = autoFilters.filter(computers)
         self.af = AutoFiltersFromSoldComputers(computers)
-        paginator = Paginator(computers, qty)
-        self.computers = paginator.get_page(page)
-        self.index = qty * (page - 1)
-
-    def get_index_and_increment(self):
-        """
-        Increments index and returns it.
-        :return: index number.
-        """
-        self.index += 1
-        return self.index
+        paginator = Paginator(computers, self.qty)
+        self.computers = paginator.get_page(self.page)
 
 
-class TypCatComputersLogic:
+class TypCatComputersLogic(PaginatedClass):
     """
     Logic class responsible for handling typcat computers from website.
     """
 
     def __init__(self, data_dict):
-        qty = int(data_dict.get('qty', 10))
-        page = int(data_dict.get('page', 1))
-        autoFilters = AutoFilter(data_dict)
+        super(TypCatComputersLogic, self).__init__(data_dict)
+        autoFilters = AutoFilter(self.data_dict)
         computers = Computers.objects.filter(
-            f_type=Types.objects.get(type_name=data_dict.get('type')),
-            f_category=Categories.objects.get(category_name=data_dict.get('cat')),
+            f_type=Types.objects.get(type_name=self.data_dict.get('type')),
+            f_category=Categories.objects.get(category_name=self.data_dict.get('cat')),
             f_sale=None
         ).exclude(f_id_comp_ord__isnull=False) \
             .exclude(f_sale__isnull=False)
         computers = autoFilters.filter(computers)
-        self.qtySelect = QtySelect(qty)
+        self.qtySelect = QtySelect(self.qty)
         self.af = AutoFiltersFromComputers(computers)
-        paginator = Paginator(computers, qty)
-        self.computers = paginator.get_page(page)
-        self.index = qty * (page - 1)
-
-    def get_index_and_increment(self):
-        """
-        Increments index and returns it.
-        :return: index number.
-        """
-        self.index += 1
-        return self.index
+        paginator = Paginator(computers, self.qty)
+        self.computers = paginator.get_page(self.page)
 
 
-class SearchComputersLogic:
+class SearchComputersLogic(PaginatedClass):
     """
     Logic class responsible for processing search query from website.
     """
 
     def __init__(self, data_dict):
-        qty = int(data_dict.get('qty', 10))
-        page = int(data_dict.get('page', 1))
+        super(SearchComputersLogic, self).__init__(data_dict)
         computers = Computers.objects.all()
-        computers = search(data_dict.get('keyword', None), computers)
+        computers = search(self.data_dict.get('keyword', None), computers)
         self.so = SearchOptions()
         for option in self.so.options:
-            computers = option.search(computers, data_dict.getlist(option.tagname, ""))
-        autoFilters = AutoFilter(data_dict)
+            computers = option.search(computers, self.data_dict.getlist(option.tagname, ""))
+        autoFilters = AutoFilter(self.data_dict)
         computers = autoFilters.filter(computers)
-        self.qtySelect = QtySelect(qty)
+        self.qtySelect = QtySelect(self.qty)
         self.af = AutoFiltersFromComputers(computers)
-        paginator = Paginator(computers, qty)
-        self.computers = paginator.get_page(page)
-        self.index = qty * (page - 1)
-
-    def get_index_and_increment(self):
-        """
-        Increments index and returns it.
-        :return: index number.
-        """
-        self.index += 1
-        return self.index
-
-
-class Counter:
-    count = 0
-
-    def increment(self):
-        self.count += 1
-        return ''
+        paginator = Paginator(computers, self.qty)
+        self.computers = paginator.get_page(self.page)
 
 
 class QtySelect:
@@ -1409,34 +1391,22 @@ class OrdersClassAutoFilter:
             lst.append(value)
 
 
-class OrdersClass:
+class OrdersClass(PaginatedClass):
     """
     Class responsible for portraying available Orders in website.
     """
 
-    def __init__(self, data_dict=None):
-        self.data_dict = data_dict
+    def __init__(self, data_dict):
+        super(OrdersClass, self).__init__(data_dict)
         self.order_list = []
         for ord in Orders.objects.all():
             self.order_list.append(Order(ord))
 
         self.filter()
         self.autoFilters = OrdersClassAutoFilter(self.order_list)
-
-        qty = int(data_dict.get('qty', 10))
-        page = int(data_dict.get('page', 1))
-        self.qtySelect = QtySelect(qty)
-        paginator = Paginator(self.order_list, qty)
-        self.order_list = paginator.get_page(page)
-        self.index = qty * (page - 1)
-
-    def increment(self):
-        """
-        Increments index which is used for numbering orders in website.
-        :return: empty string, so that nothing would be rendered.
-        """
-        self.index += 1
-        return ''
+        self.qtySelect = QtySelect(self.qty)
+        paginator = Paginator(self.order_list, self.qty)
+        self.order_list = paginator.get_page(self.page)
 
     def filter(self):
         """
@@ -1718,30 +1688,22 @@ class LotsHolderAutoFilter:
             lst.append(value)
 
 
-class LotsHolder:
+class LotsHolder(PaginatedClass):
+    """
+    Logic class responsible for processing drive lots for website.
+    """
 
     def __init__(self, data_dict):
-        self.data_dict = data_dict
+        super(LotsHolder, self).__init__(data_dict)
         self.lots = self._get_lots()
 
         self.filter()
         self.autoFilters = LotsHolderAutoFilter(self.lots)
 
-        qty = int(data_dict.get('qty', 10))
-        page = int(data_dict.get('page', 1))
-        self.qtySelect = QtySelect(qty)
+        self.qtySelect = QtySelect(self.qty)
 
-        paginator = Paginator(self.lots, qty)
-        self.lots = paginator.get_page(page)
-        self.index = qty * (page - 1)
-
-    def increment(self):
-        """
-        Increments index which is used for numbering Charger Categories in website.
-        :return: empty string, so that nothing would be rendered.
-        """
-        self.index += 1
-        return ''
+        paginator = Paginator(self.lots, self.qty)
+        self.lots = paginator.get_page(self.page)
 
     def _get_lots(self):
         lots_to_return = []
@@ -1779,30 +1741,22 @@ class LotsHolder:
                         self.lots.remove(lot)
 
 
-class HddHolder:
+class HddHolder(PaginatedClass):
+    """
+    Logic class responsible for processing drives for website.
+    """
 
-    def __init__(self, data_dict=None):
-        self.data_dict = data_dict
+    def __init__(self, data_dict):
+        super(HddHolder, self).__init__(data_dict)
         self.hdds = Drives.objects.all()
         self.changedKeys = []
 
         self.filter()
         self.autoFilters = HddAutoFilterOptions(self.hdds)
 
-        qty = int(data_dict.get('qty', 10))
-        page = int(data_dict.get('page', 1))
-        self.qtySelect = QtySelect(qty)
-        paginator = Paginator(self.hdds, qty)
-        self.hdds = paginator.get_page(page)
-        self.index = qty * (page - 1)
-
-    def increment(self):
-        """
-        Increments index which is used for numbering Charger Categories in website.
-        :return: empty string, so that nothing would be rendered.
-        """
-        self.index += 1
-        return ''
+        self.qtySelect = QtySelect(self.qty)
+        paginator = Paginator(self.hdds, self.qty)
+        self.hdds = paginator.get_page(self.page)
 
     def filter(self):
         keys = ('ser-af', 'mod-af', 'siz-af', 'loc-af', 'spe-af', 'for-af', 'hp-af', 'day-af')
@@ -2733,29 +2687,21 @@ class HddOrdersHolderAutoFilter:
             lst.append(value)
 
 
-class DriveOrdersHolder:
+class DriveOrdersHolder(PaginatedClass):
+    """
+    Logic class responsible for processing drive orders for website.
+    """
 
-    def __init__(self, data_dict=None):
-        self.data_dict = data_dict
+    def __init__(self, data_dict):
+        super(DriveOrdersHolder, self).__init__(data_dict)
         self.orders = self._get_orders()
 
         self.filter()
         self.autoFilters = HddOrdersHolderAutoFilter(self.orders)
 
-        qty = int(data_dict.get('qty', 10))
-        page = int(data_dict.get('page', 1))
-        self.qtySelect = QtySelect(qty)
-        paginator = Paginator(self.orders, qty)
-        self.orders = paginator.get_page(page)
-        self.index = qty * (page - 1)
-
-    def increment(self):
-        """
-        Increments index which is used for numbering Charger Categories in website.
-        :return: empty string, so that nothing would be rendered.
-        """
-        self.index += 1
-        return ''
+        self.qtySelect = QtySelect(self.qty)
+        paginator = Paginator(self.orders, self.qty)
+        self.orders = paginator.get_page(self.page)
 
     def filter(self):
         keys = ('hon-af', 'dat-af', 'cnt-af', 'ost-af')
@@ -2858,29 +2804,21 @@ class ChargerCategoryHolder:
         self.qty = Chargers.objects.filter(f_charger_category=self.chargerCategory).count()
 
 
-class ChargerCategoriesHolder:
+class ChargerCategoriesHolder(PaginatedClass):
+    """
+    Logic class responsible for processing charger categories for website.
+    """
 
-    def __init__(self, data_dict=None):
-        self.data_dict = data_dict
+    def __init__(self, data_dict):
+        super(ChargerCategoriesHolder, self).__init__(data_dict)
         self.chargerCategories = []
         for cat in ChargerCategories.objects.all():
             self.chargerCategories.append(ChargerCategoryHolder(cat))
 
         self.filter()
-        qty = int(data_dict.get('qty', 10))
-        page = int(data_dict.get('page', 1))
-        self.qtySelect = QtySelect(qty)
-        paginator = Paginator(self.chargerCategories, qty)
-        self.chargerCategories = paginator.get_page(page)
-        self.index = qty * (page - 1)
-
-    def increment(self):
-        """
-        Increments index which is used for numbering Charger Categories in website.
-        :return: empty string, so that nothing would be rendered.
-        """
-        self.index += 1
-        return ''
+        self.qtySelect = QtySelect(self.qty)
+        paginator = Paginator(self.chargerCategories, self.qty)
+        self.chargerCategories = paginator.get_page(self.page)
 
     def filter(self):
         keys = ('man-af', 'watts-af', 'dcmin-af', 'dcmax-af', 'count-af', 'orig-af', 'used-af')

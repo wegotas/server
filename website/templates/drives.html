@@ -230,8 +230,7 @@
         <tbody id="records">
             {% for hdd in hh.hdds %}
             <tr class="row">
-                {{ hh.increment }}
-                <td>{{ hh.index }}</td>
+                <td>{{ hh.get_index_and_increment }}</td>
                 <td id="serial">{{ hdd.hdd_serial }}</td>
                 <td>{{ hdd.f_hdd_models.hdd_models_name }}</td>
                 <td>{{ hdd.f_hdd_sizes.hdd_sizes_name }}</td>

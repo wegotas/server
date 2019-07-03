@@ -205,8 +205,7 @@
         <tbody id="records">
             {% for category in cch.chargerCategories %}
             <tr class="row">
-                {{ cch.increment }}
-                <td>{{ cch.count }}</td>
+                <td>{{ cch.get_index_and_increment }}</td>
                 <td>{{ category.chargerCategory.f_manufacturer.manufacturer_name }}</td>
                 <td>{{ category.chargerCategory.watts }}</td>
                 <td>{{ category.chargerCategory.dcoutvoltsmin }}</td>

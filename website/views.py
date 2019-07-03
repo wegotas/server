@@ -311,6 +311,7 @@ def remove_observation_from_computer(request, observation_id, computer_id):
     ).delete()
     return HttpResponse("Succesfully removed observation from computer")
 
+
 @csrf_exempt
 def remove_battery_from_computer(request, battery_id, computer_id):
     BatToComp.objects.filter(

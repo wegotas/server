@@ -113,8 +113,7 @@
         <tbody id="records">
             {% for lot in lh.lots %}
             <tr class="row">
-                {{ lh.increment }}
-                <td>{{ lh.index }}</td>
+                <td>{{ lh.get_index_and_increment }}</td>
                 <td>{{ lot.lot_name }}</td>
                 <td>{{ lot.date_of_lot|date:"c" }}</td>
                 <td>{{ lot.count }}</td>

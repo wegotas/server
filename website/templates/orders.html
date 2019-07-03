@@ -182,8 +182,7 @@
         <tbody id="records">
             {% for order in orders.order_list %}
             <tr class="row">
-                {{ orders.increment }}
-                <td>{{ orders.index }}</td>
+                <td>{{ orders.get_index_and_increment }}</td>
                 <td>{{ order.name }}</td>
                 <td>{{ order.client }}</td>
                 <td>{{ order.count }}</td>
