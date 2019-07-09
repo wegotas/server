@@ -117,5 +117,4 @@ urlpatterns = [
     path('typcat/', views.typcat_view, name='typcat'),
     path('search/', views.search_view, name='search'),
     path('export/', views.export_view, name='export'),
-    # path('export/', TemplateView.as_view(template_name="exports.html"), name='export')
 ]
