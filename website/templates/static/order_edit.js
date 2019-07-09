@@ -159,7 +159,6 @@ function download_csv(url) {
     download_file(url, 'data.csv');
 }
 
-
 function download_file(url, filename) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
@@ -180,4 +179,33 @@ function download_file(url, filename) {
             link.click();
         }
     }
+}
+
+function formationOfURL(parameterString) {
+    href = location.href;
+    string = parameterString.substr(1);
+    stringList = string.split('&');
+    for (var i =0; i<stringList.length; i++) {
+        fieldName = stringList[i].split('=')[0];
+        regString = "&?" + fieldName + "=[0-9]+"
+        pattern = new RegExp(regString, "g");
+        href = href.replace(pattern, "");
+    }
+    result = href + parameterString;
+    if (!href.includes('?')) {
+        result = result.replace('&', '?');
+    }
+    if (result.includes('?&')) {
+        result = result.replace('?&', '?');
+    }
+    return result
+}
+
+function handleSelect(element) {
+    newURL = formationOfURL(element.value);
+    loadPage(newURL);
+}
+
+function loadPage(newURL) {
+    window.location = newURL;
 }

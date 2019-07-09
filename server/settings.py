@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'server',
     'website',
-    'ULCDTinterface'
+    'ULCDTinterface',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

@@ -43,6 +43,10 @@ urlpatterns = [
     path('edit_order/<int:int_index>/excel/', views.order_excel, name='order_excel'),
     path('edit_order/<int:int_index>/csv/', views.order_csv, name='order_csv'),
 
+    path('received_batch/<int:int_index>/', views.received_batch_content_view, name='received_batch_content'),
+    path('received_batch_excel/<int:int_index>/', views.received_batch_excel_view, name='received_batch_excel_view'),
+    path('received_batch_csv/<int:int_index>/', views.received_batch_csv_view, name='received_batch_csv_view'),
+
     path('mass_delete/', views.mass_delete, name='mass_delete'),
     path('mass_excel/', views.mass_excel, name='mass_excel'),
     path('mass_csv/', views.mass_csv, name='mass_csv'),
@@ -109,8 +113,9 @@ urlpatterns = [
     path('chargers/', views.chargers_view, name='chargers'),
     path('orders/', views.orders_view, name='orders'),
     path('sold/', views.sold_view, name='sold'),
+    path('received_batches_list/', views.received_batches_list, name='received_batches_list'),
     path('typcat/', views.typcat_view, name='typcat'),
     path('search/', views.search_view, name='search'),
-    path('export/', views.export_view, name='export')
+    path('export/', views.export_view, name='export'),
     # path('export/', TemplateView.as_view(template_name="exports.html"), name='export')
 ]

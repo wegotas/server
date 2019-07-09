@@ -254,6 +254,7 @@ function load() {
     })
     searchoptions.set_option_row_count();
     searchoptions.callect_initial_options();
+    // document.getElementById('mass_batch_excel').addEventListener('submit', mass_batch_excel)
 }
 
 function remove_keyword() {
@@ -394,7 +395,7 @@ function formationOfURL(parameterString) {
     if (!href.includes('?')) {
         result = result.replace('&', '?');
     }
-    if (href.includes('?&')) {
+    if (result.includes('?&')) {
         result = result.replace('?&', '?');
     }
     return result
@@ -551,6 +552,36 @@ function mass_qr_print_with_printer(printer) {
     */
     xhr.responseType = "arraybuffer";
     xhr.send(indexArray);
+}
+
+function mass_batch_excel() {
+    mass_batch_file('excel');
+}
+
+function mass_batch_csv() {
+    mass_batch_file('csv');
+}
+
+function mass_batch_file(file_type) {
+    console.log(file_type);
+    var form = document.createElement ("form");
+    form.method = 'POST';
+    form.action = '';
+    var variable1 = document.createElement ("input");
+    variable1.type = 'hidden';
+    variable1.name = 'type';
+    variable1.value = file_type;
+    form.appendChild(variable1);
+
+    for (index of selected_records) {
+        var variable2 = document.createElement ("input");
+        variable2.type = 'hidden';
+        variable2.name = 'index';
+        variable2.value = index;
+        form.appendChild(variable2);
+    }
+    document.body.appendChild(form);
+    form.submit();
 }
 
 function modaljs(id, closeable) {

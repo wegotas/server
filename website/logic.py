@@ -98,6 +98,63 @@ class SearchComputersLogic(PaginatedClass):
         self.computers = paginator.get_page(self.page)
 
 
+class ReceivedBatchesListLogic(PaginatedClass):
+    """
+    Class responsible for showing list of batches for viewing and filtering.
+    """
+
+    def __init__(self, data_dict):
+        super(ReceivedBatchesListLogic, self).__init__(data_dict)
+        self.received_batches = Receivedbatches.objects.all()
+        self.filter()
+        self.qtySelect = QtySelect(self.qty)
+        paginator = Paginator(self.received_batches, self.qty)
+        self.received_batches_list = paginator.get_page(self.page)
+
+    def names(self):
+        """
+        :return: Unique received_batch_names of self.received_batches.
+        """
+        return self.received_batches.values_list('received_batch_name', flat=True).distinct()
+
+    def qtys(self):
+        """
+        :return: Unique quantities of computers from self.received_batches.
+        """
+        return self.received_batches.annotate(Count("computers__id_computer")).values_list(
+            'computers__id_computer__count', flat=True).distinct()
+
+    def filter(self):
+        """
+        Filters self.received_batches based on autofilters received from website.
+        """
+        keys = ('name-af', 'qty-af')
+        new_dict = {}
+        for key in keys:
+            if key in self.data_dict:
+                new_dict[key] = self.data_dict.pop(key)
+        for key, value in new_dict.items():
+            if key == 'name-af':
+                self.received_batches = self.received_batches.filter(received_batch_name__in=new_dict[key])
+            elif key == 'qty-af':
+                self.received_batches = self.received_batches.annotate(Count("computers__id_computer")).filter(
+                    computers__id_computer__count__in=new_dict[key])
+
+
+class ReceivedBatchContentLogic(PaginatedClass):
+    """
+    Class responsible for keeping batch's content for webpage viewing.
+    """
+
+    def __init__(self, data_dict, received_batch_id):
+        super(ReceivedBatchContentLogic, self).__init__(data_dict)
+        self.received_batch = Receivedbatches.objects.get(id_received_batch=received_batch_id)
+        self.computers = Computers.objects.filter(f_id_received_batches=received_batch_id)
+        self.qtySelect = QtySelect(self.qty)
+        paginator = Paginator(self.computers, self.qty)
+        self.computers = paginator.get_page(self.page)
+
+
 class QtySelect:
     qty = 0
     state10 = ""

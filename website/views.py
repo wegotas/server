@@ -82,6 +82,39 @@ def chargers_view(request):
 
 
 @csrf_exempt
+def received_batches_list(request):
+    """
+    View responsible for handling orders requests and rendering x.html.
+    :param request: request data to be handled.
+    :return: rendered orders.html page as response.
+    """
+    received_batches = ReceivedBatchesListLogic(request.GET.copy())
+    if request.method == 'POST':
+        response = HttpResponse(content_type="application/ms-excel")
+        generator = None
+        file_type = request.POST.get('type', None)
+        if file_type == 'excel':
+            generator = ExcelGenerator()
+            response["Content-Disposition"] = "attachment; filename=batches.xlsx"
+        if file_type == 'csv':
+            generator = CsvGenerator()
+            response["Content-Disposition"] = "attachment; filename=batches.csv"
+        serials = Computers.objects.filter(
+            f_id_received_batches__in=request.POST.getlist('index', None)).values_list('id_computer', flat=True)
+        file = generator.generate_file(indexes=serials)
+        response.write(file.getvalue())
+        file.close()
+        return response
+
+    if request.method == 'GET':
+        return render(request, 'received_batches.html', {
+            "typcat": TypCat(),
+            "received_batches": received_batches,
+            'so': SearchOptions()
+        })
+
+
+@csrf_exempt
 def orders_view(request):
     """
     View responsible for handling orders requests and rendering orders.html.
@@ -143,6 +176,56 @@ def search_view(request):
         'so': scl.so,
         'computers_logic': scl
     })
+
+
+@csrf_exempt
+def received_batch_content_view(request, int_index):
+    """
+    :param request: request data to be handled.
+    :param int_index: received_batch_id.
+    :return: rendered received_batch_content.html for received batch content viewing.
+    """
+    if request.method == 'POST':
+        pass
+    if request.method == 'GET':
+        rbcl = ReceivedBatchContentLogic(request.GET.copy(), int_index)
+        return render(request, 'received_batch_content.html', {
+            'rbcl': rbcl,
+        })
+
+
+@csrf_exempt
+def received_batch_excel_view(request, int_index):
+    """
+    :param request: request data not handled in this case.
+    :param int_index: received_batch_id.
+    :return: generated computers of received_batch excel file.
+    """
+    serials = Computers.objects.filter(f_id_received_batches=int_index).values_list('id_computer', flat=True)
+    response = HttpResponse(content_type="application/ms-excel")
+    generator = ExcelGenerator()
+    response["Content-Disposition"] = "attachment; filename=batch.xlsx"
+    file = generator.generate_file(indexes=serials)
+    response.write(file.getvalue())
+    file.close()
+    return response
+
+
+@csrf_exempt
+def received_batch_csv_view(request, int_index):
+    """
+    :param request: request data not handled in this case.
+    :param int_index: received_batch_id.
+    :return: generated computers of received_batch csv file.
+    """
+    serials = Computers.objects.filter(f_id_received_batches=int_index).values_list('id_computer', flat=True)
+    response = HttpResponse(content_type="application/ms-excel")
+    generator = CsvGenerator()
+    response["Content-Disposition"] = "attachment; filename=batch.csv"
+    file = generator.generate_file(indexes=serials)
+    response.write(file.getvalue())
+    file.close()
+    return response
 
 
 @csrf_exempt
@@ -1215,6 +1298,7 @@ def print_computer_qr(request, int_index):
         return HttpResponse("Not implemented return", status=200)
     if request.method == 'GET':
         pass
+
 
 @csrf_exempt
 def print_computer_qr_with_printer(request, int_index, printer):

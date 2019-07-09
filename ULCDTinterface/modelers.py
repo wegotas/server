@@ -149,6 +149,9 @@ class Receivedbatches(models.Model):
     id_received_batch = models.AutoField(primary_key=True)
     received_batch_name = models.CharField(max_length=45, blank=True, null=True)
 
+    def __repr__(self):
+        return f'id_received_batch: {self.id_received_batch}, received_batch_name: {self.received_batch_name}'
+
     class Meta:
         managed = False
         db_table = 'ReceivedBatches'

@@ -1,3 +1,24 @@
+2019-08-09
+
+LT:
+
+**Pokytis serveryje: Isplestas gautu partiju funkcionalumas.**
+
+Priezastis: Sudetinga vertinti partiju turini. Tikimasi kad geriau matant inventoriu is partiju perspektyvos bus lengviau valdyti inventoriu.
+
+* Prideta partiju perzvalgos funkcionalumas. 'received_batches_list/' pateikia visas partijas, ju pavadinimus, kompiuteriu kieki bei partijos turinio perziuros mygtuka, tai pat eksportuoti pasirinktas partijas kaip excel ar csv.
+* Prideta pavieniu partiju perzvalga. 'received_batch/<int:partijos_indeksas>/' pateikia partijos kompiuteriu turini, leidzia atidaryti pavieniu kompiuteriu redagavimo langus ar eksportuoti partijos kompiuteriu turini kaip excel ar csv.
+
+EN:
+
+**Change in server: Expanded received batches functionality.**
+
+Reason: It is difficult to judge content of batches. Intent is that seeing inventory from received batches perspective will make inventory management an easier task to do.
+
+* Added party overview functionality. 'received_batches_list/' shows all batches, their names, quantity of computers and batch content overview button, also export selected batches as excel or csv.
+* Added overview of singular batches. 'received_batch/<int:batch_index>/' shows batch computers content, allows to open individual computer editing windows and export batch computers content as excel or csv.
+
+___
 2019-08-01
 
 LT:
