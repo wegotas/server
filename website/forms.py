@@ -1,5 +1,7 @@
+from ULCDTinterface.modelers import *
 from django import forms
 import tarfile
+from django.db.models import Count
 
 
 class TarDocumentForm(forms.Form):
@@ -41,3 +43,28 @@ class ExportComputersForm(forms.Form):
     ordered = forms.BooleanField(initial=True, required=False)
     sold = forms.BooleanField(initial=True, required=False)
     file_type = forms.ChoiceField(choices=FILE_CHOICES)
+
+
+class BoxSelectionForm(forms.Form):
+    """Form responsible for providing and accepting bpx number values."""
+    '''
+    BOX_CHOICES = [(f'{value["box_number"]}', f'{value["box_number"]} ({value["box_number__count"]})') for value in
+               Computers.objects.filter(box_number__isnull=False).values('box_number').annotate(
+                   Count("box_number")).order_by(
+                   'box_number')]
+
+    box_number = forms.ChoiceField(required=True, choices=[('', '---')] + BOX_CHOICES,
+                                   widget=forms.Select(attrs={'onchange': "this.form.submit();"}))
+    '''
+
+    box_number = forms.ChoiceField(required=True, widget=forms.Select(attrs={'onchange': "this.form.submit();"}))
+
+    def __init__(self, *args, **kwargs):
+        super(BoxSelectionForm, self).__init__(*args, **kwargs)
+        BOX_CHOICES = [(f'{value["box_number"]}', f'{value["box_number"]} ({value["box_number__count"]})') for value in
+                       Computers.objects.filter(box_number__isnull=False).values('box_number').annotate(
+                           Count("box_number")).order_by(
+                           'box_number')]
+        # self.choices['box_number'] = [('', '---')] + BOX_CHOICES
+
+        self.fields['box_number'].choices = [('', '---')] + BOX_CHOICES

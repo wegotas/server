@@ -31,6 +31,7 @@ class PaginatedClass:
         self.qty = int(self.data_dict.get('qty', 10))
         self.page = int(self.data_dict.get('page', 1))
         self.index = self.qty * (self.page - 1)
+        self.qtySelect = QtySelect(self.qty)
 
     def get_index_and_increment(self):
         """
@@ -41,6 +42,30 @@ class PaginatedClass:
         return self.index
 
 
+class QtySelect:
+    qty = 0
+    state10 = ""
+    state20 = ""
+    state50 = ""
+    state100 = ""
+    state200 = ""
+
+    def __init__(self, qty):
+        self.qty = qty
+        if qty == 10:
+            self.state10 = "selected"
+        elif qty == 20:
+            self.state20 = "selected"
+        elif qty == 50:
+            self.state50 = "selected"
+        elif qty == 100:
+            self.state100 = "selected"
+        elif qty == 200:
+            self.state200 = "selected"
+        elif qty == 1000:
+            self.state1000 = "selected"
+
+
 class SoldComputersLogic(PaginatedClass):
     """"
     Logic class responsible for handling sold computers from website.
@@ -49,7 +74,6 @@ class SoldComputersLogic(PaginatedClass):
     def __init__(self, data_dict):
         super(SoldComputersLogic, self).__init__(data_dict)
         autoFilters = AutoFilter(self.data_dict.copy())
-        self.qtySelect = QtySelect(self.qty)
         computers = Computers.objects.exclude(f_sale__isnull=True)
         computers = autoFilters.filter(computers)
         self.af = AutoFiltersFromSoldComputers(computers)
@@ -72,7 +96,6 @@ class TypCatComputersLogic(PaginatedClass):
         ).exclude(f_id_comp_ord__isnull=False) \
             .exclude(f_sale__isnull=False)
         computers = autoFilters.filter(computers)
-        self.qtySelect = QtySelect(self.qty)
         self.af = AutoFiltersFromComputers(computers)
         paginator = Paginator(computers, self.qty)
         self.computers = paginator.get_page(self.page)
@@ -92,7 +115,6 @@ class SearchComputersLogic(PaginatedClass):
             computers = option.search(computers, self.data_dict.getlist(option.tagname, ""))
         autoFilters = AutoFilter(self.data_dict)
         computers = autoFilters.filter(computers)
-        self.qtySelect = QtySelect(self.qty)
         self.af = AutoFiltersFromComputers(computers)
         paginator = Paginator(computers, self.qty)
         self.computers = paginator.get_page(self.page)
@@ -107,7 +129,6 @@ class ReceivedBatchesListLogic(PaginatedClass):
         super(ReceivedBatchesListLogic, self).__init__(data_dict)
         self.received_batches = Receivedbatches.objects.all()
         self.filter()
-        self.qtySelect = QtySelect(self.qty)
         paginator = Paginator(self.received_batches, self.qty)
         self.received_batches_list = paginator.get_page(self.page)
 
@@ -150,33 +171,25 @@ class ReceivedBatchContentLogic(PaginatedClass):
         super(ReceivedBatchContentLogic, self).__init__(data_dict)
         self.received_batch = Receivedbatches.objects.get(id_received_batch=received_batch_id)
         self.computers = Computers.objects.filter(f_id_received_batches=received_batch_id)
-        self.qtySelect = QtySelect(self.qty)
         paginator = Paginator(self.computers, self.qty)
         self.computers = paginator.get_page(self.page)
 
 
-class QtySelect:
-    qty = 0
-    state10 = ""
-    state20 = ""
-    state50 = ""
-    state100 = ""
-    state200 = ""
+class BoxContentLogic(PaginatedClass):
 
-    def __init__(self, qty):
-        self.qty = qty
-        if qty == 10:
-            self.state10 = "selected"
-        elif qty == 20:
-            self.state20 = "selected"
-        elif qty == 50:
-            self.state50 = "selected"
-        elif qty == 100:
-            self.state100 = "selected"
-        elif qty == 200:
-            self.state200 = "selected"
-        elif qty == 1000:
-            self.state1000 = "selected"
+    def __init__(self, data_dict, box_number):
+        super(BoxContentLogic, self).__init__(data_dict)
+        computers = Computers.objects.filter(box_number=box_number)
+
+        autoFilters = AutoFilter(self.data_dict)
+        computers = autoFilters.filter(computers)
+
+        self.af = AutoFiltersFromComputers(computers)
+        paginator = Paginator(computers, self.qty)
+        self.computers = paginator.get_page(self.page)
+        self.box_number = 0
+        if isinstance(box_number, int):
+            self.box_number = box_number
 
 
 class FilterUnit:
@@ -1461,7 +1474,6 @@ class OrdersClass(PaginatedClass):
 
         self.filter()
         self.autoFilters = OrdersClassAutoFilter(self.order_list)
-        self.qtySelect = QtySelect(self.qty)
         paginator = Paginator(self.order_list, self.qty)
         self.order_list = paginator.get_page(self.page)
 
@@ -1757,8 +1769,6 @@ class LotsHolder(PaginatedClass):
         self.filter()
         self.autoFilters = LotsHolderAutoFilter(self.lots)
 
-        self.qtySelect = QtySelect(self.qty)
-
         paginator = Paginator(self.lots, self.qty)
         self.lots = paginator.get_page(self.page)
 
@@ -1811,7 +1821,6 @@ class HddHolder(PaginatedClass):
         self.filter()
         self.autoFilters = HddAutoFilterOptions(self.hdds)
 
-        self.qtySelect = QtySelect(self.qty)
         paginator = Paginator(self.hdds, self.qty)
         self.hdds = paginator.get_page(self.page)
 
@@ -2756,7 +2765,6 @@ class DriveOrdersHolder(PaginatedClass):
         self.filter()
         self.autoFilters = HddOrdersHolderAutoFilter(self.orders)
 
-        self.qtySelect = QtySelect(self.qty)
         paginator = Paginator(self.orders, self.qty)
         self.orders = paginator.get_page(self.page)
 
@@ -2873,7 +2881,6 @@ class ChargerCategoriesHolder(PaginatedClass):
             self.chargerCategories.append(ChargerCategoryHolder(cat))
 
         self.filter()
-        self.qtySelect = QtySelect(self.qty)
         paginator = Paginator(self.chargerCategories, self.qty)
         self.chargerCategories = paginator.get_page(self.page)
 

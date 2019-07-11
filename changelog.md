@@ -1,3 +1,24 @@
+2019-08-11
+
+LT:
+
+**Pokytis serveryje: Isplestas deziu numeriu funkcionalumas.**
+
+Priezastis: Yra poreikis perziureti pavieniu deziu turini, bei leisti dideliais kiekiais keisti dezes kompiuteriu buvimo dezes.
+
+* Sukurta atskira skiltis deziu turiniui perzvelgti. Pasirinkus is deziu saraso pakraus puslapyje tos dezes turini.
+* Skiltyse TypCat 'typcat/', Paieskoje 'search/' ir Dezes 'boxes/' pridetas papildomas masinio keitimo laukas bei mygtukas dezes keitimui. Kol lauke nebus ivestas skaicius keisti mygtukas bus uzblokuotas. Jei mygtukas bus aktyvuotas TypCat ar Paieskos skiltyje ismes langeli jei pavyko atlikti uzduoti. Jei mygtukas bus aktyvuotas Deziu skiltyje puslapis ivykus pokyciui persikraus.
+
+EN:
+
+**Change in server: Expanded box number functionality.**
+
+Reason: There is a need for looking into singular box contents, and allow changing computer storing boxes in higher quantities.
+
+* Created seperate section for viewing box content. Content is shown once box number is selected from selection box.
+* In sections TypCat 'typcat/', Search 'search/' ir Boxes 'boxes/' added additional mass change field and button for box changing. Button is disabled until field has no number entered in it. If button is pressed in TypCat and Search sections window of alert will be thrown for a successful action. If button is pressed in Boxes section after action is done page will reload.
+
+___
 2019-08-09
 
 LT:

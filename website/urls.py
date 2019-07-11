@@ -52,6 +52,7 @@ urlpatterns = [
     path('mass_csv/', views.mass_csv, name='mass_csv'),
     path('mass_qr_print/', views.mass_qr_print, name='mass_qr_print'),
     path('mass_qr_print/<slug:printer>/', views.mass_qr_print_with_printer, name='mass_qr_print_with_printer'),
+    path('mass_change_box/<int:int_index>/', views.mass_change_box, name='mass_change_box'),
 
     path('cat_change/', views.cat_change, name='cat_change'),
     path('ord_assign/', views.ord_assign, name='ord_assign'),
@@ -114,6 +115,7 @@ urlpatterns = [
     path('orders/', views.orders_view, name='orders'),
     path('sold/', views.sold_view, name='sold'),
     path('received_batches_list/', views.received_batches_list, name='received_batches_list'),
+    path('boxes/', views.boxes_view, name='boxes'),
     path('typcat/', views.typcat_view, name='typcat'),
     path('search/', views.search_view, name='search'),
     path('export/', views.export_view, name='export'),

@@ -409,7 +409,7 @@
     border-width: 1px;
     margin-top: 5px;
     margin-bottom: 5px;
-    float: left;
+    display: inline-block;
     text-align: left;
 	padding: 5px;
     border-radius: 2px;
@@ -529,4 +529,12 @@
     left: 0px;
     margin-left: 0px;
 }
+}
+
+.view_form_holder {
+    display: inline-block;
+    border-radius: 5px;
+    border-color: black;
+    padding: 5px; border:
+    2px solid;
 }

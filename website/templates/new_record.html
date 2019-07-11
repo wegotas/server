@@ -51,12 +51,8 @@
                   <input class="edit_width" type="image" name="edit" value="Edit" src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAWBJREFUWIXtl7FOwzAURQ8lA9AFKZSyo3RG6kfQHQSCj2HjazqwIOAHKqEwMkViZAqUERhAMNgGtzy7cUjaCnolS8mzn++V83z1Av8dS0IsAg6AHrBZEU8OXAJ94M23cAtIgY+axjXQdpFHNZPbIiJJwPEUyM04NKQNS0DPdTQOPAKZHsPA3C8u+yhCCi4DdoBX/b4K3ALbBfNb5qHhW+XBnUUO8KJjwSgroDIsBMxcgGgIFjLk4roRYimyzSZAp4iYK0bN4gFYKZI4AWvA09je52bS9wmGjF61snjWAkTMvAZ8AjZQDvdbNIHYNekrwhhlr1IRpsDJWOwU6AprE2C9jABQ3i75u1TtXWB3wn4/MNc1sBAw1wISlMMZNHUsGPYtyAPyOsA93w4X47lqAkSuI6bXlO5LAiJUy1w3+QBYdh1Nu2YRA6yGFNy/Znuo1rklzJdBDlwAZ8B7RXv+EXwCoevGfewJkkwAAAAASUVORK5CYII=">
                 </div>
             </div>
-            <div class="error">
-                {{ error_message|linebreaks }}
-            </div>
-            <div align="center">
-                <font color="red">*</font> Signifies fields which must be filled in.
-            </div>
+            <div class="error">{{ error_message|linebreaks }} </div>
+            <div align="center"><font color="red">*</font> Signifies fields which must be filled in.</div>
             <tr>
                 <th title="Can be found on computer's sticker&#13;or in BIOS&#13;or on motherboard">Serial<font color="red">*</font>:</th>
                 <td>

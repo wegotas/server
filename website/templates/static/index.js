@@ -254,7 +254,11 @@ function load() {
     })
     searchoptions.set_option_row_count();
     searchoptions.callect_initial_options();
-    // document.getElementById('mass_batch_excel').addEventListener('submit', mass_batch_excel)
+    // document.getElementById('mass_batch_excel').addEventListener('submit', mass_batch_excel);
+    setInputFilter(document.getElementById("box_number"), function(value) { return /^-?\d*$/.test(value); });
+    document.getElementById("box_number").addEventListener('keyup', function(event) {
+        document.getElementById("change_box_button").disabled = !(document.getElementById("box_number").value != '')
+    })
 }
 
 function remove_keyword() {
@@ -563,7 +567,6 @@ function mass_batch_csv() {
 }
 
 function mass_batch_file(file_type) {
-    console.log(file_type);
     var form = document.createElement ("form");
     form.method = 'POST';
     form.action = '';
@@ -793,4 +796,41 @@ function content(url) {
 
 function mass_sold(url) {
     var testerWindow = window.open(url + getCatSoldParams(), "", "width=920,height=600");
+}
+
+function setInputFilter(textbox, inputFilter) {
+    ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function(event) {
+        textbox.addEventListener(event, function() {
+            if (inputFilter(this.value)) {
+                this.oldValue = this.value;
+                this.oldSelectionStart = this.selectionStart;
+                this.oldSelectionEnd = this.selectionEnd;
+            } else if (this.hasOwnProperty("oldValue")) {
+                this.value = this.oldValue;
+                this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+            }
+        });
+    });
+}
+
+function mass_change_box(is_reload) {
+    var xhr = new XMLHttpRequest();
+    var runAsync = true;
+    box_number = document.getElementById('box_number').value;
+    indexArray = JSON.stringify(selected_records);
+    xhr.open('POST', '/website/mass_change_box/' + box_number + '/', true);
+    xhr.responseType = "arraybuffer";
+    xhr.send(indexArray);
+    xhr.onreadystatechange = function(e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status == 200) {
+                if (is_reload) {
+                    location.reload();
+                } else {
+                    alert('Changed');
+                }
+
+            }
+        }
+    }
 }

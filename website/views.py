@@ -275,6 +275,23 @@ def export_view(request):
 
 
 @csrf_exempt
+def boxes_view(request):
+    if request.method == 'POST':
+        pass
+    if request.method == 'GET':
+        form = BoxSelectionForm(request.GET)
+        bcl = None
+        if form.is_valid():
+            bcl = BoxContentLogic(request.GET.copy(), box_number=form.cleaned_data['box_number'])
+        return render(request, 'boxes.html', {
+            "typcat": TypCat(),
+            "form": form,
+            "bcl": bcl,
+            'so': SearchOptions()
+        })
+
+
+@csrf_exempt
 def edit(request, int_index):
     cte = ComputerToEdit(int_index=int_index)
     if request.method == 'POST':
@@ -531,6 +548,13 @@ def mass_qr_print_with_printer(request, printer):
     cmsp = ComputerMultipleSerialPrinter(JSONParser().parse(request), printer)
     cmsp.print()
     return HttpResponse('Print job is sent')
+
+
+@csrf_exempt
+def mass_change_box(request, int_index):
+    data = JSONParser().parse(request)
+    Computers.objects.filter(id_computer__in=data).update(box_number=int_index)
+    return HttpResponse('computers changed their boxes')
 
 
 @csrf_exempt
