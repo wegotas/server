@@ -356,7 +356,7 @@ def remove_ramstick_from_computer(request, ramstick_id, computer_id):
         return HttpResponse("")
 
     ram = Rams.objects.get_or_create(
-        ram_serial='Nonexistant',
+        ram_serial='Nonexistent',
         capacity='0',
         clock='0',
         type=ramstick_type,
@@ -365,7 +365,7 @@ def remove_ramstick_from_computer(request, ramstick_id, computer_id):
         f_id_computer_ram_to_com=Computers.objects.get(id_computer=computer_id),
         f_id_ram_ram_to_com=ram
     )
-    return render(request, 'nonexistant_ramstick_template.html', {'id_computer': computer_id, 'ramstick': ram})
+    return render(request, 'nonexistent_ramstick_template.html', {'id_computer': computer_id, 'ramstick': ram})
 
 
 @csrf_exempt
@@ -460,7 +460,7 @@ def add_nonexistant_ramstick(request, computer_id):
         f_id_computer_ram_to_com=Computers.objects.get(id_computer=computer_id),
         f_id_ram_ram_to_com=ram
     )
-    return render(request, 'nonexistant_ramstick_template.html', {'id_computer': computer_id, 'ramstick': ram})
+    return render(request, 'nonexistent_ramstick_template.html', {'id_computer': computer_id, 'ramstick': ram})
 
 
 @csrf_exempt
