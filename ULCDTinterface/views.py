@@ -47,6 +47,7 @@ def process_data(request):
     if request.method == "POST":
         print("POST proccess_data2")
         data = JSONParser().parse(request)
+        print(data)
         record = ComputerRecord(data)
         if record.success == True:
             status_code = 200
