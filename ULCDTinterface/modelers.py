@@ -754,7 +754,8 @@ class Processors(models.Model):
     threads = models.IntegerField()
 
     def __str__(self):
-        return "f_manufacturer: {0}, model_name: {1}, stock_clock: {2}, max_clock: {3}, cores: {4}, threads: {5}".format(self.f_manufacturer, self.model_name, self.stock_clock, self.max_clock, self.cores, self.threads)
+        # todo: change format variable insertion to an f-string ones.
+        return "id_processor: {0}, f_manufacturer: {1}, model_name: {2}, stock_clock: {3}, max_clock: {4}, cores: {5}, threads: {6}".format(self.id_processor, self.f_manufacturer, self.model_name, self.stock_clock, self.max_clock, self.cores, self.threads)
 
     class Meta:
         managed = True
