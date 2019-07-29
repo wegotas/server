@@ -12,6 +12,9 @@ class Bioses(models.Model):
     id_bios = models.AutoField(primary_key=True)
     bios_text = models.CharField(max_length=45)
 
+    def __repr__(self):
+        return f'id_bios: {self.id_bios}, bios_text: {self.bios_text}'
+
     class Meta:
         managed = True
         db_table = 'BIOSes'
@@ -26,8 +29,8 @@ class Batteries(models.Model):
     maximum_wh = models.CharField(max_length=45, blank=True, null=True)
     factory_wh = models.CharField(max_length=45, blank=True, null=True)
 
-    def __str__(self):
-        return "serial: {0}, wear_out: {1}, expected_time: {2}, model: {3}, maximum_wh: {4}, factory_wh: {5}".format(self.serial, self.wear_out, self.expected_time, self.model, self.maximum_wh, self.factory_wh)
+    def __repr__(self):
+        return f'id_battery: {self.id_battery}, serial: {self.serial}, wear_out: {self.wear_out}, expected_time: {self.expected_time}, model: {self.model}, maximum_wh: {self.maximum_wh}, factory_wh: {self.factory_wh}'
 
     class Meta:
         managed = True
@@ -38,6 +41,9 @@ class CameraOptions(models.Model):
     id_camera_options = models.AutoField(db_column='id_ camera_options', primary_key=True)  # Field renamed to remove unsuitable characters.
     option_name = models.CharField(max_length=20)
 
+    def __repr__(self):
+        return f'id_camera_options: {self.id_camera_options}, option_name: {self.option_name}'
+
     class Meta:
         managed = True
         db_table = 'Camera_options'
@@ -47,6 +53,9 @@ class Categories(models.Model):
     id_category = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=45)
     permanent = models.IntegerField(blank=True, null=True)
+
+    def __repr__(self):
+        return f'id_category: {self.id_category}, category_name: {self.category_name}, permanent: {self.permanent}'
 
     class Meta:
         managed = True
@@ -72,6 +81,9 @@ class ChargerCategories(models.Model):
     connector_type = models.CharField(max_length=45, blank=True, null=True)
     f_manufacturer = models.ForeignKey('Manufacturers', models.DO_NOTHING, blank=True, null=True)
 
+    def __repr__(self):
+        return f'charger_category_id: {self.charger_category_id}, f_manufacturer: {self.f_manufacturer}, watts: {self.watts}, originality_status: {self.originality_status}, used_status" {self.used_status}'
+
     def is_original(self):
         return bool(self.originality_status)
 
@@ -88,6 +100,9 @@ class Chargers(models.Model):
     charger_serial = models.CharField(max_length=45, blank=True, null=True)
     f_charger_category = models.ForeignKey(ChargerCategories, models.DO_NOTHING, blank=True, null=True)
 
+    def __repr__(self):
+        return f'charger_id: {self.charger_id}, charger_serial: {self.charger_serial}, f_charger_category: {self.f_charger_category}'
+
     class Meta:
         managed = True
         db_table = 'Chargers'
@@ -96,6 +111,9 @@ class Chargers(models.Model):
 class Clients(models.Model):
     id_client = models.AutoField(primary_key=True)
     client_name = models.CharField(max_length=45)
+
+    def __repr__(self):
+        return f'id_client: {self.id_client}, client_name: {self.client_name}'
 
     class Meta:
         managed = True
@@ -106,6 +124,9 @@ class CompOrd(models.Model):
     id_comp_ord = models.AutoField(db_column='id_comp/ord', primary_key=True)  # Field renamed to remove unsuitable characters.
     is_ready = models.IntegerField()
     f_order_id_to_order = models.ForeignKey('Orders', models.DO_NOTHING, db_column='f_order_id_to_order')
+
+    def __repr__(self):
+        return f'id_comp_ord: {self.id_comp_ord}, is_ready: {self.is_ready}, f_order_id_to_order: {self.f_order_id_to_order}'
 
     class Meta:
         managed = True
@@ -121,6 +142,9 @@ class Resolutioncategories(models.Model):
     id_resolution_category = models.AutoField(primary_key=True)
     resolution_category_name = models.CharField(max_length=20)
 
+    def __repr__(self):
+        return f'id_resolution_category: {self.id_resolution_category}, resolution_category_name: {self.resolution_category_name}'
+
     class Meta:
         managed = True
         db_table = 'ResolutionCategories'
@@ -131,6 +155,10 @@ class Computerresolutions(models.Model):
     f_id_resolution = models.ForeignKey('Resolutions', models.DO_NOTHING, db_column='f_id_resolution')
     f_id_resolution_category = models.ForeignKey('Resolutioncategories', models.DO_NOTHING, db_column='f_id_resolution_category')
 
+    def __repr__(self):
+        return f'id_computer_resolutions: {self.id_computer_resolutions}, f_id_resolution: {self.f_id_resolution}, ' \
+            f'f_id_resolution_category: {self.f_id_resolution_category}'
+
     class Meta:
         managed = True
         db_table = 'ComputerResolutions'
@@ -139,6 +167,9 @@ class Computerresolutions(models.Model):
 class ComputerFormFactors(models.Model):
     id_computer_form_factor = models.AutoField(primary_key=True)
     form_factor_name = models.CharField(max_length=45)
+
+    def __repr__(self):
+        return f'id_computer_form_factor: {self.id_computer_form_factor}, form_factor_name: {self.form_factor_name}'
 
     class Meta:
         managed = False
@@ -185,6 +216,12 @@ class Computers(models.Model):
     f_id_computer_form_factor = models.ForeignKey(ComputerFormFactors, models.DO_NOTHING,
                                                   db_column='f_id_computer_form_factor', blank=True, null=True)
 
+    def __repr__(self):
+        return f'id_computer: {self.id_computer}, computer_serial: {self.computer_serial}, f_type: {self.f_type}, ' \
+            f'f_category: {self.f_category}, f_model: {self.f_model}, f_tester: {self.f_tester}, ' \
+            f'f_id_comp_ord: {self.f_id_comp_ord}, f_id_received_batches: {self.f_id_received_batches}, ' \
+            f'box_number: {self.box_number}, f_id_computer_form_factor: {self.f_id_computer_form_factor}'
+
     class Meta:
         managed = True
         db_table = 'Computers'
@@ -199,7 +236,6 @@ class Computers(models.Model):
             return "N/A"
         else:
             return self.date.strftime('%Y-%m-%d')
-
 
     def getOther2lines(self):
         if '\n' in self.get_other():
@@ -242,6 +278,9 @@ class Diagonals(models.Model):
     id_diagonal = models.AutoField(primary_key=True)
     diagonal_text = models.CharField(max_length=45)
 
+    def __repr__(self):
+        return f'id_diagonal: {self.id_diagonal}, diagonal_text: {self.diagonal_text}'
+
     class Meta:
         managed = True
         db_table = 'Diagonals'
@@ -250,6 +289,9 @@ class Diagonals(models.Model):
 class FormFactor(models.Model):
     form_factor_id = models.AutoField(primary_key=True)
     form_factor_name = models.CharField(db_column='Form_factor_name', max_length=45)  # Field name made lowercase.
+
+    def __repr__(self):
+        return f'form_factor_id: {self.form_factor_id}, form_factor_name: {self.form_factor_name}'
 
     class Meta:
         managed = True
@@ -262,8 +304,8 @@ class Gpus(models.Model):
     f_id_manufacturer = models.ForeignKey('Manufacturers', models.DO_NOTHING, db_column='f_id_manufacturer', blank=True,
                                           null=True)
 
-    def __str__(self):
-        return "gpu_name: {0}, f_id_manufacturer: {1}".format(self.gpu_name, self.f_id_manufacturer)
+    def __repr__(self):
+        return f'id_gpu: {self.id_gpu}, gpu_name: {self.gpu_name}, f_id_manufacturer: {self.f_id_manufacturer}'
 
     class Meta:
         managed = True
@@ -273,6 +315,9 @@ class Gpus(models.Model):
 class HddModels(models.Model):
     hdd_models_id = models.AutoField(primary_key=True)
     hdd_models_name = models.CharField(max_length=60)
+
+    def __repr__(self):
+        return f'hdd_models_id: {self.hdd_models_id}, hdd_models_name: {self.hdd_models_name}'
 
     class Meta:
         managed = True
@@ -285,6 +330,10 @@ class HddOrder(models.Model):
     date_of_order = models.DateField(blank=True, null=True)
     f_order_status = models.ForeignKey('OrderStatus', models.DO_NOTHING, blank=True, null=True)
 
+    def __repr__(self):
+        return f'order_id: {self.order_id}, order_name: {self.order_name}, date_of_order: {self.date_of_order}, ' \
+            f'f_order_status: {self.f_order_status}'
+
     class Meta:
         managed = True
         db_table = 'Hdd_order'
@@ -293,6 +342,9 @@ class HddOrder(models.Model):
 class HddSizes(models.Model):
     hdd_sizes_id = models.AutoField(primary_key=True)
     hdd_sizes_name = models.CharField(max_length=45)
+
+    def __repr__(self):
+        return f'hdd_sizes_id: {self.hdd_sizes_id}, hdd_sizes_name: {self.hdd_sizes_name}'
 
     class Meta:
         managed = True
@@ -303,6 +355,9 @@ class DriveFamily(models.Model):
     family_id = models.AutoField(primary_key=True)
     family_name = models.CharField(max_length=50, blank=True, null=True)
 
+    def __repr__(self):
+        return f'family_id: {self.family_id}, family_name: {self.family_name}'
+
     class Meta:
         managed = False
         db_table = 'Drive_family'
@@ -311,6 +366,9 @@ class DriveFamily(models.Model):
 class DriveHeight(models.Model):
     height_id = models.AutoField(primary_key=True)
     height_name = models.CharField(max_length=10, blank=True, null=True)
+
+    def __repr__(self):
+        return f'height_id: {self.height_id}, height_name: {self.height_name}'
 
     class Meta:
         managed = False
@@ -321,6 +379,9 @@ class DriveLength(models.Model):
     length_id = models.AutoField(primary_key=True)
     length_name = models.CharField(max_length=10, blank=True, null=True)
 
+    def __repr__(self):
+        return f'length_id: {self.length_id}, length_name: {self.length_name}'
+
     class Meta:
         managed = False
         db_table = 'Drive_length'
@@ -329,6 +390,9 @@ class DriveLength(models.Model):
 class DriveNotes(models.Model):
     note_id = models.AutoField(primary_key=True)
     note_text = models.CharField(max_length=50, blank=True, null=True)
+
+    def __repr__(self):
+        return f'note_id: {self.note_id}, note_text: {self.note_text}'
 
     class Meta:
         managed = False
@@ -339,6 +403,9 @@ class DrivePowerIdle(models.Model):
     power_idle_id = models.AutoField(primary_key=True)
     power_idle_name = models.CharField(max_length=10, blank=True, null=True)
 
+    def __repr__(self):
+        return f'power_idle_id: {self.power_idle_id}, power_idle_name: {self.power_idle_name}'
+
     class Meta:
         managed = False
         db_table = 'Drive_power_idle'
@@ -347,6 +414,9 @@ class DrivePowerIdle(models.Model):
 class DrivePowerSeek(models.Model):
     power_seek_id = models.AutoField(primary_key=True)
     power_seek_name = models.CharField(max_length=10, blank=True, null=True)
+
+    def __repr__(self):
+        return f'power_seek_id: {self.power_seek_id}, power_seek_name: {self.power_seek_name}'
 
     class Meta:
         managed = False
@@ -357,6 +427,9 @@ class DrivePowerSpin(models.Model):
     power_spin_id = models.AutoField(primary_key=True)
     power_spin_name = models.CharField(max_length=10, blank=True, null=True)
 
+    def __repr__(self):
+        return f'power_spin_id: {self.power_spin_id}, power_spin_name: {self.power_spin_name}'
+
     class Meta:
         managed = False
         db_table = 'Drive_power_spin'
@@ -365,6 +438,9 @@ class DrivePowerSpin(models.Model):
 class DrivePowerStandby(models.Model):
     power_standby_id = models.AutoField(primary_key=True)
     power_standby_name = models.CharField(max_length=10, blank=True, null=True)
+
+    def __repr__(self):
+        return f'power_standby_id: {self.power_standby_id}, power_standby_name: {self.power_standby_name}'
 
     class Meta:
         managed = False
@@ -375,6 +451,9 @@ class DriveTypes(models.Model):
     type_id = models.AutoField(primary_key=True)
     type_name = models.CharField(max_length=10, blank=True, null=True)
 
+    def __repr__(self):
+        return f'type_id: {self.type_id}, type_name: {self.type_name}'
+
     class Meta:
         managed = False
         db_table = 'Drive_types'
@@ -384,6 +463,9 @@ class DriveWeight(models.Model):
     weight_id = models.AutoField(primary_key=True)
     weight_name = models.CharField(max_length=10, blank=True, null=True)
 
+    def __repr__(self):
+        return f'weight_id: {self.weight_id}, weight_name: {self.weight_name}'
+
     class Meta:
         managed = False
         db_table = 'Drive_weight'
@@ -392,6 +474,9 @@ class DriveWeight(models.Model):
 class DriveWidth(models.Model):
     width_id = models.AutoField(primary_key=True)
     width_name = models.CharField(max_length=10, blank=True, null=True)
+
+    def __repr__(self):
+        return f'width_id: {self.width_id}, width_name: {self.width_name}'
 
     class Meta:
         managed = False
@@ -430,8 +515,11 @@ class Drives(models.Model):
     f_origin = models.ForeignKey('Origins', models.DO_NOTHING, blank=True, null=True)
     date_added = models.DateField()
 
-    def __str__(self):
-        return "hdd_serial:{0}, health:{1}, days_on:{2}, tar_member_name:{3}, f_lot:{4}, f_hdd_models:{5}, f_lock_state:{6}, f_speed:{7}, f_form_factor:{8}, f_hdd_order:{9}".format(self.hdd_serial, self.health, self.days_on, self.tar_member_name, self.f_lot, self.f_hdd_models, self.f_lock_state, self.f_speed, self.f_form_factor, self.f_hdd_order)
+    def __repr__(self):
+        return f'hdd_serial: {self.hdd_serial}, health: {self.health}, days_on: {self.days_on}, ' \
+            f'tar_member_name: {self.tar_member_name}, f_lot: {self.f_lot}, f_hdd_models: {self.f_hdd_models}, ' \
+            f'f_lock_state: {self.f_lock_state}, f_speed: {self.f_speed}, f_form_factor: {self.f_form_factor}, ' \
+            f'f_hdd_order: {self.f_hdd_order}'
 
     class Meta:
         managed = True
@@ -442,6 +530,9 @@ class Origins(models.Model):
     origin_id = models.AutoField(primary_key=True)
     origin_name = models.CharField(max_length=100, blank=True, null=True)
 
+    def __repr__(self):
+        return f'origin_id: {self.origin_id}, origin_name: {self.origin_name}'
+
     class Meta:
         managed = False
         db_table = 'Origins'
@@ -450,6 +541,9 @@ class Origins(models.Model):
 class PhysicalInterfaces(models.Model):
     interface_id = models.AutoField(primary_key=True)
     interface_name = models.CharField(max_length=20, blank=True, null=True)
+
+    def __repr__(self):
+        return f'interface_id: {self.interface_id}, interface_name: {self.interface_name}'
 
     class Meta:
         managed = False
@@ -460,6 +554,9 @@ class Licenses(models.Model):
     id_license = models.AutoField(primary_key=True)
     license_name = models.CharField(max_length=45)
 
+    def __repr__(self):
+        return f'id_license: {self.id_license}, license_name: {self.license_name}'
+
     class Meta:
         managed = True
         db_table = 'Licenses'
@@ -468,6 +565,9 @@ class Licenses(models.Model):
 class LockState(models.Model):
     lock_state_id = models.AutoField(primary_key=True)
     lock_state_name = models.CharField(max_length=45)
+
+    def __repr__(self):
+        return f'lock_state_id: {self.lock_state_id}, lock_state_name: {self.lock_state_name}'
 
     class Meta:
         managed = True
@@ -479,6 +579,9 @@ class Lots(models.Model):
     lot_name = models.CharField(max_length=45)
     date_of_lot = models.DateField(blank=True, null=True)
 
+    def __repr__(self):
+        return f'lot_id: {self.lot_id}, lot_name: {self.lot_name}, date_of_lot: {self.date_of_lot}'
+
     class Meta:
         managed = True
         db_table = 'Lots'
@@ -488,8 +591,8 @@ class Manufacturers(models.Model):
     id_manufacturer = models.AutoField(primary_key=True)
     manufacturer_name = models.CharField(max_length=45)
 
-    def __str__(self):
-        return "manufacturer_name: {0}".format(self.manufacturer_name)
+    def __repr__(self):
+        return f'id_manufacturer: {self.id_manufacturer}, manufacturer_name: {self.manufacturer_name}'
 
     class Meta:
         managed = True
@@ -499,6 +602,9 @@ class Manufacturers(models.Model):
 class Models(models.Model):
     id_model = models.AutoField(primary_key=True)
     model_name = models.CharField(max_length=100)
+
+    def __repr__(self):
+        return f'id_model: {self.id_model}, model_name: {self.model_name}'
 
     class Meta:
         managed = True
@@ -510,6 +616,9 @@ class OrdTes(models.Model):
     f_order = models.ForeignKey('Orders', models.DO_NOTHING)
     f_id_tester = models.ForeignKey('Testers', models.DO_NOTHING, db_column='f_id_tester')
 
+    def __repr__(self):
+        return f'id_ord_tes: {self.id_ord_tes}, f_order: {self.f_order}, f_id_tester: {self.f_id_tester}'
+
     class Meta:
         managed = True
         db_table = 'Ord/Tes'
@@ -519,6 +628,10 @@ class OrderStatus(models.Model):
     order_status_id = models.AutoField(primary_key=True)
     order_status_name = models.CharField(max_length=500)
     is_shown = models.IntegerField()
+
+    def __repr__(self):
+        return f'order_status_id: {self.order_status_id}, order_status_name: {self.order_status_name}, ' \
+            f'is_shown: {self.is_shown}'
 
     class Meta:
         managed = True
@@ -532,6 +645,10 @@ class Orders(models.Model):
     creation_date = models.DateField()
     f_id_client = models.ForeignKey(Clients, models.DO_NOTHING, db_column='f_id_client')
 
+    def __repr__(self):
+        return f'id_order: {self.id_order}, order_name: {self.order_name}, is_sent: {self.is_sent}, ' \
+            f'creation_date: {self.creation_date}, f_id_client: {self.f_id_client}'
+
     class Meta:
         managed = True
         db_table = 'Orders'
@@ -540,6 +657,9 @@ class Orders(models.Model):
 class RamSizes(models.Model):
     id_ram_size = models.AutoField(primary_key=True)
     ram_size_text = models.CharField(max_length=45)
+
+    def __repr__(self):
+        return f'id_ram_size: {self.id_ram_size}, ram_size_text: {self.ram_size_text}'
 
     class Meta:
         managed = True
@@ -553,8 +673,9 @@ class Rams(models.Model):
     clock = models.CharField(max_length=10, blank=True, null=True)
     type = models.CharField(max_length=10, blank=True, null=True)
 
-    def __str__(self):
-        return "ramserial: {0}, capacity: {1}, clock: {2}, type: {3}".format(self.ram_serial, self.capacity, self.clock, self.type)
+    def __repr__(self):
+        return f'id_ram: {self.id_ram}, ram_serial: {self.ram_serial}, capacity: {self.capacity}, ' \
+            f'clock: {self.clock}, type: {self.type}'
 
     class Meta:
         managed = True
@@ -565,6 +686,9 @@ class Resolutions(models.Model):
     id_resolution = models.AutoField(primary_key=True)
     resolution_text = models.CharField(max_length=45)
 
+    def __repr__(self):
+        return f'id_resolution: {self.id_resolution}, resolution_text: {self.resolution_text}'
+
     class Meta:
         managed = True
         db_table = 'Resolutions'
@@ -574,6 +698,9 @@ class Sales(models.Model):
     id_sale = models.AutoField(primary_key=True)
     date_of_sale = models.DateField()
     f_id_client = models.ForeignKey(Clients, models.DO_NOTHING, db_column='f_id_client')
+
+    def __repr__(self):
+        return f'id_sale: {self.id_sale}, date_of_sale: {self.date_of_sale}, f_id_client: {self.f_id_client}'
 
     class Meta:
         managed = True
@@ -590,6 +717,9 @@ class Speed(models.Model):
     speed_id = models.AutoField(primary_key=True)
     speed_name = models.CharField(max_length=45)
 
+    def __repr__(self):
+        return f'speed_id: {self.speed_id}, speed_name: {self.speed_name}'
+
     class Meta:
         managed = True
         db_table = 'Speed'
@@ -599,6 +729,9 @@ class Testers(models.Model):
     id_tester = models.AutoField(primary_key=True)
     tester_name = models.CharField(max_length=45)
 
+    def __repr__(self):
+        return f'id_tester: {self.id_tester}, tester_name: {self.tester_name}'
+
     class Meta:
         managed = True
         db_table = 'Testers'
@@ -607,6 +740,9 @@ class Testers(models.Model):
 class Types(models.Model):
     id_type = models.AutoField(primary_key=True)
     type_name = models.CharField(max_length=45)
+
+    def __repr__(self):
+        return f'id_type: {self.id_type}, type_name: {self.type_name}'
 
     class Meta:
         managed = True
@@ -684,6 +820,10 @@ class BatToComp(models.Model):
     f_id_computer_bat_to_com = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer_bat_to_com', blank=True, null=True)
     f_bat_bat_to_com = models.ForeignKey(Batteries, models.DO_NOTHING, db_column='f_bat_bat_to_com', blank=True, null=True)
 
+    def __repr__(self):
+        return f'id_bat_to_comp: {self.id_bat_to_comp}, f_id_computer_bat_to_com: {self.f_id_computer_bat_to_com}, ' \
+            f'f_bat_bat_to_com: {self.f_bat_bat_to_com}'
+
     class Meta:
         managed = True
         db_table = 'bat_to_comp'
@@ -739,6 +879,10 @@ class RamToComp(models.Model):
     f_id_computer_ram_to_com = models.ForeignKey(Computers, models.DO_NOTHING, db_column='f_id_computer_ram_to_com', blank=True, null=True)
     f_id_ram_ram_to_com = models.ForeignKey(Rams, models.DO_NOTHING, db_column='f_id_ram_ram_to_com', blank=True, null=True)
 
+    def __repr__(self):
+        return f'id_ram_to_comp: {self.id_ram_to_comp}, f_id_computer_ram_to_com: {self.f_id_computer_ram_to_com}, ' \
+            f'f_id_ram_ram_to_com: {self.f_id_ram_ram_to_com}'
+
     class Meta:
         managed = True
         db_table = 'ram_to_comp'
@@ -753,9 +897,10 @@ class Processors(models.Model):
     cores = models.IntegerField()
     threads = models.IntegerField()
 
-    def __str__(self):
-        # todo: change format variable insertion to an f-string ones.
-        return "id_processor: {0}, f_manufacturer: {1}, model_name: {2}, stock_clock: {3}, max_clock: {4}, cores: {5}, threads: {6}".format(self.id_processor, self.f_manufacturer, self.model_name, self.stock_clock, self.max_clock, self.cores, self.threads)
+    def __repr__(self):
+        return f"id_processor: {self.id_processor}, f_manufacturer: {self.f_manufacturer}, " \
+            f"model_name: {self.model_name}, stock_clock: {self.stock_clock}, max_clock: {self.max_clock}, " \
+            f"cores: {self.cores}, threads: {self.threads}"
 
     class Meta:
         managed = True
@@ -767,6 +912,10 @@ class Computerprocessors(models.Model):
     f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer')
     f_id_processor = models.ForeignKey('Processors', models.DO_NOTHING, db_column='f_id_processor')
 
+    def __repr__(self):
+        return f"id_computers_processors: {self.id_computers_processors}, f_id_computer: {self.f_id_computer}, " \
+            f"f_id_processor: {self.f_id_processor}"
+
     class Meta:
         managed = True
         db_table = 'ComputerProcessors'
@@ -776,6 +925,9 @@ class Cabletypes(models.Model):
     id_cable_types = models.AutoField(primary_key=True)
     cable_type_name = models.CharField(max_length=20)
 
+    def __repr__(self):
+        return f"id_cable_types: {self.id_cable_types}, cable_type_name: {self.cable_type_name}"
+
     class Meta:
         managed = True
         db_table = 'CableTypes'
@@ -784,6 +936,9 @@ class Cabletypes(models.Model):
 class Matrixes(models.Model):
     id_matrix = models.AutoField(primary_key=True)
     f_id_cable_type = models.ForeignKey(Cabletypes, models.DO_NOTHING, db_column='f_id_cable_type')
+
+    def __repr__(self):
+        return f"id_matrix: {self.id_matrix}, f_id_cable_type: {self.f_id_cable_type}"
 
     class Meta:
         managed = True
@@ -795,6 +950,10 @@ class Computerdrives(models.Model):
     f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer')
     f_drive = models.ForeignKey('Drives', models.DO_NOTHING)
 
+    def __repr__(self):
+        return f"id_computer_drive: {self.id_computer_drive}, f_id_computer: {self.f_id_computer}, " \
+            f"f_drive: {self.f_drive}"
+
     class Meta:
         managed = True
         db_table = 'ComputerDrives'
@@ -805,6 +964,10 @@ class Computergpus(models.Model):
     f_id_gpu = models.ForeignKey('Gpus', models.DO_NOTHING, db_column='f_id_gpu')
     f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer')
 
+    def __repr__(self):
+        return f"id_computergpus: {self.id_computergpus}, f_id_gpu: {self.f_id_gpu}, " \
+            f"f_id_computer: {self.f_id_computer}"
+
     class Meta:
         managed = True
         db_table = 'Computergpus'
@@ -814,8 +977,8 @@ class Observationcategory(models.Model):
     id_observation_category = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=45, blank=True, null=True)
 
-    def __str__(self):
-        return "category_name: {0}".format(self.category_name)
+    def __repr__(self):
+        return f"id_observation_category: {self.id_observation_category}, category_name: {self.category_name}"
 
     class Meta:
         managed = True
@@ -826,8 +989,9 @@ class Observationsubcategory(models.Model):
     id_observation_subcategory = models.AutoField(primary_key=True)
     subcategory_name = models.CharField(max_length=45, blank=True, null=True)
 
-    def __str__(self):
-        return "subcategory_name: {0}".format(self.subcategory_name)
+    def __repr__(self):
+        return f"id_observation_subcategory: {self.id_observation_subcategory}, " \
+            f"subcategory_name: {self.subcategory_name}"
 
     class Meta:
         managed = True
@@ -841,8 +1005,10 @@ class Observations(models.Model):
     f_id_observation_category = models.ForeignKey(Observationcategory, models.DO_NOTHING, db_column='f_id_observation_category', blank=True, null=True)
     f_id_observation_subcategory = models.ForeignKey(Observationsubcategory, models.DO_NOTHING, db_column='f_id_observation_subcategory', blank=True, null=True)
 
-    def __str__(self):
-        return "shortcode: {0}, full_name: {1}, f_id_observation_category: {2}, f_id_observation_subcategory: {3}".format(self.shortcode, self.full_name, self.f_id_observation_category, self.f_id_observation_subcategory)
+    def __repr__(self):
+        return f"id_observation: {self.id_observation}, shortcode: {self.shortcode}, full_name: {self.full_name}, " \
+            f"f_id_observation_category: {self.f_id_observation_category}, " \
+            f"f_id_observation_subcategory: {self.f_id_observation_subcategory}"
 
     class Meta:
         managed = True
@@ -853,6 +1019,10 @@ class Computerobservations(models.Model):
     id_computer_observations = models.AutoField(primary_key=True)
     f_id_computer = models.ForeignKey('Computers', models.DO_NOTHING, db_column='f_id_computer', blank=True, null=True)
     f_id_observation = models.ForeignKey('Observations', models.DO_NOTHING, db_column='f_id_observation', blank=True, null=True)
+
+    def __repr__(self):
+        return f"id_computer_observations: {self.id_computer_observations}, f_id_computer: {self.f_id_computer}, " \
+            f"f_id_observation: {self.f_id_observation}"
 
     class Meta:
         managed = True
