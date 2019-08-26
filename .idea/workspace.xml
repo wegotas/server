@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b12dfcae-9b13-4cc6-9e92-f3612f8d0df9" name="Default Changelist" comment="Changes:&#10;* Changed that search bar would be fixed in a workplane.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/website/templates/static/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/website/templates/static/index.css" afterDir="false" />
-    </list>
+    <list default="true" id="b12dfcae-9b13-4cc6-9e92-f3612f8d0df9" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -316,13 +313,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1542106267817</updated>
-    </task>
-    <task id="LOCAL-00078" summary="Changes:&#10;* Removing ramstick updates total_ram based on sum of remaining rams.">
-      <created>1557238848325</created>
-      <option name="number" value="00078" />
-      <option name="presentableId" value="LOCAL-00078" />
-      <option name="project" value="LOCAL" />
-      <updated>1557238848325</updated>
     </task>
     <task id="LOCAL-00079" summary="Changes:&#10;* Automatic ramstick adding functionality.&#10;* Updated changelog.">
       <created>1557317275684</created>
@@ -660,7 +650,14 @@
       <option name="project" value="LOCAL" />
       <updated>1564403666627</updated>
     </task>
-    <option name="localTasksCounter" value="127" />
+    <task id="LOCAL-00127" summary="Changes:&#10;* Changed that search bar would be fixed in a workplane.">
+      <created>1566823908420</created>
+      <option name="number" value="00127" />
+      <option name="presentableId" value="LOCAL-00127" />
+      <option name="project" value="LOCAL" />
+      <updated>1566823908421</updated>
+    </task>
+    <option name="localTasksCounter" value="128" />
     <servers />
   </component>
   <component name="TodoView">
@@ -674,7 +671,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="704" width="1920" height="1044" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.10110585" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
