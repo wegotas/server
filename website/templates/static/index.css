@@ -140,7 +140,16 @@
 
 .search {
     text-align: center;
+    position: fixed;
+    top: 0px;
+    left: 1%;
+    right: 1%;
 }
+
+.blended_grid {
+    margin-top: 30px;
+}
+
 .c-inputbox{
     border: 2px solid darkgrey;
     height: 20px;
@@ -178,10 +187,13 @@
     border: 1px solid black;
 }
 
+
+
 .search-categories {
     display: none;
     border: 1px solid darkgrey;
     border-radius: 8px;
+    background-color:rgba(255, 255, 255, 0.85);
 }
 
 #option-title {
